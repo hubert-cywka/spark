@@ -1,14 +1,28 @@
+import { Response } from "express";
+import { responseHeaders } from "../../common/config/responseHeaders";
+
 const express = require('express');
+const dotenv = require("dotenv");
 const path = require('path');
 
-require("dotenv").config()
-
+dotenv.config();
 const app = express();
 const port = process.env.PORT;
-const distPath = '../../ui/dist'
+const staticFilesPath = '../../ui/dist';
 
-app.use(express.static(path.join(__dirname, distPath)));
+function setResponseHeaders(response: Response) {
+    response.set(responseHeaders)
+}
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
+function init() {
+    app.use(express.static(path.join(__dirname, staticFilesPath), {
+        setHeaders: setResponseHeaders
+    }));
+
+    app.listen(port, () => {
+        console.log(`Server is running on port ${port}`);
+    });
+}
+
+init();
+
