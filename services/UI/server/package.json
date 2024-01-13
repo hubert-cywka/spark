@@ -1,0 +1,21 @@
+{
+  "name": "ui-server",
+  "version": "0.0.1",
+  "description": "",
+  "main": "server.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "ts-node-dev --transpile-only --respawn --project tsconfig.json src/server.ts",
+    "build": "tsc && esbuild ./src/server.ts --bundle --outfile=dist/index.js --platform=node"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "nodemon": "^3.0.2",
+    "ts-node-dev": "^2.0.0"
+  }
+}
