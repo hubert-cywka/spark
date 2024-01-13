@@ -1,9 +1,7 @@
-import { Response } from "express";
-import { responseHeaders } from "../../common/config/responseHeaders";
+import dotenv from 'dotenv';
+import express, { Response } from 'express';
+import path from 'path';
 
-const express = require('express');
-const dotenv = require("dotenv");
-const path = require('path');
 
 dotenv.config();
 const app = express();
@@ -11,7 +9,10 @@ const port = process.env.PORT;
 const staticFilesPath = '../../ui/dist';
 
 function setResponseHeaders(response: Response) {
-    response.set(responseHeaders)
+    response.set({
+        'Content-Security-Policy': 'default-src: self',
+        'Referrer-Policy': 'no-referrer'
+    })
 }
 
 function init() {
