@@ -1,0 +1,9 @@
+version: '3.4'
+services:
+
+  ui-service:
+    ports:
+      - '10000:80'
+    environment:
+      - PORT=80
+      - STATIC_FILES_DIR=./static

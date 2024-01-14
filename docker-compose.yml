@@ -1,0 +1,7 @@
+version: '3.4'
+services:
+
+  ui-service:
+    build:
+      context: services/UI
+      dockerfile: Dockerfile

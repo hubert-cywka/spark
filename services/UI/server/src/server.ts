@@ -6,7 +6,7 @@ import path from 'path';
 dotenv.config();
 const app = express();
 const port = process.env.PORT;
-const staticFilesPath = '../../ui/dist';
+const staticFilesPath = process.env.STATIC_FILES_DIR ?? '../../ui/dist';
 
 function setResponseHeaders(response: Response) {
     response.set({
