@@ -1,0 +1,8 @@
+{
+  "proxy-service": {
+    "port": 5000
+  },
+  "ui-service": {
+    "port": 5173
+  }
+}
