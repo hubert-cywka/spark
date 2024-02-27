@@ -1,5 +1,22 @@
 version: "3.4"
 services:
+    rabbitmq:
+        image: rabbitmq:latest
+        healthcheck:
+            test: rabbitmq-diagnostics -q ping
+            interval: 1s
+            timeout: 10s
+            retries: 3
+
+    db:
+        image: postgres
+        restart: always
+        healthcheck:
+            test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+            interval: 1s
+            timeout: 10s
+            retries: 3
+
     proxy-service:
         build:
             context: services/Proxy
@@ -17,3 +34,13 @@ services:
 networks:
     services_network:
         external: true
+
+volumes:
+    postgres:
+        external: false
+
+    rabbitmq:
+        external: false
+
+    rabbitmq-logs:
+        external: false
