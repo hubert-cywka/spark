@@ -24,7 +24,7 @@ dist-ssr
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
+*.sw
 
 # Auto-generated files
 docker-compose.local.override.yml
