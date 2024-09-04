@@ -59,8 +59,8 @@ $DetachableServicesList = Get-Content -Path "services.list.json" | ConvertFrom-J
 foreach ($DetachedService in $DetachedServices) {
     $PortValue = $DetachableServicesList.$DetachedService.port
     $EnvNamePrefix = $DetachedService.ToUpper() -replace "-", "_";
-    $EnvAddress = "ENVOY_$($EnvNamePrefix)_ADDRESS=host.docker.internal"
-    $EnvPort = "ENVOY_$($EnvNamePrefix)_PORT=$($PortValue)"
+    $EnvAddress = "$($EnvNamePrefix)_ADDRESS=host.docker.internal"
+    $EnvPort = "$($EnvNamePrefix)_PORT=$($PortValue)"
 
     $DockerComposeLocal.services.$ProxyService.environment = New-Object System.Collections.ArrayList
     $DockerComposeLocal.services.$ProxyService.environment.Add($EnvAddress)

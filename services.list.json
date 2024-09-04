@@ -4,5 +4,8 @@
     },
     "ui-service": {
         "port": 5173
+    },
+    "auth-service": {
+        "port": 5200
     }
 }

@@ -42,5 +42,5 @@ static_resources:
                         - endpoint:
                               address:
                                   socket_address:
-                                      address: "${ENVOY_UI_SERVICE_ADDRESS}"
-                                      port_value: "${ENVOY_UI_SERVICE_PORT}"
+                                      address: "${UI_SERVICE_ADDRESS}"
+                                      port_value: "${UI_SERVICE_PORT}"
