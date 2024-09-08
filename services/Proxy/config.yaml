@@ -23,6 +23,8 @@ static_resources:
                                   - name: virtual_host
                                     domains: ["*"]
                                     routes:
+                                        - match: { prefix: "/auth" }
+                                          route: { cluster: auth-service }
                                         - match: { prefix: "/" }
                                           route: { cluster: ui-service }
                           http_filters:
@@ -44,3 +46,19 @@ static_resources:
                                   socket_address:
                                       address: "${UI_SERVICE_ADDRESS}"
                                       port_value: "${UI_SERVICE_PORT}"
+
+        -   name: auth-service
+            connect_timeout: 5s
+            type: STRICT_DNS
+            lb_policy: ROUND_ROBIN
+            load_assignment:
+                cluster_name: auth-service
+                endpoints:
+                    -   lb_endpoints:
+                            -   endpoint:
+                                    address:
+                                        socket_address:
+                                            address: "${AUTH_SERVICE_ADDRESS}"
+                                            port_value: "${AUTH_SERVICE_PORT}"
+
+
