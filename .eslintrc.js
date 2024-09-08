@@ -39,6 +39,7 @@ module.exports = {
         "@typescript-eslint/interface-name-prefix": "off",
         "@typescript-eslint/no-unused-vars": "off",
         "@typescript-eslint/no-var-requires": "off",
+        "react/react-in-jsx-scope": "off",
         "prettier/prettier": [
             "error",
             {

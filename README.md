@@ -17,13 +17,10 @@ However, Proxy service redirects to UI service - therefore, if you did everythin
 ## Setting up new services
 In order to add a new service, you need to:
 - create new service in [services](./services) directory, technology is up to you,
-- create Dockerfile in root of that service (example -> [Dockerfile](./services/UI/Dockerfile)),
+- create Dockerfile the in root of that service (example -> [Dockerfile](./services/UI/Dockerfile)),
 - update [docker-compose.yml](./docker-compose.yml) with basic configuration of the new service,
 - configure ports and env variables for new service in [docker-compose.local.yml](./docker-compose.local.yml),
-- update [services.list.json](./services.list.json) and specify port on which this particular service runs locally.
+- update [services.list.json](./services.list.json) and specify port on which this particular service runs locally (outside the docker container),
+- if necessary, configure routes and clusters in [the Proxy service configuration](./services/Proxy/config.yaml).
 
 If you've completed all above steps, you should be able to run the new service both dockerized and detached.
-
-## Gateway
-We use Envoy to create a single entrypoint for our application. Envoy acts as a reverse proxy and redirects network traffic to specific clusters.
-It allows to expose our services to public, provides possibility for internal authorization, load-balancing, allows to modify requests/responses, etc.
