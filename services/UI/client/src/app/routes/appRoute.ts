@@ -1,7 +1,7 @@
-export enum Routes {
-    ROOT = "/",
+export enum AppRoute {
+    HOME = "/",
     LOGIN = "/login",
     REGISTER = "/register",
     LOGOUT = "/logout",
-    HOME = "/home",
+    NOT_FOUND = "/*",
 }

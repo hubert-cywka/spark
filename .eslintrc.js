@@ -31,6 +31,7 @@ module.exports = {
         "prettier",
     ],
     rules: {
+        "no-console": "error",
         "react-hooks/rules-of-hooks": "error",
         "simple-import-sort/imports": "error",
         "simple-import-sort/exports": "error",
