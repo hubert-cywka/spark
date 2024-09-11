@@ -38,6 +38,13 @@ services:
         networks:
             - services_network
 
+    users-service:
+        build:
+            context: services/Auth
+            dockerfile: Dockerfile
+        networks:
+            - services_network
+
 networks:
     services_network:
         external: true

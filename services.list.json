@@ -7,5 +7,8 @@
     },
     "auth-service": {
         "port": 5200
+    },
+    "users-service": {
+        "port": 5300
     }
 }

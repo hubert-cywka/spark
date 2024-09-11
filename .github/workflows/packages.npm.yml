@@ -1,0 +1,57 @@
+name: Build npm packages
+
+on:
+    push:
+        branches: ["main"]
+        paths:
+            - "packages/npm/**"
+
+    pull_request:
+        types: [opened, synchronize, reopened]
+        branches: ["main"]
+        paths:
+            - "packages/npm/**"
+            - ".github/workflows/packages.*.yml"
+            - ".github/workflows/package.*.yml"
+
+concurrency:
+    group: ${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    create-packages-matrix:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - id: create-matrix
+              name: Prepare JSON with packages for matrix
+              shell: pwsh
+              run: |
+                  $root_dir = Get-Location
+                  $packages_root_dir = Join-Path $root_dir "/packages/npm"
+                  $package_dirs = Get-ChildItem -Path $packages_root_dir -Directory -Exclude 'node_modules'
+                  
+                  $packages = @{}
+                  foreach ($dir in $package_dirs) {
+                      $packages[$dir.Name] = @{
+                          "name" = $dir.Name
+                      }
+                  }
+                  
+                  $json = ,@($packages.Values) | ConvertTo-Json -Compress
+                  "packages-matrix=$json" >> $env:GITHUB_OUTPUT
+
+        outputs:
+            packages-matrix: ${{ steps.create-matrix.outputs.packages-matrix }}
+
+    build:
+        needs: create-packages-matrix
+        strategy:
+            matrix:
+                package: ${{ fromJson(needs.create-packages-matrix.outputs.packages-matrix) }}
+        uses: ./.github/workflows/package.npm.build.yml
+        with:
+            package-name: ${{ matrix.package.name }}
+            package-path: packages/npm/${{ matrix.package.name }}
+        secrets:
+            PACKAGES_REGISTRY_PAT: ${{ secrets.PACKAGES_REGISTRY_PAT }}

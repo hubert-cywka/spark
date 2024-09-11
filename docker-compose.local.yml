@@ -40,3 +40,9 @@ services:
             - "5200:80"
         environment:
             - PORT=80
+
+    users-service:
+        ports:
+            - "5300:80"
+        environment:
+            - PORT=80

@@ -78,6 +78,39 @@ module.exports = {
                 ],
             },
         },
+        // {
+        //     files: "./services/UI/client/**",
+        //     rules: {
+        //         "import/no-restricted-paths": [
+        //             "error",
+        //             {
+        //                 zones: [
+        //                     // disables cross-feature imports:
+        //                     {
+        //                         target: "./services/UI/client/src/features/auth",
+        //                         from: "./services/UI/client/src/features",
+        //                         except: ["./auth"],
+        //                     },
+        //                     // enforce unidirectional codebase:
+        //                     {
+        //                         target: "./services/UI/client/src/features",
+        //                         from: "./services/UI/client/src/app",
+        //                     },
+        //                     {
+        //                         target: [
+        //                             "./services/UI/client/src/components",
+        //                             "./services/UI/client/src/hooks",
+        //                             "./services/UI/client/src/lib",
+        //                             "./services/UI/client/src/types",
+        //                             "./services/UI/client/src/utils",
+        //                         ],
+        //                         from: ["./services/UI/client/src/features", "./services/UI/client/src/app"],
+        //                     },
+        //                 ],
+        //             },
+        //         ],
+        //     },
+        // },
     ],
     root: true,
 };
