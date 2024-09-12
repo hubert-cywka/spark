@@ -4,28 +4,20 @@ import { AppModule } from '@/app.module';
 import configuration from '@/config/configuration';
 import { ValidationPipe } from '@nestjs/common';
 
-function getMicroserviceOptions(): MicroserviceOptions {
-    const temporaryConfig = configuration();
-
-    return {
-        transport: Transport.TCP,
-        options: {
-            port: temporaryConfig.port,
-        },
-    };
-}
-
 async function bootstrap() {
-    const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-        AppModule,
-        getMicroserviceOptions(),
-    );
+    const app = await NestFactory.create(AppModule);
+    const appConfig = configuration();
+
+    app.connectMicroservice<MicroserviceOptions>({
+        transport: Transport.TCP,
+    });
 
     app.useGlobalPipes(
         new ValidationPipe({ whitelist: true, transform: true }),
     );
 
-    await app.listen();
+    await app.listen(appConfig.port);
+    await app.startAllMicroservices();
 }
 
 bootstrap();

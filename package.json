@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "prepare": "husky install",
-        "start": "pwsh ./scripts/services.up.ps1",
+        "start": "pwsh ./services.up.ps1",
         "start-rebuild": "npm run start -- -Build"
     },
     "lint-staged": {
