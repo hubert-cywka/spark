@@ -13,7 +13,7 @@ if (-not $ExistingNetwork) {
 }
 
 $ServicesList = @();
-(Get-Content -Raw -Path services.list.json | ConvertFrom-Json).psobject.Properties.name.ForEach({ $ServicesList += $_.toString() })
+(Get-Content -Raw -Path infrastructure/services.list.json | ConvertFrom-Json).psobject.Properties.name.ForEach({ $ServicesList += $_.toString() })
 
 $DetachedServicesCheck = 0
 # Check if DetachedServices contains valid and existing services
@@ -31,12 +31,14 @@ if ($DetachedServicesCheck -eq 1) {
     Exit
 }
 
+$DockerComposeRootDir = "infrastructure/docker"
+
 # If no services were specified to be ran manually, then run all services in containers
 if ($DetachedServices.Count -eq 0) {
     if ($Build) {
-        docker-compose -f docker-compose.yml -f docker-compose.local.yml up --build
+        docker-compose -f $DockerComposeRootDir/docker-compose.yml -f $DockerComposeRootDir/docker-compose.local.yml up --build
     } else {
-        docker-compose -f docker-compose.yml -f docker-compose.local.yml up
+        docker-compose -f $DockerComposeRootDir/docker-compose.yml -f $DockerComposeRootDir/docker-compose.local.yml up
     }
     exit
 }
@@ -54,8 +56,8 @@ Import-Module powershell-yaml
 # Create docker-compose.local.override.yml file
 # In that file we want to override envoy related envs, so envoy can proxy to services running on host machine
 $ProxyService = "proxy-service"
-$DockerComposeLocal = Get-Content -Path "docker-compose.local.yml" | ConvertFrom-Yaml
-$DetachableServicesList = Get-Content -Path "services.list.json" | ConvertFrom-Json
+$DockerComposeLocal = Get-Content -Path $DockerComposeRootDir/"docker-compose.local.yml" | ConvertFrom-Yaml
+$DetachableServicesList = Get-Content -Path "infrastructure/services.list.json" | ConvertFrom-Json
 foreach ($DetachedService in $DetachedServices) {
     $PortValue = $DetachableServicesList.$DetachedService.port
     $EnvNamePrefix = $DetachedService.ToUpper() -replace "-", "_";
@@ -67,10 +69,10 @@ foreach ($DetachedService in $DetachedServices) {
     $DockerComposeLocal.services.$ProxyService.environment.Add($EnvPort)
 }
 
-$DockerComposeLocal | ConvertTo-Yaml | Out-File -FilePath "docker-compose.local.override.yml" -Encoding UTF8
+$DockerComposeLocal | ConvertTo-Yaml | Out-File -FilePath $DockerComposeRootDir/"docker-compose.local.override.yml" -Encoding UTF8
 
 if ($Build) {
-    docker-compose -f docker-compose.yml -f docker-compose.local.yml -f docker-compose.local.override.yml up --build $ServicesToRunInContainer
+    docker-compose -f $DockerComposeRootDir/docker-compose.yml -f $DockerComposeRootDir/docker-compose.local.yml -f $DockerComposeRootDir/docker-compose.local.override.yml up --build $ServicesToRunInContainer
 } else {
-    docker-compose -f docker-compose.yml -f docker-compose.local.yml -f docker-compose.local.override.yml up $ServicesToRunInContainer
+    docker-compose -f $DockerComposeRootDir/docker-compose.yml -f $DockerComposeRootDir/docker-compose.local.yml -f $DockerComposeRootDir/docker-compose.local.override.yml up $ServicesToRunInContainer
 }

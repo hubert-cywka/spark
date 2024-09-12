@@ -31,16 +31,9 @@ services:
         networks:
             - services_network
 
-    auth-service:
+    access-service:
         build:
-            context: services/Auth
-            dockerfile: Dockerfile
-        networks:
-            - services_network
-
-    users-service:
-        build:
-            context: services/Auth
+            context: services/Access
             dockerfile: Dockerfile
         networks:
             - services_network

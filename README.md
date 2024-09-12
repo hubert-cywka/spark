@@ -8,7 +8,7 @@ Proxy service acts like a gateway connecting all these services and allowing the
 
 For example, in order to debug the UI service, you need to:
 - make sure that Docker daemon is running on your local machine. This command should run all necessary infrastructure and all services,
-- run `pwsh services.up.ps1 --DetachedServices ui-service` (add `--Build` flag if you run the app for the first time),
+- run `npm run start -- --DetachedServices ui-service` (add `--Build` flag if you run the app for the first time),
 - go to UI service and start it manually - `npm run dev`. 
 
 By default, UI service starts on port 5173 and Proxy service starts on port 5000.
