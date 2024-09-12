@@ -13,8 +13,7 @@ static_resources:
               - filters:
                     - name: envoy.filters.network.http_connection_manager
                       typed_config:
-                          '@type': >-
-                              type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                          '@type': type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
                           stat_prefix: ingress_http
                           codec_type: AUTO
                           route_config:
@@ -28,15 +27,48 @@ static_resources:
                                               prefix: /auth
                                           route:
                                               cluster: access-service
+                                          typed_per_filter_config:
+                                              envoy.filters.http.ext_authz:
+                                                  "@type": type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthzPerRoute
+                                                  disabled: true
+
                                         - match:
                                               prefix: /
                                           route:
                                               cluster: ui-service
+                                          typed_per_filter_config:
+                                              envoy.filters.http.ext_authz:
+                                                  "@type": type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthzPerRoute
+                                                  disabled: true
                           http_filters:
+                              - name: envoy.filters.http.ext_authz
+                                typed_config:
+                                    '@type': type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthz
+                                    transport_api_version: V3
+                                    clear_route_cache: true
+                                    allowed_headers:
+                                        patterns:
+                                            - exact: authorization
+                                              ignore_case: true
+                                    http_service:
+                                        path_prefix: /auth/authorize
+                                        authorization_request:
+                                            headers_to_add:
+                                                - key: content-type
+                                                  value: text/plain
+                                        authorization_response:
+                                            allowed_upstream_headers:
+                                                patterns:
+                                                    - exact: authorization
+                                                      ignore_case: true
+                                        server_uri:
+                                            uri: 'http://${ACCESS_SERVICE_ADDRESS}:${ACCESS_SERVICE_PORT}'
+                                            cluster: access-service
+                                            timeout: 10s
+
                               - name: envoy.filters.http.router
                                 typed_config:
-                                    '@type': >-
-                                        type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+                                    '@type': type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
     clusters:
         - name: ui-service
           connect_timeout: 5s
