@@ -5,10 +5,7 @@
     "ui-service": {
         "port": 5173
     },
-    "auth-service": {
+    "access-service": {
         "port": 5200
-    },
-    "users-service": {
-        "port": 5300
     }
 }

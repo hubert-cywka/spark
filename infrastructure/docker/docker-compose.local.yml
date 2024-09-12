@@ -25,8 +25,8 @@ services:
         environment:
             - UI_SERVICE_ADDRESS=ui-service
             - UI_SERVICE_PORT=80
-            - AUTH_SERVICE_ADDRESS=auth-service
-            - AUTH_SERVICE_PORT=80
+            - ACCESS_SERVICE_ADDRESS=access-service
+            - ACCESS_SERVICE_PORT=80
 
     ui-service:
         ports:
@@ -35,14 +35,8 @@ services:
             - PORT=80
             - STATIC_FILES_DIR=./static
 
-    auth-service:
+    access-service:
         ports:
             - "5200:80"
-        environment:
-            - PORT=80
-
-    users-service:
-        ports:
-            - "5300:80"
         environment:
             - PORT=80
