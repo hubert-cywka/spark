@@ -81,7 +81,7 @@ jobs:
                   PR_NUMBER=${{ github.event.pull_request.number }}
                   
                   PACKAGE_NAME=${{ inputs.package-name }}
-                  NEW_COMMENT="Published ${PACKAGE_NAME}@${PACKAGE_VERSION}"
+                  NEW_COMMENT="<b>Published ${PACKAGE_NAME}@${PACKAGE_VERSION}!</b>"
                   
                   # Fetch existing comments
                   COMMENTS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
