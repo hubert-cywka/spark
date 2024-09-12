@@ -9,7 +9,7 @@ RUN mkdir client
 COPY client/index.html client/index.html
 COPY client/package.json client/package.json
 COPY client/package-lock.json client/package-lock.json
-COPY client/vite.config.ts client/vite.config.json
+COPY client/vite.config.ts client/vite.config.ts
 COPY client/tsconfig.json client/tsconfig.json
 COPY client/tsconfig.node.json client/tsconfig.node.json
 COPY client/src client/src

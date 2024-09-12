@@ -8,7 +8,7 @@ export class AuthService {
     constructor(private jwtService: JwtService) {}
 
     public async login(email: string, password: string) {
-        const user = { email, password, name: 'Test' };
+        const user = { email, password, name: email };
         const jwt = await this.generateJwt(user);
         return { user, jwt };
     }

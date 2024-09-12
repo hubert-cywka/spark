@@ -3,7 +3,6 @@ admin:
         socket_address:
             address: 0.0.0.0
             port_value: 9901
-
 static_resources:
     listeners:
         - address:
@@ -14,24 +13,30 @@ static_resources:
               - filters:
                     - name: envoy.filters.network.http_connection_manager
                       typed_config:
-                          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                          '@type': >-
+                              type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
                           stat_prefix: ingress_http
                           codec_type: AUTO
                           route_config:
                               name: local_route
                               virtual_hosts:
                                   - name: virtual_host
-                                    domains: ["*"]
+                                    domains:
+                                        - '*'
                                     routes:
-                                        - match: { prefix: "/auth" }
-                                          route: { cluster: access-service }
-                                        - match: { prefix: "/" }
-                                          route: { cluster: ui-service }
+                                        - match:
+                                              prefix: /auth
+                                          route:
+                                              cluster: access-service
+                                        - match:
+                                              prefix: /
+                                          route:
+                                              cluster: ui-service
                           http_filters:
                               - name: envoy.filters.http.router
                                 typed_config:
-                                    "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
-
+                                    '@type': >-
+                                        type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
     clusters:
         - name: ui-service
           connect_timeout: 5s
@@ -44,21 +49,18 @@ static_resources:
                         - endpoint:
                               address:
                                   socket_address:
-                                      address: "${UI_SERVICE_ADDRESS}"
-                                      port_value: "${UI_SERVICE_PORT}"
-
-        -   name: access-service
-            connect_timeout: 5s
-            type: STRICT_DNS
-            lb_policy: ROUND_ROBIN
-            load_assignment:
-                cluster_name: access-service
-                endpoints:
-                    -   lb_endpoints:
-                            -   endpoint:
-                                    address:
-                                        socket_address:
-                                            address: "${ACCESS_SERVICE_ADDRESS}"
-                                            port_value: "${ACCESS_SERVICE_PORT}"
-
-
+                                      address: '${UI_SERVICE_ADDRESS}'
+                                      port_value: '${UI_SERVICE_PORT}'
+        - name: access-service
+          connect_timeout: 5s
+          type: STRICT_DNS
+          lb_policy: ROUND_ROBIN
+          load_assignment:
+              cluster_name: access-service
+              endpoints:
+                  - lb_endpoints:
+                        - endpoint:
+                              address:
+                                  socket_address:
+                                      address: '${ACCESS_SERVICE_ADDRESS}'
+                                      port_value: '${ACCESS_SERVICE_PORT}'
