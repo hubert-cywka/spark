@@ -6,6 +6,8 @@ import { LoggerModule } from "nestjs-pino";
 import { AuthModule } from "@/auth/auth.module";
 import { AuthGuard } from "@/auth/guards/auth.guard";
 import configuration from "@/config/configuration";
+import { DatabaseModule } from "@/database/database.module";
+import { UserModule } from "@/user/user.module";
 
 @Module({
     imports: [
@@ -14,6 +16,8 @@ import configuration from "@/config/configuration";
             isGlobal: true,
             load: [configuration],
         }),
+        DatabaseModule,
+        UserModule,
         AuthModule,
     ],
     providers: [

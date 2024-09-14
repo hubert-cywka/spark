@@ -11,7 +11,7 @@
         "port": 5173,
         "detachable": true
     },
-    "access-service": {
+    "authentication-service": {
         "port": 5200,
         "detachable": true
     },

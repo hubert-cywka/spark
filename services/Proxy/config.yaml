@@ -26,7 +26,7 @@ static_resources:
                                         - match:
                                               prefix: /auth
                                           route:
-                                              cluster: access-service
+                                              cluster: authentication-service
                                           typed_per_filter_config:
                                               envoy.filters.http.ext_authz:
                                                   "@type": type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthzPerRoute
@@ -67,8 +67,8 @@ static_resources:
                                                     - exact: authorization
                                                       ignore_case: true
                                         server_uri:
-                                            uri: 'http://${ACCESS_SERVICE_ADDRESS}:${ACCESS_SERVICE_PORT}'
-                                            cluster: access-service
+                                            uri: 'http://${AUTHENTICATION_SERVICE_ADDRESS}:${AUTHENTICATION_SERVICE_PORT}'
+                                            cluster: authentication-service
                                             timeout: 10s
 
                               - name: envoy.filters.http.router
@@ -88,19 +88,19 @@ static_resources:
                                   socket_address:
                                       address: '${UI_SERVICE_ADDRESS}'
                                       port_value: '${UI_SERVICE_PORT}'
-        - name: access-service
+        - name: authentication-service
           connect_timeout: 5s
           type: STRICT_DNS
           lb_policy: ROUND_ROBIN
           load_assignment:
-              cluster_name: access-service
+              cluster_name: authentication-service
               endpoints:
                   - lb_endpoints:
                         - endpoint:
                               address:
                                   socket_address:
-                                      address: '${ACCESS_SERVICE_ADDRESS}'
-                                      port_value: '${ACCESS_SERVICE_PORT}'
+                                      address: '${AUTHENTICATION_SERVICE_ADDRESS}'
+                                      port_value: '${AUTHENTICATION_SERVICE_PORT}'
 
         -   name: stitching-service
             connect_timeout: 5s

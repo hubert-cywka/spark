@@ -1,2 +1,2 @@
-# Access service
+# Authentication service
 Built with Nest.js + TS.
