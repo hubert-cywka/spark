@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
+import { LoggerModule } from "nestjs-pino";
 
 import configuration from "./config/configuration";
 
@@ -7,6 +8,7 @@ import { GraphQLGatewayModule } from "@/graphql/graphql-gateway.module";
 
 @Module({
     imports: [
+        LoggerModule.forRoot(),
         ConfigModule.forRoot({
             isGlobal: true,
             load: [configuration],

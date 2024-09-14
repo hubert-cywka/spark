@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
@@ -7,27 +7,48 @@ import { User } from "@/users/objects/user";
 
 @Injectable()
 export class UsersService {
-    constructor(@InjectRepository(UserEntity) private usersRepository: Repository<UserEntity>) {}
+    private logger = new Logger();
+
+    constructor(
+        @InjectRepository(UserEntity)
+        private usersRepository: Repository<UserEntity>
+    ) {}
 
     public async findOneById(id: string): Promise<User | null> {
-        const result = await this.usersRepository.findOne({ where: { id } });
+        try {
+            const result = await this.usersRepository.findOne({
+                where: { id },
+            });
 
-        if (!result) {
+            if (!result) {
+                this.logger.log("User not found.", { userId: id });
+                return null;
+            }
+
+            // TODO: Map to DTO
+            return result;
+        } catch (err) {
+            this.logger.error("Failed to query for user.", { err, userId: id });
             return null;
         }
-
-        // TODO: Map to DTO
-        return result;
     }
 
     public async findOneByEmail(email: string): Promise<User | null> {
-        const result = await this.usersRepository.findOne({ where: { email } });
+        try {
+            const result = await this.usersRepository.findOne({
+                where: { email },
+            });
 
-        if (!result) {
+            if (!result) {
+                this.logger.log("User not found.", { email });
+                return null;
+            }
+
+            // TODO: Map to DTO
+            return result;
+        } catch (err) {
+            this.logger.error("Failed to query for user.", { err, email });
             return null;
         }
-
-        // TODO: Map to DTO
-        return result;
     }
 }

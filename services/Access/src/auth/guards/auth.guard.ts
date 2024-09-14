@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
@@ -10,6 +10,8 @@ import { User } from "@/auth/interfaces/user.interface";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
+    private logger = new Logger(AuthGuard.name);
+
     constructor(
         private jwtService: JwtService,
         private reflector: Reflector
@@ -24,12 +26,14 @@ export class AuthGuard implements CanActivate {
         const token = this.extractTokenFromHeader(request);
 
         if (!token) {
+            this.logger.log("Access denied, no JWT provided.");
             throw new UnauthorizedException();
         }
 
         try {
             request["user"] = await this.extractUserFromToken(token);
         } catch {
+            this.logger.log("Access denied, JWT not valid.");
             throw new UnauthorizedException();
         }
 

@@ -4,7 +4,7 @@ import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
 
-import { healthCheckGraphs } from "@/graphql/utils/healthCheckGraphs";
+import { healthCheckGraphs } from "@/graphql/utils/health-check-graphs";
 import { pollResourceUntilReady } from "@/utils/pollResourceUntilReady";
 
 @Module({
@@ -12,7 +12,12 @@ import { pollResourceUntilReady } from "@/utils/pollResourceUntilReady";
         GraphQLModule.forRootAsync<ApolloGatewayDriverConfig>({
             driver: ApolloGatewayDriver,
             useFactory: async (configService: ConfigService) => {
-                const graphs = [{ name: "users", url: configService.get("subgraphs.users") }];
+                const graphs = [
+                    {
+                        name: "users",
+                        url: configService.get("subgraphs.users"),
+                    },
+                ];
                 const urls = graphs.map((graph) => graph.url);
 
                 await pollResourceUntilReady({

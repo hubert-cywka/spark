@@ -1,5 +1,6 @@
 import { NestFactory } from "@nestjs/core";
 import helmet from "helmet";
+import { Logger } from "nestjs-pino";
 
 import { AppModule } from "@/app.module";
 import configuration from "@/config/configuration";
@@ -12,8 +13,9 @@ declare const module: {
 };
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, { bufferLogs: true });
     app.use(helmet());
+    app.useLogger(app.get(Logger));
 
     const appConfig = configuration();
     await app.listen(appConfig.port);
