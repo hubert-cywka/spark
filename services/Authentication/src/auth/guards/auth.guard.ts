@@ -5,8 +5,7 @@ import { Request } from "express";
 
 import { CURRENT_JWT_VERSION } from "@/auth/constants";
 import { IS_PUBLIC_KEY } from "@/auth/decorators/public.decorator";
-import { TokenPayload } from "@/auth/interfaces/token-payload.interface";
-import { User } from "@/auth/interfaces/user.interface";
+import { User } from "@/user/models/user.model";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -50,15 +49,14 @@ export class AuthGuard implements CanActivate {
     }
 
     private async extractUserFromToken(token: string): Promise<User | null> {
-        const jwtPayload = await this.jwtService.verifyAsync<TokenPayload>(token);
+        const jwtPayload = await this.jwtService.verifyAsync<User & { ver: number }>(token);
 
         if (jwtPayload.ver !== CURRENT_JWT_VERSION) {
             throw new UnauthorizedException();
         }
 
         return {
-            name: jwtPayload.name,
-            password: jwtPayload.password,
+            id: jwtPayload.id,
             email: jwtPayload.email,
         };
     }

@@ -5,9 +5,9 @@ import { Client } from "pg";
 import { pollResourceUntilReady } from "./pollResourceUntilReady";
 
 type DBConnectionOptions = {
-    host: string;
     port: number;
-    user: string;
+    host: string;
+    username: string;
     password: string;
     database: string;
 };
