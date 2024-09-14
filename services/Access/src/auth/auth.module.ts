@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
+import { Module } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { JwtModule } from "@nestjs/jwt";
+
+import { AuthController } from "./auth.controller";
+import { AuthService } from "./auth.service";
 
 @Module({
     imports: [
@@ -10,9 +11,9 @@ import { ConfigService } from '@nestjs/config';
             global: true,
             inject: [ConfigService],
             useFactory: (configService: ConfigService) => ({
-                secret: configService.get('jwt.signingSecret'),
+                secret: configService.get("jwt.signingSecret"),
                 signOptions: {
-                    expiresIn: configService.get('jwt.expirationTimeInSeconds'),
+                    expiresIn: configService.get("jwt.expirationTimeInSeconds"),
                 },
             }),
         }),

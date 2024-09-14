@@ -1,10 +1,11 @@
 import { Module, ValidationPipe } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
-import { APP_GUARD, APP_PIPE } from "@nestjs/core";
+import { APP_PIPE } from "@nestjs/core";
 
-import { AuthModule } from "@/auth/auth.module";
-import { AuthGuard } from "@/auth/guards/auth.guard";
+import { UsersModule } from "./users/users.module";
+
 import configuration from "@/config/configuration";
+import { DatabaseModule } from "@/database/database.module";
 
 @Module({
     imports: [
@@ -12,10 +13,10 @@ import configuration from "@/config/configuration";
             isGlobal: true,
             load: [configuration],
         }),
-        AuthModule,
+        DatabaseModule,
+        UsersModule,
     ],
     providers: [
-        { provide: APP_GUARD, useClass: AuthGuard },
         {
             provide: APP_PIPE,
             useFactory: () => new ValidationPipe({ whitelist: true, transform: true }),

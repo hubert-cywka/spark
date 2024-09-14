@@ -1,22 +1,18 @@
-import {
-    CanActivate,
-    ExecutionContext,
-    Injectable,
-    UnauthorizedException,
-} from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { Request } from 'express';
-import { User } from '@/auth/interfaces/user.interface';
-import { Reflector } from '@nestjs/core';
-import { IS_PUBLIC_KEY } from '@/auth/decorators/public.decorator';
-import { TokenPayload } from '@/auth/interfaces/tokenPayload.interface';
-import { CURRENT_JWT_VERSION } from '@/auth/constants';
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { JwtService } from "@nestjs/jwt";
+import { Request } from "express";
+
+import { CURRENT_JWT_VERSION } from "@/auth/constants";
+import { IS_PUBLIC_KEY } from "@/auth/decorators/public.decorator";
+import { TokenPayload } from "@/auth/interfaces/tokenPayload.interface";
+import { User } from "@/auth/interfaces/user.interface";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
     constructor(
         private jwtService: JwtService,
-        private reflector: Reflector,
+        private reflector: Reflector
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -32,7 +28,7 @@ export class AuthGuard implements CanActivate {
         }
 
         try {
-            request['user'] = await this.extractUserFromToken(token);
+            request["user"] = await this.extractUserFromToken(token);
         } catch {
             throw new UnauthorizedException();
         }
@@ -41,20 +37,16 @@ export class AuthGuard implements CanActivate {
     }
 
     private isPublic(context: ExecutionContext) {
-        return this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-            context.getHandler(),
-            context.getClass(),
-        ]);
+        return this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [context.getHandler(), context.getClass()]);
     }
 
     private extractTokenFromHeader(request: Request): string | null {
-        const [type, token] = request.headers.authorization?.split(' ') ?? [];
-        return type === 'Bearer' ? token : null;
+        const [type, token] = request.headers.authorization?.split(" ") ?? [];
+        return type === "Bearer" ? token : null;
     }
 
     private async extractUserFromToken(token: string): Promise<User | null> {
-        const jwtPayload =
-            await this.jwtService.verifyAsync<TokenPayload>(token);
+        const jwtPayload = await this.jwtService.verifyAsync<TokenPayload>(token);
 
         if (jwtPayload.ver !== CURRENT_JWT_VERSION) {
             throw new UnauthorizedException();
