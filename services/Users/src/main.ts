@@ -13,7 +13,7 @@ declare const module: {
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
-    app.use(helmet);
+    app.use(helmet());
 
     const appConfig = configuration();
     await app.listen(appConfig.port);

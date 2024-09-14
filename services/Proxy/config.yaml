@@ -33,6 +33,11 @@ static_resources:
                                                   disabled: true
 
                                         - match:
+                                              prefix: /graphql
+                                          route:
+                                              cluster: stitching-service
+
+                                        - match:
                                               prefix: /
                                           route:
                                               cluster: ui-service
@@ -96,3 +101,17 @@ static_resources:
                                   socket_address:
                                       address: '${ACCESS_SERVICE_ADDRESS}'
                                       port_value: '${ACCESS_SERVICE_PORT}'
+
+        -   name: stitching-service
+            connect_timeout: 5s
+            type: STRICT_DNS
+            lb_policy: ROUND_ROBIN
+            load_assignment:
+                cluster_name: stitching-service
+                endpoints:
+                    -   lb_endpoints:
+                            -   endpoint:
+                                    address:
+                                        socket_address:
+                                            address: '${STITCHING_SERVICE_ADDRESS}'
+                                            port_value: '${STITCHING_SERVICE_PORT}'

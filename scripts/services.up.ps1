@@ -5,6 +5,43 @@ Param(
     $Build
 )
 
+############# FUNCTIONS ####################
+function Build-EnvVar {
+    param ($value)
+    return "      - $value`n"
+}
+
+function Update-Or-Add-EnvVariable {
+    param (
+        [ref]$envList,
+        $newEnvVariable
+    )
+
+    $envKey = $newEnvVariable.Split("=")[0]
+    $existingIndex = -1
+
+    for ($i = 0; $i -lt $envList.Value.Count; $i++) {
+        $existingKey = $envList.Value[$i].Split("=")[0]
+        if ($existingKey -eq $envKey) {
+            $existingIndex = $i
+            break
+        }
+    }
+
+    if ($existingIndex -ge 0) {
+        $envList.Value[$existingIndex] = $newEnvVariable
+    } else {
+        $envList.Value.Add($newEnvVariable)
+    }
+}
+
+################### SCRIPT #####################
+# Shutdown all running containers to ensure smooth start-up
+docker kill $(docker ps -q)
+
+# In case DetachedServices param wasn't parsed correctly
+$DetachedServices = $DetachedServices -split ',' | ForEach-Object { $_.Trim() }
+
 # Create docker network if it does not exist
 $DockerNetworkName = "services_network"
 $ExistingNetwork = docker network ls --filter "name=$DockerNetworkName" --format "{{ .Name }}"
@@ -12,19 +49,30 @@ if (-not $ExistingNetwork) {
     docker network create $DockerNetworkName
 }
 
-$ServicesList = @();
-(Get-Content -Raw -Path infrastructure/services.list.json | ConvertFrom-Json).psobject.Properties.name.ForEach({ $ServicesList += $_.toString() })
+# Get list of all services and detachable ones
+$ServicesListJson = Get-Content -Raw -Path "infrastructure/services.list.json" | ConvertFrom-Json
 
-$DetachedServicesCheck = 0
+$ServicesList = @{}
+$ServicesListJson.PSObject.Properties | ForEach-Object {
+    $ServicesList[$_.Name] = $_.Value
+}
+
+$DetachableServicesList = $ServicesListJson.PSObject.Properties |
+    Where-Object { $_.Value.detachable -eq $true } |
+    ForEach-Object { $_.Name }
+
 # Check if DetachedServices contains valid and existing services
-$DetachedServices.foreach({
-        if ($ServicesList -notcontains $PSItem) {
-            Write-Error "$PSItem service is not found. Check services.list.json for list of available services."
+$DetachedServicesCheck = 0
+foreach ($service in $DetachedServices) {
+    if (-not [string]::IsNullOrWhiteSpace($service)) {
+        if ($DetachableServicesList -notcontains $service) {
+            Write-Error "'$service' does not exist or is not detachable. Check 'services.list.json' for list of available services."
             $DetachedServicesCheck = 1
         } else {
-            echo "$PSItem found."
+            Write-Output "$service found."
         }
-    })
+    }
+}
 
 if ($DetachedServicesCheck -eq 1) {
     echo "At least one service could not be found. Exiting..."
@@ -43,8 +91,10 @@ if ($DetachedServices.Count -eq 0) {
     exit
 }
 
+
 # Get list of services that should be running inside containers anyway
-[string[]]$ServicesToRunInContainer = $ServicesList | Where-Object { -not ($DetachedServices -contains $_) }
+$ServicesListNames = $ServicesListJson.PSObject.Properties | ForEach-Object { $_.Name }
+[string[]]$ServicesToRunInContainer = $ServicesListNames | Where-Object { -not ($DetachedServices -contains $_) }
 
 # Prepare powershell-yaml module
 if (-not (Get-Module -ListAvailable -Name powershell-yaml)) {
@@ -54,25 +104,32 @@ if (-not (Get-Module -ListAvailable -Name powershell-yaml)) {
 Import-Module powershell-yaml
 
 # Create docker-compose.local.override.yml file
-# In that file we want to override envoy related envs, so envoy can proxy to services running on host machine
+# In that file we want to override envoy related envs, so envoy can proxy to services running on host machine.
+# Same applies to Stitching service, as it needs to know where are the GraphQL sub-graphs.
 $ProxyService = "proxy-service"
+$StitchingService = "stitching-service"
 $DockerComposeLocal = Get-Content -Path $DockerComposeRootDir/docker-compose.local.yml | ConvertFrom-Yaml
-$DetachableServicesList = Get-Content -Path infrastructure/services.list.json | ConvertFrom-Json
-foreach ($DetachedService in $DetachedServices) {
-    $PortValue = $DetachableServicesList.$DetachedService.port
-    $EnvNamePrefix = $DetachedService.ToUpper() -replace "-", "_";
-    $EnvAddress = "$($EnvNamePrefix)_ADDRESS=host.docker.internal"
-    $EnvPort = "$($EnvNamePrefix)_PORT=$($PortValue)"
 
-    $DockerComposeLocal.services.$ProxyService.environment = New-Object System.Collections.ArrayList
-    $DockerComposeLocal.services.$ProxyService.environment.Add($EnvAddress)
-    $DockerComposeLocal.services.$ProxyService.environment.Add($EnvPort)
+foreach ($DetachedService in $DetachedServices) {
+    $PortValue = $ServicesList[$DetachedService].port
+    $EnvNamePrefix = $DetachedService.ToUpper() -replace "-", "_"
+
+    $EnvPort = "$($EnvNamePrefix)_PORT=$($PortValue)"
+    $EnvAddress = "$($EnvNamePrefix)_ADDRESS=host.docker.internal"
+    $SubgraphHost = "$($EnvNamePrefix)_SUBGRAPH_HOST=host.docker.internal:$($PortValue)"
+
+    Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$ProxyService.environment) -newEnvVariable $EnvAddress
+    Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$ProxyService.environment) -newEnvVariable $EnvPort
+    Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$StitchingService.environment) -newEnvVariable $SubgraphHost
 }
 
 $DockerComposeLocal | ConvertTo-Yaml | Out-File -FilePath $DockerComposeRootDir/docker-compose.local.override.yml -Encoding UTF8
 
+Write-Host "Make sure all detached services that need to start before, are started, and press 'Enter':" -ForegroundColor Cyan
+Read-Host ">"
+
 if ($Build) {
-    docker-compose -f $DockerComposeRootDir/docker-compose.yml -f $DockerComposeRootDir/docker-compose.local.yml -f $DockerComposeRootDir/docker-compose.local.override.yml up --build $ServicesToRunInContainer
+    docker-compose -f $DockerComposeRootDir/docker-compose.yml -f $DockerComposeRootDir/docker-compose.local.yml -f $DockerComposeRootDir/docker-compose.local.override.yml up $ServicesToRunInContainer --build
 } else {
-    docker-compose -f $DockerComposeRootDir/docker-compose.yml -f $DockerComposeRootDir/docker-compose.local.yml -f $DockerComposeRootDir/docker-compose.local.override.yml up $ServicesToRunInContainer
+    docker-compose -f $DockerComposeRootDir/docker-compose.yml -f $DockerComposeRootDir/docker-compose.local.yml -f $DockerComposeRootDir/docker-compose.local.override.yml services up $ServicesToRunInContainer
 }

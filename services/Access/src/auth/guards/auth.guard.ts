@@ -5,7 +5,7 @@ import { Request } from "express";
 
 import { CURRENT_JWT_VERSION } from "@/auth/constants";
 import { IS_PUBLIC_KEY } from "@/auth/decorators/public.decorator";
-import { TokenPayload } from "@/auth/interfaces/tokenPayload.interface";
+import { TokenPayload } from "@/auth/interfaces/token-payload.interface";
 import { User } from "@/auth/interfaces/user.interface";
 
 @Injectable()

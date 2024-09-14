@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 
 import { CURRENT_JWT_VERSION } from "@/auth/constants";
-import { TokenPayload } from "@/auth/interfaces/tokenPayload.interface";
+import { TokenPayload } from "@/auth/interfaces/token-payload.interface";
 import { User } from "@/auth/interfaces/user.interface";
 
 @Injectable()

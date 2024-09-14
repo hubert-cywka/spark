@@ -3,6 +3,8 @@ import { ConfigService } from "@nestjs/config";
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from "@nestjs/typeorm";
 import { Client } from "pg";
 
+import { pollResourceUntilReady } from "@/utils/pollResourceUntilReady";
+
 @Injectable()
 export class DatabaseConfigService implements TypeOrmOptionsFactory {
     constructor(private configService: ConfigService) {}
@@ -27,7 +29,16 @@ export class DatabaseConfigService implements TypeOrmOptionsFactory {
             database: "postgres",
         });
 
-        await client.connect();
+        await pollResourceUntilReady({
+            pollingFn: async () => {
+                await client.connect();
+                return true;
+            },
+            resourceName: "database connection",
+            maxAttempts: 100,
+            intervalInMilliseconds: 3000,
+        });
+
         const res = await client.query("SELECT 1 FROM pg_database WHERE datname = $1", [options.database]);
 
         if (res.rowCount === 0) {
