@@ -9,7 +9,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
             useFactory: async (configService: ConfigService) => {
                 const options = {
                     port: configService.get("database.port"),
-                    user: configService.get("database.user"),
+                    username: configService.get("database.username"),
                     password: configService.get("database.password"),
                     host: configService.get("database.host"),
                     database: configService.get("database.port"),

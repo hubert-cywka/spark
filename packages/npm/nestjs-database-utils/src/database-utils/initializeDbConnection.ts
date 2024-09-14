@@ -1,4 +1,4 @@
-import { Logger } from "@nestjs/common";
+import { LoggerService } from "@nestjs/common";
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { Client } from "pg";
 
@@ -12,8 +12,11 @@ type DBConnectionOptions = {
     database: string;
 };
 
-export async function initPostgresDatabase(options: DBConnectionOptions): Promise<TypeOrmModuleOptions> {
-    await ensureDatabaseExists(options);
+export async function initPostgresDatabase(
+    options: DBConnectionOptions,
+    logger: LoggerService
+): Promise<TypeOrmModuleOptions> {
+    await ensureDatabaseExists(options, logger);
 
     return {
         type: "postgres",
@@ -23,8 +26,7 @@ export async function initPostgresDatabase(options: DBConnectionOptions): Promis
     };
 }
 
-async function ensureDatabaseExists(options: DBConnectionOptions): Promise<void> {
-    const logger = new Logger(ensureDatabaseExists.name);
+async function ensureDatabaseExists(options: DBConnectionOptions, logger: LoggerService): Promise<void> {
     const client = new Client(options);
 
     await pollResourceUntilReady({
@@ -35,6 +37,7 @@ async function ensureDatabaseExists(options: DBConnectionOptions): Promise<void>
         resourceName: `Database @ ${options.host}:${options.port}`,
         maxAttempts: 100,
         intervalInMilliseconds: 3000,
+        logger,
     });
 
     const { database } = options;

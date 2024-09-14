@@ -1,10 +1,11 @@
-import { Logger } from "@nestjs/common";
+import { LoggerService } from "@nestjs/common";
 
 type PollingOptions = {
     resourceName: string;
     pollingFn: () => Promise<boolean>;
     maxAttempts?: number;
     intervalInMilliseconds?: number;
+    logger?: LoggerService;
 };
 
 export async function pollResourceUntilReady({
@@ -12,16 +13,15 @@ export async function pollResourceUntilReady({
     pollingFn,
     maxAttempts = 10,
     intervalInMilliseconds = 5000,
+    logger,
 }: PollingOptions) {
-    const logger = new Logger(pollResourceUntilReady.name);
-
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         try {
             if (await pollingFn()) {
                 return;
             }
         } catch (e) {
-            logger.warn("Resource is not ready yet.", {
+            logger?.warn("Resource is not ready yet.", {
                 resource: resourceName,
                 attempt,
                 maxAttempts,

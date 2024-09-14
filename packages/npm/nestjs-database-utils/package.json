@@ -22,9 +22,11 @@
         "registry": "https://npm.pkg.github.com/"
     },
     "peerDependencies": {
+        "@nestjs/core": ">=10.4.0",
         "@nestjs/common": ">=10.4.0",
         "@nestjs/typeorm": ">=10.0.0",
         "@types/pg": ">=8.11.0",
-        "pg": ">=8.11.0"
+        "pg": ">=8.11.0",
+        "typeorm": ">=0.3.0"
     }
 }
