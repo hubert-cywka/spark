@@ -2,7 +2,8 @@
     "name": "@hcywka/nestjs-database-utils",
     "version": "1.0.0",
     "description": "",
-    "main": "index.ts",
+    "main": "dist/index.js",
+    "module": "dist/index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\"",
         "build": "tsc"
