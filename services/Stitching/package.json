@@ -21,7 +21,7 @@
     },
     "dependencies": {
         "@apollo/gateway": "^2.9.0",
-        "@hcywka/nestjs-logger": "^1.0.1-rc.7.56.0",
+        "@hcywka/nestjs-logger": "^1.1.0",
         "@nestjs/apollo": "^12.2.0",
         "@nestjs/common": "^10.4.1",
         "@nestjs/config": "^3.2.3",
