@@ -1,5 +1,5 @@
 {
-    "name": "@hcywka/nestjs-database-utils",
+    "name": "@hcywka/nestjs-logger",
     "version": "1.0.0",
     "description": "",
     "main": "dist/index.js",
@@ -23,10 +23,6 @@
     },
     "peerDependencies": {
         "@nestjs/common": ">=10.4.0",
-        "@nestjs/typeorm": ">=10.0.0",
-        "pg": ">=8.11.0"
-    },
-    "devDependencies": {
-        "@types/pg": ">=8.11.0"
+        "nestjs-pino": ">=4.1.0"
     }
 }

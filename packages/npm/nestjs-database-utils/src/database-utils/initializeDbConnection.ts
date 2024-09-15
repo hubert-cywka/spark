@@ -37,15 +37,12 @@ async function ensureDatabaseExists(options: DBConnectionOptions): Promise<void>
             try {
                 await client.connect();
             } catch (e) {
-                logger.warn(
-                    {
-                        attempt,
-                        database: options.database,
-                        host: options.host,
-                        port: options.port,
-                    },
-                    "Can't connect to database yet."
-                );
+                logger.warn("Can't connect to database yet.", {
+                    attempt,
+                    database: options.database,
+                    host: options.host,
+                    port: options.port,
+                });
 
                 await client.end();
                 client = new Client(options);
@@ -62,11 +59,11 @@ async function ensureDatabaseExists(options: DBConnectionOptions): Promise<void>
     const res = await client.query("SELECT 1 FROM pg_database WHERE datname = $1", [database]);
 
     if (res.rowCount === 0) {
-        logger.info("Database does not exist, creating...", { database });
+        logger.log("Database does not exist, creating...", { database });
         await client.query(`CREATE DATABASE ${options}`);
-        logger.info("Database created.", { database });
+        logger.log("Database created.", { database });
     } else {
-        logger.info("Database already exists.", { database });
+        logger.log("Database already exists.", { database });
     }
 
     await client.end();

@@ -1,5 +1,3 @@
-import { PinoLogger } from "nestjs-pino";
+import { Logger } from "@nestjs/common";
 
-export const logger = new PinoLogger({
-    renameContext: "DatabaseInitialization",
-});
+export const logger = new Logger();
