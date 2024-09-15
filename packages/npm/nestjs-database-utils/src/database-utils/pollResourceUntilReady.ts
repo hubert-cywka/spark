@@ -1,3 +1,5 @@
+import { logger } from "./logger";
+
 type PollingOptions = {
     resourceName: string;
     pollingFn: (attempt: number) => Promise<boolean>;
@@ -16,7 +18,12 @@ export async function pollResourceUntilReady({
             if (await pollingFn(attempt)) {
                 return;
             }
-        } catch (e) {
+        } catch (err) {
+            logger.warn("Can't connect to database yet.", {
+                attempt,
+                err,
+            });
+
             if (attempt < maxAttempts) {
                 await new Promise((resolve) => setTimeout(resolve, intervalInMilliseconds));
             } else {

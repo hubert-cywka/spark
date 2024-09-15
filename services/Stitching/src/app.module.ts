@@ -1,7 +1,6 @@
-import { loggerOptions } from "@hcywka/nestjs-logger";
+import { LoggerModule, loggerOptions } from "@hcywka/nestjs-logger";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
-import { LoggerModule } from "nestjs-pino";
 
 import configuration from "./config/configuration";
 

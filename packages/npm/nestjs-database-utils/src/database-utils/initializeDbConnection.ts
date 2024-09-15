@@ -24,28 +24,15 @@ export async function initPostgresDatabase(options: DBConnectionOptions): Promis
 }
 
 async function ensureDatabaseExists(options: DBConnectionOptions): Promise<void> {
-    let client = new Client({
-        database: "postgres",
-        password: options.password,
-        host: options.host,
-        user: options.username,
-        port: options.port,
-    });
+    let client = createClient(options);
 
     await pollResourceUntilReady({
-        pollingFn: async (attempt) => {
+        pollingFn: async () => {
             try {
                 await client.connect();
             } catch (e) {
-                logger.warn("Can't connect to database yet.", {
-                    attempt,
-                    database: options.database,
-                    host: options.host,
-                    port: options.port,
-                });
-
                 await client.end();
-                client = new Client(options);
+                client = createClient(options);
                 throw e;
             }
             return true;
@@ -67,4 +54,14 @@ async function ensureDatabaseExists(options: DBConnectionOptions): Promise<void>
     }
 
     await client.end();
+}
+
+function createClient(options: DBConnectionOptions): Client {
+    return new Client({
+        database: "postgres",
+        password: options.password,
+        host: options.host,
+        user: options.username,
+        port: options.port,
+    });
 }

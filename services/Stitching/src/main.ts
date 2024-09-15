@@ -1,5 +1,5 @@
+import { Logger, pinoLogger } from "@hcywka/nestjs-logger";
 import { NestFactory } from "@nestjs/core";
-import { Logger } from "nestjs-pino";
 
 import { AppModule } from "@/app.module";
 import configuration from "@/config/configuration";
@@ -12,7 +12,10 @@ declare const module: {
 };
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule, { bufferLogs: true });
+    const temporaryLogger = new Logger(pinoLogger, {});
+    const app = await NestFactory.create(AppModule, {
+        logger: temporaryLogger,
+    });
     app.useLogger(app.get(Logger));
 
     const appConfig = configuration();

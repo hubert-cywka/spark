@@ -1,10 +1,9 @@
-import { loggerOptions } from "@hcywka/nestjs-logger";
+import { LoggerModule, loggerOptions } from "@hcywka/nestjs-logger";
 import { ApolloFederationDriver, ApolloFederationDriverConfig } from "@nestjs/apollo";
 import { Module, ValidationPipe } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_PIPE } from "@nestjs/core";
 import { GraphQLModule } from "@nestjs/graphql";
-import { LoggerModule } from "nestjs-pino";
 
 import { UsersModule } from "./users/users.module";
 
