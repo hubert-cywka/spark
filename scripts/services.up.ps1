@@ -40,7 +40,7 @@ function Update-Or-Add-EnvVariable {
 docker kill $(docker ps -q)
 
 # In case DetachedServices param wasn't parsed correctly
-$DetachedServices = $DetachedServices -split ',' | ForEach-Object { $_.Trim() }
+$DetachedServices = $DetachedServices -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne "" }
 
 # Create docker network if it does not exist
 $DockerNetworkName = "services_network"

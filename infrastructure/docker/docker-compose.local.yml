@@ -2,57 +2,62 @@ version: "3.4"
 services:
     db:
         environment:
-            POSTGRES_USER: "pguser"
-            POSTGRES_PASSWORD: "pgpassword"
+            POSTGRES_USER: ${DATABASE_USERNAME}
+            POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
             POSTGRES_DB: "db"
         ports:
-            - "5432:5432"
+            - "${DATABASE_PORT}:${DATABASE_PORT}"
         volumes:
             - postgres:/var/lib/postgresql/data
 
     proxy-service:
         ports:
-            - "5000:80"
+            - "5000:${PROXY_SERVICE_PORT}"
             - "5010:9901"
         environment:
-            - AUTHENTICATION_SERVICE_ADDRESS=authentication-service
-            - AUTHENTICATION_SERVICE_PORT=80
-            - UI_SERVICE_ADDRESS=ui-service
-            - UI_SERVICE_PORT=80
-            - USERS_SERVICE_ADDRESS=users-service
-            - USERS_SERVICE_PORT=80
-            - STITCHING_SERVICE_ADDRESS=stitching-service
-            - STITCHING_SERVICE_PORT=80
+            - AUTHENTICATION_SERVICE_ADDRESS=${AUTHENTICATION_SERVICE_HOST}
+            - AUTHENTICATION_SERVICE_PORT=${AUTHENTICATION_SERVICE_PORT}
+            - UI_SERVICE_ADDRESS=${UI_SERVICE_HOST}
+            - UI_SERVICE_PORT=${UI_SERVICE_PORT}
+            - USERS_SERVICE_ADDRESS=${USERS_SERVICE_HOST}
+            - USERS_SERVICE_PORT=${USERS_SERVICE_PORT}
+            - STITCHING_SERVICE_ADDRESS=${STITCHING_SERVICE_HOST}
+            - STITCHING_SERVICE_PORT=${STITCHING_SERVICE_PORT}
 
     ui-service:
         ports:
-            - "5100:80"
+            - "5100:${UI_SERVICE_PORT}"
         environment:
-            - PORT=80
-            - STATIC_FILES_DIR=./static
+            - PORT=${UI_SERVICE_PORT}
+            - STATIC_FILES_DIR=${UI_SERVICE_STATIC_FILES_DIR}
 
     authentication-service:
         ports:
-            - "5200:80"
+            - "5200:${AUTHENTICATION_SERVICE_PORT}"
         environment:
-            - PORT=80
-            - JWT_SIGNING_SECRET=jwt-signing-secret
-            - JWT_EXPIRATION_TIME_IN_SECONDS=300
+            - PORT=${AUTHENTICATION_SERVICE_PORT}
+            - JWT_SIGNING_SECRET=${AUTHENTICATIONS_SERVICE_JWT_SIGNING_SECRET}
+            - JWT_EXPIRATION_TIME_IN_SECONDS=${AUTHENTICATIONS_SERVICE_JWT_EXPIRATION_TIME_IN_SECONDS}
+            - DATABASE_PORT=${DATABASE_PORT}
+            - DATABASE_USERNAME=${DATABASE_USERNAME}
+            - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+            - DATABASE_HOST=${DATABASE_HOST}
+            - DATABASE_NAME=${AUTHENTICATIONS_SERVICE_DATABASE_NAME}
 
     users-service:
         ports:
-            - "5300:80"
+            - "5300:${USERS_SERVICE_PORT}"
         environment:
-            - PORT=80
-            - DATABASE_PORT=5432
-            - DATABASE_USERNAME=pguser
-            - DATABASE_PASSWORD=pgpassword
-            - DATABASE_HOST=db
-            - DATABASE_NAME=db_users
+            - PORT=${USERS_SERVICE_PORT}
+            - DATABASE_PORT=${DATABASE_PORT}
+            - DATABASE_USERNAME=${DATABASE_USERNAME}
+            - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+            - DATABASE_HOST=${DATABASE_HOST}
+            - DATABASE_NAME=${USERS_SERVICE_DATABASE_NAME}
 
     stitching-service:
         ports:
-            - "5400:80"
+            - "5400:${STITCHING_SERVICE_PORT}"
         environment:
-            - PORT=80
-            - USERS_SERVICE_SUBGRAPH_HOST=users-service
+            - PORT=${STITCHING_SERVICE_PORT}
+            - USERS_SERVICE_SUBGRAPH_HOST=${USERS_SERVICE_HOST}
