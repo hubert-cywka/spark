@@ -1,2 +1,0 @@
-# Access service
-Built with Nest.js + TS.

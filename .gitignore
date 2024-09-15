@@ -14,7 +14,8 @@ dist-ssr
 .vite
 
 # Secrets
-.env
+**/.env
+.npmrc
 
 # Editor directories and files
 .vscode/*

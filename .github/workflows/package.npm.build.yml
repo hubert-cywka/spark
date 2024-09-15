@@ -70,7 +70,7 @@ jobs:
                   PACKAGEJSON_DIR: ${{ inputs.package-path }}
                   version-type: "minor"
                   bump-policy: "ignore"
-                  commit-message: "Published ${{ inputs.package-name }}@{{version}}"
+                  commit-message: "Published @hcywka/${{ inputs.package-name }}@{{version}}"
                   skip-tag: "true"
 
             - name: Bump package version (PR)
@@ -81,7 +81,7 @@ jobs:
                   PR_NUMBER=${{ github.event.pull_request.number }}
                   
                   PACKAGE_NAME=${{ inputs.package-name }}
-                  NEW_COMMENT="<b>Published ${PACKAGE_NAME}@${PACKAGE_VERSION}!</b>"
+                  NEW_COMMENT="<b>Published @hcywka/${PACKAGE_NAME}@${PACKAGE_VERSION}</b>"
                   
                   # Fetch existing comments
                   COMMENTS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
@@ -98,7 +98,7 @@ jobs:
                     COMMENT_ID=$(echo "$COMMENT" | jq -r '.id')
                     COMMENT_BODY=$(echo "$COMMENT" | jq -r '.body')
                   
-                    if [[ $COMMENT_BODY == *"Published ${PACKAGE_NAME}@"* ]]; then
+                    if [[ $COMMENT_BODY == *"Published @hcywka/${PACKAGE_NAME}@"* ]]; then
                       echo "Removing outdated comment ID: $COMMENT_ID"
                       curl -s -X DELETE -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
                         "https://api.github.com/repos/${REPO}/issues/comments/${COMMENT_ID}"
