@@ -1,3 +1,4 @@
+import { loggerOptions } from "@hcywka/nestjs-logger";
 import { Module, ValidationPipe } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD, APP_PIPE } from "@nestjs/core";
@@ -11,7 +12,7 @@ import { UserModule } from "@/user/user.module";
 
 @Module({
     imports: [
-        LoggerModule.forRoot(),
+        LoggerModule.forRoot({ pinoHttp: loggerOptions }),
         ConfigModule.forRoot({
             isGlobal: true,
             load: [configuration],

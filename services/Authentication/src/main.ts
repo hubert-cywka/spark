@@ -1,4 +1,4 @@
-import { Logger } from "@hcywka/nestjs-logger";
+import { Logger, pinoLogger } from "@hcywka/nestjs-logger";
 import { NestFactory } from "@nestjs/core";
 import helmet from "helmet";
 
@@ -13,8 +13,9 @@ declare const module: {
 };
 
 async function bootstrap() {
+    const temporaryLogger = new Logger(pinoLogger, {});
     const app = await NestFactory.create(AppModule, {
-        logger: new Logger(Logger, { renameContext: "AppInitialization" }),
+        logger: temporaryLogger,
     });
     app.useLogger(app.get(Logger));
     app.use(helmet());

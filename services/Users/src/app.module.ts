@@ -1,3 +1,4 @@
+import { loggerOptions } from "@hcywka/nestjs-logger";
 import { ApolloFederationDriver, ApolloFederationDriverConfig } from "@nestjs/apollo";
 import { Module, ValidationPipe } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
@@ -12,7 +13,7 @@ import { DatabaseModule } from "@/database/database.module";
 
 @Module({
     imports: [
-        LoggerModule.forRoot(),
+        LoggerModule.forRoot({ pinoHttp: loggerOptions }),
         ConfigModule.forRoot({
             isGlobal: true,
             load: [configuration],

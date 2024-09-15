@@ -1,3 +1,4 @@
+import { loggerOptions } from "@hcywka/nestjs-logger";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { LoggerModule } from "nestjs-pino";
@@ -8,7 +9,7 @@ import { GraphQLGatewayModule } from "@/graphql/graphql-gateway.module";
 
 @Module({
     imports: [
-        LoggerModule.forRoot(),
+        LoggerModule.forRoot({ pinoHttp: loggerOptions }),
         ConfigModule.forRoot({
             isGlobal: true,
             load: [configuration],

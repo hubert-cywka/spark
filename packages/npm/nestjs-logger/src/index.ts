@@ -1,5 +1,4 @@
-import { Logger } from "nestjs-pino";
-
 import { loggerOptions, pinoLogger } from "./logger/logger";
 
-export { Logger, loggerOptions, pinoLogger };
+export { loggerOptions, pinoLogger };
+export * from "nestjs-pino";
