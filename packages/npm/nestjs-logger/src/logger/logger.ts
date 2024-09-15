@@ -1,4 +1,6 @@
-import { Logger, PinoLogger } from "nestjs-pino";
+import { Logger, Params, PinoLogger } from "nestjs-pino";
 
-const logger = new PinoLogger({ pinoHttp: {} });
-export const CustomLogger = new Logger(logger, {});
+export const loggerOptions: Params["pinoHttp"] = {};
+export const pinoLogger = new PinoLogger({ pinoHttp: loggerOptions });
+
+export const logger = new Logger(pinoLogger, {});

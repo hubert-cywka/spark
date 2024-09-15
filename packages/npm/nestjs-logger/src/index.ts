@@ -1,3 +1,5 @@
-import { CustomLogger as Logger } from "./logger/logger";
+import { Logger } from "nestjs-pino";
 
-export { Logger };
+import { loggerOptions, pinoLogger } from "./logger/logger";
+
+export { Logger, loggerOptions, pinoLogger };
