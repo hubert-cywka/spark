@@ -6,7 +6,8 @@
     "scripts": {
         "prepare": "husky install",
         "start": "pwsh ./scripts/services.up.ps1",
-        "start-rebuild": "npm run start -- -Build"
+        "start-rebuild": "npm run start -- -Build",
+        "debug-package": "pwsh ./scripts/install.package.ps1"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx}": [

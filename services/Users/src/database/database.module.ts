@@ -12,7 +12,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
                     username: configService.get("database.username"),
                     password: configService.get("database.password"),
                     host: configService.get("database.host"),
-                    database: configService.get("database.port"),
+                    database: configService.get("database.name"),
                 };
 
                 return await initPostgresDatabase(options);
