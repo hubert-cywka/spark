@@ -1,11 +1,11 @@
 import { IntrospectAndCompose } from "@apollo/gateway";
+import { pollResourceUntilReady } from "@hcywka/common";
 import { ApolloGatewayDriver, ApolloGatewayDriverConfig } from "@nestjs/apollo";
-import { Module } from "@nestjs/common";
+import { Logger, Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
 
 import { healthCheckGraphs } from "@/graphql/utils/healthCheckGraphs";
-import { pollResourceUntilReady } from "@/utils/pollResourceUntilReady";
 
 @Module({
     imports: [
@@ -20,12 +20,15 @@ import { pollResourceUntilReady } from "@/utils/pollResourceUntilReady";
                 ];
                 const urls = graphs.map((graph) => graph.url);
 
-                await pollResourceUntilReady({
-                    resourceName: "SubGraphs",
-                    maxAttempts: 100,
-                    intervalInMilliseconds: 3000,
-                    pollingFn: () => healthCheckGraphs(urls),
-                });
+                await pollResourceUntilReady(
+                    {
+                        resourceName: "SubGraphs",
+                        maxAttempts: 100,
+                        intervalInMilliseconds: 3000,
+                        pollingFn: () => healthCheckGraphs(urls),
+                    },
+                    new Logger()
+                );
 
                 return {
                     server: {},
