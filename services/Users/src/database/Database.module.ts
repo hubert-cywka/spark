@@ -1,5 +1,6 @@
+import { Logger, pinoLogger } from "@hcywka/common";
 import { initializePostgresDatabase } from "@hcywka/database";
-import { Logger, Module } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
@@ -21,7 +22,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
                         maxAttempts: 100,
                         intervalInMilliseconds: 5000,
                     },
-                    new Logger()
+                    new Logger(pinoLogger, {})
                 );
 
                 return {

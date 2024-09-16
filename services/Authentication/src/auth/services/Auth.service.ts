@@ -1,40 +1,54 @@
 import { Inject, Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
-import { plainToInstance } from "class-transformer";
 
 import { CURRENT_JWT_VERSION } from "@/auth/constants";
-import { AuthenticationResponseDto } from "@/auth/dto/AuthenticationResponse.dto";
+import { IRefreshTokenService, IRefreshTokenServiceToken } from "@/auth/services/IRefreshToken.service";
+import { AuthenticationResult } from "@/auth/types/authenticationResult";
 import { User } from "@/user/models/User.model";
 import { IUserService, IUserServiceToken } from "@/user/services/IUser.service";
 
 @Injectable()
 export class AuthService {
     constructor(
+        private configService: ConfigService,
         private jwtService: JwtService,
         @Inject(IUserServiceToken)
-        private userService: IUserService
+        private userService: IUserService,
+        @Inject(IRefreshTokenServiceToken)
+        private refreshTokenService: IRefreshTokenService
     ) {}
 
-    public async login(email: string, password: string): Promise<AuthenticationResponseDto> {
+    public async loginWithCredentials(email: string, password: string): Promise<AuthenticationResult> {
         const user = await this.userService.findByCredentials(email, password);
-        const token = await this.generateAuthToken(user);
-
-        return this.mapToAuthenticationResponse(user, token);
+        return await this.generateTokens(user);
     }
 
-    public async register(email: string, password: string): Promise<AuthenticationResponseDto> {
+    public async loginWithRefreshToken(refreshToken: string): Promise<AuthenticationResult> {
+        const { id, email } = await this.refreshTokenService.use(refreshToken);
+        return await this.generateTokens({ id, email });
+    }
+
+    public async register(email: string, password: string): Promise<AuthenticationResult> {
         const user = await this.userService.save(email, password);
-        const token = await this.generateAuthToken(user);
-
-        return this.mapToAuthenticationResponse(user, token);
+        return await this.generateTokens(user);
     }
 
-    private async generateAuthToken(user: User) {
+    public async logout(refreshToken: string): Promise<void> {
+        return this.refreshTokenService.invalidate(refreshToken);
+    }
+
+    private async generateTokens(user: User): Promise<{ accessToken: string; refreshToken: string }> {
         const payload = { ...user, ver: CURRENT_JWT_VERSION };
-        return this.jwtService.signAsync(payload);
-    }
+        const secret = this.configService.get("jwt.signingSecret");
+        const expiresIn = this.configService.get("jwt.expirationTimeInSeconds");
 
-    private mapToAuthenticationResponse(user: User, token: string): AuthenticationResponseDto {
-        return plainToInstance(AuthenticationResponseDto, { user, token });
+        const accessToken = await this.jwtService.signAsync(payload, {
+            secret,
+            expiresIn,
+        });
+        const refreshToken = await this.refreshTokenService.sign(payload);
+
+        return { accessToken, refreshToken };
     }
 }

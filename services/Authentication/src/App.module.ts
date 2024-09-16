@@ -1,10 +1,9 @@
 import { LoggerModule, loggerOptions } from "@hcywka/common";
 import { Module, ValidationPipe } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
-import { APP_GUARD, APP_PIPE } from "@nestjs/core";
+import { APP_PIPE } from "@nestjs/core";
 
 import { AuthModule } from "@/auth/Auth.module";
-import { AuthenticationGuard } from "@/auth/guards/Authentication.guard";
 import configuration from "@/config/configuration";
 import { DatabaseModule } from "@/database/Database.module";
 import { UserModule } from "@/user/User.module";
@@ -21,7 +20,6 @@ import { UserModule } from "@/user/User.module";
         AuthModule,
     ],
     providers: [
-        { provide: APP_GUARD, useClass: AuthenticationGuard },
         {
             provide: APP_PIPE,
             useFactory: () => new ValidationPipe({ whitelist: true, transform: true }),

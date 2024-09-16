@@ -1,14 +1,19 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+
+import { RefreshTokenEntity } from "@/auth/entities/RefreshToken.entity";
 
 @Entity("user")
 @Index(["email"])
 export class UserEntity {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn("uuid")
     id!: string;
 
-    @Column({ unique: true })
+    @Column({ type: "varchar", unique: true })
     email!: string;
 
-    @Column()
+    @Column({ type: "varchar" })
     password!: string;
+
+    @OneToMany((type) => RefreshTokenEntity, (token) => token.owner)
+    refreshTokens!: RefreshTokenEntity[];
 }

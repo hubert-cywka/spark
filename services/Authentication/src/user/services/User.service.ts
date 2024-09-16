@@ -26,12 +26,12 @@ export class UserService {
         });
 
         if (!user) {
-            this.logger.warn("User not found.", { email });
+            this.logger.warn({ email }, "User not found.");
             throw new UserNotFoundError();
         }
 
         if (!(await this.comparePassword(password, user.password))) {
-            this.logger.warn("User found, incorrect password.", { email });
+            this.logger.warn({ email }, "User found, incorrect password.");
             throw new InvalidCredentialsError();
         }
 
@@ -44,7 +44,7 @@ export class UserService {
         });
 
         if (existingUser) {
-            this.logger.warn("User already exists.", { email });
+            this.logger.warn({ email }, "User already exists.");
             throw new UserAlreadyExistsError();
         }
 

@@ -1,8 +1,10 @@
-import { AuthenticationResponseDto } from "@/auth/dto/AuthenticationResponse.dto";
+import { AuthenticationResult } from "@/auth/types/authenticationResult";
 
 export const IAuthServiceToken = Symbol("IAuthService");
 
 export interface IAuthService {
-    login(email: string, password: string): Promise<AuthenticationResponseDto>;
-    register(email: string, password: string): Promise<AuthenticationResponseDto>;
+    loginWithCredentials(email: string, password: string): Promise<AuthenticationResult>;
+    loginWithRefreshToken(refreshToken: string): Promise<AuthenticationResult>;
+    register(email: string, password: string): Promise<AuthenticationResult>;
+    logout(refreshToken: string): Promise<void>;
 }

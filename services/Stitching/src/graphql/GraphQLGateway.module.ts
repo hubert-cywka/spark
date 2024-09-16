@@ -1,7 +1,7 @@
 import { IntrospectAndCompose } from "@apollo/gateway";
-import { pollResourceUntilReady } from "@hcywka/common";
+import { Logger, pinoLogger, pollResourceUntilReady } from "@hcywka/common";
 import { ApolloGatewayDriver, ApolloGatewayDriverConfig } from "@nestjs/apollo";
-import { Logger, Module } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
 
@@ -27,7 +27,7 @@ import { healthCheckGraphs } from "@/graphql/utils/healthCheckGraphs";
                         intervalInMilliseconds: 3000,
                         pollingFn: () => healthCheckGraphs(urls),
                     },
-                    new Logger()
+                    new Logger(pinoLogger, {})
                 );
 
                 return {
