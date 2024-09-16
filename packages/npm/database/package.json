@@ -1,5 +1,5 @@
 {
-    "name": "@hcywka/nestjs-database-utils",
+    "name": "@hcywka/database",
     "version": "1.2.0",
     "description": "",
     "main": "dist/index.js",
