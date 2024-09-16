@@ -1,4 +1,3 @@
-import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { Client } from "pg";
 
 import { logger } from "./logger";
@@ -12,19 +11,17 @@ type DBConnectionOptions = {
     database: string;
 };
 
-export async function initPostgresDatabase(options: DBConnectionOptions): Promise<TypeOrmModuleOptions> {
-    await ensureDatabaseExists(options);
+type RetryOptions = {
+    maxAttempts: number;
+    intervalInMilliseconds: number;
+};
 
-    return {
-        type: "postgres",
-        autoLoadEntities: true,
-        synchronize: false,
-        ...options,
-    };
-}
-
-async function ensureDatabaseExists(options: DBConnectionOptions): Promise<void> {
-    let client = createClient(options);
+export async function initializePostgresDatabase(
+    dbOptions: DBConnectionOptions,
+    { maxAttempts = 100, intervalInMilliseconds = 3000 }: RetryOptions
+): Promise<void> {
+    let client = createClient(dbOptions);
+    const { database, host, port } = dbOptions;
 
     await pollResourceUntilReady({
         pollingFn: async () => {
@@ -32,22 +29,21 @@ async function ensureDatabaseExists(options: DBConnectionOptions): Promise<void>
                 await client.connect();
             } catch (e) {
                 await client.end();
-                client = createClient(options);
+                client = createClient(dbOptions);
                 throw e;
             }
             return true;
         },
-        resourceName: `Database @ ${options.host}:${options.port}`,
-        maxAttempts: 100,
-        intervalInMilliseconds: 3000,
+        resourceName: `Database @ ${host}:${port}`,
+        maxAttempts,
+        intervalInMilliseconds,
     });
 
-    const { database } = options;
     const res = await client.query("SELECT 1 FROM pg_database WHERE datname = $1", [database]);
 
     if (res.rowCount === 0) {
         logger.log("Database does not exist, creating...", { database });
-        await client.query(`CREATE DATABASE ${options}`);
+        await client.query(`CREATE DATABASE ${database}`);
         logger.log("Database created.", { database });
     } else {
         logger.log("Database already exists.", { database });
@@ -56,12 +52,12 @@ async function ensureDatabaseExists(options: DBConnectionOptions): Promise<void>
     await client.end();
 }
 
-function createClient(options: DBConnectionOptions): Client {
+function createClient({ password, host, username, port }: DBConnectionOptions): Client {
     return new Client({
         database: "postgres",
-        password: options.password,
-        host: options.host,
-        user: options.username,
-        port: options.port,
+        user: username,
+        password,
+        host,
+        port,
     });
 }

@@ -1,7 +1,7 @@
 import { Logger, pinoLogger } from "@hcywka/nestjs-logger";
 import { NestFactory } from "@nestjs/core";
 
-import { AppModule } from "@/app.module";
+import { AppModule } from "@/App.module";
 import configuration from "@/config/configuration";
 
 declare const module: {

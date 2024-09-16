@@ -2,7 +2,7 @@ import { Logger, pinoLogger } from "@hcywka/nestjs-logger";
 import { NestFactory } from "@nestjs/core";
 import helmet from "helmet";
 
-import { AppModule } from "@/app.module";
+import { AppModule } from "@/App.module";
 import configuration from "@/config/configuration";
 
 declare const module: {
@@ -17,6 +17,7 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
         logger: temporaryLogger,
     });
+
     app.use(helmet());
     app.useLogger(app.get(Logger));
 

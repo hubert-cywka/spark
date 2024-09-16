@@ -15,7 +15,14 @@ import { TypeOrmModule } from "@nestjs/typeorm";
                     database: configService.get("database.name"),
                 };
 
-                return await initPostgresDatabase(options);
+                await initPostgresDatabase(options);
+
+                return {
+                    ...options,
+                    type: "postgres",
+                    autoLoadEntities: true,
+                    migrationsRun: true,
+                };
             },
             inject: [ConfigService],
         }),

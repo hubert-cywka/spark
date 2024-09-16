@@ -4,12 +4,12 @@ import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
 
 import { CURRENT_JWT_VERSION } from "@/auth/constants";
-import { IS_PUBLIC_KEY } from "@/auth/decorators/public.decorator";
-import { User } from "@/user/models/user.model";
+import { IS_PUBLIC_KEY } from "@/common/decorators/Public.decorator";
+import { User } from "@/user/models/User.model";
 
 @Injectable()
-export class AuthGuard implements CanActivate {
-    private logger = new Logger(AuthGuard.name);
+export class AuthenticationGuard implements CanActivate {
+    private logger = new Logger(AuthenticationGuard.name);
 
     constructor(
         private jwtService: JwtService,
@@ -25,14 +25,14 @@ export class AuthGuard implements CanActivate {
         const token = this.extractTokenFromHeader(request);
 
         if (!token) {
-            this.logger.log("Access denied, no JWT provided.");
+            this.logger.warn("Access denied, no JWT provided.");
             throw new UnauthorizedException();
         }
 
         try {
             request["user"] = await this.extractUserFromToken(token);
         } catch {
-            this.logger.log("Access denied, JWT not valid.");
+            this.logger.warn("Access denied, JWT not valid.");
             throw new UnauthorizedException();
         }
 

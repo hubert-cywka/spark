@@ -4,7 +4,7 @@ import { ConfigModule } from "@nestjs/config";
 
 import configuration from "./config/configuration";
 
-import { GraphQLGatewayModule } from "@/graphql/graphql-gateway.module";
+import { GraphQLGatewayModule } from "@/graphql/GraphQLGateway.module";
 
 @Module({
     imports: [

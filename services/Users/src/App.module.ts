@@ -5,10 +5,10 @@ import { ConfigModule } from "@nestjs/config";
 import { APP_PIPE } from "@nestjs/core";
 import { GraphQLModule } from "@nestjs/graphql";
 
-import { UsersModule } from "./users/users.module";
+import { UsersModule } from "./users/Users.module";
 
 import configuration from "@/config/configuration";
-import { DatabaseModule } from "@/database/database.module";
+import { DatabaseModule } from "@/database/Database.module";
 
 @Module({
     imports: [

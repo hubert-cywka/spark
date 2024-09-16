@@ -1,7 +1,9 @@
-import { initPostgresDatabase } from "@hcywka/nestjs-database-utils";
+import { initializePostgresDatabase } from "@hcywka/nestjs-database-utils";
 import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
+
+import { InitAuthTable1726435122759 } from "@/database/migrations/1726435122759-init-auth-table";
 
 @Module({
     imports: [
@@ -15,7 +17,18 @@ import { TypeOrmModule } from "@nestjs/typeorm";
                     database: configService.get("database.name"),
                 };
 
-                return await initPostgresDatabase(options);
+                await initializePostgresDatabase(options, {
+                    maxAttempts: 100,
+                    intervalInMilliseconds: 5000,
+                });
+
+                return {
+                    ...options,
+                    type: "postgres",
+                    autoLoadEntities: true,
+                    migrationsRun: true,
+                    migrations: [InitAuthTable1726435122759],
+                };
             },
             inject: [ConfigService],
         }),

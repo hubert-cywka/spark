@@ -1,6 +1,6 @@
 import { IsInstance, IsString } from "class-validator";
 
-import { User } from "@/user/models/user.model";
+import { User } from "@/user/models/User.model";
 
 export class AuthenticationResponseDto {
     @IsInstance(User)

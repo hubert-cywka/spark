@@ -1,6 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity()
+@Entity("user")
+@Index(["email"])
 export class UserEntity {
     @PrimaryGeneratedColumn()
     id!: string;

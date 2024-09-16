@@ -4,7 +4,7 @@ import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
 
-import { healthCheckGraphs } from "@/graphql/utils/health-check-graphs";
+import { healthCheckGraphs } from "@/graphql/utils/healthCheckGraphs";
 import { pollResourceUntilReady } from "@/utils/pollResourceUntilReady";
 
 @Module({
