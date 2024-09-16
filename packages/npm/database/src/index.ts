@@ -1,4 +1,3 @@
-import { initializePostgresDatabase } from "./database-utils/initializePostgresDatabase";
-import { pollResourceUntilReady } from "./database-utils/pollResourceUntilReady";
+import { initializePostgresDatabase } from "./utils/initializePostgresDatabase";
 
-export { initializePostgresDatabase, pollResourceUntilReady };
+export { initializePostgresDatabase };
