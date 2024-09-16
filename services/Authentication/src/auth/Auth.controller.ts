@@ -24,7 +24,7 @@ export class AuthController {
 
     constructor(@Inject(IAuthServiceToken) private authService: IAuthService) {}
 
-    @All("/authorize")
+    @All("/authorize/*")
     authorize() {
         // TODO: Attach authorization metadata like permissions etc.
         return true;

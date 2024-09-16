@@ -22,7 +22,7 @@
     "dependencies": {
         "@apollo/server": "^4.11.0",
         "@apollo/subgraph": "^2.9.0",
-        "@hcywka/database": "^1.2.0",
+        "@hcywka/database": "^1.3.0",
         "@hcywka/common": "^1.2.0",
         "@hcywka/types": "^1.1.0",
         "@nestjs/apollo": "^12.2.0",

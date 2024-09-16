@@ -1,4 +1,4 @@
-import { LoggerModule, loggerOptions } from "@hcywka/nestjs-logger";
+import { LoggerModule, loggerOptions } from "@hcywka/common";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 

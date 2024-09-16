@@ -1,4 +1,4 @@
-import { LoggerModule, loggerOptions } from "@hcywka/nestjs-logger";
+import { LoggerModule, loggerOptions } from "@hcywka/common";
 import { Module, ValidationPipe } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD, APP_PIPE } from "@nestjs/core";

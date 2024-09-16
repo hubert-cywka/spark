@@ -1,5 +1,5 @@
-import { initializePostgresDatabase } from "@hcywka/nestjs-database-utils";
-import { Module } from "@nestjs/common";
+import { initializePostgresDatabase } from "@hcywka/database";
+import { Logger, Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
@@ -17,10 +17,14 @@ import { InitAuthTable1726435122759 } from "@/database/migrations/1726435122759-
                     database: configService.get("database.name"),
                 };
 
-                await initializePostgresDatabase(options, {
-                    maxAttempts: 100,
-                    intervalInMilliseconds: 5000,
-                });
+                await initializePostgresDatabase(
+                    options,
+                    {
+                        maxAttempts: 100,
+                        intervalInMilliseconds: 5000,
+                    },
+                    new Logger()
+                );
 
                 return {
                     ...options,

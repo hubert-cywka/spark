@@ -1,15 +1,11 @@
-import { Logger, pinoLogger } from "@hcywka/nestjs-logger";
+import { Logger, pinoLogger } from "@hcywka/common";
+import { ModuleWithHotReload } from "@hcywka/types";
 import { NestFactory } from "@nestjs/core";
 
 import { AppModule } from "@/App.module";
 import configuration from "@/config/configuration";
 
-declare const module: {
-    hot: {
-        accept: () => unknown;
-        dispose: (callback: () => unknown) => unknown;
-    };
-};
+declare const module: ModuleWithHotReload;
 
 async function bootstrap() {
     const temporaryLogger = new Logger(pinoLogger, {});
