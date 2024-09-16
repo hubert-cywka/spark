@@ -1,4 +1,4 @@
-import { logger } from "./logger";
+import { LoggerService } from "@nestjs/common";
 
 type PollingOptions = {
     resourceName: string;
@@ -7,19 +7,17 @@ type PollingOptions = {
     intervalInMilliseconds?: number;
 };
 
-export async function pollResourceUntilReady({
-    resourceName,
-    pollingFn,
-    maxAttempts = 10,
-    intervalInMilliseconds = 5000,
-}: PollingOptions) {
+export async function pollResourceUntilReady(
+    { resourceName, pollingFn, maxAttempts = 10, intervalInMilliseconds = 5000 }: PollingOptions,
+    logger?: LoggerService
+) {
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         try {
             if (await pollingFn(attempt)) {
                 return;
             }
         } catch (err) {
-            logger.warn("Can't connect to database yet.", {
+            logger?.warn("Can't connect to database yet.", {
                 attempt,
                 err,
             });
