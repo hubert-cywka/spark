@@ -1,8 +1,9 @@
 import { Logger, pinoLogger } from "@hcywka/nestjs-logger";
-import { NestFactory } from "@nestjs/core";
+import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import helmet from "helmet";
 
-import { AppModule } from "@/app.module";
+import { AppModule } from "@/App.module";
+import { ExceptionsFilter } from "@/common/filters/Exceptions.filter";
 import configuration from "@/config/configuration";
 
 declare const module: {
@@ -17,7 +18,9 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
         logger: temporaryLogger,
     });
+
     app.useLogger(app.get(Logger));
+    app.useGlobalFilters(new ExceptionsFilter(app.get(HttpAdapterHost)));
     app.use(helmet());
 
     const appConfig = configuration();
