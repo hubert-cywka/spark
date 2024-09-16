@@ -1,3 +1,4 @@
+import { pollResourceUntilReady } from "@hcywka/common";
 import { LoggerService } from "@nestjs/common";
 import { Client } from "pg";
 
@@ -19,24 +20,24 @@ export async function initializePostgresDatabase(
     { maxAttempts = 100, intervalInMilliseconds = 3000 }: RetryOptions,
     logger?: LoggerService
 ): Promise<void> {
-    const client = createClient(dbOptions);
+    let client = createClient(dbOptions);
     const { database, host, port } = dbOptions;
 
-    // await pollResourceUntilReady({
-    //     pollingFn: async () => {
-    //         try {
-    //             await client.connect();
-    //         } catch (e) {
-    //             await client.end();
-    //             client = createClient(dbOptions);
-    //             throw e;
-    //         }
-    //         return true;
-    //     },
-    //     resourceName: `Database @ ${host}:${port}`,
-    //     maxAttempts,
-    //     intervalInMilliseconds,
-    // });
+    await pollResourceUntilReady({
+        pollingFn: async () => {
+            try {
+                await client.connect();
+            } catch (e) {
+                await client.end();
+                client = createClient(dbOptions);
+                throw e;
+            }
+            return true;
+        },
+        resourceName: `Database @ ${host}:${port}`,
+        maxAttempts,
+        intervalInMilliseconds,
+    });
 
     const res = await client.query("SELECT 1 FROM pg_database WHERE datname = $1", [database]);
 
