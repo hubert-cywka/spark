@@ -1,4 +1,4 @@
-import { LoggerModule, loggerOptions } from "@hcywka/common";
+import { LoggerModule, loggerOptions, ThrottlingGuard } from "@hcywka/common";
 import { Module, ValidationPipe } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { APP_GUARD, APP_PIPE } from "@nestjs/core";
@@ -6,7 +6,6 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { ThrottlerModule } from "@nestjs/throttler";
 
 import { AuthModule } from "@/auth/Auth.module";
-import { ThrottlerWithProxySupportGuard } from "@/common/guards/ThrottlerWithProxySupport.guard";
 import configuration from "@/config/configuration";
 import { DatabaseModule } from "@/database/Database.module";
 import { UserModule } from "@/user/User.module";
@@ -39,7 +38,7 @@ import { UserModule } from "@/user/User.module";
         },
         {
             provide: APP_GUARD,
-            useClass: ThrottlerWithProxySupportGuard,
+            useClass: ThrottlingGuard,
         },
     ],
     exports: [ConfigModule],

@@ -9,9 +9,10 @@ import { InvalidCredentialsError } from "@/user/errors/InvalidCredentials.error"
 import { UserAlreadyExistsError } from "@/user/errors/UserAlreadyExists.error";
 import { UserNotFoundError } from "@/user/errors/UserNotFound.error";
 import { User } from "@/user/models/User.model";
+import { IUserService } from "@/user/services/IUser.service";
 
 @Injectable()
-export class UserService {
+export class UserService implements IUserService {
     private readonly logger = new Logger(UserService.name);
     private readonly SALT_ROUNDS = 10;
 
