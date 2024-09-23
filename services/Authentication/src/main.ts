@@ -1,6 +1,7 @@
 import { Logger, pinoLogger } from "@hcywka/common";
 import { ModuleWithHotReload } from "@hcywka/types";
 import { HttpAdapterHost, NestFactory } from "@nestjs/core";
+import { NestExpressApplication } from "@nestjs/platform-express";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 
@@ -12,16 +13,17 @@ declare const module: ModuleWithHotReload;
 
 async function bootstrap() {
     const temporaryLogger = new Logger(pinoLogger, {});
-    const app = await NestFactory.create(AppModule, {
+    const app = await NestFactory.create<NestExpressApplication>(AppModule, {
         logger: temporaryLogger,
     });
 
     app.useLogger(app.get(Logger));
     app.useGlobalFilters(new ExceptionsFilter(app.get(HttpAdapterHost)));
 
-    // TODO: Add CORS and other security measures
     app.use(helmet());
     app.use(cookieParser());
+    app.enableCors();
+    app.set("trust proxy", true);
 
     const appConfig = configuration();
     await app.listen(appConfig.port);
@@ -32,4 +34,4 @@ async function bootstrap() {
     }
 }
 
-bootstrap();
+void bootstrap();

@@ -15,4 +15,8 @@ export default () => ({
         host: process.env.DATABASE_HOST,
         name: process.env.DATABASE_NAME,
     },
+    throttle: {
+        ttl: parseInt(process.env.THROTTLE_TTL_IN_MS ?? ""),
+        limit: parseInt(process.env.THROTTLE_LIMIT ?? ""),
+    },
 });

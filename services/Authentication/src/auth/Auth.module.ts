@@ -1,7 +1,6 @@
 import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
-import { ThrottlerModule } from "@nestjs/throttler";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { AuthController } from "./Auth.controller";
@@ -15,13 +14,7 @@ import { AccessTokenStrategy } from "@/auth/strategies/AccessToken.strategy";
 import { UserModule } from "@/user/User.module";
 
 @Module({
-    imports: [
-        ThrottlerModule.forRoot([{ ttl: 60 * 1000, limit: 10 }]), // TODO: Configure throttling
-        PassportModule,
-        UserModule,
-        JwtModule,
-        TypeOrmModule.forFeature([RefreshTokenEntity]),
-    ],
+    imports: [PassportModule, UserModule, JwtModule, TypeOrmModule.forFeature([RefreshTokenEntity])],
     controllers: [AuthController],
     providers: [
         { provide: IAuthServiceToken, useClass: AuthService },

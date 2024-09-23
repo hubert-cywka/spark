@@ -3,13 +3,14 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 
 import { CURRENT_JWT_VERSION } from "@/auth/constants";
+import { IAuthService } from "@/auth/services/IAuth.service";
 import { IRefreshTokenService, IRefreshTokenServiceToken } from "@/auth/services/IRefreshToken.service";
 import { AuthenticationResult } from "@/auth/types/authenticationResult";
 import { User } from "@/user/models/User.model";
 import { IUserService, IUserServiceToken } from "@/user/services/IUser.service";
 
 @Injectable()
-export class AuthService {
+export class AuthService implements IAuthService {
     constructor(
         private configService: ConfigService,
         private jwtService: JwtService,
@@ -19,12 +20,12 @@ export class AuthService {
         private refreshTokenService: IRefreshTokenService
     ) {}
 
-    public async loginWithCredentials(email: string, password: string): Promise<AuthenticationResult> {
+    public async login(email: string, password: string): Promise<AuthenticationResult> {
         const user = await this.userService.findByCredentials(email, password);
         return await this.generateTokens(user);
     }
 
-    public async loginWithRefreshToken(refreshToken: string): Promise<AuthenticationResult> {
+    public async useRefreshToken(refreshToken: string): Promise<AuthenticationResult> {
         const { id, email } = await this.refreshTokenService.use(refreshToken);
         return await this.generateTokens({ id, email });
     }

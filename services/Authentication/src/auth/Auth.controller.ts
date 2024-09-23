@@ -11,6 +11,7 @@ import {
     UseGuards,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { SkipThrottle } from "@nestjs/throttler";
 import { CookieOptions, Response } from "express";
 
 import { REFRESH_TOKEN_COOKIE_NAME } from "@/auth/constants";
@@ -30,6 +31,7 @@ export class AuthController {
         private configService: ConfigService
     ) {}
 
+    @SkipThrottle()
     @UseGuards(AuthenticationGuard)
     @All("/authorize/*")
     authorize() {
@@ -40,7 +42,7 @@ export class AuthController {
     @Post("login")
     async login(@Body() { email, password }: LoginDto, @Res() response: Response) {
         try {
-            const { accessToken, refreshToken } = await this.authService.loginWithCredentials(email, password);
+            const { accessToken, refreshToken } = await this.authService.login(email, password);
             response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, this.getRefreshTokenCookieOptions());
             return response.send({ accessToken });
         } catch (err) {
@@ -68,7 +70,7 @@ export class AuthController {
         }
 
         try {
-            const { accessToken, refreshToken } = await this.authService.loginWithRefreshToken(token);
+            const { accessToken, refreshToken } = await this.authService.useRefreshToken(token);
             response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, this.getRefreshTokenCookieOptions());
             return response.send({ accessToken });
         } catch (err) {

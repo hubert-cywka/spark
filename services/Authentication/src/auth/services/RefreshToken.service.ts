@@ -1,16 +1,16 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
+import { Cron } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import dayjs from "dayjs";
-import { IsNull, Repository } from "typeorm";
+import { IsNull, LessThanOrEqual, Repository } from "typeorm";
 
 import { RefreshTokenEntity } from "@/auth/entities/RefreshToken.entity";
 import { RefreshTokenNotFoundError } from "@/auth/errors/RefreshTokenNotFound.error";
 import { IRefreshTokenService } from "@/auth/services/IRefreshToken.service";
 import { JwtPayload } from "@/auth/types/jwtPayload";
 
-// TODO: Periodically remove old tokens and add throttling to Auth controller
 @Injectable()
 export class RefreshTokenService implements IRefreshTokenService {
     private logger = new Logger(RefreshTokenService.name);
@@ -43,19 +43,11 @@ export class RefreshTokenService implements IRefreshTokenService {
         });
         const tokenEntity = await this.findOneByValue(token);
 
-        if (!tokenEntity) {
-            this.logger.error("Refresh token not found.");
-            throw new RefreshTokenNotFoundError();
-        }
-
-        if (!this.isValid(tokenEntity)) {
-            this.logger.error("Refresh token was already used.", {
-                expirationTime: tokenEntity.expiresAt,
-                invalidatedAt: tokenEntity.invalidatedAt,
-                ownerId: tokenEntity.owner.id,
-                tokenId: tokenEntity.id,
+        if (!tokenEntity || !this.isValid(tokenEntity)) {
+            this.logger.error("Refresh token not found or already invalidated.", {
+                payload: payload,
+                invalidatedAt: tokenEntity?.invalidatedAt ?? null,
             });
-
             await this.invalidateAllByOwnerId(payload.id);
             throw new RefreshTokenNotFoundError();
         }
@@ -99,5 +91,17 @@ export class RefreshTokenService implements IRefreshTokenService {
 
     private isValid(token: RefreshTokenEntity): boolean {
         return dayjs(token.expiresAt).isAfter(new Date());
+    }
+
+    @Cron("0 1 * * *")
+    private async deleteAllExpired(): Promise<void> {
+        const now = dayjs().toDate();
+        const result = await this.refreshTokenRepository.delete({
+            expiresAt: LessThanOrEqual(now),
+        });
+        this.logger.log("Deleted expired tokens.", {
+            count: result.affected,
+            olderThan: now.toISOString(),
+        });
     }
 }
