@@ -1,4 +1,4 @@
-import { Logger, pinoLogger } from "@hcywka/common";
+import { ExceptionsFilter, Logger, pinoLogger } from "@hcywka/common";
 import { ModuleWithHotReload } from "@hcywka/types";
 import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
@@ -6,7 +6,6 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 
 import { AppModule } from "@/App.module";
-import { ExceptionsFilter } from "@/common/filters/Exceptions.filter";
 import configuration from "@/config/configuration";
 
 declare const module: ModuleWithHotReload;

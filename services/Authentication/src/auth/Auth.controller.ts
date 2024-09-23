@@ -1,3 +1,4 @@
+import { Cookies, ifError } from "@hcywka/common";
 import {
     All,
     Body,
@@ -19,10 +20,8 @@ import { LoginDto } from "@/auth/dto/Login.dto";
 import { RegisterDto } from "@/auth/dto/Register.dto";
 import { AuthenticationGuard } from "@/auth/guards/Authentication.guard";
 import { IAuthService, IAuthServiceToken } from "@/auth/services/IAuth.service";
-import { Cookies } from "@/common/decorators/Cookie.decorator";
 import { EntityAlreadyExistsError } from "@/common/errors/EntityAlreadyExists.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
-import { ifError } from "@/common/utils/ifError";
 
 @Controller("auth")
 export class AuthController {
