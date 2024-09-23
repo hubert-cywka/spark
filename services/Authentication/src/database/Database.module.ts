@@ -1,9 +1,10 @@
+import { Logger, pinoLogger } from "@hcywka/common";
 import { initializePostgresDatabase } from "@hcywka/database";
-import { Logger, Module } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
-import { InitAuthTable1726435122759 } from "@/database/migrations/1726435122759-init-auth-table";
+import { InitTables1726517504746 } from "@/database/migrations/1726517504746-InitTables";
 
 @Module({
     imports: [
@@ -23,7 +24,7 @@ import { InitAuthTable1726435122759 } from "@/database/migrations/1726435122759-
                         maxAttempts: 100,
                         intervalInMilliseconds: 5000,
                     },
-                    new Logger()
+                    new Logger(pinoLogger, {})
                 );
 
                 return {
@@ -31,7 +32,7 @@ import { InitAuthTable1726435122759 } from "@/database/migrations/1726435122759-
                     type: "postgres",
                     autoLoadEntities: true,
                     migrationsRun: true,
-                    migrations: [InitAuthTable1726435122759],
+                    migrations: [InitTables1726517504746],
                 };
             },
             inject: [ConfigService],
