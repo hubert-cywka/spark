@@ -7,10 +7,10 @@ import { AuthController } from "./Auth.controller";
 
 import { RefreshTokenEntity } from "@/auth/entities/RefreshToken.entity";
 import { AuthService } from "@/auth/services/implementations/Auth.service";
-import { AuthMessagePublisherService } from "@/auth/services/implementations/AuthMessagePublisher.service";
+import { AuthPublisherService } from "@/auth/services/implementations/AuthPublisher.service";
 import { RefreshTokenService } from "@/auth/services/implementations/RefreshToken.service";
 import { IAuthServiceToken } from "@/auth/services/interfaces/IAuth.service";
-import { IAuthMessagePublisherServiceToken } from "@/auth/services/interfaces/IAuthMessagePublisher.service";
+import { IAuthPublisherServiceToken } from "@/auth/services/interfaces/IAuthPublisher.service";
 import { IRefreshTokenServiceToken } from "@/auth/services/interfaces/IRefreshToken.service";
 import { AccessTokenStrategy } from "@/auth/strategies/AccessToken.strategy";
 import { UserModule } from "@/user/User.module";
@@ -20,8 +20,8 @@ import { UserModule } from "@/user/User.module";
     controllers: [AuthController],
     providers: [
         {
-            provide: IAuthMessagePublisherServiceToken,
-            useClass: AuthMessagePublisherService,
+            provide: IAuthPublisherServiceToken,
+            useClass: AuthPublisherService,
         },
         { provide: IAuthServiceToken, useClass: AuthService },
         { provide: IRefreshTokenServiceToken, useClass: RefreshTokenService },

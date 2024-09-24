@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 
-import { PubSubEvent } from "../channels/PubSubEvent";
+import { PubSubEvent } from "../topics/PubSubEvent";
 import { IPublisherService } from "./IPublisher.service";
 
 @Injectable()

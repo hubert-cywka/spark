@@ -6,6 +6,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { InitTables1726517504746 } from "@/database/migrations/1726517504746-InitTables";
 import { AddActivationTokens1727179586288 } from "@/database/migrations/1727179586288-AddActivationTokens";
+import { NullableActivationToken1727211365266 } from "@/database/migrations/1727211365266-NullableActivationToken";
 
 @Module({
     imports: [
@@ -33,7 +34,11 @@ import { AddActivationTokens1727179586288 } from "@/database/migrations/17271795
                     type: "postgres",
                     autoLoadEntities: true,
                     migrationsRun: true,
-                    migrations: [InitTables1726517504746, AddActivationTokens1727179586288],
+                    migrations: [
+                        InitTables1726517504746,
+                        AddActivationTokens1727179586288,
+                        NullableActivationToken1727211365266,
+                    ],
                 };
             },
             inject: [ConfigService],

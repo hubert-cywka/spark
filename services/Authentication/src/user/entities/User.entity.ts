@@ -14,8 +14,8 @@ export class UserEntity {
     @Column({ type: "varchar" })
     password!: string;
 
-    @Column({ type: "varchar" })
-    activationToken!: string;
+    @Column({ type: "varchar", nullable: true })
+    activationToken!: string | null;
 
     @Column({ type: "timestamp", nullable: true })
     activatedAt!: Date | null;

@@ -1,4 +1,4 @@
-import { ExceptionsFilter, Logger, pinoLogger } from "@hcywka/common";
+import { HttpExceptionsFilter, Logger, pinoLogger } from "@hcywka/common";
 import { connectPubSub } from "@hcywka/pubsub";
 import { ModuleWithHotReload } from "@hcywka/types";
 import { ConfigService } from "@nestjs/config";
@@ -8,27 +8,28 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 
 import { AppModule } from "@/App.module";
+import configuration from "@/common/config/configuration";
 
 declare const module: ModuleWithHotReload;
 
 async function bootstrap() {
-    const temporaryLogger = new Logger(pinoLogger, {});
+    const config = new ConfigService(configuration());
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-        logger: temporaryLogger,
+        logger: new Logger(pinoLogger, {}),
     });
 
     app.useLogger(app.get(Logger));
-    app.useGlobalFilters(new ExceptionsFilter(app.get(HttpAdapterHost)));
+    app.useGlobalFilters(new HttpExceptionsFilter(app.get(HttpAdapterHost)));
 
     app.use(helmet());
     app.use(cookieParser());
     app.set("trust proxy", true);
 
-    const config = new ConfigService();
     connectPubSub(app, {
         host: config.getOrThrow("pubsub.host"),
         port: config.getOrThrow("pubsub.port"),
     });
+
     await app.startAllMicroservices();
     await app.listen(config.getOrThrow("port"));
 

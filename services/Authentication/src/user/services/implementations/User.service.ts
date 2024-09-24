@@ -1,7 +1,8 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import * as bcrypt from "bcrypt";
 import { plainToInstance } from "class-transformer";
+import * as crypto from "crypto";
 import dayjs from "dayjs";
 import { Repository } from "typeorm";
 
@@ -12,6 +13,7 @@ import { UserAlreadyExistsError } from "@/user/errors/UserAlreadyExists.error";
 import { UserNotFoundError } from "@/user/errors/UserNotFound.error";
 import { User } from "@/user/models/User.model";
 import { IUserService } from "@/user/services/interfaces/IUser.service";
+import { IUserPublisherService, IUserPublisherServiceToken } from "@/user/services/interfaces/IUserPublisher.service";
 
 @Injectable()
 export class UserService implements IUserService {
@@ -20,55 +22,13 @@ export class UserService implements IUserService {
 
     constructor(
         @InjectRepository(UserEntity)
-        private readonly usersRepository: Repository<UserEntity>
+        private readonly repository: Repository<UserEntity>,
+        @Inject(IUserPublisherServiceToken)
+        private readonly publisher: IUserPublisherService
     ) {}
 
-    public async save(email: string, password: string): Promise<{ user: User; activationToken: string }> {
-        const existingUser = await this.usersRepository.findOne({
-            where: { email },
-        });
-
-        if (existingUser) {
-            this.logger.warn({ email }, "User already exists.");
-            throw new UserAlreadyExistsError();
-        }
-
-        const hashedPassword = await this.hashPassword(password);
-        const activationToken = await this.createActivationToken(email);
-        const userEntity = this.usersRepository.create({
-            email,
-            activationToken,
-            password: hashedPassword,
-        });
-
-        const user = await this.usersRepository.save(userEntity);
-        return { user: this.mapEntityToModel(user), activationToken };
-    }
-
-    public async activate(activationToken: string): Promise<User> {
-        const user = await this.usersRepository.findOne({
-            where: { activationToken },
-        });
-
-        if (!user) {
-            this.logger.warn({ activationToken }, "User not found.");
-            throw new UserNotFoundError();
-        }
-
-        if (user.activatedAt) {
-            this.logger.warn({ userId: user.id, activatedAt: user.activatedAt }, "User is already activated.");
-            throw new UserAlreadyActivatedError();
-        }
-
-        const activatedUser = await this.usersRepository.save({
-            ...user,
-            activatedAt: dayjs(),
-        });
-        return this.mapEntityToModel(activatedUser);
-    }
-
     public async findByCredentials(email: string, password: string): Promise<User> {
-        const user = await this.usersRepository.findOne({
+        const user = await this.repository.findOne({
             where: { email },
         });
 
@@ -90,8 +50,74 @@ export class UserService implements IUserService {
         return this.mapEntityToModel(user);
     }
 
-    private async createActivationToken(email: string): Promise<string> {
-        return bcrypt.hash(email, this.SALT_ROUNDS);
+    public async save(email: string, password: string): Promise<User> {
+        const existingUser = await this.repository.findOne({
+            where: { email },
+        });
+
+        if (existingUser) {
+            this.logger.warn({ email }, "User already exists.");
+            throw new UserAlreadyExistsError();
+        }
+
+        const hashedPassword = await this.hashPassword(password);
+        const userEntity = this.repository.create({
+            email,
+            password: hashedPassword,
+        });
+
+        const user = await this.repository.save(userEntity);
+        return this.mapEntityToModel(user);
+    }
+
+    public async activate(activationToken: string): Promise<void> {
+        const user = await this.repository.findOne({
+            where: { activationToken },
+        });
+
+        if (!user) {
+            this.logger.warn({ activationToken }, "User with that activation token not found.");
+            throw new UserNotFoundError();
+        }
+
+        this.assertEligibilityForActivation(user);
+
+        const updatedUser = await this.repository.save({
+            ...user,
+            activatedAt: dayjs(),
+        });
+        this.publisher.onUserActivated({
+            email: updatedUser.email,
+            id: updatedUser.id,
+        });
+    }
+
+    public async requestActivation(email: string): Promise<void> {
+        const user = await this.repository.findOne({
+            where: { email },
+        });
+
+        if (!user) {
+            this.logger.warn({ email }, "User not found.");
+            throw new UserNotFoundError();
+        }
+
+        this.assertEligibilityForActivation(user);
+        const activationToken = this.generateActivationToken();
+
+        await this.repository.save({ ...user, activationToken });
+        this.publisher.onUserActivationTokenRequested(email, activationToken);
+    }
+
+    private assertEligibilityForActivation(user: UserEntity): void {
+        if (user.activatedAt) {
+            this.logger.warn({ userId: user.id, activatedAt: user.activatedAt }, "User already activated.");
+            throw new UserAlreadyActivatedError();
+        }
+    }
+
+    private generateActivationToken(): string {
+        return crypto.randomUUID();
     }
 
     private async hashPassword(password: string): Promise<string> {

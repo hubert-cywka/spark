@@ -7,7 +7,7 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { ThrottlerModule } from "@nestjs/throttler";
 
 import { AuthModule } from "@/auth/Auth.module";
-import configuration from "@/config/configuration";
+import configuration from "@/common/config/configuration";
 import { DatabaseModule } from "@/database/Database.module";
 import { UserModule } from "@/user/User.module";
 

@@ -1,4 +1,4 @@
-import { PubSubEvent } from "../channels/PubSubEvent";
+import { PubSubEvent } from "../topics/PubSubEvent";
 
 export const IPublisherServiceToken = Symbol("IPublisherServiceToken");
 

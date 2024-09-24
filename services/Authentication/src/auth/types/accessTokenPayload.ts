@@ -1,5 +1,5 @@
 import { User } from "@/user/models/User.model";
 
-export type JwtPayload = {
+export type AccessTokenPayload = {
     ver: string;
 } & User;
