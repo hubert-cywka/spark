@@ -40,29 +40,11 @@ export class AuthController {
         return true; // TODO: Attach authorization metadata like permissions etc.
     }
 
-    @HttpCode(200)
-    @Post("login")
-    async login(@Body() { email, password }: LoginDto, @Res() response: Response) {
-        try {
-            const { accessToken, refreshToken } = await this.authService.login(email, password);
-            response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, this.getRefreshTokenCookieOptions());
-            return response.send({ accessToken });
-        } catch (err) {
-            ifError(err)
-                .is(EntityNotFoundError)
-                .throw(new UnauthorizedException())
-                .is(ForbiddenError)
-                .throw(new ForbiddenException())
-                .elseRethrow();
-        }
-    }
-
     @HttpCode(201)
     @Post("register")
     async register(@Body() { email, password }: RegisterDto) {
         try {
-            await this.authService.register(email, password);
-            return { success: true };
+            return await this.authService.register(email, password);
         } catch (err) {
             ifError(err).is(EntityAlreadyExistsError).throw(new ConflictException()).elseRethrow();
         }
@@ -73,10 +55,27 @@ export class AuthController {
     async confirmRegistration(@Body() { activationToken }: ConfirmRegistrationDto, @Res() response: Response) {
         try {
             const { accessToken, refreshToken } = await this.authService.confirmRegistration(activationToken);
-            response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, this.getRefreshTokenCookieOptions());
+            this.setRefreshToken(response, refreshToken);
             return response.send({ accessToken });
         } catch (err) {
             ifError(err).is(EntityAlreadyExistsError).throw(new ConflictException()).elseRethrow();
+        }
+    }
+
+    @HttpCode(200)
+    @Post("login")
+    async login(@Body() { email, password }: LoginDto, @Res() response: Response) {
+        try {
+            const { accessToken, refreshToken } = await this.authService.login(email, password);
+            this.setRefreshToken(response, refreshToken);
+            return response.send({ accessToken });
+        } catch (err) {
+            ifError(err)
+                .is(EntityNotFoundError)
+                .throw(new UnauthorizedException())
+                .is(ForbiddenError)
+                .throw(new ForbiddenException())
+                .elseRethrow();
         }
     }
 
@@ -89,7 +88,7 @@ export class AuthController {
 
         try {
             const { accessToken, refreshToken } = await this.authService.useRefreshToken(token);
-            response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, this.getRefreshTokenCookieOptions());
+            this.setRefreshToken(response, refreshToken);
             return response.send({ accessToken });
         } catch (err) {
             ifError(err).is(EntityNotFoundError).throw(new UnauthorizedException()).elseRethrow();
@@ -103,22 +102,30 @@ export class AuthController {
             throw new UnauthorizedException();
         }
 
-        const options = this.getRefreshTokenCookieOptions();
+        this.clearRefreshToken(response);
+        await this.authService.logout(token);
+        return response.send();
+    }
+
+    private setRefreshToken(response: Response, refreshToken: string) {
+        response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, this.getRefreshTokenCookieOptions());
+    }
+
+    private clearRefreshToken(response: Response) {
         response.cookie(REFRESH_TOKEN_COOKIE_NAME, "", {
-            ...options,
+            ...this.getRefreshTokenCookieOptions(),
             maxAge: 0,
         });
-
-        await this.authService.logout(token);
-        return response.send({ success: true });
     }
 
     private getRefreshTokenCookieOptions(): CookieOptions {
         const maxAge = this.configService.getOrThrow<number>("refreshToken.expirationTimeInSeconds") * 1000;
+        const secure = this.configService.get<string>("NODE_ENV") === "production";
+
         return {
-            httpOnly: true,
-            secure: true,
             partitioned: true,
+            httpOnly: true,
+            secure,
             sameSite: "strict",
             path: "/auth",
             maxAge,

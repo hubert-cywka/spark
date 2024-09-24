@@ -1,9 +1,9 @@
-import { JwtPayload } from "@/auth/types/jwtPayload";
+import { AccessTokenPayload } from "@/auth/types/accessTokenPayload";
 
 export const IRefreshTokenServiceToken = Symbol("IRefreshTokenService");
 
 export interface IRefreshTokenService {
     sign(payload: object): Promise<string>;
-    use(token: string): Promise<JwtPayload>;
+    redeem(token: string): Promise<AccessTokenPayload>;
     invalidate(token: string): Promise<void>;
 }

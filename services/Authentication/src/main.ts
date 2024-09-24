@@ -8,10 +8,12 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 
 import { AppModule } from "@/App.module";
+import configuration from "@/common/config/configuration";
 
 declare const module: ModuleWithHotReload;
 
 async function bootstrap() {
+    const config = new ConfigService(configuration());
     const temporaryLogger = new Logger(pinoLogger, {});
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
         logger: temporaryLogger,
@@ -24,11 +26,11 @@ async function bootstrap() {
     app.use(cookieParser());
     app.set("trust proxy", true);
 
-    const config = new ConfigService();
     connectPubSub(app, {
         host: config.getOrThrow("pubsub.host"),
         port: config.getOrThrow("pubsub.port"),
     });
+
     await app.startAllMicroservices();
     await app.listen(config.getOrThrow("port"));
 

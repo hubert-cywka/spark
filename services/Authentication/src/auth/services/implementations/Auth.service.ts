@@ -5,9 +5,9 @@ import { JwtService } from "@nestjs/jwt";
 import { CURRENT_JWT_VERSION } from "@/auth/constants";
 import { IAuthService } from "@/auth/services/interfaces/IAuth.service";
 import {
-    IAuthMessagePublisherService,
     IAuthMessagePublisherServiceToken,
-} from "@/auth/services/interfaces/IAuthMessagePublisher.service";
+    IAuthPublisherService,
+} from "@/auth/services/interfaces/IAuthPublisher.service";
 import { IRefreshTokenService, IRefreshTokenServiceToken } from "@/auth/services/interfaces/IRefreshToken.service";
 import { AuthenticationResult } from "@/auth/types/authenticationResult";
 import { User } from "@/user/models/User.model";
@@ -23,7 +23,7 @@ export class AuthService implements IAuthService {
         @Inject(IRefreshTokenServiceToken)
         private refreshTokenService: IRefreshTokenService,
         @Inject(IAuthMessagePublisherServiceToken)
-        private publisher: IAuthMessagePublisherService
+        private publisher: IAuthPublisherService
     ) {}
 
     public async login(email: string, password: string): Promise<AuthenticationResult> {
@@ -32,7 +32,7 @@ export class AuthService implements IAuthService {
     }
 
     public async useRefreshToken(refreshToken: string): Promise<AuthenticationResult> {
-        const { id, email } = await this.refreshTokenService.use(refreshToken);
+        const { id, email } = await this.refreshTokenService.redeem(refreshToken);
         return await this.generateTokens({ id, email });
     }
 

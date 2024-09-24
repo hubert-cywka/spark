@@ -4,7 +4,7 @@ import { DataSource } from "typeorm";
 import { AddActivationTokens1727179586288 } from "./migrations/1727179586288-AddActivationTokens";
 
 import { RefreshTokenEntity } from "@/auth/entities/RefreshToken.entity";
-import configuration from "@/config/configuration";
+import configuration from "@/common/config/configuration";
 import { InitTables1726517504746 } from "@/database/migrations/1726517504746-InitTables";
 import { UserEntity } from "@/user/entities/User.entity";
 

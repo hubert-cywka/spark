@@ -9,7 +9,7 @@ import { IsNull, LessThanOrEqual, Repository } from "typeorm";
 import { RefreshTokenEntity } from "@/auth/entities/RefreshToken.entity";
 import { RefreshTokenNotFoundError } from "@/auth/errors/RefreshTokenNotFound.error";
 import { IRefreshTokenService } from "@/auth/services/interfaces/IRefreshToken.service";
-import { JwtPayload } from "@/auth/types/jwtPayload";
+import { AccessTokenPayload } from "@/auth/types/accessTokenPayload";
 
 @Injectable()
 export class RefreshTokenService implements IRefreshTokenService {
@@ -22,7 +22,7 @@ export class RefreshTokenService implements IRefreshTokenService {
         private refreshTokenRepository: Repository<RefreshTokenEntity>
     ) {}
 
-    public async sign(payload: JwtPayload): Promise<string> {
+    public async sign(payload: AccessTokenPayload): Promise<string> {
         const secret = this.configService.getOrThrow<string>("refreshToken.signingSecret");
         const expiresIn = this.configService.getOrThrow<number>("refreshToken.expirationTimeInSeconds");
 
@@ -36,9 +36,9 @@ export class RefreshTokenService implements IRefreshTokenService {
         return token;
     }
 
-    public async use(token: string): Promise<JwtPayload> {
+    public async redeem(token: string): Promise<AccessTokenPayload> {
         const secret = this.configService.getOrThrow<string>("refreshToken.signingSecret");
-        const payload = await this.jwtService.verifyAsync<JwtPayload>(token, {
+        const payload = await this.jwtService.verifyAsync<AccessTokenPayload>(token, {
             secret,
         });
         const tokenEntity = await this.findOneByValue(token);
@@ -93,6 +93,7 @@ export class RefreshTokenService implements IRefreshTokenService {
         return dayjs(token.expiresAt).isAfter(new Date());
     }
 
+    // TODO: Test if it works
     @Cron("0 1 * * *")
     private async deleteAllExpired(): Promise<void> {
         const now = dayjs().toDate();

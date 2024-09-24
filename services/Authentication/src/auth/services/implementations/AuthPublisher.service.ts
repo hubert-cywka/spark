@@ -1,10 +1,10 @@
 import { IPublisherServiceToken, PublisherService, UserActivatedEvent, UserRegisteredEvent } from "@hcywka/pubsub";
 import { Inject } from "@nestjs/common";
 
-import { IAuthMessagePublisherService } from "@/auth/services/interfaces/IAuthMessagePublisher.service";
+import { IAuthPublisherService } from "@/auth/services/interfaces/IAuthPublisher.service";
 import { User } from "@/user/models/User.model";
 
-export class AuthMessagePublisherService implements IAuthMessagePublisherService {
+export class AuthPublisherService implements IAuthPublisherService {
     public constructor(
         @Inject(IPublisherServiceToken)
         private publisher: PublisherService

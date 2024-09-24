@@ -7,10 +7,12 @@ import { NestExpressApplication } from "@nestjs/platform-express";
 import helmet from "helmet";
 
 import { AppModule } from "@/App.module";
+import configuration from "@/config/configuration";
 
 declare const module: ModuleWithHotReload;
 
 async function bootstrap() {
+    const config = new ConfigService(configuration());
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
         logger: new Logger(pinoLogger, {}),
     });
@@ -19,11 +21,11 @@ async function bootstrap() {
     app.useGlobalFilters(new ExceptionsFilter(app.get(HttpAdapterHost)));
     app.use(helmet());
 
-    const config = new ConfigService();
     connectPubSub(app, {
         host: config.getOrThrow("pubsub.host"),
         port: config.getOrThrow("pubsub.port"),
     });
+
     await app.startAllMicroservices();
     await app.listen(config.getOrThrow("port"));
 
