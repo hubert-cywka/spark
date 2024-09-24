@@ -11,12 +11,12 @@ interface PubSubModuleOptions {
 
 const MODULE_OPTIONS_TOKEN = Symbol("PubSubModuleOptions");
 
-@Module({})
+@Module({}) // TODO: Make it bulletproof
 export class PubSubModule {
-    static forRoot(options: PubSubModuleOptions): DynamicModule {
+    static forRoot(options: { pubsub: PubSubModuleOptions; global?: boolean }): DynamicModule {
         const pubSubOptionsProvider: Provider = {
             provide: MODULE_OPTIONS_TOKEN,
-            useValue: options,
+            useValue: options.pubsub,
         };
 
         const publisherProvider: Provider = {
@@ -29,6 +29,7 @@ export class PubSubModule {
             module: PubSubModule,
             providers: [pubSubOptionsProvider, publisherProvider],
             exports: [IPublisherServiceToken],
+            global: options.global,
         };
     }
 
@@ -37,6 +38,7 @@ export class PubSubModule {
         useFactory: (...args: any[]) => PubSubModuleOptions | Promise<PubSubModuleOptions>;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         inject?: any[];
+        global?: boolean;
     }): DynamicModule {
         const asyncOptionsProvider: Provider = {
             provide: MODULE_OPTIONS_TOKEN,
@@ -54,6 +56,7 @@ export class PubSubModule {
             module: PubSubModule,
             providers: [asyncOptionsProvider, publisherProvider],
             exports: [IPublisherServiceToken],
+            global: options.global,
         };
     }
 
