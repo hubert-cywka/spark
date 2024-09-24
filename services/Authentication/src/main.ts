@@ -10,6 +10,7 @@ import configuration from "@/config/configuration";
 
 declare const module: ModuleWithHotReload;
 
+// TODO: Setup message queue to inform about user registration
 async function bootstrap() {
     const temporaryLogger = new Logger(pinoLogger, {});
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -21,7 +22,6 @@ async function bootstrap() {
 
     app.use(helmet());
     app.use(cookieParser());
-    app.enableCors();
     app.set("trust proxy", true);
 
     const appConfig = configuration();

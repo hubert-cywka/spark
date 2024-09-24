@@ -1,6 +1,8 @@
 import { configDotenv } from "dotenv";
 import { DataSource } from "typeorm";
 
+import { AddActivationTokens1727179586288 } from "./migrations/1727179586288-AddActivationTokens";
+
 import { RefreshTokenEntity } from "@/auth/entities/RefreshToken.entity";
 import configuration from "@/config/configuration";
 import { InitTables1726517504746 } from "@/database/migrations/1726517504746-InitTables";
@@ -21,5 +23,5 @@ export const dataSource = new DataSource({
     dropSchema: false,
     migrationsRun: false,
     entities: [UserEntity, RefreshTokenEntity],
-    migrations: [InitTables1726517504746],
+    migrations: [InitTables1726517504746, AddActivationTokens1727179586288],
 });

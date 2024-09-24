@@ -16,10 +16,11 @@ import { SkipThrottle } from "@nestjs/throttler";
 import { CookieOptions, Response } from "express";
 
 import { REFRESH_TOKEN_COOKIE_NAME } from "@/auth/constants";
+import { ConfirmRegistrationDto } from "@/auth/dto/ConfirmRegistration.dto";
 import { LoginDto } from "@/auth/dto/Login.dto";
 import { RegisterDto } from "@/auth/dto/Register.dto";
 import { AuthenticationGuard } from "@/auth/guards/Authentication.guard";
-import { IAuthService, IAuthServiceToken } from "@/auth/services/IAuth.service";
+import { IAuthService, IAuthServiceToken } from "@/auth/services/interfaces/IAuth.service";
 import { EntityAlreadyExistsError } from "@/common/errors/EntityAlreadyExists.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 
@@ -51,9 +52,20 @@ export class AuthController {
 
     @HttpCode(201)
     @Post("register")
-    async register(@Body() { email, password }: RegisterDto, @Res() response: Response) {
+    async register(@Body() { email, password }: RegisterDto) {
         try {
-            const { accessToken, refreshToken } = await this.authService.register(email, password);
+            await this.authService.register(email, password);
+            return { success: true };
+        } catch (err) {
+            ifError(err).is(EntityAlreadyExistsError).throw(new ConflictException()).elseRethrow();
+        }
+    }
+
+    @HttpCode(201)
+    @Post("confirm-registration")
+    async confirmRegistration(@Body() { confirmationToken }: ConfirmRegistrationDto, @Res() response: Response) {
+        try {
+            const { accessToken, refreshToken } = await this.authService.confirmRegistration(confirmationToken);
             response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, this.getRefreshTokenCookieOptions());
             return response.send({ accessToken });
         } catch (err) {
@@ -95,7 +107,7 @@ export class AuthController {
     }
 
     private getRefreshTokenCookieOptions(): CookieOptions {
-        const maxAge = this.configService.get("refreshToken.expirationTimeInSeconds") * 1000;
+        const maxAge = this.configService.getOrThrow<number>("refreshToken.expirationTimeInSeconds") * 1000;
         return {
             httpOnly: true,
             secure: true,

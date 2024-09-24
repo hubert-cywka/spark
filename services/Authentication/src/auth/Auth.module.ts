@@ -6,10 +6,12 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthController } from "./Auth.controller";
 
 import { RefreshTokenEntity } from "@/auth/entities/RefreshToken.entity";
-import { AuthService } from "@/auth/services/Auth.service";
-import { IAuthServiceToken } from "@/auth/services/IAuth.service";
-import { IRefreshTokenServiceToken } from "@/auth/services/IRefreshToken.service";
-import { RefreshTokenService } from "@/auth/services/RefreshToken.service";
+import { AuthService } from "@/auth/services/implementations/Auth.service";
+import { AuthMessagePublisherService } from "@/auth/services/implementations/AuthMessagePublisher.service";
+import { RefreshTokenService } from "@/auth/services/implementations/RefreshToken.service";
+import { IAuthServiceToken } from "@/auth/services/interfaces/IAuth.service";
+import { IAuthMessagePublisherServiceToken } from "@/auth/services/interfaces/IAuthMessagePublisher.service";
+import { IRefreshTokenServiceToken } from "@/auth/services/interfaces/IRefreshToken.service";
 import { AccessTokenStrategy } from "@/auth/strategies/AccessToken.strategy";
 import { UserModule } from "@/user/User.module";
 
@@ -17,6 +19,10 @@ import { UserModule } from "@/user/User.module";
     imports: [PassportModule, UserModule, JwtModule, TypeOrmModule.forFeature([RefreshTokenEntity])],
     controllers: [AuthController],
     providers: [
+        {
+            provide: IAuthMessagePublisherServiceToken,
+            useClass: AuthMessagePublisherService,
+        },
         { provide: IAuthServiceToken, useClass: AuthService },
         { provide: IRefreshTokenServiceToken, useClass: RefreshTokenService },
         AccessTokenStrategy,

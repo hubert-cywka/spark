@@ -20,8 +20,8 @@ import { UserModule } from "@/user/User.module";
         ThrottlerModule.forRootAsync({
             useFactory: (configService: ConfigService) => [
                 {
-                    ttl: configService.get("throttle.ttl") as number,
-                    limit: configService.get("throttle.limit") as number,
+                    ttl: configService.getOrThrow<number>("throttle.ttl"),
+                    limit: configService.getOrThrow<number>("throttle.limit"),
                 },
             ],
             inject: [ConfigService],
@@ -41,6 +41,6 @@ import { UserModule } from "@/user/User.module";
             useClass: ThrottlingGuard,
         },
     ],
-    exports: [ConfigModule],
+    exports: [],
 })
 export class AppModule {}
