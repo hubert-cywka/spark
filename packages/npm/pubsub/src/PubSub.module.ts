@@ -3,41 +3,15 @@ import { ClientProxyFactory, Transport } from "@nestjs/microservices";
 
 import { IPublisherServiceToken } from "./services/IPublisher.service";
 import { PublisherService } from "./services/Publisher.service";
-
-interface PubSubModuleOptions {
-    host: string;
-    port: number;
-}
+import { PubSubModuleOptions } from "./types";
 
 const MODULE_OPTIONS_TOKEN = Symbol("PubSubModuleOptions");
 
 @Module({}) // TODO: Make it bulletproof
 export class PubSubModule {
-    static forRoot(options: { pubsub: PubSubModuleOptions; global?: boolean }): DynamicModule {
-        const pubSubOptionsProvider: Provider = {
-            provide: MODULE_OPTIONS_TOKEN,
-            useValue: options.pubsub,
-        };
-
-        const publisherProvider: Provider = {
-            provide: IPublisherServiceToken,
-            useFactory: (pubSubOptions: PubSubModuleOptions) => this.createPublisher(pubSubOptions),
-            inject: [MODULE_OPTIONS_TOKEN],
-        };
-
-        return {
-            module: PubSubModule,
-            providers: [pubSubOptionsProvider, publisherProvider],
-            exports: [IPublisherServiceToken],
-            global: options.global,
-        };
-    }
-
     static forRootAsync(options: {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        useFactory: (...args: any[]) => PubSubModuleOptions | Promise<PubSubModuleOptions>;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        inject?: any[];
+        useFactory: (...args: any[]) => PubSubModuleOptions | Promise<PubSubModuleOptions>; // eslint-disable-line @typescript-eslint/no-explicit-any
+        inject?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
         global?: boolean;
     }): DynamicModule {
         const asyncOptionsProvider: Provider = {
@@ -48,7 +22,13 @@ export class PubSubModule {
 
         const publisherProvider: Provider = {
             provide: IPublisherServiceToken,
-            useFactory: (pubSubOptions: PubSubModuleOptions) => this.createPublisher(pubSubOptions),
+            useFactory: (moduleOptions: PubSubModuleOptions) => {
+                const client = ClientProxyFactory.create({
+                    transport: Transport.REDIS,
+                    options: moduleOptions.connection,
+                });
+                return new PublisherService(client);
+            },
             inject: [MODULE_OPTIONS_TOKEN],
         };
 
@@ -58,17 +38,5 @@ export class PubSubModule {
             exports: [IPublisherServiceToken],
             global: options.global,
         };
-    }
-
-    private static createPublisher({ host, port }: PubSubModuleOptions) {
-        const client = ClientProxyFactory.create({
-            transport: Transport.REDIS,
-            options: {
-                host,
-                port,
-            },
-        });
-
-        return new PublisherService(client);
     }
 }
