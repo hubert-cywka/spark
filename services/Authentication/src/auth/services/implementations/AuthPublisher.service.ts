@@ -1,4 +1,4 @@
-import { IPublisherServiceToken, PublisherService, UserActivatedEvent, UserRegisteredEvent } from "@hcywka/pubsub";
+import { IPublisherServiceToken, PublisherService, UserRegisteredEvent } from "@hcywka/pubsub";
 import { Inject } from "@nestjs/common";
 
 import { IAuthPublisherService } from "@/auth/services/interfaces/IAuthPublisher.service";
@@ -10,11 +10,7 @@ export class AuthPublisherService implements IAuthPublisherService {
         private publisher: PublisherService
     ) {}
 
-    public onUserRegistered(user: User, confirmationToken: string): void {
-        this.publisher.publish(new UserRegisteredEvent(user, confirmationToken));
-    }
-
-    public onUserActivated(user: User): void {
-        this.publisher.publish(new UserActivatedEvent(user));
+    public onUserRegistered(user: User): void {
+        this.publisher.publish(new UserRegisteredEvent({ user }));
     }
 }

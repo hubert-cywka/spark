@@ -17,7 +17,6 @@ import { SkipThrottle } from "@nestjs/throttler";
 import { CookieOptions, Response } from "express";
 
 import { REFRESH_TOKEN_COOKIE_NAME } from "@/auth/constants";
-import { ConfirmRegistrationDto } from "@/auth/dto/ConfirmRegistration.dto";
 import { LoginDto } from "@/auth/dto/Login.dto";
 import { RegisterDto } from "@/auth/dto/Register.dto";
 import { AuthenticationGuard } from "@/auth/guards/Authentication.guard";
@@ -50,18 +49,6 @@ export class AuthController {
         }
     }
 
-    @HttpCode(201)
-    @Post("confirm-registration")
-    async confirmRegistration(@Body() { activationToken }: ConfirmRegistrationDto, @Res() response: Response) {
-        try {
-            const { accessToken, refreshToken } = await this.authService.confirmRegistration(activationToken);
-            this.setRefreshToken(response, refreshToken);
-            return response.send({ accessToken });
-        } catch (err) {
-            ifError(err).is(EntityAlreadyExistsError).throw(new ConflictException()).elseRethrow();
-        }
-    }
-
     @HttpCode(200)
     @Post("login")
     async login(@Body() { email, password }: LoginDto, @Res() response: Response) {
@@ -87,7 +74,7 @@ export class AuthController {
         }
 
         try {
-            const { accessToken, refreshToken } = await this.authService.useRefreshToken(token);
+            const { accessToken, refreshToken } = await this.authService.redeemRefreshToken(token);
             this.setRefreshToken(response, refreshToken);
             return response.send({ accessToken });
         } catch (err) {

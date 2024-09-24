@@ -6,6 +6,7 @@ import { AddActivationTokens1727179586288 } from "./migrations/1727179586288-Add
 import { RefreshTokenEntity } from "@/auth/entities/RefreshToken.entity";
 import configuration from "@/common/config/configuration";
 import { InitTables1726517504746 } from "@/database/migrations/1726517504746-InitTables";
+import { NullableActivationToken1727211365266 } from "@/database/migrations/1727211365266-NullableActivationToken";
 import { UserEntity } from "@/user/entities/User.entity";
 
 configDotenv();
@@ -23,5 +24,5 @@ export const dataSource = new DataSource({
     dropSchema: false,
     migrationsRun: false,
     entities: [UserEntity, RefreshTokenEntity],
-    migrations: [InitTables1726517504746, AddActivationTokens1727179586288],
+    migrations: [InitTables1726517504746, AddActivationTokens1727179586288, NullableActivationToken1727211365266],
 });

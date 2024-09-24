@@ -4,10 +4,7 @@ import { JwtService } from "@nestjs/jwt";
 
 import { CURRENT_JWT_VERSION } from "@/auth/constants";
 import { IAuthService } from "@/auth/services/interfaces/IAuth.service";
-import {
-    IAuthMessagePublisherServiceToken,
-    IAuthPublisherService,
-} from "@/auth/services/interfaces/IAuthPublisher.service";
+import { IAuthPublisherService, IAuthPublisherServiceToken } from "@/auth/services/interfaces/IAuthPublisher.service";
 import { IRefreshTokenService, IRefreshTokenServiceToken } from "@/auth/services/interfaces/IRefreshToken.service";
 import { AuthenticationResult } from "@/auth/types/authenticationResult";
 import { User } from "@/user/models/User.model";
@@ -22,7 +19,7 @@ export class AuthService implements IAuthService {
         private userService: IUserService,
         @Inject(IRefreshTokenServiceToken)
         private refreshTokenService: IRefreshTokenService,
-        @Inject(IAuthMessagePublisherServiceToken)
+        @Inject(IAuthPublisherServiceToken)
         private publisher: IAuthPublisherService
     ) {}
 
@@ -31,20 +28,14 @@ export class AuthService implements IAuthService {
         return await this.generateTokens(user);
     }
 
-    public async useRefreshToken(refreshToken: string): Promise<AuthenticationResult> {
+    public async redeemRefreshToken(refreshToken: string): Promise<AuthenticationResult> {
         const { id, email } = await this.refreshTokenService.redeem(refreshToken);
         return await this.generateTokens({ id, email });
     }
 
     public async register(email: string, password: string): Promise<void> {
-        const { user, activationToken } = await this.userService.save(email, password);
-        this.publisher.onUserRegistered(user, activationToken);
-    }
-
-    public async confirmRegistration(activationToken: string): Promise<AuthenticationResult> {
-        const activatedUser = await this.userService.activate(activationToken);
-        this.publisher.onUserActivated(activatedUser);
-        return await this.generateTokens(activatedUser);
+        const user = await this.userService.save(email, password);
+        this.publisher.onUserRegistered(user);
     }
 
     public async logout(refreshToken: string): Promise<void> {

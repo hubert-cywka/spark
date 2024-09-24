@@ -2,8 +2,8 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logge
 import { HttpAdapterHost } from "@nestjs/core";
 
 @Catch()
-export class ExceptionsFilter implements ExceptionFilter {
-    private readonly logger = new Logger(ExceptionsFilter.name);
+export class HttpExceptionsFilter implements ExceptionFilter {
+    private readonly logger = new Logger(HttpExceptionsFilter.name);
 
     constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
@@ -11,7 +11,8 @@ export class ExceptionsFilter implements ExceptionFilter {
         const { httpAdapter } = this.httpAdapterHost;
         const ctx = host.switchToHttp();
         const isHttpException = exception instanceof HttpException;
-        const httpStatus = isHttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
+        const statusCode = isHttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
+        const message = isHttpException ? exception.message : "Internal server error.";
 
         if (!isHttpException) {
             // HTTPExceptions are not logged here by design, as logging just before those exceptions are thrown (or handled in controller) usually allows to add more context.
@@ -19,11 +20,12 @@ export class ExceptionsFilter implements ExceptionFilter {
         }
 
         const responseBody = {
-            statusCode: httpStatus,
+            message,
+            statusCode,
             timestamp: new Date().toISOString(),
             path: httpAdapter.getRequestUrl(ctx.getRequest()),
         };
 
-        httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
+        httpAdapter.reply(ctx.getResponse(), responseBody, statusCode);
     }
 }
