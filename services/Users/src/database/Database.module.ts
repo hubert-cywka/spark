@@ -9,11 +9,11 @@ import { TypeOrmModule } from "@nestjs/typeorm";
         TypeOrmModule.forRootAsync({
             useFactory: async (configService: ConfigService) => {
                 const options = {
-                    port: configService.get("database.port"),
-                    username: configService.get("database.username"),
-                    password: configService.get("database.password"),
-                    host: configService.get("database.host"),
-                    database: configService.get("database.name"),
+                    port: configService.getOrThrow<number>("database.port"),
+                    username: configService.getOrThrow<string>("database.username"),
+                    password: configService.getOrThrow<string>("database.password"),
+                    host: configService.getOrThrow<string>("database.host"),
+                    database: configService.getOrThrow<string>("database.name"),
                 };
 
                 await initializePostgresDatabase(

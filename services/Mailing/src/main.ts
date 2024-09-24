@@ -1,6 +1,7 @@
-import { Logger, pinoLogger } from "@hcywka/common";
+import { ExceptionsFilter, Logger, pinoLogger } from "@hcywka/common";
 import { ModuleWithHotReload } from "@hcywka/types";
-import { NestFactory } from "@nestjs/core";
+import { HttpAdapterHost, NestFactory } from "@nestjs/core";
+import { NestExpressApplication } from "@nestjs/platform-express";
 import helmet from "helmet";
 
 import { AppModule } from "@/App.module";
@@ -8,16 +9,16 @@ import configuration from "@/config/configuration";
 
 declare const module: ModuleWithHotReload;
 
-// TODO: Use 'common' package
-// TODO: Setup message queue and listen for "register" event (once Authentication service is sending it)
 async function bootstrap() {
     const temporaryLogger = new Logger(pinoLogger, {});
-    const app = await NestFactory.create(AppModule, {
+    const app = await NestFactory.create<NestExpressApplication>(AppModule, {
         logger: temporaryLogger,
     });
 
-    app.use(helmet());
     app.useLogger(app.get(Logger));
+    app.useGlobalFilters(new ExceptionsFilter(app.get(HttpAdapterHost)));
+
+    app.use(helmet());
 
     const appConfig = configuration();
     await app.listen(appConfig.port);
@@ -28,4 +29,4 @@ async function bootstrap() {
     }
 }
 
-bootstrap();
+void bootstrap();

@@ -15,7 +15,7 @@ import { healthCheckGraphs } from "@/graphql/utils/healthCheckGraphs";
                 const graphs = [
                     {
                         name: "users",
-                        url: configService.get("subgraphs.users"),
+                        url: configService.getOrThrow<string>("subgraphs.users"),
                     },
                 ];
                 const urls = graphs.map((graph) => graph.url);
