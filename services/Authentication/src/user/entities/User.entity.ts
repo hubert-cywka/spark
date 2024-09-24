@@ -1,4 +1,4 @@
-import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 import { RefreshTokenEntity } from "@/auth/entities/RefreshToken.entity";
 
@@ -13,6 +13,18 @@ export class UserEntity {
 
     @Column({ type: "varchar" })
     password!: string;
+
+    @Column({ type: "varchar" })
+    activationToken!: string;
+
+    @Column({ type: "timestamp", nullable: true })
+    activatedAt!: Date | null;
+
+    @CreateDateColumn({ type: "timestamp" })
+    createdAt!: Date;
+
+    @UpdateDateColumn({ type: "timestamp" })
+    updatedAt!: Date;
 
     @OneToMany((type) => RefreshTokenEntity, (token) => token.owner)
     refreshTokens!: RefreshTokenEntity[];

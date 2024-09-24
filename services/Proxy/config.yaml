@@ -89,6 +89,7 @@ static_resources:
                                   socket_address:
                                       address: '${UI_SERVICE_ADDRESS}'
                                       port_value: '${UI_SERVICE_PORT}'
+
         - name: authentication-service
           connect_timeout: 5s
           type: STRICT_DNS

@@ -7,6 +7,7 @@ import configuration from "@/config/configuration";
 
 declare const module: ModuleWithHotReload;
 
+// TODO: Use 'common' package
 async function bootstrap() {
     const temporaryLogger = new Logger(pinoLogger, {});
     const app = await NestFactory.create(AppModule, {

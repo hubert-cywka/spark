@@ -2,8 +2,8 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { UserEntity } from "@/user/entities/User.entity";
-import { IUserServiceToken } from "@/user/services/IUser.service";
-import { UserService } from "@/user/services/User.service";
+import { UserService } from "@/user/services/implementations/User.service";
+import { IUserServiceToken } from "@/user/services/interfaces/IUser.service";
 
 @Module({
     imports: [TypeOrmModule.forFeature([UserEntity])],

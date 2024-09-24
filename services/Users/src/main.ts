@@ -8,6 +8,8 @@ import configuration from "@/config/configuration";
 
 declare const module: ModuleWithHotReload;
 
+// TODO: Use 'common' package
+// TODO: Setup message queue and listen for "register" event (once Authentication service is sending it)
 async function bootstrap() {
     const temporaryLogger = new Logger(pinoLogger, {});
     const app = await NestFactory.create(AppModule, {

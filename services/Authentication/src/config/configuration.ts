@@ -19,4 +19,8 @@ export default () => ({
         ttl: parseInt(process.env.THROTTLE_TTL_IN_MS ?? ""),
         limit: parseInt(process.env.THROTTLE_LIMIT ?? ""),
     },
+    pubsub: {
+        host: process.env.PUBSUB_HOST,
+        port: parseInt(process.env.PUBSUB_PORT ?? ""),
+    },
 });

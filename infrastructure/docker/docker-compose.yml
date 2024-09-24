@@ -3,11 +3,14 @@ services:
     db:
         image: postgres
         restart: always
-        healthcheck:
-            test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
-            interval: 1s
-            timeout: 10s
-            retries: 3
+        networks:
+            - services_network
+
+    redis:
+        image: redis:6.2-alpine
+        restart: always
+        volumes:
+            - redis_cache:/data
         networks:
             - services_network
 
@@ -31,6 +34,8 @@ services:
             dockerfile: Dockerfile
         networks:
             - services_network
+        depends_on:
+            - redis
 
     users-service:
         build:
@@ -40,6 +45,7 @@ services:
             - services_network
         depends_on:
             - db
+            - redis
 
     stitching-service:
         build:
@@ -50,10 +56,21 @@ services:
         depends_on:
             - users-service
 
+    mailing-service:
+        build:
+            context: services/Mailing
+            dockerfile: Dockerfile
+        networks:
+            - services_network
+        depends_on:
+            - redis
+
 networks:
     services_network:
         external: true
 
 volumes:
     postgres:
+        external: false
+    redis_cache:
         external: false

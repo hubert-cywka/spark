@@ -1,4 +1,5 @@
 import { LoggerModule, loggerOptions, ThrottlingGuard } from "@hcywka/common";
+import { PubSubModule } from "@hcywka/pubsub";
 import { Module, ValidationPipe } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { APP_GUARD, APP_PIPE } from "@nestjs/core";
@@ -17,11 +18,21 @@ import { UserModule } from "@/user/User.module";
             isGlobal: true,
             load: [configuration],
         }),
+        PubSubModule.forRootAsync({
+            global: true,
+            useFactory: (configService: ConfigService) => ({
+                connection: {
+                    port: configService.getOrThrow<number>("pubsub.port"),
+                    host: configService.getOrThrow<string>("pubsub.host"),
+                },
+            }),
+            inject: [ConfigService],
+        }),
         ThrottlerModule.forRootAsync({
             useFactory: (configService: ConfigService) => [
                 {
-                    ttl: configService.get("throttle.ttl") as number,
-                    limit: configService.get("throttle.limit") as number,
+                    ttl: configService.getOrThrow<number>("throttle.ttl"),
+                    limit: configService.getOrThrow<number>("throttle.limit"),
                 },
             ],
             inject: [ConfigService],
@@ -41,6 +52,6 @@ import { UserModule } from "@/user/User.module";
             useClass: ThrottlingGuard,
         },
     ],
-    exports: [ConfigModule],
+    exports: [],
 })
 export class AppModule {}

@@ -8,7 +8,7 @@ import { IsNull, LessThanOrEqual, Repository } from "typeorm";
 
 import { RefreshTokenEntity } from "@/auth/entities/RefreshToken.entity";
 import { RefreshTokenNotFoundError } from "@/auth/errors/RefreshTokenNotFound.error";
-import { IRefreshTokenService } from "@/auth/services/IRefreshToken.service";
+import { IRefreshTokenService } from "@/auth/services/interfaces/IRefreshToken.service";
 import { JwtPayload } from "@/auth/types/jwtPayload";
 
 @Injectable()
@@ -23,8 +23,8 @@ export class RefreshTokenService implements IRefreshTokenService {
     ) {}
 
     public async sign(payload: JwtPayload): Promise<string> {
-        const secret = this.configService.get("refreshToken.signingSecret");
-        const expiresIn = this.configService.get("refreshToken.expirationTimeInSeconds");
+        const secret = this.configService.getOrThrow<string>("refreshToken.signingSecret");
+        const expiresIn = this.configService.getOrThrow<number>("refreshToken.expirationTimeInSeconds");
 
         const expiresAt = dayjs().add(expiresIn, "seconds").toDate();
         const token = await this.jwtService.signAsync(payload, {
@@ -37,7 +37,7 @@ export class RefreshTokenService implements IRefreshTokenService {
     }
 
     public async use(token: string): Promise<JwtPayload> {
-        const secret = this.configService.get("refreshToken.signingSecret");
+        const secret = this.configService.getOrThrow<string>("refreshToken.signingSecret");
         const payload = await this.jwtService.verifyAsync<JwtPayload>(token, {
             secret,
         });

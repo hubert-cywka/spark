@@ -1,12 +1,13 @@
 import { ExceptionsFilter, Logger, pinoLogger } from "@hcywka/common";
+import { connectPubSub } from "@hcywka/pubsub";
 import { ModuleWithHotReload } from "@hcywka/types";
+import { ConfigService } from "@nestjs/config";
 import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 
 import { AppModule } from "@/App.module";
-import configuration from "@/config/configuration";
 
 declare const module: ModuleWithHotReload;
 
@@ -21,11 +22,15 @@ async function bootstrap() {
 
     app.use(helmet());
     app.use(cookieParser());
-    app.enableCors();
     app.set("trust proxy", true);
 
-    const appConfig = configuration();
-    await app.listen(appConfig.port);
+    const config = new ConfigService();
+    connectPubSub(app, {
+        host: config.getOrThrow("pubsub.host"),
+        port: config.getOrThrow("pubsub.port"),
+    });
+    await app.startAllMicroservices();
+    await app.listen(config.getOrThrow("port"));
 
     if (module.hot) {
         module.hot.accept();
