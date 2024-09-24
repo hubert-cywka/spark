@@ -36,6 +36,7 @@ export class AuthService implements IAuthService {
     public async register(email: string, password: string): Promise<void> {
         const user = await this.userService.save(email, password);
         this.publisher.onUserRegistered(user);
+        await this.userService.requestActivation(email);
     }
 
     public async logout(refreshToken: string): Promise<void> {

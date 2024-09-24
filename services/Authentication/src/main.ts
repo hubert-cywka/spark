@@ -1,4 +1,4 @@
-import { ExceptionsFilter, Logger, pinoLogger } from "@hcywka/common";
+import { HttpExceptionsFilter, Logger, pinoLogger } from "@hcywka/common";
 import { connectPubSub } from "@hcywka/pubsub";
 import { ModuleWithHotReload } from "@hcywka/types";
 import { ConfigService } from "@nestjs/config";
@@ -14,13 +14,12 @@ declare const module: ModuleWithHotReload;
 
 async function bootstrap() {
     const config = new ConfigService(configuration());
-    const temporaryLogger = new Logger(pinoLogger, {});
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-        logger: temporaryLogger,
+        logger: new Logger(pinoLogger, {}),
     });
 
     app.useLogger(app.get(Logger));
-    app.useGlobalFilters(new ExceptionsFilter(app.get(HttpAdapterHost)));
+    app.useGlobalFilters(new HttpExceptionsFilter(app.get(HttpAdapterHost)));
 
     app.use(helmet());
     app.use(cookieParser());
