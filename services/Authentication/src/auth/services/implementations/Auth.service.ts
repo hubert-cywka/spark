@@ -38,12 +38,12 @@ export class AuthService implements IAuthService {
 
     public async register(email: string, password: string): Promise<void> {
         const { user, activationToken } = await this.userService.save(email, password);
-        this.publisher.onRegistrationStarted(user, activationToken);
+        this.publisher.onUserRegistered(user, activationToken);
     }
 
     public async confirmRegistration(activationToken: string): Promise<AuthenticationResult> {
         const activatedUser = await this.userService.activate(activationToken);
-        this.publisher.onRegistrationConfirmed(activatedUser);
+        this.publisher.onUserActivated(activatedUser);
         return await this.generateTokens(activatedUser);
     }
 

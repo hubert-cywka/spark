@@ -4,6 +4,7 @@ import {
     Body,
     ConflictException,
     Controller,
+    ForbiddenException,
     HttpCode,
     Inject,
     Post,
@@ -23,6 +24,7 @@ import { AuthenticationGuard } from "@/auth/guards/Authentication.guard";
 import { IAuthService, IAuthServiceToken } from "@/auth/services/interfaces/IAuth.service";
 import { EntityAlreadyExistsError } from "@/common/errors/EntityAlreadyExists.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
+import { ForbiddenError } from "@/common/errors/Forbidden.error";
 
 @Controller("auth")
 export class AuthController {
@@ -46,7 +48,12 @@ export class AuthController {
             response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, this.getRefreshTokenCookieOptions());
             return response.send({ accessToken });
         } catch (err) {
-            ifError(err).is(EntityNotFoundError).throw(new UnauthorizedException()).elseRethrow();
+            ifError(err)
+                .is(EntityNotFoundError)
+                .throw(new UnauthorizedException())
+                .is(ForbiddenError)
+                .throw(new ForbiddenException())
+                .elseRethrow();
         }
     }
 
@@ -63,9 +70,9 @@ export class AuthController {
 
     @HttpCode(201)
     @Post("confirm-registration")
-    async confirmRegistration(@Body() { confirmationToken }: ConfirmRegistrationDto, @Res() response: Response) {
+    async confirmRegistration(@Body() { activationToken }: ConfirmRegistrationDto, @Res() response: Response) {
         try {
-            const { accessToken, refreshToken } = await this.authService.confirmRegistration(confirmationToken);
+            const { accessToken, refreshToken } = await this.authService.confirmRegistration(activationToken);
             response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, this.getRefreshTokenCookieOptions());
             return response.send({ accessToken });
         } catch (err) {

@@ -1,25 +1,20 @@
+import { IPublisherServiceToken, PublisherService, UserActivatedEvent, UserRegisteredEvent } from "@hcywka/pubsub";
 import { Inject } from "@nestjs/common";
-import { Observable } from "rxjs";
 
 import { IAuthMessagePublisherService } from "@/auth/services/interfaces/IAuthMessagePublisher.service";
-import { IPubSubService, IPubSubServiceToken } from "@/common/mq/IPubSubService";
 import { User } from "@/user/models/User.model";
 
 export class AuthMessagePublisherService implements IAuthMessagePublisherService {
     public constructor(
-        @Inject(IPubSubServiceToken)
-        private basePublisher: IPubSubService
+        @Inject(IPublisherServiceToken)
+        private publisher: PublisherService
     ) {}
 
-    public onRegistrationStarted(user: User, confirmationToken: string): Observable<unknown> {
-        const topic = "user_registration_started";
-        const payload = { user, confirmationToken };
-        return this.basePublisher.publish(topic, payload);
+    public onUserRegistered(user: User, confirmationToken: string): void {
+        this.publisher.publish(new UserRegisteredEvent(user, confirmationToken));
     }
 
-    public onRegistrationConfirmed(user: User): Observable<unknown> {
-        const topic = "user_registration_confirmed";
-        const payload = { user };
-        return this.basePublisher.publish(topic, payload);
+    public onUserActivated(user: User): void {
+        this.publisher.publish(new UserActivatedEvent(user));
     }
 }

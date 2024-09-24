@@ -78,7 +78,12 @@ export class UserService implements IUserService {
         }
 
         if (!(await this.comparePassword(password, user.password))) {
-            this.logger.warn({ email }, "User found, incorrect password.");
+            this.logger.warn({ id: user.id }, "User found, incorrect password.");
+            throw new InvalidCredentialsError();
+        }
+
+        if (!user.activatedAt) {
+            this.logger.warn({ id: user.id }, "User not activated.");
             throw new InvalidCredentialsError();
         }
 

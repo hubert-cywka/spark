@@ -5,7 +5,7 @@ export const IAuthServiceToken = Symbol("IAuthService");
 export interface IAuthService {
     login(email: string, password: string): Promise<AuthenticationResult>;
     useRefreshToken(refreshToken: string): Promise<AuthenticationResult>;
-    register(email: string, password: string): Promise<void>;
-    confirmRegistration(confirmationToken: string): Promise<AuthenticationResult>;
     logout(refreshToken: string): Promise<void>;
+    register(email: string, password: string): Promise<void>;
+    confirmRegistration(activationToken: string): Promise<AuthenticationResult>;
 }
