@@ -1,23 +1,15 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from "@nestjs/common";
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from "@nestjs/common";
 import { HttpAdapterHost } from "@nestjs/core";
 
-@Catch()
-export class HttpExceptionsFilter implements ExceptionFilter {
-    private readonly logger = new Logger(HttpExceptionsFilter.name);
-
+@Catch(HttpException)
+export class HttpExceptionsFilter implements ExceptionFilter<HttpException> {
     constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
-    catch(exception: unknown, host: ArgumentsHost): void {
+    catch(exception: HttpException, host: ArgumentsHost): void {
         const { httpAdapter } = this.httpAdapterHost;
         const ctx = host.switchToHttp();
-        const isHttpException = exception instanceof HttpException;
-        const statusCode = isHttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
-        const message = isHttpException ? exception.message : "Internal server error.";
-
-        if (!isHttpException) {
-            // HTTPExceptions are not logged here by design, as logging just before those exceptions are thrown (or handled in controller) usually allows to add more context.
-            this.logger.error({ err: exception }, "Caught unexpected exception.");
-        }
+        const statusCode = exception.getStatus();
+        const message = exception.message;
 
         const responseBody = {
             message,

@@ -1,9 +1,9 @@
 import { Directive, Field, ObjectType } from "@nestjs/graphql";
 import { Type } from "class-transformer";
 
-@ObjectType()
+@ObjectType("user")
 @Directive('@key(fields: "id")')
-export class User {
+export class UserObject {
     @Field()
     @Type(() => String)
     id!: string;
@@ -13,6 +13,6 @@ export class User {
     email!: string;
 
     @Field()
-    @Type(() => String)
-    name!: string;
+    @Type(() => Boolean)
+    isActivated!: boolean;
 }

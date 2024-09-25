@@ -1,18 +1,21 @@
+import { Inject } from "@nestjs/common";
 import { Args, Query, Resolver, ResolveReference } from "@nestjs/graphql";
 
-import { User } from "@/users/objects/User";
+import { UserObject } from "@/users/objects/User.object";
+import { IUsersService, IUsersServiceToken } from "@/users/services/interfaces/IUsers.service";
 
-@Resolver(User)
+@Resolver(UserObject)
 export class UsersResolver {
-    constructor() {}
+    constructor(@Inject(IUsersServiceToken) private usersService: IUsersService) {}
 
-    @Query((returns) => User, { nullable: true })
-    async user(@Args("id", { type: () => String }) id: string) {
-        return null;
+    // TODO: Add data loader
+    @Query((returns) => UserObject)
+    async user(@Args("id", { type: () => String }) id: string): Promise<UserObject> {
+        return await this.usersService.findOneById(id);
     }
 
     @ResolveReference()
-    resolveReference(reference: { __typename: string; id: string }): User | null {
-        return null;
+    async resolveReference(reference: { __typename: string; id: string }): Promise<UserObject> {
+        return await this.usersService.findOneById(reference.id);
     }
 }
