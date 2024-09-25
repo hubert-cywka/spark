@@ -1,12 +1,11 @@
-import { ifError, RpcExceptionsFilter, UncaughtExceptionsFilter } from "@hcywka/common";
+import { ifError } from "@hcywka/common";
 import { PUBSUB_TOPICS, UserActivatedEventPayload, UserRegisteredEventPayload } from "@hcywka/pubsub";
-import { Controller, Inject, Logger, UseFilters } from "@nestjs/common";
+import { Controller, Inject, Logger } from "@nestjs/common";
 import { EventPattern, Payload } from "@nestjs/microservices";
 
 import { EntityAlreadyExistsError } from "@/common/errors/EntityAlreadyExists.error";
 import { IUsersService, IUsersServiceToken } from "@/users/services/interfaces/IUsers.service";
 
-@UseFilters(RpcExceptionsFilter, UncaughtExceptionsFilter)
 @Controller()
 export class UsersSubscriber {
     private readonly logger = new Logger();

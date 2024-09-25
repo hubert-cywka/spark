@@ -8,5 +8,4 @@ import { pollResourceUntilReady } from "./utils/pollResourceUntilReady";
 export { Cookies, loggerOptions, pinoLogger, ThrottlingGuard, TransformToDtoInterceptor };
 export { ifError, pollResourceUntilReady };
 
-export * from "./filters";
 export * from "nestjs-pino";
