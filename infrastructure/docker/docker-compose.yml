@@ -53,8 +53,6 @@ services:
             dockerfile: Dockerfile
         networks:
             - services_network
-        depends_on:
-            - users-service
 
     mailing-service:
         build:
