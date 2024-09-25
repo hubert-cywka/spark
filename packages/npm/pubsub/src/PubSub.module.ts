@@ -7,7 +7,7 @@ import { PubSubModuleOptions } from "./types";
 
 const MODULE_OPTIONS_TOKEN = Symbol("PubSubModuleOptions");
 
-@Module({}) // TODO: Make it bulletproof
+@Module({}) // TODO: Make it bulletproof, try to implement at-least-once delivery
 export class PubSubModule {
     static forRootAsync(options: {
         useFactory: (...args: any[]) => PubSubModuleOptions | Promise<PubSubModuleOptions>; // eslint-disable-line @typescript-eslint/no-explicit-any
