@@ -62,6 +62,8 @@ services:
             - DATABASE_PASSWORD=${DATABASE_PASSWORD}
             - DATABASE_HOST=${DATABASE_HOST}
             - DATABASE_NAME=${USERS_SERVICE_DATABASE_NAME}
+            - PUBSUB_HOST=${REDIS_HOST}
+            - PUBSUB_PORT=${REDIS_PORT}
 
     stitching-service:
         ports:

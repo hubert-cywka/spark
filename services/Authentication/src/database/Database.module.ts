@@ -34,6 +34,7 @@ import { NullableActivationToken1727211365266 } from "@/database/migrations/1727
                     type: "postgres",
                     autoLoadEntities: true,
                     migrationsRun: true,
+                    synchronize: false,
                     migrations: [
                         InitTables1726517504746,
                         AddActivationTokens1727179586288,

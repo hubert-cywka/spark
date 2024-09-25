@@ -1,12 +1,11 @@
 import { Cookies } from "./decorators/Cookie.decorator";
-import { HttpExceptionsFilter } from "./filters/HttpExceptionsFilter";
 import { ThrottlingGuard } from "./guards/Throttling.guard";
 import { TransformToDtoInterceptor } from "./interceptors/TransformToDto.interceptor";
 import { loggerOptions, pinoLogger } from "./logger/logger";
 import { ifError } from "./utils/ifError";
 import { pollResourceUntilReady } from "./utils/pollResourceUntilReady";
 
-export { Cookies, HttpExceptionsFilter, loggerOptions, pinoLogger, ThrottlingGuard, TransformToDtoInterceptor };
+export { Cookies, loggerOptions, pinoLogger, ThrottlingGuard, TransformToDtoInterceptor };
 export { ifError, pollResourceUntilReady };
 
 export * from "nestjs-pino";

@@ -8,6 +8,6 @@ export type UserActivationTokenRequestedEventPayload = {
 
 export class UserActivationTokenRequestedEvent extends PubSubEvent {
     public constructor(payload: UserActivationTokenRequestedEventPayload) {
-        super(PUBSUB_TOPICS.user.activated, payload);
+        super(PUBSUB_TOPICS.user.activationTokenRequested, payload);
     }
 }

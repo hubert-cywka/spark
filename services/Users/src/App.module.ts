@@ -7,7 +7,7 @@ import { GraphQLModule } from "@nestjs/graphql";
 
 import { UsersModule } from "./users/Users.module";
 
-import configuration from "@/config/configuration";
+import configuration from "@/common/config/configuration";
 import { DatabaseModule } from "@/database/Database.module";
 
 @Module({

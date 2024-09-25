@@ -1,3 +1,5 @@
+import { RpcException } from "@nestjs/microservices";
+
 interface ConstructorOf<C> {
     new (...args: ReadonlyArray<never>): C;
 }
@@ -9,6 +11,14 @@ export function ifError(error: unknown) {
                 throw(err: Error) {
                     if (error instanceof ErrorType) {
                         throw err;
+                    }
+
+                    return actions;
+                },
+
+                throwRpcException(message: string) {
+                    if (error instanceof ErrorType) {
+                        throw new RpcException(message);
                     }
 
                     return actions;

@@ -1,26 +1,31 @@
 import { Logger, pinoLogger } from "@hcywka/common";
+import { connectPubSub } from "@hcywka/pubsub";
 import { ModuleWithHotReload } from "@hcywka/types";
+import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import helmet from "helmet";
 
 import { AppModule } from "@/App.module";
-import configuration from "@/config/configuration";
+import configuration from "@/common/config/configuration";
 
 declare const module: ModuleWithHotReload;
 
-// TODO: Use 'common' package
-// TODO: Setup message queue and listen for "register" event (once Authentication service is sending it)
 async function bootstrap() {
-    const temporaryLogger = new Logger(pinoLogger, {});
+    const config = new ConfigService(configuration());
     const app = await NestFactory.create(AppModule, {
-        logger: temporaryLogger,
+        logger: new Logger(pinoLogger, {}),
     });
 
     app.use(helmet());
     app.useLogger(app.get(Logger));
 
-    const appConfig = configuration();
-    await app.listen(appConfig.port);
+    connectPubSub(app, {
+        port: config.getOrThrow("pubsub.port"),
+        host: config.getOrThrow("pubsub.host"),
+    });
+
+    await app.startAllMicroservices();
+    await app.listen(config.getOrThrow("port"));
 
     if (module.hot) {
         module.hot.accept();

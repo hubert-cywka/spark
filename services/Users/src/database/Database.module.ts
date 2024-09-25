@@ -4,6 +4,8 @@ import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
+import { AddUserTable1727272270150 } from "@/database/migrations/1727272270150-AddUserTable";
+
 @Module({
     imports: [
         TypeOrmModule.forRootAsync({
@@ -30,6 +32,8 @@ import { TypeOrmModule } from "@nestjs/typeorm";
                     type: "postgres",
                     autoLoadEntities: true,
                     migrationsRun: true,
+                    synchronize: false,
+                    migrations: [AddUserTable1727272270150],
                 };
             },
             inject: [ConfigService],
