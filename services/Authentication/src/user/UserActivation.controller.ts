@@ -7,12 +7,12 @@ import { UserAlreadyActivatedError } from "@/user/errors/UserAlreadyActivated.er
 import { UserNotFoundError } from "@/user/errors/UserNotFound.error";
 import { IUserService, IUserServiceToken } from "@/user/services/interfaces/IUser.service";
 
-@Controller("auth/user")
-export class UserController {
+@Controller("auth/activation")
+export class UserActivationController {
     constructor(@Inject(IUserServiceToken) private userService: IUserService) {}
 
     @HttpCode(201)
-    @Post("activation/redeem")
+    @Post("redeem")
     async redeemActivationToken(@Body() { activationToken }: RedeemActivationTokenDto) {
         try {
             await this.userService.activate(activationToken);

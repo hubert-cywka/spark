@@ -1,12 +1,16 @@
 export default () => ({
     port: parseInt(process.env.PORT ?? ""),
+    appUrl: process.env.APP_URL,
     isDebugMode: process.env.DEBUG_MODE === "true",
     sender: {
-        email: process.env.SENDER_EMAIL,
-        password: parseInt(process.env.SENDER_PASSWORD ?? ""),
+        name: process.env.SENDER_NAME,
+        user: process.env.SENDER_USER,
+        port: process.env.SENDER_PORT,
+        password: process.env.SENDER_PASSWORD,
+        host: process.env.SENDER_HOST,
     },
     pubsub: {
         host: process.env.PUBSUB_HOST,
-        port: parseInt(process.env.PUBSUB_PORT ?? ""),
+        port: process.env.PUBSUB_PORT,
     },
 });

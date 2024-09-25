@@ -1,18 +1,18 @@
 import { Module } from "@nestjs/common";
 
-import { AuthSubscriber } from "@/mail/Auth.subscriber";
-import { IMailServiceToken } from "@/mail/services/IMail.service";
-import { MailService } from "@/mail/services/Mail.service";
+import { MailerService } from "@/mail/services/implementations/Mailer.service";
+import { IMailerServiceToken } from "@/mail/services/interfaces/IMailer.service";
+import { UserSubscriber } from "@/mail/User.subscriber";
 
 @Module({
     imports: [],
     providers: [
         {
-            provide: IMailServiceToken,
-            useClass: MailService,
+            provide: IMailerServiceToken,
+            useClass: MailerService,
         },
     ],
-    controllers: [AuthSubscriber],
-    exports: [IMailServiceToken],
+    controllers: [UserSubscriber],
+    exports: [IMailerServiceToken],
 })
 export class MailModule {}
