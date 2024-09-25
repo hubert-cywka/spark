@@ -1,9 +1,11 @@
-import { Inject } from "@nestjs/common";
+import { HttpExceptionsFilter, UncaughtExceptionsFilter } from "@hcywka/common";
+import { Inject, UseFilters } from "@nestjs/common";
 import { Args, Query, Resolver, ResolveReference } from "@nestjs/graphql";
 
 import { UserObject } from "@/users/objects/User.object";
 import { IUsersService, IUsersServiceToken } from "@/users/services/interfaces/IUsers.service";
 
+@UseFilters(HttpExceptionsFilter, UncaughtExceptionsFilter)
 @Resolver(UserObject)
 export class UsersResolver {
     constructor(@Inject(IUsersServiceToken) private usersService: IUsersService) {}

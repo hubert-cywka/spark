@@ -1,8 +1,8 @@
-import { HttpExceptionsFilter, Logger, pinoLogger } from "@hcywka/common";
+import { Logger, pinoLogger } from "@hcywka/common";
 import { connectPubSub } from "@hcywka/pubsub";
 import { ModuleWithHotReload } from "@hcywka/types";
 import { ConfigService } from "@nestjs/config";
-import { HttpAdapterHost, NestFactory } from "@nestjs/core";
+import { NestFactory } from "@nestjs/core";
 import helmet from "helmet";
 
 import { AppModule } from "@/App.module";
@@ -18,7 +18,6 @@ async function bootstrap() {
 
     app.use(helmet());
     app.useLogger(app.get(Logger));
-    app.useGlobalFilters(new HttpExceptionsFilter(app.get(HttpAdapterHost)));
 
     connectPubSub(app, {
         port: config.getOrThrow("pubsub.port"),

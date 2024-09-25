@@ -1,13 +1,10 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus, Logger } from "@nestjs/common";
-import { HttpAdapterHost } from "@nestjs/core";
 import { RpcException } from "@nestjs/microservices";
 import { Observable, throwError } from "rxjs";
 
 @Catch()
 export class UncaughtExceptionsFilter implements ExceptionFilter {
     private readonly logger = new Logger(UncaughtExceptionsFilter.name);
-
-    constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
     catch(exception: unknown, host: ArgumentsHost): Observable<unknown> | void {
         if (exception instanceof RpcException) {
@@ -35,17 +32,17 @@ export class UncaughtExceptionsFilter implements ExceptionFilter {
     }
 
     private handleHttpContext(host: ArgumentsHost): void {
-        const { httpAdapter } = this.httpAdapterHost;
         const ctx = host.switchToHttp();
         const statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
 
-        const responseBody = {
+        const response = ctx.getResponse();
+        const request = ctx.getRequest();
+
+        response.status(statusCode).json({
             message: "Internal server error.",
             statusCode,
             timestamp: new Date().toISOString(),
-            path: httpAdapter.getRequestUrl(ctx.getRequest()),
-        };
-
-        httpAdapter.reply(ctx.getResponse(), responseBody, statusCode);
+            path: request.url,
+        });
     }
 }

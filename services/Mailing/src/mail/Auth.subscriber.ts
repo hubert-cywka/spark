@@ -1,7 +1,9 @@
+import { RpcExceptionsFilter, UncaughtExceptionsFilter } from "@hcywka/common";
 import { PUBSUB_TOPICS } from "@hcywka/pubsub";
-import { Controller, Logger } from "@nestjs/common";
+import { Controller, Logger, UseFilters } from "@nestjs/common";
 import { EventPattern, Payload } from "@nestjs/microservices";
 
+@UseFilters(RpcExceptionsFilter, UncaughtExceptionsFilter)
 @Controller()
 export class AuthSubscriber {
     private readonly logger = new Logger();

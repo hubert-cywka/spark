@@ -1,4 +1,4 @@
-import { Cookies, ifError } from "@hcywka/common";
+import { Cookies, HttpExceptionsFilter, ifError, UncaughtExceptionsFilter } from "@hcywka/common";
 import {
     All,
     Body,
@@ -10,6 +10,7 @@ import {
     Post,
     Res,
     UnauthorizedException,
+    UseFilters,
     UseGuards,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -25,6 +26,7 @@ import { EntityAlreadyExistsError } from "@/common/errors/EntityAlreadyExists.er
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 
+@UseFilters(HttpExceptionsFilter, UncaughtExceptionsFilter)
 @Controller("auth")
 export class AuthController {
     constructor(

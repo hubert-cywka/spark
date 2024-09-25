@@ -1,8 +1,8 @@
-import { HttpExceptionsFilter, Logger, pinoLogger } from "@hcywka/common";
+import { Logger, pinoLogger } from "@hcywka/common";
 import { connectPubSub } from "@hcywka/pubsub";
 import { ModuleWithHotReload } from "@hcywka/types";
 import { ConfigService } from "@nestjs/config";
-import { HttpAdapterHost, NestFactory } from "@nestjs/core";
+import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
@@ -19,7 +19,6 @@ async function bootstrap() {
     });
 
     app.useLogger(app.get(Logger));
-    app.useGlobalFilters(new HttpExceptionsFilter(app.get(HttpAdapterHost)));
 
     app.use(helmet());
     app.use(cookieParser());
