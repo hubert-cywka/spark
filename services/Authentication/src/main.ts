@@ -5,7 +5,6 @@ import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import cookieParser from "cookie-parser";
-import helmet from "helmet";
 
 import { AppModule } from "@/App.module";
 import configuration from "@/common/config/configuration";
@@ -20,7 +19,6 @@ async function bootstrap() {
 
     app.useLogger(app.get(Logger));
 
-    app.use(helmet());
     app.use(cookieParser());
     app.set("trust proxy", true);
 

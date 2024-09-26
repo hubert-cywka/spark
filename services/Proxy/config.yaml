@@ -19,6 +19,51 @@ static_resources:
                           codec_type: AUTO
                           route_config:
                               name: local_route
+
+                              response_headers_to_remove:
+                                  - X-Powered-By
+                              response_headers_to_add:
+                                  - append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                                    header:
+                                        key: Content-Security-Policy
+                                        value: "default-src 'self'; base-uri 'self'; font-src 'self' https: data:; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; object-src 'none'; script-src 'self'; script-src-attr 'none'; style-src 'self' https: 'unsafe-inline'; upgrade-insecure-requests"
+                                  - append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                                    header:
+                                        key: Cross-Origin-Opener-Policy
+                                        value: same-origin
+                                  - append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                                    header:
+                                        key: Cross-Origin-Resource-Policy
+                                        value: same-origin
+                                  - append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                                    header:
+                                          key: Origin-Agent-Cluster
+                                          value: ?1
+                                  - append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                                    header:
+                                        key: Referrer-Policy
+                                        value: strict-origin-when-cross-origin
+                                  - append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                                    header:
+                                        key: Strict-Transport-Security
+                                        value: "max-age=15552000; includeSubDomains"
+                                  - append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                                    header:
+                                        key: X-Content-Type-Options
+                                        value: nosniff
+                                  - append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                                    header:
+                                        key: X-Frame-Options
+                                        value: DENY
+                                  - append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                                    header:
+                                          key: X-Permitted-Cross-Domain-Policies
+                                          value: none
+                                  - append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                                    header:
+                                        key: X-XSS-Protection
+                                        value: "0"
+
                               virtual_hosts:
                                   - name: virtual_host
                                     domains:

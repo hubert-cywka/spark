@@ -3,7 +3,6 @@ import { connectPubSub } from "@hcywka/pubsub";
 import { ModuleWithHotReload } from "@hcywka/types";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
-import helmet from "helmet";
 
 import { AppModule } from "@/App.module";
 import configuration from "@/common/config/configuration";
@@ -16,7 +15,6 @@ async function bootstrap() {
         logger: new Logger(pinoLogger, {}),
     });
 
-    app.use(helmet());
     app.useLogger(app.get(Logger));
 
     connectPubSub(app, {
