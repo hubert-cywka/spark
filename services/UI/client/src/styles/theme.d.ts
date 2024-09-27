@@ -98,6 +98,7 @@ export type Theme = {
         };
     };
     spacing: {
+        xxxs: string;
         xxs: string;
         xs: string;
         s: string;

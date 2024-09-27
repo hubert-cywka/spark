@@ -96,6 +96,7 @@ export const lightTheme: Theme = {
         },
     },
     spacing: {
+        xxxs: "0.125rem",
         xxs: "0.25rem",
         xs: "0.5rem",
         s: "0.75rem",

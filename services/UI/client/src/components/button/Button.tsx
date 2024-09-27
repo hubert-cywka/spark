@@ -9,12 +9,13 @@ export const Button = styled(BaseButton)<ButtonProps>`
     font: ${(p) => p.theme.typography.body.bold.s};
     border: none;
     border-radius: ${(p) => p.theme.radius.m};
+    outline-offset: ${(p) => p.theme.spacing.xxxs};
 
     padding-block: ${(p) => p.theme.spacing.s};
     padding-inline: ${(p) => p.theme.spacing.m};
 
     cursor: pointer;
-    transition: all 150ms ease;
+    transition: transform 150ms ease;
 
     display: flex;
     justify-content: center;
@@ -32,6 +33,7 @@ export const Button = styled(BaseButton)<ButtonProps>`
                     background: transparent;
                     border: 2px solid ${(p) => p.theme.color.foreground.primary};
                     color: ${(p) => p.theme.color.foreground.primary};
+                    outline-offset: 0;
                 `;
 
             case "success":
@@ -64,7 +66,6 @@ export const Button = styled(BaseButton)<ButtonProps>`
 
     &:focus,
     &.${buttonClasses.focusVisible} {
-        outline: 2px solid ${(p) => p.theme.color.foreground.info};
-        outline-offset: 2px;
+        outline: 2px solid ${(p) => p.theme.color.foreground.primary};
     }
 `;
