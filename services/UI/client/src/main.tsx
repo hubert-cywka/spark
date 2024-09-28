@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 
 import "./styles/normalize.css";
+import "@fontsource/montserrat";
 
 import App from "@/app/App";
 

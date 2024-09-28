@@ -1,71 +1,96 @@
-import { Button as BaseButton, buttonClasses } from "@mui/base/Button";
+import { Button as BaseButton } from "react-aria-components";
 import styled, { css } from "styled-components";
 
+type ButtonVariant = "primary" | "secondary" | "confirm" | "danger";
+type ButtonSize = "1" | "2" | "3";
 type ButtonProps = {
-    variant?: "primary" | "secondary" | "success" | "error";
+    variant?: ButtonVariant;
+    size?: ButtonSize;
 } & typeof BaseButton;
 
-export const Button = styled(BaseButton)<ButtonProps>`
-    font: ${(p) => p.theme.typography.body.bold.s};
-    border: none;
-    border-radius: ${(p) => p.theme.radius.m};
-    outline-offset: ${(p) => p.theme.spacing.xxxs};
+export const Button = styled(BaseButton).attrs<ButtonProps>((props) => {
+    const variant: ButtonVariant = props.variant ?? "primary";
+    const size: ButtonSize = props.size ?? "2";
 
-    padding-block: ${(p) => p.theme.spacing.s};
-    padding-inline: ${(p) => p.theme.spacing.m};
+    return {
+        ...props,
+        size,
+        variant,
+        "data-button-size": size,
+        "data-button-variant": variant,
+    };
+})<ButtonProps>`
+    ${({ theme }) => css`
+        height: fit-content;
+        border-radius: ${theme.radius._300};
 
-    cursor: pointer;
-    transition: transform 150ms ease;
+        cursor: pointer;
+        transition: transform 150ms ease;
 
-    display: flex;
-    justify-content: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
-    ${(p) => {
-        switch (p.variant) {
-            case "primary":
-                return css`
-                    background: ${(p) => p.theme.color.foreground.accent};
-                    color: ${(p) => p.theme.color.foreground.inverted};
-                `;
-
-            case "secondary":
-                return css`
-                    background: transparent;
-                    border: 2px solid ${(p) => p.theme.color.foreground.primary};
-                    color: ${(p) => p.theme.color.foreground.primary};
-                    outline-offset: 0;
-                `;
-
-            case "success":
-                return css`
-                    background: ${(p) => p.theme.color.foreground.success};
-                    color: ${(p) => p.theme.color.foreground.inverted};
-                `;
-
-            case "error":
-                return css`
-                    background: ${(p) => p.theme.color.foreground.error};
-                    color: ${(p) => p.theme.color.foreground.inverted};
-                `;
+        &[data-button-size="1"] {
+            font: ${theme.typography.body._200};
+            padding-block: ${theme.spacing._200};
+            padding-inline: ${theme.spacing._400};
         }
-    }}
 
-    &.${buttonClasses.disabled} {
-        background: ${(p) => p.theme.color.foreground.disabled};
-        color: ${(p) => p.theme.color.foreground.primary};
-        cursor: not-allowed;
-    }
+        &[data-button-size="2"] {
+            font: ${theme.typography.body._300};
+            padding-block: ${theme.spacing._300};
+            padding-inline: ${theme.spacing._500};
+        }
 
-    &:hover {
-        transform: scale(1.02);
-    }
+        &[data-button-size="3"] {
+            font: ${theme.typography.body._400};
+            padding-block: ${theme.spacing._300};
+            padding-inline: ${theme.spacing._500};
+        }
 
-    &.${buttonClasses.active} {
-        transform: scale(0.98);
-    }
+        &[data-button-variant="primary"] {
+            border: ${theme.spacing._100} solid ${theme.color.accent.solid._300};
+            color: ${theme.color.accent.text._100};
+            background: ${theme.color.accent.solid._300};
+        }
 
-    &:focus,
-    &.${buttonClasses.focusVisible} {
-        outline: 2px solid ${(p) => p.theme.color.foreground.primary};
-    }
+        &[data-button-variant="secondary"] {
+            border: ${theme.spacing._100} solid ${theme.color.accent.solid._300};
+            color: ${theme.color.accent.text._300};
+            background: ${theme.color.accent.background._300};
+        }
+
+        &[data-button-variant="danger"] {
+            border: ${theme.spacing._100} solid ${theme.color.danger.solid._300};
+            color: ${theme.color.danger.text._300};
+            background: ${theme.color.danger.surface._300};
+        }
+
+        &[data-button-variant="confirm"] {
+            border: ${theme.spacing._100} solid ${theme.color.success.solid._300};
+            color: ${theme.color.success.text._300};
+            background: ${theme.color.success.surface._300};
+        }
+
+        &:disabled {
+            filter: grayscale(0.9);
+            cursor: not-allowed;
+        }
+
+        &:not(&:disabled) {
+            &:hover {
+                transform: scale(1.02);
+            }
+
+            &:active {
+                transform: scale(0.98);
+            }
+        }
+
+        &:focus {
+            outline-offset: ${theme.spacing._100};
+            outline: ${theme.spacing._100} solid ${theme.color.accent.solid._300};
+        }
+    `}
 `;

@@ -4,115 +4,76 @@ declare module "styled-components" {
 
 export type Theme = {
     color: {
-        foreground: {
-            primary: string;
-            secondary: string;
-            inverted: string;
-            accent: string;
-            success: string;
-            error: string;
-            warning: string;
-            info: string;
-            disabled: string;
-        };
-        background: {
-            primary: {
-                neutral: string;
-                hover: string;
-                active: string;
-                focus: string;
-            };
-            secondary: {
-                neutral: string;
-                hover: string;
-                active: string;
-                focus: string;
-            };
-            inverted: {
-                neutral: string;
-                hover: string;
-                active: string;
-                focus: string;
-            };
-            disabled: string;
-            success: {
-                primary: string;
-                secondary: string;
-            };
-            error: {
-                primary: string;
-                secondary: string;
-            };
-            info: {
-                primary: string;
-                secondary: string;
-            };
-            warning: {
-                primary: string;
-                secondary: string;
-            };
-        };
-        border: {
-            neutral: string;
-            hover: string;
-            active: string;
-            focus: string;
-        };
-    };
-    shadow: {
-        xs: string;
-        s: string;
-        m: string;
-        l: string;
-        xl: string;
+        accent: Color;
+        neutral: Color;
+        success: Color;
+        danger: Color;
+        info: Color;
     };
     typography: {
-        title: {
-            s: string;
-            m: string;
-            l: string;
-        };
-        body: {
-            bold: {
-                s: string;
-                m: string;
-                l: string;
-            };
-            neutral: {
-                s: string;
-                m: string;
-                l: string;
-            };
-        };
-        caption: {
-            bold: {
-                s: string;
-                m: string;
-                l: string;
-            };
-            neutral: {
-                s: string;
-                m: string;
-                l: string;
-            };
-        };
+        title: Typography;
+        body: Typography;
+        caption: Typography;
     };
-    spacing: {
-        xxxs: string;
-        xxs: string;
-        xs: string;
-        s: string;
-        m: string;
-        l: string;
-        xl: string;
-        xxl: string;
+    shadow: {
+        elevation: Shadow;
     };
-    radius: {
-        round: string;
-        xs: string;
-        s: string;
-        m: string;
-        l: string;
-        xl: string;
+    spacing: Size;
+    radius: Radius;
+};
+
+type Shadow = {
+    _100: string;
+    _200: string;
+    _300: string;
+};
+
+type Radius = {
+    _100: string;
+    _200: string;
+    _300: string;
+    _400: string;
+    _500: string;
+};
+
+type Size = {
+    _100: string;
+    _200: string;
+    _300: string;
+    _400: string;
+    _500: string;
+    _600: string;
+    _700: string;
+    _800: string;
+};
+
+type Color = {
+    solid: {
+        _100: string;
+        _200: string;
+        _300: string;
     };
+    text: {
+        _100: string;
+        _200: string;
+        _300: string;
+    };
+    background: {
+        _100: string;
+        _200: string;
+        _300: string;
+    };
+    surface: {
+        _100: string;
+        _200: string;
+        _300: string;
+    };
+};
+
+type Typography = {
+    _100: string;
+    _200: string;
+    _300: string;
+    _400: string;
+    _500: string;
 };
