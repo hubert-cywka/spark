@@ -13,6 +13,7 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
         logger: temporaryLogger,
     });
+
     app.useLogger(app.get(Logger));
 
     const appConfig = configuration();

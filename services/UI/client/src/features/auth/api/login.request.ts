@@ -1,7 +1,6 @@
-import { User } from "@/features/auth/types/user";
 import { apiClient } from "@/lib/apiClient/apiClient";
 
-const LOGIN_ENDPOINT = "/api/login";
+const LOGIN_ENDPOINT = "/auth/login";
 
 export type LoginRequestPayload = {
     email: string;
@@ -9,7 +8,6 @@ export type LoginRequestPayload = {
 };
 
 export type LoginRequestResponse = {
-    user: User;
     token: string;
 };
 

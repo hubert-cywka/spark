@@ -3,6 +3,13 @@ declare module "styled-components" {
 }
 
 export type Theme = {
+    breakpoints: {
+        xs: string;
+        sm: string;
+        md: string;
+        lg: string;
+        xl: string;
+    };
     color: {
         accent: Color;
         neutral: Color;
@@ -11,40 +18,48 @@ export type Theme = {
         info: Color;
     };
     typography: {
-        title: Typography;
-        body: Typography;
-        caption: Typography;
+        title: {
+            _100: string;
+            _200: string;
+            _300: string;
+            _400: string;
+            _500: string;
+        };
+        body: {
+            _100: string;
+            _200: string;
+            _300: string;
+            _400: string;
+        };
+        caption: {
+            _100: string;
+            _200: string;
+        };
     };
     shadow: {
-        elevation: Shadow;
+        elevation: {
+            _100: string;
+            _200: string;
+            _300: string;
+        };
     };
-    spacing: Size;
-    radius: Radius;
-};
-
-type Shadow = {
-    _100: string;
-    _200: string;
-    _300: string;
-};
-
-type Radius = {
-    _100: string;
-    _200: string;
-    _300: string;
-    _400: string;
-    _500: string;
-};
-
-type Size = {
-    _100: string;
-    _200: string;
-    _300: string;
-    _400: string;
-    _500: string;
-    _600: string;
-    _700: string;
-    _800: string;
+    spacing: {
+        _100: string;
+        _200: string;
+        _300: string;
+        _400: string;
+        _500: string;
+        _600: string;
+        _700: string;
+        _800: string;
+    };
+    radius: {
+        _100: string;
+        _200: string;
+        _300: string;
+        _400: string;
+        _500: string;
+    };
 };
 
 type Color = {
@@ -68,12 +83,4 @@ type Color = {
         _200: string;
         _300: string;
     };
-};
-
-type Typography = {
-    _100: string;
-    _200: string;
-    _300: string;
-    _400: string;
-    _500: string;
 };

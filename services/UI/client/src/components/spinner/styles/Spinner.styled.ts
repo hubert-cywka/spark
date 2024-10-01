@@ -1,0 +1,86 @@
+import styled, { css } from "styled-components";
+
+import { SpinnerProps } from "@/components/spinner/types/Spinner";
+
+export const SpinnerStyled = {
+    Spinner: styled.div.attrs<SpinnerProps>(({ size = "2", ...props }) => ({
+        size,
+        "data-size": size,
+        ...props,
+    }))<SpinnerProps>`
+        ${({ theme }) => css`
+            border-radius: 50%;
+            border-style: solid;
+            border-color: ${theme.color.info.solid._300};
+            animation:
+                change-shape 0.8s infinite linear alternate,
+                spin 1.6s infinite linear;
+
+            @keyframes change-shape {
+                0% {
+                    clip-path: polygon(50% 50%, 0 0, 50% 0%, 50% 0%, 50% 0%, 50% 0%, 50% 0%);
+                }
+
+                12.5% {
+                    clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 0%, 100% 0%, 100% 0%);
+                }
+
+                25% {
+                    clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 100%, 100% 100%, 100% 100%);
+                }
+
+                50% {
+                    clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%);
+                }
+
+                62.5% {
+                    clip-path: polygon(50% 50%, 100% 0, 100% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%);
+                }
+
+                75% {
+                    clip-path: polygon(50% 50%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 50% 100%, 0% 100%);
+                }
+
+                100% {
+                    clip-path: polygon(50% 50%, 50% 100%, 50% 100%, 50% 100%, 50% 100%, 50% 100%, 0% 100%);
+                }
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: scaleY(1) rotate(0deg);
+                }
+
+                49.99% {
+                    transform: scaleY(1) rotate(135deg);
+                }
+
+                50% {
+                    transform: scaleY(-1) rotate(0deg);
+                }
+
+                100% {
+                    transform: scaleY(-1) rotate(-135deg);
+                }
+            }
+
+            &[data-size="1"] {
+                border-width: 5px;
+                width: 20px;
+                height: 20px;
+            }
+
+            &[data-size="2"] {
+                border-width: 8px;
+                width: 40px;
+                height: 40px;
+            }
+
+            &[data-size="3"] {
+                border-width: 11px;
+                width: 60px;
+                height: 60px;
+            }
+        `}
+    `,
+};

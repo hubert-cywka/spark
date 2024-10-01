@@ -1,35 +1,36 @@
 import { Theme } from "@/styles/theme";
 
-const TYPOGRAPHY_BODY_FONT_FAMILY = "'Montserrat', sans-serif";
-const TYPOGRAPHY_CAPTION_FONT_FAMILY = "'Roboto', sans-serif";
-const TYPOGRAPHY_TITLE_FONT_FAMILY = "'Montserrat', sans-serif";
+const FONT_FAMILY = "'Montserrat', sans-serif";
 
 const TYPOGRAPHY_BODY_WEIGHT = 550;
 const TYPOGRAPHY_CAPTION_WEIGHT = 450;
 const TYPOGRAPHY_TITLE_WEIGHT = 700;
 
 export const mainTheme: Theme = {
+    breakpoints: {
+        xs: "700px",
+        sm: "800px",
+        md: "900px",
+        lg: "1000px",
+        xl: "1100px",
+    },
     typography: {
         body: {
-            _100: `${TYPOGRAPHY_BODY_WEIGHT} 0.75rem ${TYPOGRAPHY_BODY_FONT_FAMILY}`,
-            _200: `${TYPOGRAPHY_BODY_WEIGHT} 0.875rem ${TYPOGRAPHY_BODY_FONT_FAMILY}`,
-            _300: `${TYPOGRAPHY_BODY_WEIGHT} 1rem ${TYPOGRAPHY_BODY_FONT_FAMILY}`,
-            _400: `${TYPOGRAPHY_BODY_WEIGHT} 1.25rem ${TYPOGRAPHY_BODY_FONT_FAMILY}`,
-            _500: `${TYPOGRAPHY_BODY_WEIGHT} 1.5rem ${TYPOGRAPHY_BODY_FONT_FAMILY}`,
+            _100: `${TYPOGRAPHY_BODY_WEIGHT} 0.875rem ${FONT_FAMILY}`,
+            _200: `${TYPOGRAPHY_BODY_WEIGHT} 1rem ${FONT_FAMILY}`,
+            _300: `${TYPOGRAPHY_BODY_WEIGHT} 1.25rem ${FONT_FAMILY}`,
+            _400: `${TYPOGRAPHY_BODY_WEIGHT} 1.5rem ${FONT_FAMILY}`,
         },
         caption: {
-            _100: `${TYPOGRAPHY_CAPTION_WEIGHT} 0.125rem ${TYPOGRAPHY_CAPTION_FONT_FAMILY}`,
-            _200: `${TYPOGRAPHY_CAPTION_WEIGHT} 0.25rem ${TYPOGRAPHY_CAPTION_FONT_FAMILY}`,
-            _300: `${TYPOGRAPHY_CAPTION_WEIGHT} 0.375rem ${TYPOGRAPHY_CAPTION_FONT_FAMILY}`,
-            _400: `${TYPOGRAPHY_CAPTION_WEIGHT} 0.5rem ${TYPOGRAPHY_CAPTION_FONT_FAMILY}`,
-            _500: `${TYPOGRAPHY_CAPTION_WEIGHT} 0.625rem ${TYPOGRAPHY_CAPTION_FONT_FAMILY}`,
+            _100: `${TYPOGRAPHY_CAPTION_WEIGHT} 0.625rem ${FONT_FAMILY}`,
+            _200: `${TYPOGRAPHY_CAPTION_WEIGHT} 0.75rem ${FONT_FAMILY}`,
         },
         title: {
-            _100: `${TYPOGRAPHY_TITLE_WEIGHT} 1.75rem ${TYPOGRAPHY_TITLE_FONT_FAMILY}`,
-            _200: `${TYPOGRAPHY_TITLE_WEIGHT} 2rem ${TYPOGRAPHY_TITLE_FONT_FAMILY}`,
-            _300: `${TYPOGRAPHY_TITLE_WEIGHT} 2.5rem ${TYPOGRAPHY_TITLE_FONT_FAMILY}`,
-            _400: `${TYPOGRAPHY_TITLE_WEIGHT} 3rem ${TYPOGRAPHY_TITLE_FONT_FAMILY}`,
-            _500: `${TYPOGRAPHY_TITLE_WEIGHT} 3.5rem ${TYPOGRAPHY_TITLE_FONT_FAMILY}`,
+            _100: `${TYPOGRAPHY_TITLE_WEIGHT} 1.75rem ${FONT_FAMILY}`,
+            _200: `${TYPOGRAPHY_TITLE_WEIGHT} 2rem ${FONT_FAMILY}`,
+            _300: `${TYPOGRAPHY_TITLE_WEIGHT} 2.5rem ${FONT_FAMILY}`,
+            _400: `${TYPOGRAPHY_TITLE_WEIGHT} 3rem ${FONT_FAMILY}`,
+            _500: `${TYPOGRAPHY_TITLE_WEIGHT} 3.5rem ${FONT_FAMILY}`,
         },
     },
     color: {
