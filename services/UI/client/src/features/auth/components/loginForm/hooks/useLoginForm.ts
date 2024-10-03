@@ -1,15 +1,14 @@
-import * as yup from "yup";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
-import { UseBaseForm, useBaseForm } from "@/hooks/useBaseForm";
+import { loginFormRequirements } from "@/features/auth/components/loginForm/misc/loginFormRequirements";
 
 export type LoginFormInputs = {
     email: string;
     password: string;
 };
 
-const loginFormSchema = yup.object({
-    email: yup.string().required("Email is required."),
-    password: yup.string().required("Password is required."),
-});
-
-export const useLoginForm = (): UseBaseForm<LoginFormInputs> => useBaseForm<LoginFormInputs>(loginFormSchema);
+export const useLoginForm = () =>
+    useForm<LoginFormInputs>({
+        resolver: yupResolver<LoginFormInputs>(loginFormRequirements),
+    });

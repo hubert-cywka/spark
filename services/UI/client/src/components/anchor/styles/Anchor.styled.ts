@@ -8,7 +8,6 @@ export const AnchorStyled = {
             outline: none;
 
             color: ${theme.color.accent.text._300};
-            font: ${theme.typography.body._100};
 
             &[data-disabled] {
                 color: ${theme.color.neutral.text._200};

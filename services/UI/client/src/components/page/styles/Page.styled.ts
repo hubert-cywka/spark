@@ -6,6 +6,7 @@ export const PageStyled = {
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
 
             width: 100vw;
             min-height: 100vh;
@@ -17,6 +18,7 @@ export const PageStyled = {
 
     InnerWrapper: styled.div`
         ${({ theme }) => css`
+            font: ${theme.typography.body._100};
             width: ${theme.breakpoints.xl};
 
             display: flex;

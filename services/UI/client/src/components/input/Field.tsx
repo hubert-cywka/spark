@@ -1,26 +1,55 @@
 import { ReactNode } from "react";
-import { TextFieldProps } from "react-aria-components";
+import { Control, FieldValues, Path, useController } from "react-hook-form";
 
 import { FieldStyled } from "@/components/input/styles/Field.styled";
-import { InputProps } from "@/components/input/types/Input";
+import { InputSize } from "@/components/input/types/Input";
 
-type FieldProps = {
-    inputProps: InputProps;
+type FieldProps<T extends FieldValues> = {
+    name: Path<T>;
+    control: Control<T>;
     label: ReactNode;
-    error?: string;
-} & TextFieldProps;
+    width?: number;
+    size?: InputSize;
+    required?: boolean;
+    autoComplete?: "email" | "hidden" | "text" | "search" | "url" | "tel" | "date" | "password";
+};
 
-export const Field = ({ inputProps, error, label, isInvalid, isRequired, ...props }: FieldProps) => {
-    const internalIsInvalid = isInvalid ?? !!error;
+export const Field = <T extends FieldValues>({
+    width,
+    size,
+    label,
+    required,
+    name,
+    control,
+    ...props
+}: FieldProps<T>) => {
+    const {
+        field,
+        fieldState: { invalid, error },
+    } = useController({
+        name,
+        control,
+        rules: { required },
+    });
 
     return (
-        <FieldStyled.Controller {...props} isRequired={isRequired} isInvalid={internalIsInvalid}>
+        <FieldStyled.Controller
+            {...props}
+            onChange={field.onChange}
+            onBlur={field.onBlur}
+            value={field.value}
+            name={field.name}
+            ref={field.ref}
+            isRequired={required}
+            isInvalid={invalid}
+            validationBehavior="aria"
+        >
             <FieldStyled.Label>
                 {label}
-                {isRequired && <FieldStyled.RequiredFieldHighlight> *</FieldStyled.RequiredFieldHighlight>}
+                {required && <FieldStyled.RequiredFieldHighlight> *</FieldStyled.RequiredFieldHighlight>}
             </FieldStyled.Label>
-            <FieldStyled.Input {...inputProps} />
-            {error && <FieldStyled.Error>{error}</FieldStyled.Error>}
+            <FieldStyled.Input width={width} size={size} />
+            {error && <FieldStyled.Error>{error.message}</FieldStyled.Error>}
         </FieldStyled.Controller>
     );
 };

@@ -1,28 +1,46 @@
 import { Anchor } from "@/components/anchor/Anchor";
+import { Button } from "@/components/button/Button";
 import { Field } from "@/components/input/Field";
 import { LoginFormInputs, useLoginForm } from "@/features/auth/components/loginForm/hooks/useLoginForm";
 import { LoginFormStyled } from "@/features/auth/components/loginForm/styles/LoginForm.styled";
+import { AuthenticationFormStyled } from "@/features/auth/styles/AuthenticationForm.styled";
 
 type LoginFormProps = {
     onSubmit: (data: LoginFormInputs) => void;
+    onRegisterLinkClick: () => void;
+    onResetPasswordLinkClick: () => void;
+    onRequestAccountActivationLinkClick: () => void;
     isLoading?: boolean;
 };
 
-// TODO: Handle navigation to register and reset password pages
-export const LoginForm = ({ onSubmit, isLoading }: LoginFormProps) => {
-    const { fields, handleSubmit } = useLoginForm();
+export const LoginForm = ({
+    onSubmit,
+    isLoading,
+    onRegisterLinkClick,
+    onResetPasswordLinkClick,
+    onRequestAccountActivationLinkClick,
+}: LoginFormProps) => {
+    const { handleSubmit, control } = useLoginForm();
 
     return (
-        <LoginFormStyled.Form onSubmit={handleSubmit(onSubmit)}>
-            <LoginFormStyled.Header>Sign in</LoginFormStyled.Header>
-            <Field label="Email" inputProps={{ ...fields.email(), width: 300, size: "3" }} isRequired />
-            <Field label="Password" inputProps={{ ...fields.password(), width: 300, size: "3" }} isRequired />
-            <LoginFormStyled.ResetPasswordLink>Forgot password?</LoginFormStyled.ResetPasswordLink>
+        <AuthenticationFormStyled.Form onSubmit={handleSubmit(onSubmit)}>
+            <AuthenticationFormStyled.Header>Log in</AuthenticationFormStyled.Header>
+            <AuthenticationFormStyled.Caption>
+                {"Don't have an account?"} <Anchor onPress={onRegisterLinkClick}>Create one</Anchor>
+            </AuthenticationFormStyled.Caption>
 
-            <LoginFormStyled.Button isLoading={isLoading} size="3" type="submit">
+            <AuthenticationFormStyled.FieldsWrapper>
+                <Field label="Email" name="email" autoComplete="email" control={control} size="3" required />
+                <Field label="Password" name="password" autoComplete="hidden" control={control} size="3" required />
+                <LoginFormStyled.Link onPress={onResetPasswordLinkClick}>Forgot password?</LoginFormStyled.Link>
+                <LoginFormStyled.Link onPress={onRequestAccountActivationLinkClick}>
+                    Account not activated?
+                </LoginFormStyled.Link>
+            </AuthenticationFormStyled.FieldsWrapper>
+
+            <Button isLoading={isLoading} size="3" type="submit">
                 Sign in
-            </LoginFormStyled.Button>
-            <Anchor>Create an account.</Anchor>
-        </LoginFormStyled.Form>
+            </Button>
+        </AuthenticationFormStyled.Form>
     );
 };

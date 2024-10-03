@@ -1,0 +1,32 @@
+export type LoginRequestPayload = {
+    email: string;
+    password: string;
+};
+
+export type LoginRequestResponse = {
+    accessToken: string;
+};
+
+export type RegisterRequestPayload = {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+};
+
+export type UpdatePasswordResetRequestPayload = {
+    password: string;
+    confirmPassword: string;
+};
+
+export type RequestPasswordResetRequestPayload = {
+    email: string;
+};
+
+export type RequestActivationTokenRequestPayload = {
+    email: string;
+};
+
+export type ActivateAccountRequestPayload = {
+    activationToken: string;
+};

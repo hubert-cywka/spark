@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
 
-import { PageStyled } from "@/components/page/styled/Page.styled";
+import { PageStyled } from "@/components/page/styles/Page.styled";
 
 type PageProps = PropsWithChildren;
 
