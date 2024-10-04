@@ -1,9 +1,9 @@
-import { User } from "@/users/models/User";
+import { User } from "@/users/models/User.model";
 
 export const IUsersServiceToken = Symbol("IUsersServiceToken");
 
 export interface IUsersService {
-    create(id: string, email: string): Promise<User>;
+    create(user: User): Promise<User>;
     activate(id: string): Promise<User>;
     findOneById(id: string): Promise<User>;
 }

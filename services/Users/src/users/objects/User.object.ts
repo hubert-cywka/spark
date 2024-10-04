@@ -13,6 +13,14 @@ export class UserObject {
     email!: string;
 
     @Field()
+    @Type(() => String)
+    firstName!: string;
+
+    @Field()
+    @Type(() => String)
+    lastName!: string;
+
+    @Field()
     @Type(() => Boolean)
     isActivated!: boolean;
 }

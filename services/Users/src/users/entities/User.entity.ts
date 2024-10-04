@@ -8,6 +8,12 @@ export class UserEntity {
     @Column({ type: "varchar", unique: true })
     email!: string;
 
+    @Column({ type: "varchar" })
+    lastName!: string;
+
+    @Column({ type: "varchar" })
+    firstName!: string;
+
     @Column({ type: "boolean", default: false })
     isActivated!: boolean;
 

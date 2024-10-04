@@ -3,6 +3,7 @@ import { DataSource } from "typeorm";
 
 import configuration from "@/common/config/configuration";
 import { AddUserTable1727272270150 } from "@/database/migrations/1727272270150-AddUserTable";
+import { AddFirstAndLastNameFieldsToUser1728058199103 } from "@/database/migrations/1728058199103-AddFirstAndLastNameFieldsToUser";
 import { UserEntity } from "@/users/entities/User.entity";
 
 configDotenv();
@@ -20,5 +21,5 @@ export const dataSource = new DataSource({
     dropSchema: false,
     migrationsRun: false,
     entities: [UserEntity],
-    migrations: [AddUserTable1727272270150],
+    migrations: [AddUserTable1727272270150, AddFirstAndLastNameFieldsToUser1728058199103],
 });
