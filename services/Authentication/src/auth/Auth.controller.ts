@@ -41,9 +41,9 @@ export class AuthController {
 
     @HttpCode(201)
     @Post("register")
-    async register(@Body() { email, password }: RegisterDto) {
+    async register(@Body() dto: RegisterDto) {
         try {
-            return await this.authService.register(email, password);
+            return await this.authService.register(dto);
         } catch (err) {
             ifError(err).is(EntityAlreadyExistsError).throw(new ConflictException()).elseRethrow();
         }
@@ -51,9 +51,9 @@ export class AuthController {
 
     @HttpCode(200)
     @Post("login")
-    async login(@Body() { email, password }: LoginDto, @Res() response: Response) {
+    async login(@Body() dto: LoginDto, @Res() response: Response) {
         try {
-            const { accessToken, refreshToken } = await this.authService.login(email, password);
+            const { accessToken, refreshToken } = await this.authService.login(dto);
             this.setRefreshToken(response, refreshToken);
             return response.send({ accessToken });
         } catch (err) {

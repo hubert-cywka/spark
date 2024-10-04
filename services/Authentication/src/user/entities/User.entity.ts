@@ -14,6 +14,9 @@ export class UserEntity {
     @Column({ type: "varchar" })
     password!: string;
 
+    @Column({ type: "varchar", nullable: true }) // TODO: Maybe combine activation and passwordReset tokens as a separate entity.
+    passwordResetToken!: string | null;
+
     @Column({ type: "varchar", nullable: true })
     activationToken!: string | null;
 
