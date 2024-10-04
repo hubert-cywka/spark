@@ -11,4 +11,4 @@ export { PUBSUB_TOPICS };
 export * from "./topics/user/UserActivatedEvent";
 export * from "./topics/user/UserActivationTokenRequestedEvent";
 export * from "./topics/user/UserRegisteredEvent";
-export * from "./topics/user/UserRequestedPasswordChangeEvent";
+export * from "./topics/user/UserRequestedPasswordResetEvent";

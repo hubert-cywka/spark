@@ -42,6 +42,7 @@ module.exports = {
         "@typescript-eslint/no-var-requires": "off",
         "react/react-in-jsx-scope": "off",
         "import/no-named-as-default": "off",
+        "sonarjs/no-duplicate-string": "off",
         "prettier/prettier": [
             "error",
             {
