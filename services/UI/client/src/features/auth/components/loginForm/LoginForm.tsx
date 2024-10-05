@@ -4,18 +4,18 @@ import { Field } from "@/components/input/Field";
 import { LoginFormInputs, useLoginForm } from "@/features/auth/components/loginForm/hooks/useLoginForm";
 import { LoginFormStyled } from "@/features/auth/components/loginForm/styles/LoginForm.styled";
 import { AuthenticationFormStyled } from "@/features/auth/styles/AuthenticationForm.styled";
+import { FormProps } from "@/types/Form";
 
 type LoginFormProps = {
-    onSubmit: (data: LoginFormInputs) => void;
     onRegisterLinkClick: () => void;
     onResetPasswordLinkClick: () => void;
     onRequestAccountActivationLinkClick: () => void;
-    isLoading?: boolean;
-};
+} & FormProps<LoginFormInputs>;
 
 export const LoginForm = ({
     onSubmit,
     isLoading,
+    isDisabled,
     onRegisterLinkClick,
     onResetPasswordLinkClick,
     onRequestAccountActivationLinkClick,
@@ -36,7 +36,7 @@ export const LoginForm = ({
                 <LoginFormStyled.Link onPress={onRequestAccountActivationLinkClick}>Account not activated?</LoginFormStyled.Link>
             </AuthenticationFormStyled.FieldsWrapper>
 
-            <Button isLoading={isLoading} size="3" type="submit">
+            <Button isLoading={isLoading} size="3" type="submit" isDisabled={isDisabled}>
                 Sign in
             </Button>
         </AuthenticationFormStyled.Form>

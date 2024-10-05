@@ -2,7 +2,7 @@ import styled, { css } from "styled-components";
 
 const ContentWrapper = styled.div`
     ${({ theme }) => css`
-        width: 500px;
+        width: 500px; // TODO
 
         display: flex;
         flex-direction: column;

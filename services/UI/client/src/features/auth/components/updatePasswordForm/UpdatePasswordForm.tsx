@@ -3,14 +3,13 @@ import { Button } from "@/components/button/Button";
 import { Field } from "@/components/input/Field";
 import { UpdatePasswordFormInputs, useUpdatePasswordForm } from "@/features/auth/components/updatePasswordForm/hooks/useUpdatePasswordForm";
 import { AuthenticationFormStyled } from "@/features/auth/styles/AuthenticationForm.styled";
+import { FormProps } from "@/types/Form";
 
 type UpdatePasswordFormProps = {
-    onSubmit: (payload: UpdatePasswordFormInputs) => void;
     onLogInLinkClick: () => void;
-    isLoading?: boolean;
-};
+} & FormProps<UpdatePasswordFormInputs>;
 
-export const UpdatePasswordForm = ({ isLoading, onSubmit, onLogInLinkClick }: UpdatePasswordFormProps) => {
+export const UpdatePasswordForm = ({ isLoading, onSubmit, onLogInLinkClick, isDisabled }: UpdatePasswordFormProps) => {
     const { handleSubmit, control } = useUpdatePasswordForm();
 
     return (
@@ -26,7 +25,7 @@ export const UpdatePasswordForm = ({ isLoading, onSubmit, onLogInLinkClick }: Up
                 <Field label="Confirm password" name="confirmPassword" type="password" control={control} size="3" required />
             </AuthenticationFormStyled.FieldsWrapper>
 
-            <Button isLoading={isLoading} size="3" type="submit">
+            <Button isLoading={isLoading} isDisabled={isDisabled} size="3" type="submit">
                 Update
             </Button>
         </AuthenticationFormStyled.Form>

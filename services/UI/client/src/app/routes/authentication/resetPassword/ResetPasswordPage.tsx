@@ -2,48 +2,64 @@ import { useNavigate } from "react-router";
 
 import { AppRoute } from "@/app/routes/appRoute";
 import { AuthenticationPageStyled } from "@/app/routes/authentication/shared/styles/AuthenticationPage.styled";
-import { Alert } from "@/components/alert/Alert";
-import { Anchor } from "@/components/anchor/Anchor";
 import { Card } from "@/components/card/Card";
 import { Page } from "@/components/page/Page";
 import { ResetPasswordFormInputs } from "@/features/auth/components/resetPasswordForm/hooks/useResetPasswordForm";
 import { ResetPasswordForm } from "@/features/auth/components/resetPasswordForm/ResetPasswordForm";
 import { UpdatePasswordFormInputs } from "@/features/auth/components/updatePasswordForm/hooks/useUpdatePasswordForm";
 import { UpdatePasswordForm } from "@/features/auth/components/updatePasswordForm/UpdatePasswordForm";
-import { usePasswordReset } from "@/features/auth/hooks/usePasswordReset";
+import { useRequestPasswordResetToken } from "@/features/auth/hooks/useRequestPasswordResetToken";
+import { useUpdatePassword } from "@/features/auth/hooks/useUpdatePassword";
 import { logger } from "@/lib/logger/logger";
+import { showToast } from "@/lib/notifications/showToast";
+import { getErrorMessage } from "@/utils/getErrorMessage";
 
 export const ResetPasswordPage = () => {
     const navigate = useNavigate();
-    const { passwordResetToken, requestPasswordReset, updatePassword } = usePasswordReset();
+    const { updatePassword, passwordChangeToken } = useUpdatePassword();
 
     const {
         mutateAsync: requestPasswordResetLinkMutation,
         isPending: isRequestingPasswordResetLink,
-        error: passwordResetRequestError,
         isSuccess: hasSentPasswordResetLink,
-    } = requestPasswordReset;
+    } = useRequestPasswordResetToken();
 
-    const {
-        mutateAsync: updatePasswordMutation,
-        isPending: isUpdatingPassword,
-        error: passwordUpdateError,
-        isSuccess: hasUpdatedPassword,
-    } = updatePassword;
+    const { mutateAsync: updatePasswordMutation, isPending: isUpdatingPassword, isSuccess: hasUpdatedPassword } = updatePassword;
 
     const onResetPasswordFormSubmit = async (payload: ResetPasswordFormInputs) => {
         try {
             await requestPasswordResetLinkMutation(payload);
+            showToast().success({
+                message: "Please check your mail inbox to reset the password.",
+                title: "Request sent",
+            });
         } catch (err) {
-            logger.error(err);
+            logger.error({ err });
+            showToast().danger({
+                message: getErrorMessage(err),
+                title: "Request not sent",
+            });
         }
     };
 
-    const onUpdatePasswordFormSubmit = async (payload: UpdatePasswordFormInputs) => {
+    const onUpdatePasswordFormSubmit = async ({ password }: UpdatePasswordFormInputs) => {
+        if (!passwordChangeToken) {
+            logger.error({ msg: "Password change token not found." });
+            return;
+        }
+
         try {
-            await updatePasswordMutation(payload);
+            await updatePasswordMutation({ password, passwordChangeToken });
+            showToast().success({
+                message: "You can now log in with your new credentials.",
+                title: "Password updated",
+            });
         } catch (err) {
-            logger.error(err);
+            logger.error({ err });
+            showToast().danger({
+                message: getErrorMessage(err),
+                title: "Password not updated",
+            });
         }
     };
 
@@ -55,33 +71,22 @@ export const ResetPasswordPage = () => {
         <Page>
             <AuthenticationPageStyled.ContentWrapper>
                 <Card>
-                    {!passwordResetToken ? (
+                    {!passwordChangeToken ? (
                         <ResetPasswordForm
+                            isDisabled={hasSentPasswordResetLink}
                             onSubmit={onResetPasswordFormSubmit}
                             onLogInLinkClick={navigateToLoginPage}
                             isLoading={isRequestingPasswordResetLink}
                         />
                     ) : (
                         <UpdatePasswordForm
+                            isDisabled={hasUpdatedPassword}
                             onSubmit={onUpdatePasswordFormSubmit}
                             onLogInLinkClick={navigateToLoginPage}
                             isLoading={isUpdatingPassword}
                         />
                     )}
                 </Card>
-
-                {!!passwordUpdateError && <Alert variant="danger">{passwordUpdateError.message}</Alert>}
-                {hasUpdatedPassword && (
-                    <Alert variant="success">
-                        Password updated. You can now <Anchor onPress={navigateToLoginPage}>log in</Anchor> with your
-                        new password.
-                    </Alert>
-                )}
-
-                {hasSentPasswordResetLink && (
-                    <Alert variant="success">Password reset link sent. Please check your mail inbox.</Alert>
-                )}
-                {!!passwordResetRequestError && <Alert variant="danger">{passwordResetRequestError.message}</Alert>}
             </AuthenticationPageStyled.ContentWrapper>
         </Page>
     );

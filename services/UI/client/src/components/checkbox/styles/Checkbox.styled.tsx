@@ -50,7 +50,7 @@ const Checkbox = styled(BaseCheckbox)`
         align-items: center;
         gap: ${theme.spacing._200};
 
-        font: ${theme.typography.caption._200};
+        font: ${theme.typography.body._100};
 
         &[data-invalid] ${SvgWrapper} {
             border-color: ${theme.color.danger.solid._200};

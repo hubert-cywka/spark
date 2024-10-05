@@ -7,15 +7,14 @@ import { Field } from "@/components/input/Field";
 import { RegisterFormInputs, useRegisterForm } from "@/features/auth/components/registerForm/hooks/useRegisterForm";
 import { RegisterFormStyled } from "@/features/auth/components/registerForm/styles/RegisterForm.styled";
 import { AuthenticationFormStyled } from "@/features/auth/styles/AuthenticationForm.styled";
+import { FormProps } from "@/types/Form";
 
 type RegisterFormProps = {
-    onSubmit: (data: RegisterFormInputs) => void;
     onLoginLinkClick: () => void;
-    isLoading?: boolean;
-};
+} & FormProps<RegisterFormInputs>;
 
 // TODO: Finish T&C
-export const RegisterForm = ({ onSubmit, onLoginLinkClick, isLoading }: RegisterFormProps) => {
+export const RegisterForm = ({ onSubmit, onLoginLinkClick, isLoading, isDisabled }: RegisterFormProps) => {
     const form = useRegisterForm();
     const { handleSubmit, control } = form;
 
@@ -52,7 +51,7 @@ export const RegisterForm = ({ onSubmit, onLoginLinkClick, isLoading }: Register
                     </RegisterFormStyled.AgreementsWrapper>
                 </AuthenticationFormStyled.FieldsWrapper>
 
-                <Button isLoading={isLoading} size="3" type="submit">
+                <Button isLoading={isLoading} isDisabled={isDisabled} size="3" type="submit">
                     Sign up
                 </Button>
             </AuthenticationFormStyled.Form>

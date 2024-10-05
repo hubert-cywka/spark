@@ -84,9 +84,9 @@ $DockerComposeRootDir = "infrastructure/docker"
 # If no services were specified to be ran manually, then run all services in containers
 if ($DetachedServices.Count -eq 0) {
     if ($Build) {
-        docker-compose -f $DockerComposeRootDir/docker-compose.yml -f $DockerComposeRootDir/docker-compose.local.yml up --build
+        docker-compose -f $DockerComposeRootDir/docker-compose.yml -f $DockerComposeRootDir/docker-compose.local.yml up --build -d
     } else {
-        docker-compose -f $DockerComposeRootDir/docker-compose.yml -f $DockerComposeRootDir/docker-compose.local.yml up
+        docker-compose -f $DockerComposeRootDir/docker-compose.yml -f $DockerComposeRootDir/docker-compose.local.yml up -d
     }
     exit
 }
@@ -129,7 +129,7 @@ Write-Host "Make sure all detached services that need to start before, are start
 Read-Host ">"
 
 if ($Build) {
-    docker-compose -f $DockerComposeRootDir/docker-compose.yml -f $DockerComposeRootDir/docker-compose.local.yml -f $DockerComposeRootDir/docker-compose.local.override.yml up $ServicesToRunInContainer --build
+    docker-compose -f $DockerComposeRootDir/docker-compose.yml -f $DockerComposeRootDir/docker-compose.local.yml -f $DockerComposeRootDir/docker-compose.local.override.yml up $ServicesToRunInContainer --build -d
 } else {
-    docker-compose -f $DockerComposeRootDir/docker-compose.yml -f $DockerComposeRootDir/docker-compose.local.yml -f $DockerComposeRootDir/docker-compose.local.override.yml services up $ServicesToRunInContainer
+    docker-compose -f $DockerComposeRootDir/docker-compose.yml -f $DockerComposeRootDir/docker-compose.local.yml -f $DockerComposeRootDir/docker-compose.local.override.yml services up $ServicesToRunInContainer -d
 }

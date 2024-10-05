@@ -1,9 +1,4 @@
-import {
-    FieldError as BaseFieldError,
-    Input as BaseInput,
-    Label as BaseLabel,
-    TextField as BaseTextField,
-} from "react-aria-components";
+import { FieldError as BaseFieldError, Input as BaseInput, Label as BaseLabel, TextField as BaseTextField } from "react-aria-components";
 import styled, { css } from "styled-components";
 
 import { InputProps } from "@/components/input/types/Input";
@@ -18,14 +13,14 @@ const Controller = styled(BaseTextField)`
 
 const Error = styled(BaseFieldError)`
     ${({ theme }) => css`
-        font: ${theme.typography.caption._200};
+        font: ${theme.typography.body._100};
         color: ${theme.color.danger.solid._200};
     `}
 `;
 
 const Label = styled(BaseLabel)`
     ${({ theme }) => css`
-        font: ${theme.typography.caption._200};
+        font: ${theme.typography.body._100};
     `}
 `;
 

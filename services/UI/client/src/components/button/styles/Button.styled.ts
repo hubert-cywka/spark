@@ -2,6 +2,7 @@ import { Button as BaseButton } from "react-aria-components";
 import styled, { css } from "styled-components";
 
 import { ButtonProps } from "@/components/button/types/Button";
+import { alpha } from "@/styles/utilities";
 
 export const ButtonStyled = {
     Button: styled(BaseButton).attrs<ButtonProps>(({ size = "2", variant = "primary", ...props }) => ({
@@ -59,6 +60,12 @@ export const ButtonStyled = {
                 border: ${theme.spacing._100} solid ${theme.color.success.solid._300};
                 color: ${theme.color.success.text._300};
                 background: ${theme.color.success.surface._300};
+            }
+
+            &[data-variant="subtle"] {
+                color: ${theme.color.neutral.text._100};
+                background: ${alpha(theme.color.accent.solid._300, 0.1)};
+                border: none;
             }
 
             &[data-disabled] {

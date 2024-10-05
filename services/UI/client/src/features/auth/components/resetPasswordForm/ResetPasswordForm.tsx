@@ -1,19 +1,15 @@
 import { Anchor } from "@/components/anchor/Anchor";
 import { Button } from "@/components/button/Button";
 import { Field } from "@/components/input/Field";
-import {
-    ResetPasswordFormInputs,
-    useResetPasswordForm,
-} from "@/features/auth/components/resetPasswordForm/hooks/useResetPasswordForm";
+import { ResetPasswordFormInputs, useResetPasswordForm } from "@/features/auth/components/resetPasswordForm/hooks/useResetPasswordForm";
 import { AuthenticationFormStyled } from "@/features/auth/styles/AuthenticationForm.styled";
+import { FormProps } from "@/types/Form";
 
 type ResetPasswordFormProps = {
-    onSubmit: (data: ResetPasswordFormInputs) => void;
     onLogInLinkClick: () => void;
-    isLoading?: boolean;
-};
+} & FormProps<ResetPasswordFormInputs>;
 
-export const ResetPasswordForm = ({ onSubmit, isLoading, onLogInLinkClick }: ResetPasswordFormProps) => {
+export const ResetPasswordForm = ({ onSubmit, isLoading, onLogInLinkClick, isDisabled }: ResetPasswordFormProps) => {
     const { control, handleSubmit } = useResetPasswordForm();
 
     return (
@@ -30,7 +26,7 @@ export const ResetPasswordForm = ({ onSubmit, isLoading, onLogInLinkClick }: Res
                 <Field label="Email" name="email" control={control} autoComplete="email" size="3" required />
             </AuthenticationFormStyled.FieldsWrapper>
 
-            <Button isLoading={isLoading} size="3" type="submit">
+            <Button isLoading={isLoading} isDisabled={isDisabled} size="3" type="submit">
                 Send
             </Button>
         </AuthenticationFormStyled.Form>

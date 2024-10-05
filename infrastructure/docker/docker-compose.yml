@@ -16,21 +16,21 @@ services:
 
     proxy-service:
         build:
-            context: services/Proxy
+            context: ../../services/Proxy
             dockerfile: Dockerfile
         networks:
             - services_network
 
     ui-service:
         build:
-            context: services/UI
+            context: ../../services/UI
             dockerfile: Dockerfile
         networks:
             - services_network
 
     authentication-service:
         build:
-            context: services/Authentication
+            context: ../../services/Authentication
             dockerfile: Dockerfile
         networks:
             - services_network
@@ -39,7 +39,7 @@ services:
 
     users-service:
         build:
-            context: services/Users
+            context: ../../services/Users
             dockerfile: Dockerfile
         networks:
             - services_network
@@ -49,14 +49,14 @@ services:
 
     stitching-service:
         build:
-            context: services/Stitching
+            context: ../../services/Stitching
             dockerfile: Dockerfile
         networks:
             - services_network
 
     mailing-service:
         build:
-            context: services/Mailing
+            context: ../../services/Mailing
             dockerfile: Dockerfile
         networks:
             - services_network

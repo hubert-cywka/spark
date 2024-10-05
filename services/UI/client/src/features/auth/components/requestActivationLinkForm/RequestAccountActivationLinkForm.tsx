@@ -5,13 +5,11 @@ import {
     useRequestAccountActivationLinkForm,
 } from "@/features/auth/components/requestActivationLinkForm/hooks/useRequestAccountActivationLinkForm";
 import { AuthenticationFormStyled } from "@/features/auth/styles/AuthenticationForm.styled";
+import { FormProps } from "@/types/Form";
 
-type RequestActivationLinkFormProps = {
-    onSubmit: (payload: RequestAccountActivationFormInputs) => void;
-    isLoading?: boolean;
-};
+type RequestActivationLinkFormProps = FormProps<RequestAccountActivationFormInputs>;
 
-export const RequestActivationLinkForm = ({ onSubmit, isLoading }: RequestActivationLinkFormProps) => {
+export const RequestActivationLinkForm = ({ onSubmit, isLoading, isDisabled }: RequestActivationLinkFormProps) => {
     const { control, handleSubmit } = useRequestAccountActivationLinkForm();
 
     return (
@@ -30,7 +28,7 @@ export const RequestActivationLinkForm = ({ onSubmit, isLoading }: RequestActiva
                 <Field label="Email" name="email" control={control} autoComplete="email" size="3" required />
             </AuthenticationFormStyled.FieldsWrapper>
 
-            <Button type="submit" isLoading={isLoading} size="3">
+            <Button type="submit" isLoading={isLoading} isDisabled={isDisabled} size="3">
                 Send
             </Button>
         </AuthenticationFormStyled.Form>

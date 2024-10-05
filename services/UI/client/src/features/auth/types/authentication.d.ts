@@ -17,7 +17,7 @@ export type RegisterRequestPayload = {
 
 export type UpdatePasswordResetRequestPayload = {
     password: string;
-    confirmPassword: string;
+    passwordChangeToken: string;
 };
 
 export type RequestPasswordResetRequestPayload = {

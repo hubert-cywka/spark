@@ -3,29 +3,34 @@ import { useNavigate } from "react-router";
 
 import { AppRoute } from "@/app/routes/appRoute";
 import { AuthenticationPageStyled } from "@/app/routes/authentication/shared/styles/AuthenticationPage.styled";
-import { Alert } from "@/components/alert/Alert";
 import { Card } from "@/components/card/Card";
 import { Page } from "@/components/page/Page";
 import { RegisterFormInputs } from "@/features/auth/components/registerForm/hooks/useRegisterForm";
 import { RegisterForm } from "@/features/auth/components/registerForm/RegisterForm";
 import { useRegister } from "@/features/auth/hooks/useRegister";
 import { logger } from "@/lib/logger/logger";
-import { wait } from "@/utils/wait";
-
-const DELAY_BEFORE_REDIRECTION = 3000;
+import { showToast } from "@/lib/notifications/showToast";
+import { getErrorMessage } from "@/utils/getErrorMessage";
 
 export const RegisterPage = () => {
-    const { mutateAsync: register, isPending, error, isSuccess } = useRegister();
+    const { mutateAsync: register, isPending, isSuccess } = useRegister();
     const navigate = useNavigate();
 
     const handleRegister = useCallback(
         async (data: RegisterFormInputs) => {
             try {
                 await register(data);
-                await wait(DELAY_BEFORE_REDIRECTION);
                 navigate(AppRoute.ACTIVATE_ACCOUNT);
+                showToast().success({
+                    message: "Please check your mail inbox to finish registration process.",
+                    title: "Account created",
+                });
             } catch (err) {
-                logger.error(err);
+                logger.error({ err });
+                showToast().danger({
+                    message: getErrorMessage(err),
+                    title: "Registration failed",
+                });
             }
         },
         [navigate, register]
@@ -42,11 +47,10 @@ export const RegisterPage = () => {
                     <RegisterForm
                         onSubmit={handleRegister}
                         isLoading={isPending}
+                        isDisabled={isSuccess}
                         onLoginLinkClick={navigateToLoginPage}
                     />
                 </Card>
-                {error && <Alert variant="danger">{error.message}</Alert>}
-                {isSuccess && <Alert variant="success">Registration submitted. Please wait for redirection...</Alert>}
             </AuthenticationPageStyled.ContentWrapper>
         </Page>
     );

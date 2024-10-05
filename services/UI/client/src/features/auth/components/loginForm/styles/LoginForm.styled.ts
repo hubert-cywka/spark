@@ -5,7 +5,7 @@ import { Anchor } from "@/components/anchor/Anchor";
 export const LoginFormStyled = {
     Link: styled(Anchor)`
         ${({ theme }) => css`
-            font: ${theme.typography.caption._200};
+            font: ${theme.typography.body._100};
         `}
     `,
 };

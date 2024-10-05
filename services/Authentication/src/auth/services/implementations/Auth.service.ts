@@ -45,7 +45,7 @@ export class AuthService implements IAuthService {
     }
 
     private async generateTokens(userId: string): Promise<{ accessToken: string; refreshToken: string }> {
-        const payload = { user: { id: userId }, ver: CURRENT_JWT_VERSION };
+        const payload = { id: userId, ver: CURRENT_JWT_VERSION };
         const secret = this.configService.getOrThrow<string>("jwt.signingSecret");
         const expiresIn = this.configService.getOrThrow<number>("jwt.expirationTimeInSeconds");
 
@@ -53,6 +53,7 @@ export class AuthService implements IAuthService {
             secret,
             expiresIn,
         });
+
         const refreshToken = await this.refreshTokenService.sign(payload);
 
         return { accessToken, refreshToken };
