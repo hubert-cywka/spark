@@ -33,7 +33,6 @@ services:
         environment:
             - PORT=${UI_SERVICE_INTERNAL_PORT}
             - STATIC_FILES_DIR=${UI_SERVICE_STATIC_FILES_DIR}
-            - VITE_API_BASE_URL=${UI_SERVICE_API_BASE_URL}
 
     authentication-service:
         ports:

@@ -12,6 +12,7 @@ export type RegisterRequestPayload = {
     password: string;
     firstName: string;
     lastName: string;
+    hasAcceptedTermsAndConditions: boolean;
 };
 
 export type UpdatePasswordResetRequestPayload = {

@@ -1,12 +1,10 @@
-import { IsString, Matches } from "class-validator";
-
-import { PASSWORD_REGEX } from "@/common/constants/passwordRegex";
+import { IsString, MinLength } from "class-validator";
 
 export class UpdatePasswordDto {
     @IsString()
     passwordChangeToken!: string;
 
     @IsString()
-    @Matches(PASSWORD_REGEX)
+    @MinLength(8)
     password!: string;
 }

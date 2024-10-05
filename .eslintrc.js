@@ -12,15 +12,7 @@ module.exports = {
             jsx: true,
         },
     },
-    plugins: [
-        "@typescript-eslint",
-        "react",
-        "react-hooks",
-        "sonarjs",
-        "unused-imports",
-        "simple-import-sort",
-        "prettier",
-    ],
+    plugins: ["@typescript-eslint", "react", "react-hooks", "sonarjs", "unused-imports", "simple-import-sort", "prettier"],
     extends: [
         "eslint:recommended",
         "plugin:react/recommended",
@@ -46,7 +38,7 @@ module.exports = {
         "prettier/prettier": [
             "error",
             {
-                printWidth: 120,
+                printWidth: 140,
                 useTabs: false,
                 tabWidth: 4,
                 trailingComma: "es5",

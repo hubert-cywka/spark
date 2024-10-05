@@ -9,6 +9,11 @@ const staticFilesPath = process.env.STATIC_FILES_DIR ?? "../../ui/dist";
 
 function init() {
     app.use(express.static(path.join(__dirname, staticFilesPath)));
+
+    app.get("*", (req, res) => {
+        res.sendFile(path.join(__dirname, staticFilesPath, "index.html"));
+    });
+
     app.listen(port);
 }
 

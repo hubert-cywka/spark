@@ -9,7 +9,7 @@ export type RegisterFormInputs = {
     confirmPassword: string;
     firstName: string;
     lastName: string;
-    termsAndConditions: boolean;
+    hasAcceptedTermsAndConditions: boolean;
 };
 
 export const useRegisterForm = () =>

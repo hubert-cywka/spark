@@ -31,11 +31,9 @@ export const LoginForm = ({
 
             <AuthenticationFormStyled.FieldsWrapper>
                 <Field label="Email" name="email" autoComplete="email" control={control} size="3" required />
-                <Field label="Password" name="password" autoComplete="hidden" control={control} size="3" required />
+                <Field label="Password" name="password" type="password" autoComplete="hidden" control={control} size="3" required />
                 <LoginFormStyled.Link onPress={onResetPasswordLinkClick}>Forgot password?</LoginFormStyled.Link>
-                <LoginFormStyled.Link onPress={onRequestAccountActivationLinkClick}>
-                    Account not activated?
-                </LoginFormStyled.Link>
+                <LoginFormStyled.Link onPress={onRequestAccountActivationLinkClick}>Account not activated?</LoginFormStyled.Link>
             </AuthenticationFormStyled.FieldsWrapper>
 
             <Button isLoading={isLoading} size="3" type="submit">

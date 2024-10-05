@@ -109,8 +109,9 @@ static_resources:
                                               status: 204
 
                                         - match:
-                                              prefix: /auth
+                                              prefix: /api/auth
                                           route:
+                                              prefix_rewrite: /auth
                                               cluster: authentication-service
                                           typed_per_filter_config:
                                               envoy.filters.http.ext_authz:
@@ -118,8 +119,9 @@ static_resources:
                                                   disabled: true
 
                                         - match:
-                                              prefix: /graphql
+                                              prefix: /api/graphql
                                           route:
+                                              prefix_rewrite: /graphql
                                               cluster: stitching-service
 
                                         - match:

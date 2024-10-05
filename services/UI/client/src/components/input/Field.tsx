@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { InputHTMLAttributes, ReactNode } from "react";
 import { Control, FieldValues, Path, useController } from "react-hook-form";
 
 import { FieldStyled } from "@/components/input/styles/Field.styled";
@@ -11,7 +11,8 @@ type FieldProps<T extends FieldValues> = {
     width?: number;
     size?: InputSize;
     required?: boolean;
-    autoComplete?: "email" | "hidden" | "text" | "search" | "url" | "tel" | "date" | "password";
+    autoComplete?: InputHTMLAttributes<unknown>["autoComplete"];
+    type?: InputHTMLAttributes<unknown>["type"];
 };
 
 export const Field = <T extends FieldValues>({
@@ -21,6 +22,8 @@ export const Field = <T extends FieldValues>({
     required,
     name,
     control,
+    autoComplete,
+    type,
     ...props
 }: FieldProps<T>) => {
     const {
@@ -48,7 +51,7 @@ export const Field = <T extends FieldValues>({
                 {label}
                 {required && <FieldStyled.RequiredFieldHighlight> *</FieldStyled.RequiredFieldHighlight>}
             </FieldStyled.Label>
-            <FieldStyled.Input width={width} size={size} />
+            <FieldStyled.Input width={width} size={size} type={type} autoComplete={autoComplete} />
             {error && <FieldStyled.Error>{error.message}</FieldStyled.Error>}
         </FieldStyled.Controller>
     );

@@ -33,23 +33,12 @@ export const RegisterForm = ({ onSubmit, onLoginLinkClick, isLoading }: Register
                         <Field label="Last name" name="lastName" control={control} size="3" required />
                     </RegisterFormStyled.NameWrapper>
 
-                    <RegisterFormStyled.NameWrapper>
-                        <Field label="First name" name="firstName" control={control} size="3" required />
-                        <Field label="Last name" name="lastName" control={control} size="3" required />
-                    </RegisterFormStyled.NameWrapper>
-
-                    <Field<RegisterFormInputs>
-                        label="Email"
-                        autoComplete="email"
-                        name="email"
-                        control={control}
-                        size="3"
-                        required
-                    />
-                    <Field label="Password" name="password" autoComplete="hidden" control={control} size="3" required />
+                    <Field<RegisterFormInputs> label="Email" autoComplete="email" name="email" control={control} size="3" required />
+                    <Field label="Password" name="password" type="password" autoComplete="hidden" control={control} size="3" required />
                     <Field
                         label="Confirm password"
                         name="confirmPassword"
+                        type="password"
                         control={control}
                         autoComplete="hidden"
                         size="3"
@@ -57,7 +46,7 @@ export const RegisterForm = ({ onSubmit, onLoginLinkClick, isLoading }: Register
                     />
 
                     <RegisterFormStyled.AgreementsWrapper>
-                        <Checkbox name="termsAndConditions" control={control} required>
+                        <Checkbox name="hasAcceptedTermsAndConditions" control={control} required>
                             I agree to Terms & Conditions.
                         </Checkbox>
                     </RegisterFormStyled.AgreementsWrapper>
