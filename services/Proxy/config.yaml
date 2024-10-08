@@ -14,6 +14,7 @@ static_resources:
                     - name: envoy.filters.network.http_connection_manager
                       typed_config:
                           '@type': type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                          generate_request_id: true
                           stat_prefix: ingress_http
                           use_remote_address: true
                           codec_type: AUTO
@@ -64,14 +65,53 @@ static_resources:
                                         key: X-XSS-Protection
                                         value: "0"
 
+                                    # CORS
+                                  - append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                                    header:
+                                        key: Access-Control-Allow-Origin
+                                        value: ${ALLOWED_ORIGINS}
+                                  -   append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                                      header:
+                                          key: Access-Control-Allow-Methods
+                                          value: "GET, POST, OPTIONS, PATCH, PUT, DELETE"
+                                  -   append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                                      header:
+                                          key: Access-Control-Allow-Headers
+                                          value: "DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, Authorization, Access-Control-Allow-Origin"
+                                  -   append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                                      header:
+                                          key: Access-Control-Max-Age
+                                          value: "1728000"
+                                  -   append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                                      header:
+                                          key: Access-Control-Allow-Credentials
+                                          value: "true"
+
                               virtual_hosts:
                                   - name: virtual_host
                                     domains:
                                         - '*'
+
                                     routes:
+                                        # CORS preflight handler
                                         - match:
-                                              prefix: /auth
+                                              safe_regex:
+                                                  regex: ".*"
+                                              headers:
+                                                  - name: ":method"
+                                                    string_match:
+                                                        exact: "OPTIONS"
+                                          typed_per_filter_config:
+                                              envoy.filters.http.ext_authz:
+                                                  "@type": type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthzPerRoute
+                                                  disabled: true
+                                          direct_response:
+                                              status: 204
+
+                                        - match:
+                                              prefix: /api/auth
                                           route:
+                                              prefix_rewrite: /auth
                                               cluster: authentication-service
                                           typed_per_filter_config:
                                               envoy.filters.http.ext_authz:
@@ -79,8 +119,9 @@ static_resources:
                                                   disabled: true
 
                                         - match:
-                                              prefix: /graphql
+                                              prefix: /api/graphql
                                           route:
+                                              prefix_rewrite: /graphql
                                               cluster: stitching-service
 
                                         - match:

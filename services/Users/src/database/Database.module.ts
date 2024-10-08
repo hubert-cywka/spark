@@ -5,6 +5,7 @@ import { ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { AddUserTable1727272270150 } from "@/database/migrations/1727272270150-AddUserTable";
+import { AddFirstAndLastNameFieldsToUser1728058199103 } from "@/database/migrations/1728058199103-AddFirstAndLastNameFieldsToUser";
 
 @Module({
     imports: [
@@ -33,7 +34,7 @@ import { AddUserTable1727272270150 } from "@/database/migrations/1727272270150-A
                     autoLoadEntities: true,
                     migrationsRun: true,
                     synchronize: false,
-                    migrations: [AddUserTable1727272270150],
+                    migrations: [AddUserTable1727272270150, AddFirstAndLastNameFieldsToUser1728058199103],
                 };
             },
             inject: [ConfigService],

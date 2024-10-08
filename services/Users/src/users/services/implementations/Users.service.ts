@@ -5,7 +5,7 @@ import { Repository } from "typeorm";
 import { UserEntity } from "@/users/entities/User.entity";
 import { UserAlreadyExistsError } from "@/users/errors/UserAlreadyExists.error";
 import { UserNotFoundError } from "@/users/errors/UserNotFound.error";
-import { User } from "@/users/models/User";
+import { User } from "@/users/models/User.model";
 import { IUsersService } from "@/users/services/interfaces/IUsers.service";
 
 @Injectable()
@@ -28,15 +28,15 @@ export class UsersService implements IUsersService {
         return user;
     }
 
-    public async create(id: string, email: string): Promise<User> {
-        const user = await this.repository.save({ id, email });
+    public async create(user: User): Promise<User> {
+        const savedUser = await this.repository.save(user);
 
-        if (!user) {
-            this.logger.warn({ userId: id, email }, "User already exists.");
+        if (!savedUser) {
+            this.logger.warn({ userId: user.id, email: user.email }, "User already exists.");
             throw new UserAlreadyExistsError();
         }
 
-        return user;
+        return savedUser;
     }
 
     public async activate(id: string): Promise<User> {

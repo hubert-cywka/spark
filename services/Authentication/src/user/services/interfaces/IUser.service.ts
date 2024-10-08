@@ -7,4 +7,6 @@ export interface IUserService {
     save(email: string, password: string): Promise<User>;
     requestActivation(email: string): Promise<void>;
     activate(activationToken: string): Promise<void>;
+    requestPasswordChange(email: string): Promise<void>;
+    updatePassword(passwordChangeToken: string, password: string): Promise<void>;
 }

@@ -4,7 +4,6 @@ import { PubSubEvent } from "../PubSubEvent";
 export type UserActivatedEventPayload = {
     user: {
         id: string;
-        email: string;
     };
 };
 

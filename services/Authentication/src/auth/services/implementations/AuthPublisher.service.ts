@@ -10,7 +10,7 @@ export class AuthPublisherService implements IAuthPublisherService {
         private publisher: PublisherService
     ) {}
 
-    public onUserRegistered(user: User): void {
+    public onUserRegistered(user: { lastName: string; firstName: string } & User): void {
         this.publisher.publish(new UserRegisteredEvent({ user }));
     }
 }

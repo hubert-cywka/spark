@@ -6,7 +6,7 @@ import { UserService } from "@/user/services/implementations/User.service";
 import { UserPublisherService } from "@/user/services/implementations/UserPublisher.service";
 import { IUserServiceToken } from "@/user/services/interfaces/IUser.service";
 import { IUserPublisherServiceToken } from "@/user/services/interfaces/IUserPublisher.service";
-import { UserActivationController } from "@/user/UserActivation.controller";
+import { UserController } from "@/user/User.controller";
 
 @Module({
     imports: [TypeOrmModule.forFeature([UserEntity])],
@@ -14,7 +14,7 @@ import { UserActivationController } from "@/user/UserActivation.controller";
         { provide: IUserServiceToken, useClass: UserService },
         { provide: IUserPublisherServiceToken, useClass: UserPublisherService },
     ],
-    controllers: [UserActivationController],
+    controllers: [UserController],
     exports: [IUserServiceToken],
 })
 export class UserModule {}

@@ -27,6 +27,39 @@ export class UserService implements IUserService {
         private readonly publisher: IUserPublisherService
     ) {}
 
+    public async requestPasswordChange(email: string): Promise<void> {
+        const user = await this.repository.findOne({
+            where: { email },
+        });
+
+        if (!user) {
+            this.logger.warn({ email }, "User not found.");
+            throw new UserNotFoundError();
+        }
+
+        const passwordResetToken = this.generateOneTimeUseToken();
+        await this.repository.save({ ...user, passwordResetToken });
+        await this.publisher.onPasswordResetRequested(user.email, passwordResetToken);
+    }
+
+    public async updatePassword(passwordResetToken: string, password: string): Promise<void> {
+        const user = await this.repository.findOne({
+            where: { passwordResetToken },
+        });
+
+        if (!user) {
+            this.logger.warn({ passwordResetToken }, "User with that password reset token not found.");
+            throw new UserNotFoundError();
+        }
+
+        const hashedPassword = await this.hashPassword(password);
+        await this.repository.save({
+            ...user,
+            passwordResetToken: null,
+            password: hashedPassword,
+        });
+    }
+
     public async findByCredentials(email: string, password: string): Promise<User> {
         const user = await this.repository.findOne({
             where: { email },
@@ -103,7 +136,7 @@ export class UserService implements IUserService {
         }
 
         this.assertEligibilityForActivation(user);
-        const activationToken = this.generateActivationToken();
+        const activationToken = this.generateOneTimeUseToken();
 
         await this.repository.save({ ...user, activationToken });
         this.publisher.onUserActivationTokenRequested(email, activationToken);
@@ -116,7 +149,7 @@ export class UserService implements IUserService {
         }
     }
 
-    private generateActivationToken(): string {
+    private generateOneTimeUseToken(): string {
         return crypto.randomUUID();
     }
 

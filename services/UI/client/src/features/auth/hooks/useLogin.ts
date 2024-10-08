@@ -1,21 +1,22 @@
 import { useCallback } from "react";
 import { useMutation } from "@tanstack/react-query";
 
-import { loginRequest, LoginRequestResponse } from "@/features/auth/api/login.request";
+import { AuthenticationService } from "@/features/auth/api/authenticationService";
 import { useAuthToken } from "@/features/auth/hooks/useAuthToken";
-import { useUserStore } from "@/features/auth/hooks/useUserStore";
+import { LoginRequestResponse } from "@/features/auth/types/authentication";
 
 export const useLogin = () => {
     const { setToken } = useAuthToken();
-    const storeUser = useUserStore((state) => state.storeUser);
 
     const onLoginSuccess = useCallback(
         (data: LoginRequestResponse) => {
-            storeUser(data.user);
-            setToken(data.token);
+            setToken(data.accessToken);
         },
-        [storeUser, setToken]
+        [setToken]
     );
 
-    return useMutation({ mutationFn: loginRequest, onSuccess: onLoginSuccess }).mutateAsync;
+    return useMutation({
+        mutationFn: AuthenticationService.login,
+        onSuccess: onLoginSuccess,
+    });
 };

@@ -82,6 +82,7 @@ export class RefreshTokenService implements IRefreshTokenService {
             owner: { id: ownerId },
             expiresAt,
         });
+
         return this.refreshTokenRepository.save(token);
     }
 

@@ -19,7 +19,7 @@ export function useBrowserStorage<T>(key: string): UseBrowserStorage<T> {
             const raw = window.localStorage.getItem(key);
             return raw ? JSON.parse(raw) : null;
         } catch (error) {
-            logger.warn(`Error reading localStorage key “${key}”:`, error);
+            logger.warn({ msg: "Error reading localStorage item", key, error });
             return null;
         }
     }, [key]);
@@ -30,7 +30,11 @@ export function useBrowserStorage<T>(key: string): UseBrowserStorage<T> {
                 window.localStorage.setItem(key, JSON.stringify(value));
                 window.dispatchEvent(new StorageEvent(LOCAL_STORAGE_CUSTOM_EVENT_NAME, { key }));
             } catch (error) {
-                logger.warn(`Error setting localStorage key “${key}”:`, error);
+                logger.warn({
+                    msg: "Error setting localStorage item",
+                    key,
+                    error,
+                });
             }
         },
         [key]

@@ -1,11 +1,25 @@
-import { IsEmail, IsString, MaxLength, MinLength } from "class-validator";
+import { Equals, IsBoolean, IsEmail, IsString, Matches, MinLength } from "class-validator";
+
+import { PASSWORD_LENGTH } from "@/auth/constants/passwordLength";
+import { USER_NAME_REGEX } from "@/auth/constants/userNameRegex";
 
 export class RegisterDto {
     @IsEmail()
     email!: string;
 
     @IsString()
-    @MinLength(8)
-    @MaxLength(256)
+    @MinLength(PASSWORD_LENGTH)
     password!: string;
+
+    @IsString()
+    @Matches(USER_NAME_REGEX)
+    lastName!: string;
+
+    @IsString()
+    @Matches(USER_NAME_REGEX)
+    firstName!: string;
+
+    @IsBoolean()
+    @Equals(true)
+    hasAcceptedTermsAndConditions!: boolean;
 }

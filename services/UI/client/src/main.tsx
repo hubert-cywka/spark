@@ -1,7 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-import "./normalize.css";
+import "./styles/normalize.css";
+import "@fontsource/montserrat";
 
 import App from "@/app/App";
 

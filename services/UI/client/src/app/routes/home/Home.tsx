@@ -1,3 +1,5 @@
+import { Page } from "@/components/page/Page";
+
 export const Home = () => {
-    return <main>Home</main>;
+    return <Page>Home</Page>;
 };

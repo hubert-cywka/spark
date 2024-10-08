@@ -3,5 +3,5 @@ import { User } from "@/user/models/User.model";
 export const IAuthPublisherServiceToken = Symbol("IAuthPublisherServiceToken");
 
 export interface IAuthPublisherService {
-    onUserRegistered(user: User): void;
+    onUserRegistered(user: { lastName: string; firstName: string } & User): void;
 }

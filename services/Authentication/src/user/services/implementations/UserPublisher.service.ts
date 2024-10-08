@@ -3,6 +3,7 @@ import {
     PublisherService,
     UserActivatedEvent,
     UserActivationTokenRequestedEvent,
+    UserRequestedPasswordResetEvent,
 } from "@hcywka/pubsub";
 import { Inject } from "@nestjs/common";
 
@@ -21,5 +22,9 @@ export class UserPublisherService implements IUserPublisherService {
 
     public onUserActivationTokenRequested(email: string, activationToken: string) {
         this.publisher.publish(new UserActivationTokenRequestedEvent({ email, activationToken }));
+    }
+
+    public onPasswordResetRequested(email: string, passwordResetToken: string) {
+        this.publisher.publish(new UserRequestedPasswordResetEvent({ email, passwordResetToken }));
     }
 }
