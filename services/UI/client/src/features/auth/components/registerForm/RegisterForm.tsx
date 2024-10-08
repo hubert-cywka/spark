@@ -7,6 +7,7 @@ import { Field } from "@/components/input/Field";
 import { RegisterFormInputs, useRegisterForm } from "@/features/auth/components/registerForm/hooks/useRegisterForm";
 import { RegisterFormStyled } from "@/features/auth/components/registerForm/styles/RegisterForm.styled";
 import { AuthenticationFormStyled } from "@/features/auth/styles/AuthenticationForm.styled";
+import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 import { FormProps } from "@/types/Form";
 
 type RegisterFormProps = {
@@ -15,27 +16,56 @@ type RegisterFormProps = {
 
 // TODO: Finish T&C
 export const RegisterForm = ({ onSubmit, onLoginLinkClick, isLoading, isDisabled }: RegisterFormProps) => {
+    const t = useTranslate();
     const form = useRegisterForm();
     const { handleSubmit, control } = form;
 
     return (
         <FormProvider {...form}>
             <AuthenticationFormStyled.Form onSubmit={handleSubmit(onSubmit)}>
-                <AuthenticationFormStyled.Header>Create an account</AuthenticationFormStyled.Header>
+                <AuthenticationFormStyled.Header>{t("authentication.registration.form.header")}</AuthenticationFormStyled.Header>
                 <AuthenticationFormStyled.Caption>
-                    Already have one? <Anchor onPress={onLoginLinkClick}>Log in</Anchor>
+                    {t("authentication.registration.form.alreadyRegistered.caption")}{" "}
+                    <Anchor onPress={onLoginLinkClick}>{t("authentication.registration.form.alreadyRegistered.link")}</Anchor>
                 </AuthenticationFormStyled.Caption>
 
                 <AuthenticationFormStyled.FieldsWrapper>
                     <RegisterFormStyled.NameWrapper>
-                        <Field label="First name" name="firstName" control={control} size="3" required />
-                        <Field label="Last name" name="lastName" control={control} size="3" required />
+                        <Field
+                            label={t("authentication.common.fields.firstName.label")}
+                            name="firstName"
+                            control={control}
+                            size="3"
+                            required
+                        />
+                        <Field
+                            label={t("authentication.common.fields.lastName.label")}
+                            name="lastName"
+                            control={control}
+                            size="3"
+                            required
+                        />
                     </RegisterFormStyled.NameWrapper>
 
-                    <Field<RegisterFormInputs> label="Email" autoComplete="email" name="email" control={control} size="3" required />
-                    <Field label="Password" name="password" type="password" autoComplete="hidden" control={control} size="3" required />
+                    <Field<RegisterFormInputs>
+                        label={t("authentication.common.fields.email.label")}
+                        autoComplete="email"
+                        name="email"
+                        control={control}
+                        size="3"
+                        required
+                    />
                     <Field
-                        label="Confirm password"
+                        label={t("authentication.common.fields.password.label")}
+                        name="password"
+                        type="password"
+                        autoComplete="hidden"
+                        control={control}
+                        size="3"
+                        required
+                    />
+                    <Field
+                        label={t("authentication.common.fields.confirmPassword.label")}
                         name="confirmPassword"
                         type="password"
                         control={control}
@@ -46,13 +76,13 @@ export const RegisterForm = ({ onSubmit, onLoginLinkClick, isLoading, isDisabled
 
                     <RegisterFormStyled.AgreementsWrapper>
                         <Checkbox name="hasAcceptedTermsAndConditions" control={control} required>
-                            I agree to Terms & Conditions.
+                            {t("authentication.common.fields.termsAndConditions.label")}
                         </Checkbox>
                     </RegisterFormStyled.AgreementsWrapper>
                 </AuthenticationFormStyled.FieldsWrapper>
 
                 <Button isLoading={isLoading} isDisabled={isDisabled} size="3" type="submit">
-                    Sign up
+                    {t("authentication.registration.form.submitButton")}
                 </Button>
             </AuthenticationFormStyled.Form>
         </FormProvider>

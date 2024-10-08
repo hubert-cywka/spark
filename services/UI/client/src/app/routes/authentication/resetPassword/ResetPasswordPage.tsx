@@ -10,11 +10,13 @@ import { UpdatePasswordFormInputs } from "@/features/auth/components/updatePassw
 import { UpdatePasswordForm } from "@/features/auth/components/updatePasswordForm/UpdatePasswordForm";
 import { useRequestPasswordResetToken } from "@/features/auth/hooks/useRequestPasswordResetToken";
 import { useUpdatePassword } from "@/features/auth/hooks/useUpdatePassword";
+import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 import { logger } from "@/lib/logger/logger";
 import { showToast } from "@/lib/notifications/showToast";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 
 export const ResetPasswordPage = () => {
+    const t = useTranslate();
     const navigate = useNavigate();
     const { updatePassword, passwordChangeToken } = useUpdatePassword();
 
@@ -30,14 +32,14 @@ export const ResetPasswordPage = () => {
         try {
             await requestPasswordResetLinkMutation(payload);
             showToast().success({
-                message: "Please check your mail inbox to reset the password.",
-                title: "Request sent",
+                message: t("authentication.requestPasswordReset.notifications.success.body"),
+                title: t("authentication.requestPasswordReset.notifications.success.title"),
             });
         } catch (err) {
             logger.error({ err });
             showToast().danger({
                 message: getErrorMessage(err),
-                title: "Request not sent",
+                title: t("authentication.requestPasswordReset.notifications.error.title"),
             });
         }
     };
@@ -51,14 +53,14 @@ export const ResetPasswordPage = () => {
         try {
             await updatePasswordMutation({ password, passwordChangeToken });
             showToast().success({
-                message: "You can now log in with your new credentials.",
-                title: "Password updated",
+                message: t("authentication.passwordReset.notifications.success.body"),
+                title: t("authentication.passwordReset.notifications.success.title"),
             });
         } catch (err) {
             logger.error({ err });
             showToast().danger({
                 message: getErrorMessage(err),
-                title: "Password not updated",
+                title: t("authentication.passwordReset.notifications.error.title"),
             });
         }
     };

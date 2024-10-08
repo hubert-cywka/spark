@@ -1,13 +1,19 @@
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
-import { requestActivationLinkFormRequirements } from "@/features/auth/components/requestActivationLinkForm/misc/requestActivationLinkFormRequirements";
+import { useCommonAuthenticationRequirements } from "@/features/auth/schemas/useCommonAuthenticationRequirements";
 
 export type RequestAccountActivationFormInputs = {
     email: string;
 };
 
-export const useRequestAccountActivationLinkForm = () =>
-    useForm<RequestAccountActivationFormInputs>({
-        resolver: yupResolver<RequestAccountActivationFormInputs>(requestActivationLinkFormRequirements),
+export const useRequestAccountActivationLinkForm = () => {
+    const { email } = useCommonAuthenticationRequirements();
+
+    const requirements = yup.object({ email });
+
+    return useForm<RequestAccountActivationFormInputs>({
+        resolver: yupResolver<RequestAccountActivationFormInputs>(requirements),
     });
+};

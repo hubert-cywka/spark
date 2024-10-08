@@ -3,6 +3,7 @@ import { Button } from "@/components/button/Button";
 import { Field } from "@/components/input/Field";
 import { ResetPasswordFormInputs, useResetPasswordForm } from "@/features/auth/components/resetPasswordForm/hooks/useResetPasswordForm";
 import { AuthenticationFormStyled } from "@/features/auth/styles/AuthenticationForm.styled";
+import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 import { FormProps } from "@/types/Form";
 
 type ResetPasswordFormProps = {
@@ -10,24 +11,30 @@ type ResetPasswordFormProps = {
 } & FormProps<ResetPasswordFormInputs>;
 
 export const ResetPasswordForm = ({ onSubmit, isLoading, onLogInLinkClick, isDisabled }: ResetPasswordFormProps) => {
+    const t = useTranslate();
     const { control, handleSubmit } = useResetPasswordForm();
 
     return (
         <AuthenticationFormStyled.Form onSubmit={handleSubmit(onSubmit)}>
-            <AuthenticationFormStyled.Header>Reset password</AuthenticationFormStyled.Header>
+            <AuthenticationFormStyled.Header>{t("authentication.requestPasswordReset.form.header")}</AuthenticationFormStyled.Header>
+            <AuthenticationFormStyled.Caption>{t("authentication.requestPasswordReset.form.caption")}</AuthenticationFormStyled.Caption>
             <AuthenticationFormStyled.Caption>
-                Enter your email, we will send you a link to update your password.
-            </AuthenticationFormStyled.Caption>
-            <AuthenticationFormStyled.Caption>
-                <Anchor onPress={onLogInLinkClick}>Log in</Anchor> instead.
+                <Anchor onPress={onLogInLinkClick}>{t("authentication.requestPasswordReset.form.logInLink")}</Anchor>
             </AuthenticationFormStyled.Caption>
 
             <AuthenticationFormStyled.FieldsWrapper>
-                <Field label="Email" name="email" control={control} autoComplete="email" size="3" required />
+                <Field
+                    label={t("authentication.common.fields.email.label")}
+                    name="email"
+                    control={control}
+                    autoComplete="email"
+                    size="3"
+                    required
+                />
             </AuthenticationFormStyled.FieldsWrapper>
 
             <Button isLoading={isLoading} isDisabled={isDisabled} size="3" type="submit">
-                Send
+                {t("authentication.requestPasswordReset.form.submitButton")}
             </Button>
         </AuthenticationFormStyled.Form>
     );

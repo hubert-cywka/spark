@@ -5,25 +5,27 @@ import { AccountActivationHandler } from "@/features/auth/components/accountActi
 import { RequestActivationLinkForm } from "@/features/auth/components/requestActivationLinkForm/RequestAccountActivationLinkForm";
 import { useRequestAccountActivationToken } from "@/features/auth/hooks/useRequestAccountActivationToken";
 import { RequestActivationTokenRequestPayload } from "@/features/auth/types/authentication";
+import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 import { logger } from "@/lib/logger/logger";
 import { showToast } from "@/lib/notifications/showToast";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 
 export const ActivateAccountPage = () => {
+    const t = useTranslate();
     const { mutateAsync, isPending, isSuccess } = useRequestAccountActivationToken();
 
     const onSubmit = async (payload: RequestActivationTokenRequestPayload) => {
         try {
             await mutateAsync(payload);
             showToast().success({
-                message: "Please check your mail inbox to activate your account.",
-                title: "Request sent",
+                message: t("authentication.accountActivation.notifications.success.body"),
+                title: t("authentication.accountActivation.notifications.success.title"),
             });
         } catch (err) {
             logger.error({ err });
             showToast().danger({
                 message: getErrorMessage(err),
-                title: "Request not sent",
+                title: t("authentication.accountActivation.notifications.error.title"),
             });
         }
     };

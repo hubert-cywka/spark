@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useNavigate } from "react-router";
 
 import { AppRoute } from "@/app/routes/appRoute";
@@ -8,32 +7,31 @@ import { Page } from "@/components/page/Page";
 import { LoginFormInputs } from "@/features/auth/components/loginForm/hooks/useLoginForm";
 import { LoginForm } from "@/features/auth/components/loginForm/LoginForm";
 import { useLogin } from "@/features/auth/hooks/useLogin";
+import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 import { logger } from "@/lib/logger/logger";
 import { showToast } from "@/lib/notifications/showToast";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 
 export const LoginPage = () => {
+    const t = useTranslate();
     const { mutateAsync: login, isPending, isSuccess } = useLogin();
     const navigate = useNavigate();
 
-    const handleLogin = useCallback(
-        async (data: LoginFormInputs) => {
-            try {
-                await login(data);
-                showToast().success({
-                    message: "Welcome back!",
-                    title: "Authentication successful",
-                });
-            } catch (err) {
-                logger.error({ err });
-                showToast().danger({
-                    message: getErrorMessage(err),
-                    title: "Authentication failed",
-                });
-            }
-        },
-        [login]
-    );
+    const onLoginFormSubmitted = async (data: LoginFormInputs) => {
+        try {
+            await login(data);
+            showToast().success({
+                message: t("authentication.login.notifications.success.body"),
+                title: t("authentication.login.notifications.success.title"),
+            });
+        } catch (err) {
+            logger.error({ err });
+            showToast().danger({
+                message: getErrorMessage(err),
+                title: t("authentication.login.notifications.error.title"),
+            });
+        }
+    };
 
     const navigateToRegisterPage = () => {
         navigate(AppRoute.REGISTER);
@@ -52,7 +50,7 @@ export const LoginPage = () => {
             <AuthenticationPageStyled.ContentWrapper>
                 <Card>
                     <LoginForm
-                        onSubmit={handleLogin}
+                        onSubmit={onLoginFormSubmitted}
                         isLoading={isPending}
                         isDisabled={isSuccess}
                         onRegisterLinkClick={navigateToRegisterPage}

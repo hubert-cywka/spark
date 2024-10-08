@@ -1,0 +1,139 @@
+import { TranslationSource } from "@/lib/i18n/types/i18n";
+
+export const en: TranslationSource = {
+    authentication: {
+        common: {
+            fields: {
+                confirmPassword: {
+                    errors: { mismatch: "Passwords do not match." },
+                    label: "Confirm password",
+                },
+                email: {
+                    errors: {
+                        invalid: "Email has invalid format.",
+                        required: "Email is required.",
+                    },
+                    label: "Email",
+                },
+                firstName: {
+                    errors: {
+                        required: "Name is required.",
+                        tooLong: "Name can't exceed {{length}} characters.",
+                        invalid: "Name is invalid.",
+                    },
+                    label: "First name",
+                },
+                lastName: {
+                    errors: {
+                        required: "Name is required.",
+                        tooLong: "Name can't exceed {{length}} characters.",
+                        invalid: "Name is invalid.",
+                    },
+                    label: "Last name",
+                },
+                password: {
+                    errors: {
+                        weak: "Password requires at least {{length}} characters.",
+                        required: "Password is required.",
+                    },
+                    label: "Password",
+                },
+                termsAndConditions: { label: "I accept Terms and Conditions" },
+            },
+        },
+        accountActivation: {
+            notifications: {
+                error: { title: "Request not sent" },
+                success: {
+                    body: "Please check your inbox to continue.",
+                    title: "Request sent",
+                },
+            },
+            alert: {
+                info: "Please check your email to find account activation link. We always send one immediately after registration.",
+                loading: "Activating your account...",
+                success: "Your account has been activated!",
+                logInLink: "Click here to log in",
+            },
+            form: {
+                caption:
+                    "Please submit your email, we will send the activation link once again. Previous one will be invalidated and won't work anymore.",
+                header: "Need another link?",
+                submitButton: "Send",
+                warning: "You won't receive the activation link if your account is already activated.",
+            },
+        },
+        login: {
+            form: {
+                accountNotActivated: {
+                    caption: "Have not activated it yet?",
+                    link: "Request activation",
+                },
+                forgotPassword: { link: "Forgot password?" },
+                header: "Log in",
+                noAccount: {
+                    caption: "Don't have an account?",
+                    link: "Create one",
+                },
+                submitButton: "Sign in",
+            },
+            notifications: {
+                error: { title: "Authentication failed" },
+                success: {
+                    body: "We were able to authenticate you.",
+                    title: "Welcome back!",
+                },
+            },
+        },
+        passwordReset: {
+            form: {
+                caption: "Please submit your new password.",
+                header: "Update password",
+                logInLink: {
+                    caption: "Don't want to change it?",
+                    link: "Log in",
+                },
+                submitButton: "Update",
+            },
+            notifications: {
+                error: { title: "Password not updated" },
+                success: {
+                    body: "You can now log in with your new credentials.",
+                    title: "Password updated",
+                },
+            },
+        },
+        registration: {
+            form: {
+                alreadyRegistered: {
+                    caption: "Already have one?",
+                    link: "Log in",
+                },
+                header: "Create an account",
+                submitButton: "Sign up",
+            },
+            notifications: {
+                error: { title: "Registration failed" },
+                success: {
+                    body: "Please check your inbox to find account activation link.",
+                    title: "Registration successful",
+                },
+            },
+        },
+        requestPasswordReset: {
+            form: {
+                caption: "Enter your email, we will send you a link to update your password.",
+                header: "Reset password",
+                logInLink: "Log in instead",
+                submitButton: "Send",
+            },
+            notifications: {
+                error: { title: "Request not sent" },
+                success: {
+                    body: "Please check your inbox to reset the password.",
+                    title: "Request sent",
+                },
+            },
+        },
+    },
+};
