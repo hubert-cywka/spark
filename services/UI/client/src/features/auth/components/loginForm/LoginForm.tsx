@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+
 import { Anchor } from "@/components/anchor/Anchor";
 import { Button } from "@/components/button/Button";
 import { Field } from "@/components/input/Field";
@@ -23,8 +25,15 @@ export const LoginForm = ({
     const t = useTranslate();
     const { handleSubmit, control } = useLoginForm();
 
+    const internalOnSubmit = useCallback(
+        (inputs: LoginFormInputs) => {
+            onSubmit({ ...inputs, email: inputs.email.trim() });
+        },
+        [onSubmit]
+    );
+
     return (
-        <AuthenticationFormStyled.Form onSubmit={handleSubmit(onSubmit)}>
+        <AuthenticationFormStyled.Form onSubmit={handleSubmit(internalOnSubmit)}>
             <AuthenticationFormStyled.Header>{t("authentication.login.form.header")}</AuthenticationFormStyled.Header>
             <AuthenticationFormStyled.Caption>
                 {t("authentication.login.form.noAccount.caption")}{" "}

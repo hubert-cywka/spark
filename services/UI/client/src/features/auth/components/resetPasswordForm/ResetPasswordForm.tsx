@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+
 import { Anchor } from "@/components/anchor/Anchor";
 import { Button } from "@/components/button/Button";
 import { Field } from "@/components/input/Field";
@@ -14,8 +16,15 @@ export const ResetPasswordForm = ({ onSubmit, isLoading, onLogInLinkClick, isDis
     const t = useTranslate();
     const { control, handleSubmit } = useResetPasswordForm();
 
+    const internalOnSubmit = useCallback(
+        (inputs: ResetPasswordFormInputs) => {
+            onSubmit({ email: inputs.email.trim() });
+        },
+        [onSubmit]
+    );
+
     return (
-        <AuthenticationFormStyled.Form onSubmit={handleSubmit(onSubmit)}>
+        <AuthenticationFormStyled.Form onSubmit={handleSubmit(internalOnSubmit)}>
             <AuthenticationFormStyled.Header>{t("authentication.requestPasswordReset.form.header")}</AuthenticationFormStyled.Header>
             <AuthenticationFormStyled.Caption>{t("authentication.requestPasswordReset.form.caption")}</AuthenticationFormStyled.Caption>
             <AuthenticationFormStyled.Caption>
