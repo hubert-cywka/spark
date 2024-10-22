@@ -33,11 +33,12 @@ jobs:
               id: check_changes
               run: |
                   git fetch origin main
-                  if [ -z "$(git diff --name-only HEAD..origin/main)" ]; then
-                    echo "No changes detected. Skipping build."
+                  
+                  if [ -z "$(git diff --name-only HEAD..origin/main -- ${{ inputs.service-directory }})" ]; then
+                    echo "No changes detected in ${inputs.service-directory}. Skipping build."
                     echo "skip_build=true" >> $GITHUB_ENV
                   else
-                    echo "Changes detected. Proceeding with build."
+                    echo "Changes detected in ${inputs.service-directory}. Proceeding with build."
                     echo "skip_build=false" >> $GITHUB_ENV
                   fi
 
