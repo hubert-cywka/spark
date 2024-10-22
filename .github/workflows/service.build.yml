@@ -1,0 +1,80 @@
+name: Build and Push Docker Image
+
+on:
+    workflow_call:
+        inputs:
+            service-directory:
+                required: true
+                type: string
+            service-name:
+                required: true
+                type: string
+            image-tag:
+                required: false
+                type: string
+                default: 'latest'
+        secrets:
+            DOCKER_HUB_USERNAME:
+                required: true
+            DOCKER_HUB_TOKEN:
+                required: true
+            PACKAGES_REGISTRY_PAT:
+                required: true
+
+jobs:
+    preparation:
+        runs-on: ubuntu-latest
+
+        outputs:
+            changes-probe: ${{ steps.filter.outputs.changes-probe }}
+
+        steps:
+            - uses: actions/checkout@v3
+            - name: Filter paths
+              uses: dorny/paths-filter@v2
+              id: filter
+              with:
+                  filters: |
+                      changes-probe:
+                        - ${{ inputs.service-directory }}/**
+
+    build:
+        runs-on: ubuntu-latest
+        needs: preparation
+        if: ${{ needs.preparation.outputs.changes-probe == 'true' }}
+
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  ref: ${{ github.ref }}
+                  fetch-depth: 1
+                  clean: true
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Create .npmrc file
+              working-directory: ${{ inputs.service-directory }}
+              run: |
+                  echo "//npm.pkg.github.com/:_authToken=${{ secrets.PACKAGES_REGISTRY_PAT }}" > .npmrc
+                  echo "@hubert-cywka:registry=https://npm.pkg.github.com/" >> .npmrc
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v2
+
+            - name: Log in to Docker Hub
+              uses: docker/login-action@v2
+              with:
+                  username: ${{ secrets.DOCKER_HUB_USERNAME }}
+                  password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+            - name: Build Docker image
+              working-directory: ${{ inputs.service-directory }}
+              run: |
+                  docker build -t ${{ inputs.service-name }} .
+
+            - name: Tag Docker image
+              run: |
+                  docker tag ${{ inputs.service-name }} hejs22/codename-${{ inputs.service-name }}:${{ inputs.image-tag }}
+
+            - name: Push Docker image to Docker Hub
+              run: |
+                  docker push hejs22/codename-${{ inputs.service-name }}:${{ inputs.image-tag }}

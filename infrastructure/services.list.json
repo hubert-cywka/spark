@@ -1,34 +1,42 @@
 {
     "db": {
         "port": 5432,
-        "detachable": false
+        "detachable": false,
+        "customImage": false
     },
     "redis": {
         "port": 6379,
-        "detachable": false
+        "detachable": false,
+        "customImage": false
     },
     "proxy-service": {
         "port": 5000,
-        "detachable": true
+        "detachable": true,
+        "customImage": true
     },
     "ui-service": {
-        "port": 5173,
-        "detachable": true
+        "port": 5100,
+        "detachable": true,
+        "customImage": true
     },
     "authentication-service": {
         "port": 5200,
-        "detachable": true
+        "detachable": true,
+        "customImage": true
     },
     "users-service": {
         "port": 5300,
-        "detachable": true
+        "detachable": true,
+        "customImage": true
     },
     "stitching-service": {
         "port": 5400,
-        "detachable": true
+        "detachable": true,
+        "customImage": true
     },
     "mailing-service": {
         "port": 5500,
-        "detachable": true
+        "detachable": true,
+        "customImage": true
     }
 }
