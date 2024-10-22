@@ -7,10 +7,10 @@ import { ToastProps } from "@/components/toast/types/Toast";
 export const Toast = ({ onClose, title, message, variant = "info" }: ToastProps) => {
     return (
         <ToastStyled.Container variant={variant}>
-            <p>
+            <div>
                 <ToastStyled.Title>{title}</ToastStyled.Title>
                 <ToastStyled.Message>{message}</ToastStyled.Message>
-            </p>
+            </div>
             <IconButton onPress={onClose} variant="subtle" size="1">
                 <IconX />
             </IconButton>

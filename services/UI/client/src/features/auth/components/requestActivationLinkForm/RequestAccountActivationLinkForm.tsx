@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+
 import { Button } from "@/components/button/Button";
 import { Field } from "@/components/input/Field";
 import {
@@ -14,8 +16,15 @@ export const RequestActivationLinkForm = ({ onSubmit, isLoading, isDisabled }: R
     const t = useTranslate();
     const { control, handleSubmit } = useRequestAccountActivationLinkForm();
 
+    const internalOnSubmit = useCallback(
+        (inputs: RequestAccountActivationFormInputs) => {
+            onSubmit({ email: inputs.email.trim() });
+        },
+        [onSubmit]
+    );
+
     return (
-        <AuthenticationFormStyled.Form onSubmit={handleSubmit(onSubmit)}>
+        <AuthenticationFormStyled.Form onSubmit={handleSubmit(internalOnSubmit)}>
             <AuthenticationFormStyled.Header>{t("authentication.accountActivation.form.header")}</AuthenticationFormStyled.Header>
             <AuthenticationFormStyled.Caption>{t("authentication.accountActivation.form.caption")}</AuthenticationFormStyled.Caption>
             <AuthenticationFormStyled.Caption>{t("authentication.accountActivation.form.warning")}</AuthenticationFormStyled.Caption>

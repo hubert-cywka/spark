@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { FormProvider } from "react-hook-form";
 
 import { Anchor } from "@/components/anchor/Anchor";
@@ -20,9 +21,21 @@ export const RegisterForm = ({ onSubmit, onLoginLinkClick, isLoading, isDisabled
     const form = useRegisterForm();
     const { handleSubmit, control } = form;
 
+    const internalOnSubmit = useCallback(
+        (inputs: RegisterFormInputs) => {
+            onSubmit({
+                ...inputs,
+                email: inputs.email.trim(),
+                lastName: inputs.lastName.trim(),
+                firstName: inputs.firstName.trim(),
+            });
+        },
+        [onSubmit]
+    );
+
     return (
         <FormProvider {...form}>
-            <AuthenticationFormStyled.Form onSubmit={handleSubmit(onSubmit)}>
+            <AuthenticationFormStyled.Form onSubmit={handleSubmit(internalOnSubmit)}>
                 <AuthenticationFormStyled.Header>{t("authentication.registration.form.header")}</AuthenticationFormStyled.Header>
                 <AuthenticationFormStyled.Caption>
                     {t("authentication.registration.form.alreadyRegistered.caption")}{" "}
