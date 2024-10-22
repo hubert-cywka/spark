@@ -1,0 +1,40 @@
+name: Build services
+
+on:
+    push:
+        branches: ["main"]
+        paths:
+            - "services/**"
+
+    pull_request:
+        types: [opened, synchronize, reopened]
+        branches: ["main"]
+        paths:
+            - "services/npm/**"
+            - ".github/workflows/service.*.yml"
+            - ".github/workflows/services.*.yml"
+
+concurrency:
+    group: ${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    build:
+        strategy:
+            matrix:
+                service:
+                    - { name: 'ui-service', directory: 'services/UI' }
+                    - { name: 'authentication-service', directory: 'services/Authentication' }
+                    - { name: 'mailing-service', directory: 'services/Mailing' }
+                    - { name: 'users-service', directory: 'services/Users' }
+                    - { name: 'proxy-service', directory: 'services/Proxy' }
+                    - { name: 'stitching-service', directory: 'services/Stitching' }
+
+        uses: ./.github/workflows/service.build.yml
+        with:
+            image-tag: "latest"
+            service-directory: ${{ matrix.service.directory }}
+            service-name: ${{ matrix.service.name }}
+        secrets:
+            DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN  }}
+            DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}

@@ -1,0 +1,68 @@
+name: Build and Push Docker Image
+
+on:
+    workflow_call:
+        inputs:
+            service-directory:
+                required: true
+                type: string
+            service-name:
+                required: true
+                type: string
+            image-tag:
+                required: false
+                type: string
+                default: 'latest'
+        secrets:
+            DOCKER_HUB_USERNAME:
+                required: true
+            DOCKER_HUB_TOKEN:
+                required: true
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@v2
+              with:
+                  ref: main
+
+            - name: Check for changes
+              id: check_changes
+              run: |
+                  git fetch origin main
+                  if [ -z "$(git diff --name-only HEAD..origin/main)" ]; then
+                    echo "No changes detected. Skipping build."
+                    echo "skip_build=true" >> $GITHUB_ENV
+                  else
+                    echo "Changes detected. Proceeding with build."
+                    echo "skip_build=false" >> $GITHUB_ENV
+                  fi
+
+            - name: Exit if no changes
+              if: env.skip_build == 'true'
+              run: exit 0
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v2
+
+            - name: Log in to Docker Hub
+              uses: docker/login-action@v2
+              with:
+                  username: ${{ secrets.DOCKER_HUB_USERNAME }}
+                  password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+            - name: Build Docker image
+              working-directory: ${{ inputs.service-directory }}
+              run: |
+                  docker build -t ${{ inputs.service-name }} .
+
+            - name: Tag Docker image
+              run: |
+                  docker tag ${{ inputs.service-name }} hejs22/codename-${{ inputs.service-name }}:${{ inputs.image-tag }}
+
+            - name: Push Docker image to Docker Hub
+              run: |
+                  docker push hejs22/codename-${{ inputs.service-name }}:${{ inputs.image-tag }}
