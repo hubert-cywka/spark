@@ -20,14 +20,14 @@ on:
                 required: true
 
 jobs:
-    build:
+    prepare:
         runs-on: ubuntu-latest
 
         steps:
             - name: Check out repository
               uses: actions/checkout@v2
               with:
-                  ref: main
+                ref: main
 
             - name: Check for changes
               id: check_changes
@@ -41,11 +41,16 @@ jobs:
                   else
                     echo "Changes detected in ${INPUTS_SERVICE_DIRECTORY}. Proceeding with build."
                     echo "skip_build=false" >> $GITHUB_ENV
-                  fi
+                  fise" >> $GITHUB_ENV
+                    fi
 
+    build:
+        runs-on: ubuntu-latest
+        if: env.skip_build == 'false'
+
+        steps:
             - name: Exit if no changes
-              if: env.skip_build == 'true'
-              run: exit 0
+              if: env.skip_build != 'true'
 
             - name: Create .npmrc file
               working-directory: ${{ inputs.service-directory }}
