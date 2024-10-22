@@ -42,13 +42,18 @@ jobs:
         if: ${{ needs.preparation.outputs.changes-probe == 'true' }}
 
         steps:
-            - name: Debug
-              run: ls -la
+            - uses: actions/checkout@v3
+              with:
+                  ref: ${{ github.ref }}
+                  fetch-depth: 1
+                  clean: true
+                  token: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Create .npmrc file
+              working-directory: ${{ inputs.service-directory }}
               run: |
-                  echo "//npm.pkg.github.com/:_authToken=${{ secrets.PACKAGES_REGISTRY_PAT }}" > ${{ inputs.service-directory }}/.npmrc
-                  echo "@hubert-cywka:registry=https://npm.pkg.github.com/" >> ${{ inputs.service-directory }}/.npmrc
+                  echo "//npm.pkg.github.com/:_authToken=${{ secrets.PACKAGES_REGISTRY_PAT }}" > .npmrc
+                  echo "@hubert-cywka:registry=https://npm.pkg.github.com/" >> .npmrc
 
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v2
@@ -60,8 +65,9 @@ jobs:
                   password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
             - name: Build Docker image
+              working-directory: ${{ inputs.service-directory }}
               run: |
-                  docker build ${{ inputs.service-directory }} -t ${{ inputs.service-name }} .
+                  docker build -t ${{ inputs.service-name }} .
 
             - name: Tag Docker image
               run: |
