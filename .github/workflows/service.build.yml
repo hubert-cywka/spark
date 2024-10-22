@@ -45,6 +45,11 @@ jobs:
               if: env.skip_build == 'true'
               run: exit 0
 
+            - name: Create .npmrc file
+              run: |
+                  echo "//npm.pkg.github.com/:_authToken=${{ secrets.PACKAGES_REGISTRY_PAT }}" > .npmrc
+                  echo "@hubert-cywka:registry=https://npm.pkg.github.com/" >> .npmrc
+
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v2
 
