@@ -20,31 +20,25 @@ on:
                 required: true
 
 jobs:
-    prepare:
+    preparation:
         runs-on: ubuntu-latest
 
-        steps:
-            - name: Check out repository
-              uses: actions/checkout@v2
-              with:
-                ref: main
+        outputs:
+            changes-probe: ${{ steps.filter.outputs.changes-probe }}
 
-            - name: Check for changes
-              id: check_changes
-              run: |
-                  git fetch origin main
-                  
-                  if [ -z "$(git diff --name-only HEAD..origin/main -- ${INPUTS_SERVICE_DIRECTORY})" ]; then
-                    echo "No changes detected in ${INPUTS_SERVICE_DIRECTORY}. Skipping build."
-                    echo "skip_build=true" >> $GITHUB_ENV
-                  else
-                    echo "Changes detected in ${INPUTS_SERVICE_DIRECTORY}. Proceeding with build."
-                    echo "skip_build=false" >> $GITHUB_ENV
-                  fi
+        steps:
+            - uses: actions/checkout@v3
+            - name: Filter paths
+              uses: dorny/paths-filter@v2
+              id: filter
+              with:
+                  filters: |
+                      changes-probe:
+                        - ${{ inputs.service-directory }}/**
 
     build:
         runs-on: ubuntu-latest
-        if: env.skip_build == 'false'
+        if: ${{ needs.preparation.outputs.changes-probe == 'true' }}
 
         steps:
             - name: Create .npmrc file
