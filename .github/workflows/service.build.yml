@@ -49,9 +49,6 @@ jobs:
         if: env.skip_build == 'false'
 
         steps:
-            - name: Exit if no changes
-              if: env.skip_build != 'true'
-
             - name: Create .npmrc file
               working-directory: ${{ inputs.service-directory }}
               run: |
