@@ -48,6 +48,7 @@ jobs:
               run: exit 0
 
             - name: Create .npmrc file
+              working-directory: ${{ inputs.service-directory }}
               run: |
                   echo "//npm.pkg.github.com/:_authToken=${{ secrets.PACKAGES_REGISTRY_PAT }}" > .npmrc
                   echo "@hubert-cywka:registry=https://npm.pkg.github.com/" >> .npmrc
