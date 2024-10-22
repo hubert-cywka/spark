@@ -18,6 +18,8 @@ on:
                 required: true
             DOCKER_HUB_TOKEN:
                 required: true
+            PACKAGES_REGISTRY_PAT:
+                required: true
 
 jobs:
     preparation:
