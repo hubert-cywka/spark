@@ -41,8 +41,7 @@ jobs:
                   else
                     echo "Changes detected in ${INPUTS_SERVICE_DIRECTORY}. Proceeding with build."
                     echo "skip_build=false" >> $GITHUB_ENV
-                  fise" >> $GITHUB_ENV
-                    fi
+                  fi
 
     build:
         runs-on: ubuntu-latest
