@@ -26,7 +26,7 @@ const Title = styled.h1`
     `}
 `;
 
-const Message = styled.p`
+const Message = styled.span`
     ${({ theme }) => css`
         font: ${theme.typography.body._100};
     `}

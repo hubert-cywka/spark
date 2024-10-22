@@ -10,6 +10,7 @@ export const PageStyled = {
 
             width: 100vw;
             min-height: 100vh;
+            padding: ${theme.spacing._500};
 
             background: ${theme.color.neutral.background._300};
             color: ${theme.color.neutral.text._100};
@@ -19,7 +20,8 @@ export const PageStyled = {
     InnerWrapper: styled.div`
         ${({ theme }) => css`
             font: ${theme.typography.body._100};
-            width: ${theme.breakpoints.xl};
+            max-width: ${theme.breakpoints.xl};
+            width: 100%;
 
             display: flex;
             flex-direction: column;
