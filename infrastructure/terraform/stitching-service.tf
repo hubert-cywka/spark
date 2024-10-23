@@ -1,7 +1,7 @@
 resource "kubernetes_deployment" "stitching_service" {
     metadata {
         name      = "stitching-service"
-        namespace = kubernetes_namespace.app_namespace.metadata[0].name
+        namespace = kubernetes_namespace.codename.metadata[0].name
     }
 
     spec {
@@ -25,37 +25,37 @@ resource "kubernetes_deployment" "stitching_service" {
                     image = "hejs22/codename-stitching-service:latest"
 
                     port {
-                        container_port = var.STITCHING_SERVICE_INTERNAL_PORT
+                        container_port = var.STITCHING_SERVICE_PORT
                     }
 
                     env {
                         name  = "PORT"
-                        value = var.STITCHING_SERVICE_INTERNAL_PORT
+                        value = var.STITCHING_SERVICE_PORT
                     }
                     env {
                         name  = "USERS_SERVICE_SUBGRAPH_HOST"
-                        value = var.USERS_SERVICE_HOST
+                        value = "${kubernetes_service.users_service.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
                     }
                 }
             }
         }
     }
+    depends_on = [kubernetes_deployment.users_service]
 }
 
 resource "kubernetes_service" "stitching_service" {
     metadata {
         name      = "stitching-service"
-        namespace = kubernetes_namespace.app_namespace.metadata[0].name
+        namespace = kubernetes_namespace.codename.metadata[0].name
     }
 
     spec {
         selector = {
-            app = "stitching-service"
+            app = kubernetes_deployment.stitching_service.spec[0].template[0].metadata[0].labels.app
         }
 
         port {
-            port        = var.STITCHING_SERVICE_EXTERNAL_PORT
-            target_port = var.STITCHING_SERVICE_INTERNAL_PORT
+            port = var.STITCHING_SERVICE_PORT
         }
 
         type = "ClusterIP"

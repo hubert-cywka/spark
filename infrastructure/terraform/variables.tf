@@ -10,15 +10,7 @@ variable "DATABASE_PASSWORD" {
     type        = string
 }
 
-variable "DATABASE_HOST" {
-    type        = string
-}
-
 variable "APP_URL" {
-    type        = string
-}
-
-variable "REDIS_HOST" {
     type        = string
 }
 
@@ -26,16 +18,8 @@ variable "REDIS_PORT" {
     type        = number
 }
 
-variable "AUTHENTICATION_SERVICE_INTERNAL_PORT" {
+variable "AUTHENTICATION_SERVICE_PORT" {
     type        = number
-}
-
-variable "AUTHENTICATION_SERVICE_EXTERNAL_PORT" {
-    type        = number
-}
-
-variable "AUTHENTICATION_SERVICE_HOST" {
-    type        = string
 }
 
 variable "AUTHENTICATION_SERVICE_DATABASE_NAME" {
@@ -66,55 +50,27 @@ variable "AUTHENTICATION_SERVICE_THROTTLE_LIMIT" {
     type        = number
 }
 
-variable "USERS_SERVICE_INTERNAL_PORT" {
+variable "USERS_SERVICE_PORT" {
     type        = number
-}
-
-variable "USERS_SERVICE_EXTERNAL_PORT" {
-    type        = number
-}
-
-variable "USERS_SERVICE_HOST" {
-    type        = string
 }
 
 variable "USERS_SERVICE_DATABASE_NAME" {
     type        = string
 }
 
-variable "STITCHING_SERVICE_INTERNAL_PORT" {
+variable "STITCHING_SERVICE_PORT" {
     type        = number
 }
 
-variable "STITCHING_SERVICE_EXTERNAL_PORT" {
+variable "UI_SERVICE_PORT" {
     type        = number
-}
-
-variable "STITCHING_SERVICE_HOST" {
-    type        = string
-}
-
-variable "UI_SERVICE_INTERNAL_PORT" {
-    type        = number
-}
-
-variable "UI_SERVICE_EXTERNAL_PORT" {
-    type        = number
-}
-
-variable "UI_SERVICE_HOST" {
-    type        = string
 }
 
 variable "UI_SERVICE_STATIC_FILES_DIR" {
     type        = string
 }
 
-variable "PROXY_SERVICE_INTERNAL_PORT" {
-    type        = number
-}
-
-variable "PROXY_SERVICE_EXTERNAL_PORT" {
+variable "PROXY_SERVICE_PORT" {
     type        = number
 }
 
@@ -122,11 +78,7 @@ variable "PROXY_SERVICE_ALLOWED_ORIGINS" {
     type        = string
 }
 
-variable "MAILING_SERVICE_INTERNAL_PORT" {
-    type        = number
-}
-
-variable "MAILING_SERVICE_EXTERNAL_PORT" {
+variable "MAILING_SERVICE_PORT" {
     type        = number
 }
 

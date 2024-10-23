@@ -1,7 +1,7 @@
 resource "kubernetes_deployment" "redis" {
     metadata {
         name      = "redis"
-        namespace = kubernetes_namespace.app_namespace.metadata[0].name
+        namespace = kubernetes_namespace.codename.metadata[0].name
     }
 
     spec {
@@ -23,6 +23,7 @@ resource "kubernetes_deployment" "redis" {
                 container {
                     name  = "redis"
                     image = "redis:6.2-alpine"
+
                     port {
                         container_port = var.REDIS_PORT
                     }
@@ -45,17 +46,16 @@ resource "kubernetes_deployment" "redis" {
 resource "kubernetes_service" "redis" {
     metadata {
         name      = "redis"
-        namespace = kubernetes_namespace.app_namespace.metadata[0].name
+        namespace = kubernetes_namespace.codename.metadata[0].name
     }
 
     spec {
         selector = {
-            app = "redis"
+            app = kubernetes_deployment.redis.spec[0].template[0].metadata[0].labels.app
         }
 
         port {
-            port        = var.REDIS_PORT
-            target_port = var.REDIS_PORT
+            port = var.REDIS_PORT
         }
 
         type = "ClusterIP"

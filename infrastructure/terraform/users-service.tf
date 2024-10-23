@@ -1,7 +1,7 @@
 resource "kubernetes_deployment" "users_service" {
     metadata {
         name      = "users-service"
-        namespace = kubernetes_namespace.app_namespace.metadata[0].name
+        namespace = kubernetes_namespace.codename.metadata[0].name
     }
 
     spec {
@@ -25,12 +25,12 @@ resource "kubernetes_deployment" "users_service" {
                     image = "hejs22/codename-users-service:latest"
 
                     port {
-                        container_port = var.USERS_SERVICE_INTERNAL_PORT
+                        container_port = var.USERS_SERVICE_PORT
                     }
 
                     env {
                         name  = "PORT"
-                        value = var.USERS_SERVICE_INTERNAL_PORT
+                        value = var.USERS_SERVICE_PORT
                     }
                     env {
                         name  = "DATABASE_PORT"
@@ -46,7 +46,7 @@ resource "kubernetes_deployment" "users_service" {
                     }
                     env {
                         name  = "DATABASE_HOST"
-                        value = var.DATABASE_HOST
+                        value = "${kubernetes_service.postgres.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
                     }
                     env {
                         name  = "DATABASE_NAME"
@@ -54,7 +54,7 @@ resource "kubernetes_deployment" "users_service" {
                     }
                     env {
                         name  = "PUBSUB_HOST"
-                        value = var.REDIS_HOST
+                        value = "${kubernetes_service.redis.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
                     }
                     env {
                         name  = "PUBSUB_PORT"
@@ -64,22 +64,22 @@ resource "kubernetes_deployment" "users_service" {
             }
         }
     }
+    depends_on = [kubernetes_deployment.postgres, kubernetes_deployment.redis]
 }
 
 resource "kubernetes_service" "users_service" {
     metadata {
         name      = "users-service"
-        namespace = kubernetes_namespace.app_namespace.metadata[0].name
+        namespace = kubernetes_namespace.codename.metadata[0].name
     }
 
     spec {
         selector = {
-            app = "users-service"
+            app = kubernetes_deployment.users_service.spec[0].template[0].metadata[0].labels.app
         }
 
         port {
-            port        = var.USERS_SERVICE_EXTERNAL_PORT
-            target_port = var.USERS_SERVICE_INTERNAL_PORT
+            port = var.USERS_SERVICE_PORT
         }
 
         type = "ClusterIP"

@@ -1,7 +1,7 @@
 resource "kubernetes_deployment" "postgres" {
     metadata {
         name      = "postgres"
-        namespace = kubernetes_namespace.app_namespace.metadata[0].name
+        namespace = kubernetes_namespace.codename.metadata[0].name
     }
 
     spec {
@@ -36,7 +36,7 @@ resource "kubernetes_deployment" "postgres" {
                     }
                     env {
                         name  = "POSTGRES_DB"
-                        value = var.DATABASE_HOST
+                        value = "db" // TODO
                     }
                     volume_mount {
                         mount_path = "/var/lib/postgresql/data"
@@ -57,12 +57,12 @@ resource "kubernetes_deployment" "postgres" {
 resource "kubernetes_service" "postgres" {
     metadata {
         name      = "postgres"
-        namespace = kubernetes_namespace.app_namespace.metadata[0].name
+        namespace = kubernetes_namespace.codename.metadata[0].name
     }
 
     spec {
         selector = {
-            app = "postgres"
+            app = kubernetes_deployment.postgres.spec[0].template[0].metadata[0].labels.app
         }
 
         port {

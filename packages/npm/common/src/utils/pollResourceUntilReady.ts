@@ -17,7 +17,7 @@ export async function pollResourceUntilReady(
                 return;
             }
         } catch (err) {
-            logger?.warn("Can't connect to database yet.", {
+            logger?.warn("Can't connect to resource yet.", {
                 attempt,
                 err,
             });
