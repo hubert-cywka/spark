@@ -1,0 +1,146 @@
+resource "kubernetes_deployment" "backend" {
+    metadata {
+        name      = "backend"
+        namespace = kubernetes_namespace.codename.metadata[0].name
+    }
+
+    spec {
+        replicas = 1
+
+        selector {
+            match_labels = {
+                app = "backend"
+            }
+        }
+
+        template {
+            metadata {
+                labels = {
+                    app = "backend"
+                }
+            }
+
+            spec {
+                container {
+                    name  = "backend"
+                    image = "hejs22/codename-backend:latest"
+
+                    port {
+                        container_port = var.BACKEND_PORT
+                    }
+
+                    env {
+                        name  = "PORT"
+                        value = var.BACKEND_PORT
+                    }
+
+                    env {
+                        name  = "DATABASE_PORT"
+                        value = var.DATABASE_PORT
+                    }
+                    env {
+                        name  = "DATABASE_USERNAME"
+                        value = var.DATABASE_USERNAME
+                    }
+                    env {
+                        name  = "DATABASE_PASSWORD"
+                        value = var.DATABASE_PASSWORD
+                    }
+                    env {
+                        name  = "DATABASE_HOST"
+                        value = "${kubernetes_service.postgres.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
+                    }
+
+                    env {
+                        name  = "PUBSUB_HOST"
+                        value = "${kubernetes_service.redis.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
+                    }
+                    env {
+                        name  = "PUBSUB_PORT"
+                        value = var.PUBSUB_PORT
+                    }
+
+                    env {
+                        name  = "JWT_SIGNING_SECRET"
+                        value = var.JWT_SIGNING_SECRET
+                    }
+                    env {
+                        name  = "JWT_EXPIRATION_TIME_IN_SECONDS"
+                        value = var.JWT_EXPIRATION_TIME_IN_SECONDS
+                    }
+                    env {
+                        name  = "REFRESH_TOKEN_SIGNING_SECRET"
+                        value = var.REFRESH_TOKEN_SIGNING_SECRET
+                    }
+                    env {
+                        name  = "REFRESH_TOKEN_EXPIRATION_TIME_IN_SECONDS"
+                        value = var.REFRESH_TOKEN_EXPIRATION_TIME_IN_SECONDS
+                    }
+
+                    env {
+                        name  = "AUTH_DATABASE_NAME"
+                        value = var.AUTH_DATABASE_NAME
+                    }
+                    env {
+                        name  = "AUTH_THROTTLE_LIMIT"
+                        value = var.AUTH_THROTTLE_LIMIT
+                    }
+                    env {
+                        name  = "AUTH_THROTTLE_TTL_IN_MS"
+                        value = var.AUTH_THROTTLE_TTL_IN_MS
+                    }
+
+                    env {
+                        name  = "USERS_DATABASE_NAME"
+                        value = var.USERS_DATABASE_NAME
+                    }
+
+                    env {
+                        name  = "MAIL_SENDER_NAME"
+                        value = var.MAIL_SENDER_NAME
+                    }
+                    env {
+                        name  = "MAIL_SENDER_USER"
+                        value = var.MAIL_SENDER_USER
+                    }
+                    env {
+                        name  = "MAIL_SENDER_PASSWORD"
+                        value = var.MAIL_SENDER_PASSWORD
+                    }
+                    env {
+                        name  = "MAIL_SENDER_HOST"
+                        value = var.MAIL_SENDER_HOST
+                    }
+                    env {
+                        name  = "MAIL_SENDER_PORT"
+                        value = var.MAIL_SENDER_PORT
+                    }
+                    env {
+                        name  = "MAIL_DEBUG_MODE"
+                        value = var.MAIL_DEBUG_MODE
+                    }
+                }
+            }
+        }
+    }
+    depends_on = [kubernetes_deployment.postgres, kubernetes_deployment.redis]
+}
+
+resource "kubernetes_service" "backend" {
+    metadata {
+        name      = "backend"
+        namespace = kubernetes_namespace.codename.metadata[0].name
+    }
+
+    spec {
+        selector = {
+            app = kubernetes_deployment.backend.spec[0].template[0].metadata[0].labels.app
+        }
+
+        port {
+            port = var.BACKEND_PORT
+        }
+
+        type = "ClusterIP"
+    }
+}

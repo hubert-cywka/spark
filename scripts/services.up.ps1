@@ -106,8 +106,7 @@ Import-Module powershell-yaml
 # Create docker-compose.local.override.yml file
 # In that file we want to override envoy related envs, so envoy can proxy to services running on host machine.
 # Same applies to Stitching service, as it needs to know where are the GraphQL sub-graphs.
-$ProxyService = "proxy-service"
-$StitchingService = "stitching-service"
+$GatewayService = "gateway"
 $DockerComposeLocal = Get-Content -Path $DockerComposeRootDir/docker-compose.local.yml | ConvertFrom-Yaml
 
 foreach ($DetachedService in $DetachedServices) {
@@ -116,11 +115,9 @@ foreach ($DetachedService in $DetachedServices) {
 
     $EnvPort = "$($EnvNamePrefix)_PORT=$($PortValue)"
     $EnvAddress = "$($EnvNamePrefix)_ADDRESS=host.docker.internal"
-    $SubgraphHost = "$($EnvNamePrefix)_SUBGRAPH_HOST=host.docker.internal:$($PortValue)"
 
-    Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$ProxyService.environment) -newEnvVariable $EnvAddress
-    Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$ProxyService.environment) -newEnvVariable $EnvPort
-    Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$StitchingService.environment) -newEnvVariable $SubgraphHost
+    Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvAddress
+    Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvPort
 }
 
 $DockerComposeLocal | ConvertTo-Yaml | Out-File -FilePath $DockerComposeRootDir/docker-compose.local.override.yml -Encoding UTF8

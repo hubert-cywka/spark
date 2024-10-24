@@ -10,7 +10,7 @@ on:
         types: [opened, synchronize, reopened]
         branches: ["main"]
         paths:
-            - "services/npm/**"
+            - "services/**"
             - ".github/workflows/service.*.yml"
             - ".github/workflows/services.*.yml"
 
@@ -23,12 +23,9 @@ jobs:
         strategy:
             matrix:
                 service:
-                    - { name: 'ui-service', directory: 'services/UI' }
-                    - { name: 'authentication-service', directory: 'services/Authentication' }
-                    - { name: 'mailing-service', directory: 'services/Mailing' }
-                    - { name: 'users-service', directory: 'services/Users' }
-                    - { name: 'proxy-service', directory: 'services/Proxy' }
-                    - { name: 'stitching-service', directory: 'services/Stitching' }
+                    - { name: 'frontend', directory: 'services/Frontend' }
+                    - { name: 'backend', directory: 'services/Backend' }
+                    - { name: 'gateway', directory: 'services/Gateway' }
 
         uses: ./.github/workflows/service.build.yml
         with:

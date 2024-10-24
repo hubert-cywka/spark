@@ -25,7 +25,7 @@ resource "kubernetes_deployment" "redis" {
                     image = "redis:6.2-alpine"
 
                     port {
-                        container_port = var.REDIS_PORT
+                        container_port = var.PUBSUB_PORT
                     }
                     volume_mount {
                         mount_path = "/data"
@@ -55,7 +55,7 @@ resource "kubernetes_service" "redis" {
         }
 
         port {
-            port = var.REDIS_PORT
+            port = var.PUBSUB_PORT
         }
 
         type = "ClusterIP"

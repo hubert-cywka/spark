@@ -19,9 +19,9 @@ resource "kubernetes_ingress_v1" "ingress" {
 
                     backend {
                         service {
-                            name = kubernetes_service.proxy_service.metadata[0].name
+                            name = kubernetes_service.gateway.metadata[0].name
                             port {
-                                number = var.PROXY_SERVICE_PORT
+                                number = var.GATEWAY_PORT
                             }
                         }
                     }

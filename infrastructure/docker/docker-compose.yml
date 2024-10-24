@@ -14,54 +14,29 @@ services:
         networks:
             - services_network
 
-    proxy-service:
+    backend:
         build:
-            context: ../../services/Proxy
-            dockerfile: Dockerfile
-        networks:
-            - services_network
-
-    ui-service:
-        build:
-            context: ../../services/UI
-            dockerfile: Dockerfile
-        networks:
-            - services_network
-
-    authentication-service:
-        build:
-            context: ../../services/Authentication
+            context: ../../services/Backend
             dockerfile: Dockerfile
         networks:
             - services_network
         depends_on:
             - redis
-
-    users-service:
-        build:
-            context: ../../services/Users
-            dockerfile: Dockerfile
-        networks:
-            - services_network
-        depends_on:
             - db
-            - redis
 
-    stitching-service:
+    frontend:
         build:
-            context: ../../services/Stitching
+            context: ../../services/Frontend
             dockerfile: Dockerfile
         networks:
             - services_network
 
-    mailing-service:
+    gateway:
         build:
-            context: ../../services/Mailing
+            context: ../../services/Gateway
             dockerfile: Dockerfile
         networks:
             - services_network
-        depends_on:
-            - redis
 
 networks:
     services_network:
