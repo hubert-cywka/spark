@@ -1,0 +1,54 @@
+// TODO: Split terraform into modules
+
+provider "kubernetes" {
+    config_path = "~/.kube/config"
+}
+
+resource "kubernetes_namespace" "codename" {
+    metadata {
+        name = "codename"
+    }
+}
+
+resource "kubernetes_config_map" "app_config" {
+    metadata {
+        name      = "app-config"
+        namespace = kubernetes_namespace.codename.metadata[0].name
+    }
+
+    data = {
+        DATABASE_PORT                                       = var.DATABASE_PORT
+        DATABASE_USERNAME                                   = var.DATABASE_USERNAME
+        DATABASE_PASSWORD                                   = var.DATABASE_PASSWORD
+
+        APP_URL                                             = var.APP_URL
+
+        PUBSUB_PORT                                          = var.PUBSUB_PORT
+
+        BACKEND_PORT                                        = var.BACKEND_PORT
+        JWT_SIGNING_SECRET                                  = var.JWT_SIGNING_SECRET
+        JWT_EXPIRATION_TIME_IN_SECONDS                      = var.JWT_EXPIRATION_TIME_IN_SECONDS
+        REFRESH_TOKEN_SIGNING_SECRET                        = var.REFRESH_TOKEN_SIGNING_SECRET
+        REFRESH_TOKEN_EXPIRATION_TIME_IN_SECONDS            = var.REFRESH_TOKEN_EXPIRATION_TIME_IN_SECONDS
+
+        AUTH_DATABASE_NAME                                  = var.AUTH_DATABASE_NAME
+        AUTH_THROTTLE_TTL_IN_MS                             = var.AUTH_THROTTLE_TTL_IN_MS
+        AUTH_THROTTLE_LIMIT                                 = var.AUTH_THROTTLE_LIMIT
+
+        USERS_DATABASE_NAME                                 = var.USERS_DATABASE_NAME
+
+        FRONTEND_PORT                                       = var.FRONTEND_PORT
+        FRONTEND_STATIC_FILES_DIR                           = var.FRONTEND_STATIC_FILES_DIR
+
+        GATEWAY_PORT                                        = var.GATEWAY_PORT
+        GATEWAY_ALLOWED_ORIGINS                             = var.GATEWAY_ALLOWED_ORIGINS
+
+        MAIL_SENDER_PORT                                    = var.MAIL_SENDER_PORT
+        MAIL_SENDER_NAME                                    = var.MAIL_SENDER_NAME
+        MAIL_SENDER_USER                                    = var.MAIL_SENDER_USER
+        MAIL_SENDER_PASSWORD                                = var.MAIL_SENDER_PASSWORD
+        MAIL_SENDER_PORT                                    = var.MAIL_SENDER_PORT
+        MAIL_DEBUG_MODE                                     = var.MAIL_DEBUG_MODE
+    }
+}
+

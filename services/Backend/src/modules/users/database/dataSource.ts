@@ -1,0 +1,24 @@
+import { configDotenv } from "dotenv";
+import { DataSource } from "typeorm";
+
+import { AppConfig } from "@/config/configuration";
+import { AccountEntity } from "@/modules/identity/account/entities/AccountEntity";
+import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
+
+configDotenv();
+
+const config = AppConfig();
+
+export const dataSource = new DataSource({
+    type: "postgres",
+    port: parseInt(config.modules.users.database.port ?? ""),
+    host: config.modules.users.database.host,
+    username: config.modules.users.database.username,
+    password: config.modules.users.database.password,
+    database: config.modules.users.database.name,
+    synchronize: false,
+    dropSchema: false,
+    migrationsRun: false,
+    entities: [AccountEntity, RefreshTokenEntity],
+    migrations: [],
+});

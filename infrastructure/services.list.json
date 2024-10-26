@@ -7,28 +7,16 @@
         "port": 6379,
         "detachable": false
     },
-    "proxy-service": {
+    "gateway": {
         "port": 5000,
         "detachable": true
     },
-    "ui-service": {
-        "port": 5173,
+    "frontend": {
+        "port": 5100,
         "detachable": true
     },
-    "authentication-service": {
+    "backend": {
         "port": 5200,
-        "detachable": true
-    },
-    "users-service": {
-        "port": 5300,
-        "detachable": true
-    },
-    "stitching-service": {
-        "port": 5400,
-        "detachable": true
-    },
-    "mailing-service": {
-        "port": 5500,
         "detachable": true
     }
 }

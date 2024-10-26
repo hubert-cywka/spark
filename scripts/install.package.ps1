@@ -1,5 +1,8 @@
 $organization = "@hcywka"
 
+Write-Host "This script was deprecated after merging microservices into modular monolith." -ForegroundColor Red
+exit 1
+
 function List-Packages {
     $packages = Get-ChildItem -Directory -Path "packages/npm/"
     $index = 1

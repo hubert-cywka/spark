@@ -1,0 +1,95 @@
+variable "DATABASE_PORT" {
+    type        = number
+}
+
+variable "DATABASE_USERNAME" {
+    type        = string
+}
+
+variable "DATABASE_PASSWORD" {
+    type        = string
+}
+
+variable "APP_URL" {
+    type        = string
+}
+
+variable "PUBSUB_PORT" {
+    type        = number
+}
+
+variable "BACKEND_PORT" {
+    type        = number
+}
+
+variable "FRONTEND_PORT" {
+    type        = number
+}
+
+variable "GATEWAY_PORT" {
+    type        = number
+}
+
+variable "AUTH_DATABASE_NAME" {
+    type        = string
+}
+
+variable "JWT_SIGNING_SECRET" {
+    type        = string
+}
+
+variable "JWT_EXPIRATION_TIME_IN_SECONDS" {
+    type        = number
+}
+
+variable "REFRESH_TOKEN_SIGNING_SECRET" {
+    type        = string
+}
+
+variable "REFRESH_TOKEN_EXPIRATION_TIME_IN_SECONDS" {
+    type        = number
+}
+
+variable "AUTH_THROTTLE_TTL_IN_MS" {
+    type        = number
+}
+
+variable "AUTH_THROTTLE_LIMIT" {
+    type        = number
+}
+
+variable "USERS_DATABASE_NAME" {
+    type        = string
+}
+
+variable "FRONTEND_STATIC_FILES_DIR" {
+    type        = string
+}
+
+variable "GATEWAY_ALLOWED_ORIGINS" {
+    type        = string
+}
+
+variable "MAIL_SENDER_NAME" {
+    type        = string
+}
+
+variable "MAIL_SENDER_USER" {
+    type        = string
+}
+
+variable "MAIL_SENDER_PASSWORD" {
+    type        = string
+}
+
+variable "MAIL_SENDER_HOST" {
+    type        = string
+}
+
+variable "MAIL_SENDER_PORT" {
+    type        = number
+}
+
+variable "MAIL_DEBUG_MODE" {
+    type        = string
+}
