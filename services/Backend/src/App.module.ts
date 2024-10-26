@@ -6,6 +6,7 @@ import { LoggerModule } from "nestjs-pino";
 
 import { EventsModule } from "@/common/events";
 import { AppConfig } from "@/config/configuration";
+import { loggerOptions } from "@/lib/logger";
 import { IdentityModule } from "@/modules/identity/Identity.module";
 import { DatabaseModule } from "@/modules/identity/infrastructure/database/Database.module";
 import { MailModule } from "@/modules/mail/Mail.module";
@@ -17,7 +18,7 @@ import { UsersModule } from "@/modules/users/Users.module";
             load: [AppConfig],
             isGlobal: true,
         }),
-        LoggerModule.forRoot({ pinoHttp: {} }),
+        LoggerModule.forRoot({ pinoHttp: loggerOptions }),
         EventsModule.forRootAsync({
             global: true,
             useFactory: (configService: ConfigService) => ({

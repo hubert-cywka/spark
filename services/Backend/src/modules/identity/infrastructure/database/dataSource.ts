@@ -4,6 +4,7 @@ import { DataSource } from "typeorm";
 import { AppConfig } from "@/config/configuration";
 import { AccountEntity } from "@/modules/identity/account/entities/AccountEntity";
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
+import { InitIdentityModuleDatabase1729970567968 } from "@/modules/identity/infrastructure/database/migrations/1729970567968-InitIdentityModuleDatabase.ts";
 
 configDotenv();
 
@@ -20,5 +21,5 @@ export const dataSource = new DataSource({
     dropSchema: false,
     migrationsRun: false,
     entities: [AccountEntity, RefreshTokenEntity],
-    migrations: [],
+    migrations: [InitIdentityModuleDatabase1729970567968],
 });
