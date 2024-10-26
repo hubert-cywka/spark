@@ -1,8 +1,8 @@
 import { ActivateAccountRequestPayload, RequestActivationTokenRequestPayload } from "@/features/auth/types/authentication";
 import { apiClient } from "@/lib/apiClient/apiClient";
 
-const REQUEST_ACTIVATION_TOKEN_ENDPOINT = "/auth/account/activation/request";
-const ACTIVATE_ACCOUNT_ENDPOINT = "/auth/account/activation/redeem";
+const REQUEST_ACTIVATION_TOKEN_ENDPOINT = "/account/activation/request";
+const ACTIVATE_ACCOUNT_ENDPOINT = "/account/activation/redeem";
 
 export class AccountActivationService {
     public static async requestAccountActivationToken(payload: RequestActivationTokenRequestPayload) {

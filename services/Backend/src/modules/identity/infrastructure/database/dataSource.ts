@@ -11,11 +11,11 @@ const config = AppConfig();
 
 export const dataSource = new DataSource({
     type: "postgres",
-    port: parseInt(config.modules.users.database.port ?? ""),
-    host: config.modules.users.database.host,
-    username: config.modules.users.database.username,
-    password: config.modules.users.database.password,
-    database: config.modules.users.database.name,
+    port: parseInt(config.modules.auth.database.port ?? ""),
+    host: config.modules.auth.database.host,
+    username: config.modules.auth.database.username,
+    password: config.modules.auth.database.password,
+    database: config.modules.auth.database.name,
     synchronize: false,
     dropSchema: false,
     migrationsRun: false,

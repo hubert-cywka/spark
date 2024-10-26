@@ -2,8 +2,8 @@ import { Controller, Inject, Logger } from "@nestjs/common";
 import { EventPattern, Payload } from "@nestjs/microservices";
 
 import { EntityAlreadyExistsError } from "@/common/errors/EntityAlreadyExists.error";
-import { PUBSUB_TOPICS, UserActivatedEventPayload, UserRegisteredEventPayload } from "@/common/pubsub";
-import { ifError } from "@/common/utils/ifError";
+import { whenError } from "@/common/errors/whenError";
+import { AccountActivatedEventPayload, AccountRegisteredEventPayload, EventTopics } from "@/common/events";
 import { IUsersService, IUsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
 
 @Controller()
@@ -12,33 +12,33 @@ export class UsersSubscriber {
 
     public constructor(@Inject(IUsersServiceToken) private usersService: IUsersService) {}
 
-    @EventPattern(PUBSUB_TOPICS.user.registered)
-    async onUserRegistered(@Payload() payload: UserRegisteredEventPayload) {
-        this.logger.log({ payload }, `Received ${PUBSUB_TOPICS.user.registered} event.`);
-        const { user } = payload;
+    @EventPattern(EventTopics.account.registered)
+    async onUserRegistered(@Payload() payload: AccountRegisteredEventPayload) {
+        this.logger.log({ payload }, `Received ${EventTopics.account.registered} event.`);
+        const { account } = payload;
 
         try {
             await this.usersService.create({
-                id: user.id,
-                email: user.email,
-                lastName: user.lastName,
-                firstName: user.firstName,
+                id: account.id,
+                email: account.email,
+                lastName: account.lastName,
+                firstName: account.firstName,
                 isActivated: false,
             });
         } catch (e) {
-            ifError(e).is(EntityAlreadyExistsError).throwRpcException("User already exists.").elseRethrow();
+            whenError(e).is(EntityAlreadyExistsError).throwRpcException("User already exists.").elseRethrow();
         }
     }
 
-    @EventPattern(PUBSUB_TOPICS.user.activated)
-    async onUserActivated(@Payload() payload: UserActivatedEventPayload) {
-        this.logger.log({ payload }, `Received ${PUBSUB_TOPICS.user.activated} event.`);
-        const { user } = payload;
+    @EventPattern(EventTopics.account.activated)
+    async onUserActivated(@Payload() payload: AccountActivatedEventPayload) {
+        this.logger.log({ payload }, `Received ${EventTopics.account.activated} event.`);
+        const { account } = payload;
 
         try {
-            await this.usersService.activate(user.id);
+            await this.usersService.activate(account.id);
         } catch (e) {
-            ifError(e).is(EntityAlreadyExistsError).throwRpcException("User already exists.").elseRethrow();
+            whenError(e).is(EntityAlreadyExistsError).throwRpcException("User already exists.").elseRethrow();
         }
     }
 }

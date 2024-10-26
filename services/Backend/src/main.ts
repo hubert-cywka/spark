@@ -1,13 +1,13 @@
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
+import { RedisOptions, Transport } from "@nestjs/microservices";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import cookieParser from "cookie-parser";
 import { Logger } from "nestjs-pino";
 
 import { AppModule } from "@/App.module";
-import { logger } from "@/common/logger/logger";
-import { connectPubSub } from "@/common/pubsub";
 import { AppConfig } from "@/config/configuration";
+import { logger } from "@/lib/logger";
 import { ModuleWithHotReload } from "@/types/hmr";
 
 declare const module: ModuleWithHotReload;
@@ -23,9 +23,12 @@ async function bootstrap() {
     app.use(cookieParser());
     app.set("trust proxy", true);
 
-    connectPubSub(app, {
-        host: config.getOrThrow<string>("pubsub.host"),
-        port: config.getOrThrow<number>("pubsub.port"),
+    app.connectMicroservice<RedisOptions>({
+        transport: Transport.REDIS,
+        options: {
+            host: config.getOrThrow<string>("pubsub.host"),
+            port: config.getOrThrow<number>("pubsub.port"),
+        },
     });
 
     await app.startAllMicroservices();

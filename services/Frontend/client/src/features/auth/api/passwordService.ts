@@ -1,8 +1,8 @@
 import { RequestPasswordResetRequestPayload, UpdatePasswordResetRequestPayload } from "@/features/auth/types/authentication";
 import { apiClient } from "@/lib/apiClient/apiClient";
 
-const REQUEST_PASSWORD_RESET_ENDPOINT = "/auth/password/reset";
-const UPDATE_PASSWORD_ENDPOINT = "/auth/password";
+const REQUEST_PASSWORD_RESET_ENDPOINT = "/account/password/reset";
+const UPDATE_PASSWORD_ENDPOINT = "/account/password";
 
 export class PasswordService {
     public static async requestPasswordResetLink(payload: RequestPasswordResetRequestPayload) {

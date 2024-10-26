@@ -4,10 +4,10 @@ import { APP_PIPE } from "@nestjs/core";
 import { ScheduleModule } from "@nestjs/schedule";
 import { LoggerModule } from "nestjs-pino";
 
-import { PubSubModule } from "@/common/pubsub";
+import { EventsModule } from "@/common/events";
 import { AppConfig } from "@/config/configuration";
-import { AuthModule } from "@/modules/auth/Auth.module";
-import { DatabaseModule } from "@/modules/auth/database/Database.module";
+import { IdentityModule } from "@/modules/identity/Identity.module";
+import { DatabaseModule } from "@/modules/identity/infrastructure/database/Database.module";
 import { MailModule } from "@/modules/mail/Mail.module";
 import { UsersModule } from "@/modules/users/Users.module";
 
@@ -18,7 +18,7 @@ import { UsersModule } from "@/modules/users/Users.module";
             isGlobal: true,
         }),
         LoggerModule.forRoot({ pinoHttp: {} }),
-        PubSubModule.forRootAsync({
+        EventsModule.forRootAsync({
             global: true,
             useFactory: (configService: ConfigService) => ({
                 connection: {
@@ -30,7 +30,7 @@ import { UsersModule } from "@/modules/users/Users.module";
         }),
         ScheduleModule.forRoot(),
         DatabaseModule,
-        AuthModule,
+        IdentityModule,
         MailModule,
         UsersModule,
     ],

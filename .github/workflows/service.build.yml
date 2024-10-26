@@ -9,7 +9,10 @@ on:
             service-name:
                 required: true
                 type: string
-            image-tag:
+            service-image-repository:
+                required: true
+                type: string
+            service-image-tag:
                 required: false
                 type: string
                 default: 'latest'
@@ -73,8 +76,8 @@ jobs:
 
             - name: Tag Docker image
               run: |
-                  docker tag ${{ inputs.service-name }} hejs22/codename-${{ inputs.service-name }}:${{ inputs.image-tag }}
+                  docker tag ${{ inputs.service-name }} ${{ inputs.service-image-repository }}:${{ inputs.service-image-tag }}
 
             - name: Push Docker image to Docker Hub
               run: |
-                  docker push hejs22/codename-${{ inputs.service-name }}:${{ inputs.image-tag }}
+                  docker push ${{ inputs.service-image-repository }}:${{ inputs.service-image-tag }}

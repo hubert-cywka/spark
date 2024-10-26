@@ -23,15 +23,16 @@ jobs:
         strategy:
             matrix:
                 service:
-                    - { name: 'frontend', directory: 'services/Frontend' }
-                    - { name: 'backend', directory: 'services/Backend' }
-                    - { name: 'gateway', directory: 'services/Gateway' }
+                    - { name: 'frontend', directory: 'services/Frontend', image-repository: "hejs22/codename-frontend" }
+                    - { name: 'backend', directory: 'services/Backend', image-repository: "hejs22/codename-backend" }
+                    - { name: 'gateway', directory: 'services/Gateway', image-repository: "hejs22/codename-gateway" }
 
         uses: ./.github/workflows/service.build.yml
         with:
-            image-tag: "latest" # TODO: Right now we don't need tags other than "latest", but they could be necessary in the future
+            service-image-tag: ${{ github.event.number == 0 && 'latest' ||  format('pr-{0}', github.event.pull_request.number)  }}
             service-directory: ${{ matrix.service.directory }}
             service-name: ${{ matrix.service.name }}
+            service-image-repository: ${{ matrix.service.image-repository }}
         secrets:
             DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN  }}
             DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
