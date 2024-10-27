@@ -48,12 +48,12 @@ resource "kubernetes_deployment" "backend" {
                     }
                     env {
                         name  = "DATABASE_HOST"
-                        value = "${kubernetes_service.postgres.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
+                        value = "${kubernetes_service.db.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
                     }
 
                     env {
                         name  = "PUBSUB_HOST"
-                        value = "${kubernetes_service.redis.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
+                        value = "${kubernetes_service.pubsub.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
                     }
                     env {
                         name  = "PUBSUB_PORT"
@@ -123,7 +123,7 @@ resource "kubernetes_deployment" "backend" {
             }
         }
     }
-    depends_on = [kubernetes_deployment.postgres, kubernetes_deployment.redis]
+    depends_on = [kubernetes_deployment.db, kubernetes_deployment.pubsub]
 }
 
 resource "kubernetes_service" "backend" {

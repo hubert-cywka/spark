@@ -1,6 +1,6 @@
-resource "kubernetes_deployment" "redis" {
+resource "kubernetes_deployment" "pubsub" {
     metadata {
-        name      = "redis"
+        name      = "pubsub"
         namespace = kubernetes_namespace.codename.metadata[0].name
     }
 
@@ -8,20 +8,20 @@ resource "kubernetes_deployment" "redis" {
         replicas = 1
         selector {
             match_labels = {
-                app = "redis"
+                app = "pubsub"
             }
         }
 
         template {
             metadata {
                 labels = {
-                    app = "redis"
+                    app = "pubsub"
                 }
             }
 
             spec {
                 container {
-                    name  = "redis"
+                    name  = "pubsub"
                     image = "redis:6.2-alpine"
 
                     port {
@@ -29,13 +29,13 @@ resource "kubernetes_deployment" "redis" {
                     }
                     volume_mount {
                         mount_path = "/data"
-                        name       = "redis-storage"
+                        name       = "pubsub-storage"
                     }
                 }
                 volume {
-                    name = "redis-storage"
+                    name = "pubsub-storage"
                     persistent_volume_claim {
-                        claim_name = kubernetes_persistent_volume_claim.redis_pvc.metadata[0].name
+                        claim_name = kubernetes_persistent_volume_claim.pubsub_pvc.metadata[0].name
                     }
                 }
             }
@@ -43,15 +43,15 @@ resource "kubernetes_deployment" "redis" {
     }
 }
 
-resource "kubernetes_service" "redis" {
+resource "kubernetes_service" "pubsub" {
     metadata {
-        name      = "redis"
+        name      = "pubsub"
         namespace = kubernetes_namespace.codename.metadata[0].name
     }
 
     spec {
         selector = {
-            app = kubernetes_deployment.redis.spec[0].template[0].metadata[0].labels.app
+            app = kubernetes_deployment.pubsub.spec[0].template[0].metadata[0].labels.app
         }
 
         port {
