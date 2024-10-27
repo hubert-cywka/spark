@@ -1,6 +1,6 @@
-resource "kubernetes_persistent_volume" "postgres_volume" {
+resource "kubernetes_persistent_volume" "db_volume" {
     metadata {
-        name = "postgres-volume"
+        name = "db-volume"
     }
 
     spec {
@@ -11,15 +11,15 @@ resource "kubernetes_persistent_volume" "postgres_volume" {
 
         persistent_volume_source {
             host_path {
-                path = "/mnt/data/postgres"
+                path = "/mnt/data/db"
             }
         }
     }
 }
 
-resource "kubernetes_persistent_volume_claim" "postgres_pvc" {
+resource "kubernetes_persistent_volume_claim" "db_pvc" {
     metadata {
-        name      = "postgres-pvc"
+        name      = "db-pvc"
         namespace = kubernetes_namespace.codename.metadata[0].name
     }
 
@@ -33,28 +33,28 @@ resource "kubernetes_persistent_volume_claim" "postgres_pvc" {
     }
 }
 
-resource "kubernetes_persistent_volume" "redis_volume" {
+resource "kubernetes_persistent_volume" "pubsub_volume" {
     metadata {
-        name = "redis-volume"
+        name = "pubsub-volume"
     }
 
     spec {
         capacity = {
-            storage = "1Gi"
+            storage = "0.25Gi"
         }
         access_modes = ["ReadWriteOnce"]
 
         persistent_volume_source {
             host_path {
-                path = "/mnt/data/redis"
+                path = "/mnt/data/pubsub"
             }
         }
     }
 }
 
-resource "kubernetes_persistent_volume_claim" "redis_pvc" {
+resource "kubernetes_persistent_volume_claim" "pubsub_pvc" {
     metadata {
-        name      = "redis-pvc"
+        name      = "pubsub-pvc"
         namespace = kubernetes_namespace.codename.metadata[0].name
     }
 
@@ -62,7 +62,7 @@ resource "kubernetes_persistent_volume_claim" "redis_pvc" {
         access_modes = ["ReadWriteOnce"]
         resources {
             requests = {
-                storage = "1Gi"
+                storage = "0.25Gi"
             }
         }
     }

@@ -1,6 +1,6 @@
-resource "kubernetes_deployment" "postgres" {
+resource "kubernetes_deployment" "db" {
     metadata {
-        name      = "postgres"
+        name      = "db"
         namespace = kubernetes_namespace.codename.metadata[0].name
     }
 
@@ -8,21 +8,21 @@ resource "kubernetes_deployment" "postgres" {
         replicas = 1
         selector {
             match_labels = {
-                app = "postgres"
+                app = "db"
             }
         }
 
         template {
             metadata {
                 labels = {
-                    app = "postgres"
+                    app = "db"
                 }
             }
 
             spec {
                 container {
-                    name  = "postgres"
-                    image = "postgres"
+                    name  = "db"
+                    image = "postgres:17.0"
                     port {
                         container_port = var.DATABASE_PORT
                     }
@@ -40,13 +40,13 @@ resource "kubernetes_deployment" "postgres" {
                     }
                     volume_mount {
                         mount_path = "/var/lib/postgresql/data"
-                        name       = "postgres-storage"
+                        name       = "db-storage"
                     }
                 }
                 volume {
-                    name = "postgres-storage"
+                    name = "db-storage"
                     persistent_volume_claim {
-                        claim_name = kubernetes_persistent_volume_claim.postgres_pvc.metadata[0].name
+                        claim_name = kubernetes_persistent_volume_claim.db_pvc.metadata[0].name
                     }
                 }
             }
@@ -54,15 +54,15 @@ resource "kubernetes_deployment" "postgres" {
     }
 }
 
-resource "kubernetes_service" "postgres" {
+resource "kubernetes_service" "db" {
     metadata {
-        name      = "postgres"
+        name      = "db"
         namespace = kubernetes_namespace.codename.metadata[0].name
     }
 
     spec {
         selector = {
-            app = kubernetes_deployment.postgres.spec[0].template[0].metadata[0].labels.app
+            app = kubernetes_deployment.db.spec[0].template[0].metadata[0].labels.app
         }
 
         port {
