@@ -1,0 +1,15 @@
+.iconButton {
+    aspect-ratio: 1;
+
+    &[data-size="1"] {
+        padding: var(--spacing-100);
+    }
+
+    &[data-size="2"] {
+        padding: var(--spacing-200);
+    }
+
+    &[data-size="3"] {
+        padding: var(--spacing-300);
+    }
+}

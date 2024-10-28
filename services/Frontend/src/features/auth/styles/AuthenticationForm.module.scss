@@ -1,0 +1,23 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-300);
+
+    .header {
+        font: var(--typography-title-200);
+        font-weight: 500;
+    }
+
+    .caption {
+        color: var(--color-neutral-text-200);
+    }
+
+    .fieldsWrapper {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-300);
+        padding-block: var(--spacing-700);
+    }
+}
+
+

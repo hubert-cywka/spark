@@ -1,0 +1,13 @@
+.nameFieldsWrapper {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--spacing-600);
+
+    div {
+        flex-grow: 1;
+    }
+}
+
+.agreementsWrapper {
+    margin-top: var(--spacing-400);
+}

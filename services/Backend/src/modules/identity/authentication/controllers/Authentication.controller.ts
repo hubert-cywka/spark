@@ -17,7 +17,7 @@ import { EntityAlreadyExistsError } from "@/common/errors/EntityAlreadyExists.er
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
-import { REFRESH_TOKEN_COOKIE_NAME } from "@/modules/identity/authentication/constants";
+import { ACCESS_TOKEN_COOKIE_NAME, REFRESH_TOKEN_COOKIE_NAME } from "@/modules/identity/authentication/constants";
 import { LoginDto } from "@/modules/identity/authentication/dto/Login.dto";
 import { RegisterDto } from "@/modules/identity/authentication/dto/Register.dto";
 import { IAuthenticationService, IAuthServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthenticationService";
@@ -45,7 +45,8 @@ export class AuthenticationController {
         try {
             const { accessToken, refreshToken } = await this.authService.login(dto);
             this.setRefreshToken(response, refreshToken);
-            return response.send({ accessToken });
+            this.setAccessToken(response, accessToken);
+            return response.send();
         } catch (err) {
             whenError(err)
                 .is(EntityNotFoundError)
@@ -66,7 +67,8 @@ export class AuthenticationController {
         try {
             const { accessToken, refreshToken } = await this.authService.redeemRefreshToken(token);
             this.setRefreshToken(response, refreshToken);
-            return response.send({ accessToken });
+            this.setAccessToken(response, accessToken);
+            return response.send();
         } catch (err) {
             whenError(err).is(EntityNotFoundError).throw(new UnauthorizedException()).elseRethrow();
         }
@@ -80,6 +82,7 @@ export class AuthenticationController {
         }
 
         this.clearRefreshToken(response);
+        this.clearAccessToken(response);
         await this.authService.logout(token);
         return response.send();
     }
@@ -95,6 +98,17 @@ export class AuthenticationController {
         });
     }
 
+    private setAccessToken(response: Response, accessToken: string) {
+        response.cookie(ACCESS_TOKEN_COOKIE_NAME, accessToken, this.getAccessTokenCookieOptions());
+    }
+
+    private clearAccessToken(response: Response) {
+        response.cookie(ACCESS_TOKEN_COOKIE_NAME, "", {
+            ...this.getAccessTokenCookieOptions(),
+            maxAge: 0,
+        });
+    }
+
     private getRefreshTokenCookieOptions(): CookieOptions {
         const maxAge = this.configService.getOrThrow<number>("modules.auth.refreshToken.expirationTimeInSeconds") * 1000;
         const secure = this.configService.get<string>("NODE_ENV") === "production";
@@ -104,7 +118,21 @@ export class AuthenticationController {
             httpOnly: true,
             secure,
             sameSite: "strict",
-            path: "/auth",
+            path: "/api/auth",
+            maxAge,
+        };
+    }
+
+    private getAccessTokenCookieOptions(): CookieOptions {
+        const maxAge = this.configService.getOrThrow<number>("modules.auth.accessToken.expirationTimeInSeconds") * 1000;
+        const secure = this.configService.get<string>("NODE_ENV") === "production";
+
+        return {
+            partitioned: true,
+            httpOnly: true,
+            secure,
+            sameSite: "strict",
+            path: "/",
             maxAge,
         };
     }

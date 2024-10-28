@@ -1,0 +1,68 @@
+
+.controller {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-200);
+}
+
+.error {
+    font: var(--typography-body-100);
+    color: var(--color-danger-solid-200);
+}
+
+.label {
+    font: var(--typography-body-100);
+}
+
+.highlight {
+    color: var(--color-danger-text-300);
+}
+
+.input {
+    color: var(--color-neutral-text-100);
+    background: var(--color-neutral-background-100);
+
+    border: thin solid var(--color-neutral-surface-200);
+    border-radius: var(--radius-100);
+
+    // Hubert: Chrome and Safari highlight the input whenever autocomplete was used
+    &:-webkit-autofill {
+        color-scheme: dark;
+        transition: background-color 10000s ease-in-out 0s;
+    }
+
+    &[data-size="1"] {
+        font: var(--typography-body-100);
+        padding: var(--spacing-100) var(--spacing-300);
+    }
+
+    &[data-size="2"] {
+        font: var(--typography-body-200);
+        padding: var(--spacing-200) var(--spacing-300);
+    }
+
+    &[data-size="3"] {
+        font: var(--typography-body-200);
+        padding: var(--spacing-300) var(--spacing-400);
+    }
+
+    &[data-disabled] {
+        color: var(--color-neutral-text-300);
+        background: var(--color-neutral-background-100);
+        cursor: not-allowed;
+    }
+
+    &:not(&[data-disabled]) {
+        &[data-invalid] {
+            border-color: var(--color-danger-surface-100);
+        }
+
+        &[data-hovered] {
+            outline: 1px solid var(--color-neutral-surface-100);
+        }
+
+        &[data-focused] {
+            outline: 2px solid var(--color-accent-solid-200);
+        }
+    }
+}
