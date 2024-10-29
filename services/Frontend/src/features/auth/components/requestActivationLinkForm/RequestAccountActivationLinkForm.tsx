@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback } from "react";
 
 import sharedStyles from "../../styles/AuthenticationForm.module.scss";
@@ -8,20 +10,45 @@ import {
     RequestAccountActivationFormInputs,
     useRequestAccountActivationLinkForm,
 } from "@/features/auth/components/requestActivationLinkForm/hooks/useRequestAccountActivationLinkForm";
+import { useRequestAccountActivationToken } from "@/features/auth/hooks/useRequestAccountActivationToken";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
-import { FormProps } from "@/types/Form";
+import { logger } from "@/lib/logger/logger";
+import { showToast } from "@/lib/notifications/showToast";
+import { getErrorMessage } from "@/utils/getErrorMessage";
 
-type RequestActivationLinkFormProps = FormProps<RequestAccountActivationFormInputs>;
-
-export const RequestActivationLinkForm = ({ onSubmit, isLoading, isDisabled }: RequestActivationLinkFormProps) => {
+export const RequestActivationLinkForm = () => {
     const t = useTranslate();
     const { control, handleSubmit } = useRequestAccountActivationLinkForm();
+    const { mutateAsync, isPending, isSuccess } = useRequestAccountActivationToken();
+
+    const onRequestActivationSuccess = useCallback(() => {
+        showToast().success({
+            message: t("authentication.accountActivation.notifications.success.body"),
+            title: t("authentication.accountActivation.notifications.success.title"),
+        });
+    }, [t]);
+
+    const onRequestActivationError = useCallback(
+        (err: unknown) => {
+            logger.error({ err });
+            showToast().danger({
+                message: getErrorMessage(err),
+                title: t("authentication.accountActivation.notifications.error.title"),
+            });
+        },
+        [t]
+    );
 
     const internalOnSubmit = useCallback(
-        (inputs: RequestAccountActivationFormInputs) => {
-            onSubmit({ email: inputs.email.trim() });
+        async ({ email }: RequestAccountActivationFormInputs) => {
+            try {
+                await mutateAsync({ email: email.trim() });
+                onRequestActivationSuccess();
+            } catch (err) {
+                onRequestActivationError(err);
+            }
         },
-        [onSubmit]
+        [mutateAsync, onRequestActivationError, onRequestActivationSuccess]
     );
 
     return (
@@ -37,7 +64,7 @@ export const RequestActivationLinkForm = ({ onSubmit, isLoading, isDisabled }: R
                 />
             </div>
 
-            <Button type="submit" isLoading={isLoading} isDisabled={isDisabled} size="3">
+            <Button type="submit" isLoading={isPending} isDisabled={isSuccess} size="3">
                 {t("authentication.accountActivation.form.submitButton")}
             </Button>
         </form>

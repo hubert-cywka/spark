@@ -26,15 +26,15 @@
         .svgWrapper {
             border-color: var(--color-accent-solid-200);
             background: var(--color-accent-solid-200);
-        }
 
-        .svg {
-            stroke-dashoffset: 44;
+            svg {
+                stroke-dashoffset: 44;
+            }
         }
     }
 
     &[data-indeterminate] {
-        & .svg {
+        & svg {
             stroke: none;
         }
     }
@@ -53,7 +53,7 @@
 
         transition: border-color 200ms;
 
-        .svg {
+        svg {
             width: 1.25rem;
             height: 1.25rem;
 

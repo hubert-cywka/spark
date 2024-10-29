@@ -1,3 +1,5 @@
+"use client";
+
 import { PropsWithChildren, useCallback } from "react";
 
 import sharedStyles from "../../styles/AuthenticationForm.module.scss";
@@ -5,20 +7,47 @@ import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 import { Button } from "@/components/button/Button";
 import { Field } from "@/components/input/Field";
 import { LoginFormInputs, useLoginForm } from "@/features/auth/components/loginForm/hooks/useLoginForm";
+import { useLogin } from "@/features/auth/hooks/useLogin";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
-import { FormProps } from "@/types/Form";
+import { logger } from "@/lib/logger/logger";
+import { showToast } from "@/lib/notifications/showToast";
+import { getErrorMessage } from "@/utils/getErrorMessage";
 
-type LoginFormProps = PropsWithChildren<FormProps<LoginFormInputs>>;
+type LoginFormProps = PropsWithChildren;
 
-export const LoginForm = ({ onSubmit, isLoading, isDisabled, children }: LoginFormProps) => {
+export const LoginForm = ({ children }: LoginFormProps) => {
     const t = useTranslate();
     const { handleSubmit, control } = useLoginForm();
+    const { mutateAsync: login, isPending, isSuccess } = useLogin();
+
+    const onLoginSuccess = useCallback(() => {
+        showToast().success({
+            message: t("authentication.login.notifications.success.body"),
+            title: t("authentication.login.notifications.success.title"),
+        });
+    }, [t]);
+
+    const onLoginError = useCallback(
+        (err: unknown) => {
+            logger.error({ err });
+            showToast().danger({
+                message: getErrorMessage(err),
+                title: t("authentication.login.notifications.error.title"),
+            });
+        },
+        [t]
+    );
 
     const internalOnSubmit = useCallback(
-        (inputs: LoginFormInputs) => {
-            onSubmit({ ...inputs, email: inputs.email.trim() });
+        async (inputs: LoginFormInputs) => {
+            try {
+                await login({ ...inputs, email: inputs.email.trim() });
+                onLoginSuccess();
+            } catch (e) {
+                onLoginError(e);
+            }
         },
-        [onSubmit]
+        [login, onLoginError, onLoginSuccess]
     );
 
     return (
@@ -44,7 +73,7 @@ export const LoginForm = ({ onSubmit, isLoading, isDisabled, children }: LoginFo
                 {children}
             </div>
 
-            <Button isLoading={isLoading} size="3" type="submit" isDisabled={isDisabled}>
+            <Button isLoading={isPending} size="3" type="submit" isDisabled={isSuccess}>
                 {t("authentication.login.form.submitButton")}
             </Button>
         </form>

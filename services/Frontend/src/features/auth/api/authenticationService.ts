@@ -1,4 +1,4 @@
-import { LoginRequestPayload, LoginRequestResponse, RegisterRequestPayload } from "@/features/auth/types/authentication";
+import { LoginRequestPayload, RegisterRequestPayload } from "@/features/auth/types/authentication";
 import { apiClient } from "@/lib/apiClient/apiClient";
 
 const LOGIN_ENDPOINT = "/auth/login";
@@ -8,7 +8,7 @@ const REFRESH_TOKEN_ENDPOINT = "/auth/refresh";
 
 export class AuthenticationService {
     public static async login(payload: LoginRequestPayload) {
-        await apiClient.post<LoginRequestResponse>(LOGIN_ENDPOINT, payload);
+        await apiClient.post(LOGIN_ENDPOINT, payload);
     }
 
     public static async register(payload: RegisterRequestPayload) {

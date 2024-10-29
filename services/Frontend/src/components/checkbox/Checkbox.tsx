@@ -37,7 +37,7 @@ export const Checkbox = <T extends FieldValues>({ children, required, control, n
         >
             <>
                 <div className={styles.svgWrapper}>
-                    <svg className={styles.svg} viewBox="0 0 18 18" aria-hidden="true">
+                    <svg viewBox="0 0 18 18" aria-hidden="true">
                         <polyline points="1 9 7 14 15 4" />
                     </svg>
                 </div>

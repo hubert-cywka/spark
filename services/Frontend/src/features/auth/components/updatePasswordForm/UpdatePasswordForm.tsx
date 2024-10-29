@@ -1,19 +1,61 @@
+"use client";
+
+import { useCallback } from "react";
+
 import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 
 import { Button } from "@/components/button/Button";
 import { Field } from "@/components/input/Field";
 import { UpdatePasswordFormInputs, useUpdatePasswordForm } from "@/features/auth/components/updatePasswordForm/hooks/useUpdatePasswordForm";
+import { useUpdatePassword } from "@/features/auth/hooks/useUpdatePassword";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
-import { FormProps } from "@/types/Form";
+import { logger } from "@/lib/logger/logger";
+import { showToast } from "@/lib/notifications/showToast";
+import { getErrorMessage } from "@/utils/getErrorMessage";
 
-type UpdatePasswordFormProps = FormProps<UpdatePasswordFormInputs>;
+type UpdatePasswordFormProps = {
+    passwordChangeToken: string;
+};
 
-export const UpdatePasswordForm = ({ isLoading, onSubmit, isDisabled }: UpdatePasswordFormProps) => {
+export const UpdatePasswordForm = ({ passwordChangeToken }: UpdatePasswordFormProps) => {
     const t = useTranslate();
     const { handleSubmit, control } = useUpdatePasswordForm();
+    const {
+        updatePassword: { mutateAsync, isPending, isSuccess },
+    } = useUpdatePassword();
+
+    const onPasswordUpdateSuccess = useCallback(() => {
+        showToast().success({
+            message: t("authentication.passwordReset.notifications.success.body"),
+            title: t("authentication.passwordReset.notifications.success.title"),
+        });
+    }, [t]);
+
+    const onPasswordUpdateError = useCallback(
+        (err: unknown) => {
+            logger.error({ err });
+            showToast().danger({
+                message: getErrorMessage(err),
+                title: t("authentication.passwordReset.notifications.error.title"),
+            });
+        },
+        [t]
+    );
+
+    const internalOnSubmit = useCallback(
+        async ({ password }: UpdatePasswordFormInputs) => {
+            try {
+                await mutateAsync({ password, passwordChangeToken });
+                onPasswordUpdateSuccess();
+            } catch (err) {
+                onPasswordUpdateError(err);
+            }
+        },
+        [mutateAsync, passwordChangeToken, onPasswordUpdateSuccess, onPasswordUpdateError]
+    );
 
     return (
-        <form className={sharedStyles.form} onSubmit={handleSubmit(onSubmit)}>
+        <form className={sharedStyles.form} onSubmit={handleSubmit(internalOnSubmit)}>
             <div className={sharedStyles.fieldsWrapper}>
                 <Field
                     label={t("authentication.common.fields.password.label")}
@@ -33,7 +75,7 @@ export const UpdatePasswordForm = ({ isLoading, onSubmit, isDisabled }: UpdatePa
                 />
             </div>
 
-            <Button isLoading={isLoading} isDisabled={isDisabled} size="3" type="submit">
+            <Button isLoading={isPending} isDisabled={isSuccess} size="3" type="submit">
                 {t("authentication.passwordReset.form.submitButton")}
             </Button>
         </form>

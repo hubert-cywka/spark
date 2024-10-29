@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback } from "react";
 
 import sharedStyles from "../../styles/AuthenticationForm.module.scss";
@@ -5,20 +7,45 @@ import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 import { Button } from "@/components/button/Button";
 import { Field } from "@/components/input/Field";
 import { ResetPasswordFormInputs, useResetPasswordForm } from "@/features/auth/components/resetPasswordForm/hooks/useResetPasswordForm";
+import { useRequestPasswordResetToken } from "@/features/auth/hooks/useRequestPasswordResetToken";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
-import { FormProps } from "@/types/Form";
+import { logger } from "@/lib/logger/logger";
+import { showToast } from "@/lib/notifications/showToast";
+import { getErrorMessage } from "@/utils/getErrorMessage";
 
-type ResetPasswordFormProps = FormProps<ResetPasswordFormInputs>;
-
-export const ResetPasswordForm = ({ onSubmit, isLoading, isDisabled }: ResetPasswordFormProps) => {
+export const ResetPasswordForm = () => {
     const t = useTranslate();
     const { control, handleSubmit } = useResetPasswordForm();
+    const { mutateAsync, isSuccess, isPending } = useRequestPasswordResetToken();
+
+    const onPasswordResetRequestSuccess = useCallback(() => {
+        showToast().success({
+            message: t("authentication.requestPasswordReset.notifications.success.body"),
+            title: t("authentication.requestPasswordReset.notifications.success.title"),
+        });
+    }, [t]);
+
+    const onPasswordResetRequestError = useCallback(
+        (err: unknown) => {
+            logger.error({ err });
+            showToast().danger({
+                message: getErrorMessage(err),
+                title: t("authentication.requestPasswordReset.notifications.error.title"),
+            });
+        },
+        [t]
+    );
 
     const internalOnSubmit = useCallback(
-        (inputs: ResetPasswordFormInputs) => {
-            onSubmit({ email: inputs.email.trim() });
+        async ({ email }: ResetPasswordFormInputs) => {
+            try {
+                await mutateAsync({ email: email.trim() });
+                onPasswordResetRequestSuccess?.();
+            } catch (err) {
+                onPasswordResetRequestError?.(err);
+            }
         },
-        [onSubmit]
+        [onPasswordResetRequestError, onPasswordResetRequestSuccess, mutateAsync]
     );
 
     return (
@@ -34,7 +61,7 @@ export const ResetPasswordForm = ({ onSubmit, isLoading, isDisabled }: ResetPass
                 />
             </div>
 
-            <Button isLoading={isLoading} isDisabled={isDisabled} size="3" type="submit">
+            <Button isLoading={isPending} isDisabled={isSuccess} size="3" type="submit">
                 {t("authentication.requestPasswordReset.form.submitButton")}
             </Button>
         </form>
