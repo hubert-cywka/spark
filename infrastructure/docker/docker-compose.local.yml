@@ -6,35 +6,35 @@ services:
             POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
             POSTGRES_DB: "db"
         ports:
-            - "${DATABASE_PORT}:${DATABASE_PORT}"
+            - "${DATABASE_PORT}:5432"
         volumes:
             - postgres:/var/lib/postgresql/data
 
     redis:
         ports:
-            - "${PUBSUB_PORT}:${PUBSUB_PORT}"
+            - "${PUBSUB_PORT}:6379"
 
     gateway:
         ports:
-            - "${GATEWAY_EXTERNAL_PORT}:80"
+            - "${GATEWAY_PORT}:80"
             - "5010:9901"
         environment:
             - BACKEND_ADDRESS=${BACKEND_HOST}
-            - BACKEND_PORT=${BACKEND_INTERNAL_PORT}
+            - BACKEND_PORT=80
             - FRONTEND_ADDRESS=${FRONTEND_HOST}
-            - FRONTEND_PORT=${FRONTEND_INTERNAL_PORT}
+            - FRONTEND_PORT=80
             - ALLOWED_ORIGINS=${GATEWAY_ALLOWED_ORIGINS}
 
     frontend:
         ports:
-            - "${FRONTEND_EXTERNAL_PORT}:${FRONTEND_INTERNAL_PORT}"
+            - "${FRONTEND_PORT}:80"
         environment:
-            - PORT=${FRONTEND_INTERNAL_PORT}
+            - PORT=80
             - STATIC_FILES_DIR=${FRONTEND_STATIC_FILES_DIR}
 
     backend:
         ports:
-            - "${BACKEND_EXTERNAL_PORT}:${BACKEND_INTERNAL_PORT}"
+            - "${BACKEND_PORT}:80"
         environment:
             - APP_URL=${APP_URL}
 
@@ -46,7 +46,7 @@ services:
             - DATABASE_PASSWORD=${DATABASE_PASSWORD}
             - DATABASE_HOST=${DATABASE_HOST}
 
-            - PORT=${BACKEND_INTERNAL_PORT}
+            - PORT=80
             - JWT_SIGNING_SECRET=${JWT_SIGNING_SECRET}
             - JWT_EXPIRATION_TIME_IN_SECONDS=${JWT_EXPIRATION_TIME_IN_SECONDS}
             - REFRESH_TOKEN_SIGNING_SECRET=${REFRESH_TOKEN_SIGNING_SECRET}

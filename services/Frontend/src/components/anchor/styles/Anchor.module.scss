@@ -4,13 +4,13 @@
     text-decoration: none;
     color: var(--color-accent-text-300);
 
-    &[data-disabled] {
+    &:disabled {
         color: var(--color-neutral-text-200);
         cursor: not-allowed;
     }
 
-    &[data-hovered],
-    &[data-pressed] {
+    &:hover,
+    &:active {
         text-decoration: underline;
         cursor: pointer;
 
@@ -23,7 +23,7 @@
         }
     }
 
-    &[data-focused] {
+    &:focus {
         text-decoration: underline;
     }
 }

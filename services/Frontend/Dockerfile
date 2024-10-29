@@ -1,35 +1,34 @@
-ARG ENV=dev
+FROM node:lts AS base
 
-FROM node:lts AS preparation
-WORKDIR /app
-
-COPY package.json package.json
-COPY package-lock.json package-lock.json
-COPY next.config.mjs next.config.mjs
-COPY tsconfig.json tsconfig.json
-COPY public public
-COPY messages messages
-COPY src src
-
-FROM preparation AS pre-build-dev
-RUN echo "Stage 'pre-build-dev' is empty. Skipping..."
-
-FROM preparation AS pre-build-ci
-RUN echo "Stage 'pre-build-ci' is empty. Skipping..."
-
-FROM pre-build-${ENV} AS build
-WORKDIR /app
+COPY package.json package-lock.json ./
 RUN npm ci
+
+FROM base AS builder
+WORKDIR /app
+COPY . .
+
 RUN npm run build
 
-FROM node:20.8.1-bookworm-slim
+FROM base AS runner
 WORKDIR /app
 
-COPY --from=build /app/.next ./.next
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/package.json ./package.json
-COPY --from=build /app/public ./public
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+
+RUN mkdir .next
+RUN chown nextjs:nodejs .next
+
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+
+USER nextjs
+
+ENV PORT=80
 
 EXPOSE 80
-
-CMD ["npm", "run", "start", "--", "-p", "80"]
+CMD ["node", "server.js"]
