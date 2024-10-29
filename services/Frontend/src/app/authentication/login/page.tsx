@@ -1,5 +1,7 @@
 import styles from "../(shared)/styles/Authentication.module.scss";
 
+import { AppRoute } from "@/app/appRoute";
+import { Anchor } from "@/components/anchor/Anchor";
 import { Card } from "@/components/card/Card";
 import { LoginFormInputs } from "@/features/auth/components/loginForm/hooks/useLoginForm";
 import { LoginForm } from "@/features/auth/components/loginForm/LoginForm";
@@ -32,7 +34,19 @@ export default function Page() {
     return (
         <div className={styles.container}>
             <Card>
-                <LoginForm onSubmit={onLoginFormSubmitted} isLoading={isPending} isDisabled={isSuccess} />
+                <h1 className={styles.header}>{t("authentication.login.form.header")}</h1>
+                <p className={styles.caption}>
+                    {t("authentication.login.form.noAccount.caption")}{" "}
+                    <Anchor href={AppRoute.REGISTER}>{t("authentication.login.form.noAccount.link")}</Anchor>
+                </p>
+                <p className={styles.caption}>
+                    {t("authentication.login.form.accountNotActivated.caption")}{" "}
+                    <Anchor href={AppRoute.ACTIVATE_ACCOUNT}>{t("authentication.login.form.accountNotActivated.link")}</Anchor>
+                </p>
+
+                <LoginForm onSubmit={onLoginFormSubmitted} isLoading={isPending} isDisabled={isSuccess}>
+                    <Anchor href={AppRoute.RESET_PASSWORD}>{t("authentication.login.form.forgotPassword.link")}</Anchor>
+                </LoginForm>
             </Card>
         </div>
     );

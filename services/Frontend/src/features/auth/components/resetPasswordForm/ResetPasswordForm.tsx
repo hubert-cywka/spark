@@ -2,8 +2,6 @@ import { useCallback } from "react";
 
 import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 
-import { AppRoute } from "@/app/appRoute";
-import { Anchor } from "@/components/anchor/Anchor";
 import { Button } from "@/components/button/Button";
 import { Field } from "@/components/input/Field";
 import { ResetPasswordFormInputs, useResetPasswordForm } from "@/features/auth/components/resetPasswordForm/hooks/useResetPasswordForm";
@@ -25,12 +23,6 @@ export const ResetPasswordForm = ({ onSubmit, isLoading, isDisabled }: ResetPass
 
     return (
         <form className={sharedStyles.form} onSubmit={handleSubmit(internalOnSubmit)}>
-            <h1 className={sharedStyles.header}>{t("authentication.requestPasswordReset.form.header")}</h1>
-            <p className={sharedStyles.caption}>{t("authentication.requestPasswordReset.form.caption")}</p>
-            <p className={sharedStyles.caption}>
-                <Anchor href={AppRoute.LOGIN}>{t("authentication.requestPasswordReset.form.logInLink")}</Anchor>
-            </p>
-
             <div className={sharedStyles.fieldsWrapper}>
                 <Field
                     label={t("authentication.common.fields.email.label")}

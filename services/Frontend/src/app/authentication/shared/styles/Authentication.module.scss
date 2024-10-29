@@ -1,0 +1,17 @@
+.container {
+    max-width: 500px;
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-400);
+
+    .header {
+        font: var(--typography-title-200);
+        font-weight: 500;
+    }
+
+    .caption {
+        color: var(--color-neutral-text-200);
+    }
+}

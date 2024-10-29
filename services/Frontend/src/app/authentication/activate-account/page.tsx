@@ -38,6 +38,9 @@ export default function Page() {
                 <AccountActivationHandler />
             </Suspense>
             <Card>
+                <h1 className={styles.header}>{t("authentication.accountActivation.form.header")}</h1>
+                <p className={styles.caption}>{t("authentication.accountActivation.form.caption")}</p>
+                <p className={styles.caption}>{t("authentication.accountActivation.form.warning")}</p>
                 <RequestActivationLinkForm isDisabled={isSuccess} onSubmit={onSubmit} isLoading={isPending} />
             </Card>
         </div>

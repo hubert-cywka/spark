@@ -26,10 +26,6 @@ export const RequestActivationLinkForm = ({ onSubmit, isLoading, isDisabled }: R
 
     return (
         <form className={sharedStyles.form} onSubmit={handleSubmit(internalOnSubmit)}>
-            <h1 className={sharedStyles.header}>{t("authentication.accountActivation.form.header")}</h1>
-            <p className={sharedStyles.caption}>{t("authentication.accountActivation.form.caption")}</p>
-            <p className={sharedStyles.caption}>{t("authentication.accountActivation.form.warning")}</p>
-
             <div className={sharedStyles.fieldsWrapper}>
                 <Field
                     label={t("authentication.common.fields.email.label")}

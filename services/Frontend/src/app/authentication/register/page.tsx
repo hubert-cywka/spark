@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import styles from "@/app/authentication/(shared)/styles/Authentication.module.scss";
 
 import { AppRoute } from "@/app/appRoute";
+import { Anchor } from "@/components/anchor/Anchor";
 import { Card } from "@/components/card/Card";
 import { RegisterFormInputs } from "@/features/auth/components/registerForm/hooks/useRegisterForm";
 import { RegisterForm } from "@/features/auth/components/registerForm/RegisterForm";
@@ -37,6 +38,11 @@ export default function Page() {
     return (
         <div className={styles.container}>
             <Card>
+                <h1 className={styles.header}>{t("authentication.registration.form.header")}</h1>
+                <p className={styles.caption}>
+                    {t("authentication.registration.form.alreadyRegistered.caption")}{" "}
+                    <Anchor href={AppRoute.LOGIN}>{t("authentication.registration.form.alreadyRegistered.link")}</Anchor>
+                </p>
                 <RegisterForm onSubmit={onRegisterFormSubmitted} isLoading={isPending} isDisabled={isSuccess} />
             </Card>
         </div>

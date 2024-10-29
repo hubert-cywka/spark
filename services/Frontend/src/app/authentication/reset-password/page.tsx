@@ -1,7 +1,10 @@
 "use client";
 
 import styles from "@/app/authentication/(shared)/styles/Authentication.module.scss";
+import sharedStyles from "@/features/auth/styles/AuthenticationForm.module.scss";
 
+import { AppRoute } from "@/app/appRoute";
+import { Anchor } from "@/components/anchor/Anchor";
 import { Card } from "@/components/card/Card";
 import { ResetPasswordFormInputs } from "@/features/auth/components/resetPasswordForm/hooks/useResetPasswordForm";
 import { ResetPasswordForm } from "@/features/auth/components/resetPasswordForm/ResetPasswordForm";
@@ -67,17 +70,32 @@ export default function Page() {
         <div className={styles.container}>
             <Card>
                 {!passwordChangeToken ? (
-                    <ResetPasswordForm
-                        isDisabled={hasSentPasswordResetLink}
-                        onSubmit={onResetPasswordFormSubmit}
-                        isLoading={isRequestingPasswordResetLink}
-                    />
+                    <>
+                        <h1 className={sharedStyles.header}>{t("authentication.requestPasswordReset.form.header")}</h1>
+                        <p className={sharedStyles.caption}>{t("authentication.requestPasswordReset.form.caption")}</p>
+                        <p className={sharedStyles.caption}>
+                            <Anchor href={AppRoute.LOGIN}>{t("authentication.requestPasswordReset.form.logInLink")}</Anchor>
+                        </p>
+                        <ResetPasswordForm
+                            isDisabled={hasSentPasswordResetLink}
+                            onSubmit={onResetPasswordFormSubmit}
+                            isLoading={isRequestingPasswordResetLink}
+                        />
+                    </>
                 ) : (
-                    <UpdatePasswordForm
-                        isDisabled={hasUpdatedPassword}
-                        onSubmit={onUpdatePasswordFormSubmit}
-                        isLoading={isUpdatingPassword}
-                    />
+                    <>
+                        <h1 className={sharedStyles.header}>{t("authentication.passwordReset.form.header")}</h1>
+                        <p className={sharedStyles.caption}>{t("authentication.passwordReset.form.caption")}</p>
+                        <p className={sharedStyles.caption}>
+                            {t("authentication.passwordReset.form.logInLink.link")}{" "}
+                            <Anchor href={AppRoute.LOGIN}>{t("authentication.passwordReset.form.logInLink.link")}</Anchor>
+                        </p>
+                        <UpdatePasswordForm
+                            isDisabled={hasUpdatedPassword}
+                            onSubmit={onUpdatePasswordFormSubmit}
+                            isLoading={isUpdatingPassword}
+                        />
+                    </>
                 )}
             </Card>
         </div>

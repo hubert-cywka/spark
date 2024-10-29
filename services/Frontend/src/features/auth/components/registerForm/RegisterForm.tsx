@@ -4,8 +4,6 @@ import { FormProvider } from "react-hook-form";
 import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 import styles from "./styles/RegisterForm.module.scss";
 
-import { AppRoute } from "@/app/appRoute";
-import { Anchor } from "@/components/anchor/Anchor";
 import { Button } from "@/components/button/Button";
 import { Checkbox } from "@/components/checkbox/Checkbox";
 import { Field } from "@/components/input/Field";
@@ -36,12 +34,6 @@ export const RegisterForm = ({ onSubmit, isLoading, isDisabled }: RegisterFormPr
     return (
         <FormProvider {...form}>
             <form className={sharedStyles.form} onSubmit={handleSubmit(internalOnSubmit)}>
-                <h1 className={sharedStyles.header}>{t("authentication.registration.form.header")}</h1>
-                <p className={sharedStyles.caption}>
-                    {t("authentication.registration.form.alreadyRegistered.caption")}{" "}
-                    <Anchor href={AppRoute.LOGIN}>{t("authentication.registration.form.alreadyRegistered.link")}</Anchor>
-                </p>
-
                 <div className={sharedStyles.fieldsWrapper}>
                     <div className={styles.nameFieldsWrapper}>
                         <Field

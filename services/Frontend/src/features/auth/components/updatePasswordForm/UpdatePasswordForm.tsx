@@ -1,7 +1,5 @@
 import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 
-import { AppRoute } from "@/app/appRoute";
-import { Anchor } from "@/components/anchor/Anchor";
 import { Button } from "@/components/button/Button";
 import { Field } from "@/components/input/Field";
 import { UpdatePasswordFormInputs, useUpdatePasswordForm } from "@/features/auth/components/updatePasswordForm/hooks/useUpdatePasswordForm";
@@ -16,13 +14,6 @@ export const UpdatePasswordForm = ({ isLoading, onSubmit, isDisabled }: UpdatePa
 
     return (
         <form className={sharedStyles.form} onSubmit={handleSubmit(onSubmit)}>
-            <h1 className={sharedStyles.header}>{t("authentication.passwordReset.form.header")}</h1>
-            <p className={sharedStyles.caption}>{t("authentication.passwordReset.form.caption")}</p>
-            <p className={sharedStyles.caption}>
-                {t("authentication.passwordReset.form.logInLink.link")}{" "}
-                <Anchor href={AppRoute.LOGIN}>{t("authentication.passwordReset.form.logInLink.link")}</Anchor>
-            </p>
-
             <div className={sharedStyles.fieldsWrapper}>
                 <Field
                     label={t("authentication.common.fields.password.label")}
