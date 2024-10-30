@@ -10,34 +10,15 @@ import {
     RequestAccountActivationFormInputs,
     useRequestAccountActivationLinkForm,
 } from "@/features/auth/components/requestActivationLinkForm/hooks/useRequestAccountActivationLinkForm";
+import { useRequestAccountActivationLinkFormEvents } from "@/features/auth/components/requestActivationLinkForm/hooks/useRequestAccountActivationLinkFormEvents";
 import { useRequestAccountActivationToken } from "@/features/auth/hooks/useRequestAccountActivationToken";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
-import { logger } from "@/lib/logger/logger";
-import { showToast } from "@/lib/notifications/showToast";
-import { getErrorMessage } from "@/utils/getErrorMessage";
 
 export const RequestActivationLinkForm = () => {
     const t = useTranslate();
     const { control, handleSubmit } = useRequestAccountActivationLinkForm();
     const { mutateAsync, isPending, isSuccess } = useRequestAccountActivationToken();
-
-    const onRequestActivationSuccess = useCallback(() => {
-        showToast().success({
-            message: t("authentication.accountActivation.notifications.success.body"),
-            title: t("authentication.accountActivation.notifications.success.title"),
-        });
-    }, [t]);
-
-    const onRequestActivationError = useCallback(
-        (err: unknown) => {
-            logger.error({ err });
-            showToast().danger({
-                message: getErrorMessage(err),
-                title: t("authentication.accountActivation.notifications.error.title"),
-            });
-        },
-        [t]
-    );
+    const { onRequestActivationError, onRequestActivationSuccess } = useRequestAccountActivationLinkFormEvents();
 
     const internalOnSubmit = useCallback(
         async ({ email }: RequestAccountActivationFormInputs) => {

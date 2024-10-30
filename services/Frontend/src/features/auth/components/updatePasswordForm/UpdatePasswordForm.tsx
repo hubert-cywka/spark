@@ -7,11 +7,9 @@ import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 import { Button } from "@/components/button/Button";
 import { Field } from "@/components/input/Field";
 import { UpdatePasswordFormInputs, useUpdatePasswordForm } from "@/features/auth/components/updatePasswordForm/hooks/useUpdatePasswordForm";
+import { useUpdatePasswordFormEvents } from "@/features/auth/components/updatePasswordForm/hooks/useUpdatePasswordFormEvents";
 import { useUpdatePassword } from "@/features/auth/hooks/useUpdatePassword";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
-import { logger } from "@/lib/logger/logger";
-import { showToast } from "@/lib/notifications/showToast";
-import { getErrorMessage } from "@/utils/getErrorMessage";
 
 type UpdatePasswordFormProps = {
     passwordChangeToken: string;
@@ -20,27 +18,10 @@ type UpdatePasswordFormProps = {
 export const UpdatePasswordForm = ({ passwordChangeToken }: UpdatePasswordFormProps) => {
     const t = useTranslate();
     const { handleSubmit, control } = useUpdatePasswordForm();
+    const { onPasswordUpdateError, onPasswordUpdateSuccess } = useUpdatePasswordFormEvents();
     const {
         updatePassword: { mutateAsync, isPending, isSuccess },
     } = useUpdatePassword();
-
-    const onPasswordUpdateSuccess = useCallback(() => {
-        showToast().success({
-            message: t("authentication.passwordReset.notifications.success.body"),
-            title: t("authentication.passwordReset.notifications.success.title"),
-        });
-    }, [t]);
-
-    const onPasswordUpdateError = useCallback(
-        (err: unknown) => {
-            logger.error({ err });
-            showToast().danger({
-                message: getErrorMessage(err),
-                title: t("authentication.passwordReset.notifications.error.title"),
-            });
-        },
-        [t]
-    );
 
     const internalOnSubmit = useCallback(
         async ({ password }: UpdatePasswordFormInputs) => {

@@ -7,34 +7,16 @@ import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 import { Button } from "@/components/button/Button";
 import { Field } from "@/components/input/Field";
 import { ResetPasswordFormInputs, useResetPasswordForm } from "@/features/auth/components/resetPasswordForm/hooks/useResetPasswordForm";
+import { useResetPasswordFormEvents } from "@/features/auth/components/resetPasswordForm/hooks/useResetPasswordFormEvents";
 import { useRequestPasswordResetToken } from "@/features/auth/hooks/useRequestPasswordResetToken";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
-import { logger } from "@/lib/logger/logger";
-import { showToast } from "@/lib/notifications/showToast";
-import { getErrorMessage } from "@/utils/getErrorMessage";
 
 export const ResetPasswordForm = () => {
     const t = useTranslate();
+
     const { control, handleSubmit } = useResetPasswordForm();
     const { mutateAsync, isSuccess, isPending } = useRequestPasswordResetToken();
-
-    const onPasswordResetRequestSuccess = useCallback(() => {
-        showToast().success({
-            message: t("authentication.requestPasswordReset.notifications.success.body"),
-            title: t("authentication.requestPasswordReset.notifications.success.title"),
-        });
-    }, [t]);
-
-    const onPasswordResetRequestError = useCallback(
-        (err: unknown) => {
-            logger.error({ err });
-            showToast().danger({
-                message: getErrorMessage(err),
-                title: t("authentication.requestPasswordReset.notifications.error.title"),
-            });
-        },
-        [t]
-    );
+    const { onPasswordResetRequestError, onPasswordResetRequestSuccess } = useResetPasswordFormEvents();
 
     const internalOnSubmit = useCallback(
         async ({ email }: ResetPasswordFormInputs) => {

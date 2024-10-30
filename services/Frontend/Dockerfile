@@ -5,7 +5,16 @@ RUN npm ci
 
 FROM base AS builder
 WORKDIR /app
-COPY . .
+
+COPY src src
+COPY public public
+COPY scripts scripts
+COPY translations translations
+COPY next.config.mjs next.config.mjs
+COPY next-env.d.ts next-env.d.ts
+COPY package.json package.json
+COPY package-lock.json package-lock.json
+COPY tsconfig.json tsconfig.json
 
 RUN npm run build
 

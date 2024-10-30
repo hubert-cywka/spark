@@ -4,7 +4,7 @@
     "version": "0.0.1",
     "type": "module",
     "scripts": {
-        "dev": "next dev --turbo",
+        "dev": "next dev --turbo -p 5100",
         "build": "next build",
         "postbuild": "node scripts/remove-inline-scripts.js",
         "start": "next start",

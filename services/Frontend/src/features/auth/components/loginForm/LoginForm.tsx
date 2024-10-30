@@ -7,11 +7,9 @@ import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 import { Button } from "@/components/button/Button";
 import { Field } from "@/components/input/Field";
 import { LoginFormInputs, useLoginForm } from "@/features/auth/components/loginForm/hooks/useLoginForm";
+import { useLoginFormEvents } from "@/features/auth/components/loginForm/hooks/useLoginFormEvents";
 import { useLogin } from "@/features/auth/hooks/useLogin";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
-import { logger } from "@/lib/logger/logger";
-import { showToast } from "@/lib/notifications/showToast";
-import { getErrorMessage } from "@/utils/getErrorMessage";
 
 type LoginFormProps = PropsWithChildren;
 
@@ -19,24 +17,7 @@ export const LoginForm = ({ children }: LoginFormProps) => {
     const t = useTranslate();
     const { handleSubmit, control } = useLoginForm();
     const { mutateAsync: login, isPending, isSuccess } = useLogin();
-
-    const onLoginSuccess = useCallback(() => {
-        showToast().success({
-            message: t("authentication.login.notifications.success.body"),
-            title: t("authentication.login.notifications.success.title"),
-        });
-    }, [t]);
-
-    const onLoginError = useCallback(
-        (err: unknown) => {
-            logger.error({ err });
-            showToast().danger({
-                message: getErrorMessage(err),
-                title: t("authentication.login.notifications.error.title"),
-            });
-        },
-        [t]
-    );
+    const { onLoginError, onLoginSuccess } = useLoginFormEvents();
 
     const internalOnSubmit = useCallback(
         async (inputs: LoginFormInputs) => {
