@@ -10,8 +10,9 @@ export const useAuthRefreshInterceptor = (client: AxiosInstance) => {
             (response) => response,
             async (error) => {
                 const originalRequest = error.config;
+                const shouldReAuthenticate = error.response?.status === HttpStatusCode.Unauthorized && !originalRequest._retry;
 
-                if (error.response?.status === HttpStatusCode.Unauthorized && !originalRequest._retry) {
+                if (shouldReAuthenticate) {
                     originalRequest._retry = true;
 
                     try {
@@ -23,6 +24,8 @@ export const useAuthRefreshInterceptor = (client: AxiosInstance) => {
                         });
                     }
                 }
+
+                return Promise.reject(error);
             }
         );
 
