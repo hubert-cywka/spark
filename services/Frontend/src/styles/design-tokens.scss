@@ -1,0 +1,112 @@
+:root {
+    /* Breakpoints */
+    --breakpoint-xs: 700px;
+    --breakpoint-sm: 800px;
+    --breakpoint-md: 900px;
+    --breakpoint-lg: 1000px;
+    --breakpoint-xl: 1100px;
+
+    /* Typography - Body */
+    --typography-body-100: 500 0.875rem 'Montserrat', sans-serif;
+    --typography-body-200: 500 1rem 'Montserrat', sans-serif;
+    --typography-body-300: 500 1.25rem 'Montserrat', sans-serif;
+    --typography-body-400: 500 1.5rem 'Montserrat', sans-serif;
+
+    /* Typography - Caption */
+    --typography-caption-100: 450 0.625rem 'Montserrat', sans-serif;
+    --typography-caption-200: 450 0.75rem 'Montserrat', sans-serif;
+
+    /* Typography - Title */
+    --typography-title-100: 700 1.75rem 'Montserrat', sans-serif;
+    --typography-title-200: 700 2rem 'Montserrat', sans-serif;
+    --typography-title-300: 700 2.5rem 'Montserrat', sans-serif;
+    --typography-title-400: 700 3rem 'Montserrat', sans-serif;
+    --typography-title-500: 700 3.5rem 'Montserrat', sans-serif;
+
+    /* Colors - Accent */
+    --color-accent-solid-100: #6651C0;
+    --color-accent-solid-200: #673CDD;
+    --color-accent-solid-300: #5B28CC;
+    --color-accent-text-100: #EDECFF;
+    --color-accent-text-200: #DFDDFF;
+    --color-accent-text-300: #B2A7FF;
+    --color-accent-background-100: #251D4D;
+    --color-accent-background-200: #171529;
+    --color-accent-background-300: #100F1E;
+    --color-accent-surface-100: #52429D;
+    --color-accent-surface-200: #443486;
+    --color-accent-surface-300: #312168;
+
+    /* Colors - Neutral */
+    --color-neutral-solid-100: #5F606A;
+    --color-neutral-solid-200: #6C6E79;
+    --color-neutral-solid-300: #797B86;
+    --color-neutral-text-100: #EEEEF0;
+    --color-neutral-text-200: #BFBFC0;
+    --color-neutral-text-300: #797B86;
+    --color-neutral-background-100: #222325;
+    --color-neutral-background-200: #19191B;
+    --color-neutral-background-300: #111113;
+    --color-neutral-surface-100: #46484F;
+    --color-neutral-surface-200: #393A40;
+    --color-neutral-surface-300: #292A2E;
+
+    /* Colors - Danger */
+    --color-danger-solid-100: #BB395A;
+    --color-danger-solid-200: #E61961;
+    --color-danger-solid-300: #D60055;
+    --color-danger-text-100: #FFD0D7;
+    --color-danger-text-200: #FFB0C7;
+    --color-danger-text-300: #FF8DA4;
+    --color-danger-background-100: #3C111B;
+    --color-danger-background-200: #201315;
+    --color-danger-background-300: #170E0F;
+    --color-danger-surface-100: #8F2C44;
+    --color-danger-surface-200: #751D34;
+    --color-danger-surface-300: #530A20;
+
+    /* Colors - Success */
+    --color-success-solid-100: #00DB9E;
+    --color-success-solid-200: #19E6A8;
+    --color-success-solid-300: #297F5F;
+    --color-success-text-100: #BBF6DC;
+    --color-success-text-200: #9DECC8;
+    --color-success-text-300: #00DA9D;
+    --color-success-background-100: #0D2E21;
+    --color-success-background-200: #111C17;
+    --color-success-background-300: #0B130F;
+    --color-success-surface-100: #23694E;
+    --color-success-surface-200: #185740;
+    --color-success-surface-300: #063C2A;
+
+    /* Colors - Info */
+    --color-info-solid-100: #2C71AF;
+    --color-info-solid-200: #198DE6;
+    --color-info-solid-300: #0080D8;
+    --color-info-text-100: #CCE4FC;
+    --color-info-text-200: #AAC4DC;
+    --color-info-text-300: #79BAF8;
+    --color-info-background-100: #09121A;
+    --color-info-background-200: #0F1923;
+    --color-info-background-300: #0D2942;
+    --color-info-surface-100: #245E92;
+    --color-info-surface-200: #194E7C;
+    --color-info-surface-300: #02345A;
+
+    /* Radius */
+    --radius-100: 0.25rem;
+    --radius-200: 0.5rem;
+    --radius-300: 0.75rem;
+    --radius-400: 1rem;
+    --radius-500: 50%;
+
+    /* Spacing */
+    --spacing-100: 0.125rem;
+    --spacing-200: 0.25rem;
+    --spacing-300: 0.5rem;
+    --spacing-400: 0.75rem;
+    --spacing-500: 1rem;
+    --spacing-600: 1.5rem;
+    --spacing-700: 2rem;
+    --spacing-800: 3rem;
+}

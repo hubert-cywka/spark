@@ -1,0 +1,29 @@
+.anchor {
+    width: fit-content;
+    outline: none;
+    text-decoration: none;
+    color: var(--color-accent-text-300);
+
+    &:disabled {
+        color: var(--color-neutral-text-200);
+        cursor: not-allowed;
+    }
+
+    &:hover,
+    &:active {
+        text-decoration: underline;
+        cursor: pointer;
+
+        &[data-hovered] {
+            color: var(--color-accent-text-200);
+        }
+
+        &[data-pressed] {
+            color: var(--color-accent-text-100);
+        }
+    }
+
+    &:focus {
+        text-decoration: underline;
+    }
+}

@@ -1,0 +1,74 @@
+.checkbox {
+    --selected-color: var(--color-neutral-surface-200);
+    --selected-color-pressed: var(--color-neutral-surface-100);
+    --checkmark-color: var(--color-neutral-text-100);
+
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-200);
+
+    font: var(--typography-body-100);
+
+    &[data-invalid] .svgWrapper {
+        border-color: var(--color-danger-solid-200);
+    }
+
+    &[data-pressed] .svgWrapper {
+        border-color: var(--color-accent-solid-200);
+    }
+
+    &[data-focus-visible] .svgWrapper {
+        outline: 2px solid var(--color-accent-solid-200);
+    }
+
+    &[data-selected],
+    &[data-indeterminate] {
+        .svgWrapper {
+            border-color: var(--color-accent-solid-200);
+            background: var(--color-accent-solid-200);
+
+            svg {
+                stroke-dashoffset: 44;
+            }
+        }
+    }
+
+    &[data-indeterminate] {
+        & svg {
+            stroke: none;
+        }
+    }
+
+    .svgWrapper {
+        border: 1px solid var(--color-neutral-solid-200);
+        border-radius: var(--radius-100);
+
+        margin-right: var(--spacing-200);
+        width: 1.25rem;
+        height: 1.25rem;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        transition: border-color 200ms;
+
+        svg {
+            width: 1.25rem;
+            height: 1.25rem;
+
+            fill: none;
+            stroke: var(--color-neutral-text-100);
+
+            stroke-width: 3px;
+            stroke-dasharray: 22px;
+            stroke-dashoffset: 66;
+
+            transition: all 200ms;
+        }
+    }
+
+    .requiredMark {
+        color: var(--color-danger-text-200);
+    }
+}

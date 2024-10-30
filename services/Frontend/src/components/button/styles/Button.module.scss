@@ -1,0 +1,76 @@
+.button {
+    height: fit-content;
+    border-radius: var(--radius-100);
+
+    cursor: pointer;
+    transition: transform 150ms ease;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &[data-size="1"] {
+        font: var(--typography-body-100);
+        padding: var(--spacing-100) var(--spacing-300);
+    }
+
+    &[data-size="2"] {
+        font: var(--typography-body-200);
+        padding: var(--spacing-200) var(--spacing-400);
+    }
+
+    &[data-size="3"] {
+        font: var(--typography-body-200);
+        padding: var(--spacing-300) var(--spacing-500);
+    }
+
+    &[data-variant="primary"] {
+        border: var(--spacing-100) solid var(--color-accent-solid-300);
+        color: var(--color-accent-text-100);
+        background:var(--color-accent-solid-300);
+    }
+
+    &[data-variant="secondary"] {
+        border: var(--spacing-100) solid var(--color-accent-solid-300);
+        color: var(--color-accent-text-300);
+        background: var(--color-accent-background-300);
+    }
+
+    &[data-variant="danger"] {
+        border: var(--spacing-100) solid var(--color-danger-solid-300);
+        color: var(--color-accent-danger-200);
+        background: var(--color-danger-surface-300);
+    }
+
+    &[data-variant="confirm"] {
+        border: var(--spacing-100) solid var(--color-success-solid-300);
+        color: var(--color-accent-success-300);
+        background: var(--color-success-surface-300);
+    }
+
+    &[data-variant="subtle"] {
+        color: var(--color-neutral-text-100);
+        background: rgba(var(--color-accent-solid-300), 0.1);
+        border: none;
+    }
+
+    &[data-disabled] {
+        filter: grayscale(0.9);
+        cursor: not-allowed;
+    }
+
+    &:not(&[data-disabled]) {
+        &[data-hovered] {
+            transform: scale(1.02);
+        }
+
+        &[data-pressed] {
+            transform: scale(0.98);
+        }
+    }
+
+    &[data-focused] {
+        outline-offset: var(--spacing-100);
+        outline: var(--spacing-100) solid var(--color-accent-solid-200);
+    }
+}

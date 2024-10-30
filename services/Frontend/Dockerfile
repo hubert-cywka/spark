@@ -1,45 +1,42 @@
-ARG ENV=dev
+FROM node:lts AS base
 
-FROM node:lts AS preparation
+COPY package.json package-lock.json ./
+RUN npm ci
+
+FROM base AS builder
 WORKDIR /app
 
-RUN mkdir server
-RUN mkdir client
+COPY src src
+COPY public public
+COPY scripts scripts
+COPY translations translations
+COPY next.config.mjs next.config.mjs
+COPY package.json package.json
+COPY package-lock.json package-lock.json
+COPY tsconfig.json tsconfig.json
 
-COPY client/index.html client/index.html
-COPY client/package.json client/package.json
-COPY client/package-lock.json client/package-lock.json
-COPY client/vite.config.ts client/vite.config.ts
-COPY client/tsconfig.json client/tsconfig.json
-COPY client/tsconfig.node.json client/tsconfig.node.json
-COPY client/src client/src
-COPY client/public client/public
-
-COPY server/package.json server/package.json
-COPY server/package-lock.json server/package-lock.json
-COPY server/tsconfig.json server/tsconfig.json
-COPY server/src server/src
-
-FROM preparation AS pre-build-dev
-RUN echo "Stage 'pre-build-dev' is empty. Skipping..."
-
-FROM preparation AS pre-build-ci
-RUN echo "Stage 'pre-build-ci' is empty. Skipping..."
-
-FROM pre-build-${ENV} AS build
-WORKDIR /app/client
-RUN npm ci
 RUN npm run build
 
-WORKDIR /app/server
-RUN npm ci
-RUN npm run build
-
+FROM base AS runner
 WORKDIR /app
 
-FROM node:20.8.1-bookworm-slim
-COPY --from=build /app/client/dist ./app/static
-COPY --from=build /app/server/dist ./app
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+
+RUN mkdir .next
+RUN chown nextjs:nodejs .next
+
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+
+USER nextjs
+
+ENV PORT=80
+
 EXPOSE 80
-
-CMD ["node", "/app/index.js"]
+CMD ["node", "server.js"]
