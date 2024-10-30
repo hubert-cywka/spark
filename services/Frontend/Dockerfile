@@ -11,7 +11,6 @@ COPY public public
 COPY scripts scripts
 COPY translations translations
 COPY next.config.mjs next.config.mjs
-COPY next-env.d.ts next-env.d.ts
 COPY package.json package.json
 COPY package-lock.json package-lock.json
 COPY tsconfig.json tsconfig.json
