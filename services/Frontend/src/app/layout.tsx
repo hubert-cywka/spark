@@ -4,16 +4,16 @@ import { Montserrat } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 
-import "../styles/design-tokens.scss";
+import "../styles/tokens.scss";
 import "../styles/normalize.scss";
-import styles from "./layout.module.scss";
 
 import { Provider } from "@/components/provider/Provider";
+import { Shell } from "@/features/layout/components/Shell/Shell";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Codename",
+    title: "Spark",
     description: "",
 };
 
@@ -24,13 +24,11 @@ export default async function RootLayout({ children }: PropsWithChildren) {
     return (
         <html lang={locale}>
             <body className={montserrat.className}>
-                <div id="root" className={styles.container}>
-                    <NextIntlClientProvider messages={messages}>
-                        <Provider>
-                            <div className={styles.innerWrapper}>{children}</div>
-                        </Provider>
-                    </NextIntlClientProvider>
-                </div>
+                <NextIntlClientProvider messages={messages}>
+                    <Provider>
+                        <Shell id="root">{children}</Shell>
+                    </Provider>
+                </NextIntlClientProvider>
             </body>
         </html>
     );

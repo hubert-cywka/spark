@@ -1,3 +1,5 @@
+@use "tokens";
+
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -9,6 +11,7 @@
 body {
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
+    background: tokens.$color-neutral-background-300;
 }
 
 img, picture, video, canvas, svg {

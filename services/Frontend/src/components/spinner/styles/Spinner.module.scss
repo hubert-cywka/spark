@@ -1,7 +1,9 @@
+@use "src/styles/tokens";
+
 .spinner {
     border-radius: 50%;
     border-style: solid;
-    border-color: var(--color-info-solid-300);
+    border-color: tokens.$color-info-solid-300;
     animation:
         change-shape 0.8s infinite linear alternate,
         spin 1.6s infinite linear;

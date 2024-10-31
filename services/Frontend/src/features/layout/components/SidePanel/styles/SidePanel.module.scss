@@ -1,0 +1,49 @@
+@use "src/styles/tokens";
+
+.container {
+    height: 100vh;
+    background: tokens.$color-neutral-background-200;
+    border-right: thin solid tokens.$color-neutral-surface-300;
+    transition: transform 0.25s;
+
+    @media (max-width: tokens.$breakpoint-sm) {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
+    .sidePanel {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$spacing-400;
+
+        position: relative;
+        padding: tokens.$spacing-400;
+
+        .collapseButtonWrapper {
+            transition: transform 0.25s;
+            transform: translateX(50%);
+
+            position: absolute;
+            top: tokens.$spacing-500;
+            right: 0;
+
+            button {
+                border-radius: tokens.$radius-500;
+                border: thin solid tokens.$color-neutral-surface-200;
+                background: tokens.$color-neutral-background-100;
+                color: tokens.$color-neutral-text-200;
+            }
+        }
+    }
+
+    &.collapsed {
+        transform: translateX(-100%);
+
+        .sidePanel {
+            .collapseButtonWrapper {
+                transform: translateX(150%) rotate(180deg);
+            }
+        }
+    }
+}

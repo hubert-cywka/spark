@@ -1,0 +1,31 @@
+@use "src/styles/tokens";
+
+.shell {
+    display: flex;
+
+    .contentContainer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        width: 100vw;
+        min-height: 100vh;
+        padding: tokens.$spacing-500;
+        color: tokens.$color-neutral-text-100;
+
+        .content {
+            font: tokens.$typography-body-100;
+            max-width: tokens.$breakpoint-xl;
+            width: 100%;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+}
+
+
+
+
