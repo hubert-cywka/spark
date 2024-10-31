@@ -1,15 +1,18 @@
-.iconButton {
+@use "src/styles/tokens";
+
+// TODO: Fix specificity
+.iconButton.iconButton {
     aspect-ratio: 1;
 
     &[data-size="1"] {
-        padding: var(--spacing-100);
+        padding: tokens.$spacing-100;
     }
 
     &[data-size="2"] {
-        padding: var(--spacing-200);
+        padding: tokens.$spacing-200;
     }
 
     &[data-size="3"] {
-        padding: var(--spacing-300);
+        padding: tokens.$spacing-300;
     }
 }

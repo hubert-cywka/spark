@@ -6,7 +6,9 @@ export const useEventListener = <T extends keyof WindowEventMap>(
     options?: boolean | AddEventListenerOptions
 ) => {
     useEffect(() => {
-        window.addEventListener(type, listener, options);
-        return () => window.removeEventListener(type, listener, options);
+        if (typeof window !== "undefined") {
+            window.addEventListener(type, listener, options);
+            return () => window.removeEventListener(type, listener, options);
+        }
     }, [listener, options, type]);
 };

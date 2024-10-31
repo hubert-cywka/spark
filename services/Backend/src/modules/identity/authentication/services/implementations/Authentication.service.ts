@@ -6,7 +6,7 @@ import { IAccountService, IAccountServiceToken } from "@/modules/identity/accoun
 import { CURRENT_JWT_VERSION } from "@/modules/identity/authentication/constants";
 import { LoginDto } from "@/modules/identity/authentication/dto/Login.dto";
 import { RegisterDto } from "@/modules/identity/authentication/dto/Register.dto";
-import { IAuthenticationService } from "@/modules/identity/authentication/services/interfaces/IAuthenticationService";
+import { IAuthenticationService } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
 import {
     IAuthPublisherService,
     IAuthPublisherServiceToken,

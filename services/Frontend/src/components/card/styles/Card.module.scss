@@ -1,17 +1,19 @@
+@use "src/styles/tokens";
+
 .container {
-    background: var(--color-neutral-background-200);
-    border: thin solid var(--color-neutral-surface-200);
-    border-radius: var(--radius-300);
+    background: tokens.$color-neutral-background-200;
+    border: thin solid tokens.$color-neutral-surface-200;
+    border-radius: tokens.$radius-300;
 
     &[data-size="1"] {
-        padding: var(--spacing-400);
+        padding: tokens.$spacing-400;
     }
 
     &[data-size="2"] {
-        padding: var(--spacing-600);
+        padding: tokens.$spacing-600;
     }
 
     &[data-size="3"] {
-        padding: var(--spacing-800);
+        padding: tokens.$spacing-800;
     }
 }

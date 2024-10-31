@@ -2,6 +2,8 @@ import { Suspense } from "react";
 
 import styles from "@/app/authentication/shared/styles/Authentication.module.scss";
 
+import { AppRoute } from "@/app/appRoute";
+import { Anchor } from "@/components/anchor/Anchor";
 import { Card } from "@/components/card/Card";
 import { AccountActivationHandler } from "@/features/auth/components/accountActivationHandler/AccountActivationHandler";
 import { RequestActivationLinkForm } from "@/features/auth/components/requestActivationLinkForm/RequestAccountActivationLinkForm";
@@ -19,6 +21,7 @@ export default function Page() {
                 <h1 className={styles.header}>{t("authentication.accountActivation.form.header")}</h1>
                 <p className={styles.caption}>{t("authentication.accountActivation.form.caption")}</p>
                 <p className={styles.caption}>{t("authentication.accountActivation.form.warning")}</p>
+                <Anchor href={AppRoute.LOGIN}>{t("authentication.accountActivation.form.loginLink")}</Anchor>
                 <RequestActivationLinkForm />
             </Card>
         </div>

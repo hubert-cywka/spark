@@ -1,0 +1,40 @@
+@use "src/styles/tokens";
+
+.navigationItem {
+    // TODO: Find another way to increase specificity
+   .link.link {
+       width: 100%;
+       display: flex;
+       gap: tokens.$spacing-200;
+       align-items: center;
+
+       padding: tokens.$spacing-200;
+       color: tokens.$color-neutral-text-200;
+       border-radius: tokens.$radius-100;
+
+       text-decoration: none;
+       font: tokens.$typography-body-100;
+
+       .icon {
+           height: 1.125rem;
+       }
+
+       &:hover, &.active, &:focus {
+           color: tokens.$color-neutral-text-100;
+       }
+
+       &:hover {
+           background: tokens.$color-neutral-background-100;
+       }
+
+       &.active {
+           outline: thin solid tokens.$color-neutral-surface-200;
+           background: tokens.$color-neutral-background-100;
+       }
+
+       &:focus {
+           outline-offset: 2px;
+           outline: thin solid tokens.$color-accent-solid-200;
+       }
+   }
+}

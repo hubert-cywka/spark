@@ -1,0 +1,20 @@
+@use "src/styles/tokens";
+
+.navigationSection {
+    .label {
+        color: tokens.$color-neutral-text-300;
+        font: tokens.$typography-caption-200;
+
+        padding: tokens.$spacing-200;
+        margin-bottom: tokens.$spacing-200;
+    }
+
+    .navigationItems {
+        padding: 0;
+        list-style: none;
+
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$spacing-300;
+    }
+}

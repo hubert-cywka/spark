@@ -1,12 +1,14 @@
-.tooltipPopup {
-    background: var(--color-info-solid-200);
-    border-radius: var(--radius-400);
-    padding: var(--spacing-200) var(--spacing-400);
+@use "src/styles/tokens";
 
-    font: var(--typography-body-100);
-    color: var(--color-neutral-text-100);
+.tooltipPopup {
+    background: tokens.$color-info-solid-200;
+    border-radius: tokens.$radius-400;
+    padding: tokens.$spacing-200 tokens.$spacing-400;
+
+    font: tokens.$typography-body-100;
+    color: tokens.$color-neutral-text-100;
 
     svg {
-        fill: var(--color-info-solid-200);
+        fill: tokens.$color-info-solid-200;
     }
 }

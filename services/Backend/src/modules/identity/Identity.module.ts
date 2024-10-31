@@ -19,7 +19,7 @@ import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/R
 import { AuthenticationService } from "@/modules/identity/authentication/services/implementations/Authentication.service";
 import { AuthPublisherService } from "@/modules/identity/authentication/services/implementations/AuthPublisher.service";
 import { RefreshTokenService } from "@/modules/identity/authentication/services/implementations/RefreshToken.service";
-import { IAuthServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthenticationService";
+import { IAuthServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
 import { IAuthPublisherServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthPublisher.service";
 import { IRefreshTokenServiceToken } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
 import { AccessTokenStrategy } from "@/modules/identity/authentication/strategies/AccessToken.strategy";

@@ -20,7 +20,7 @@ import { whenError } from "@/common/errors/whenError";
 import { ACCESS_TOKEN_COOKIE_NAME, REFRESH_TOKEN_COOKIE_NAME } from "@/modules/identity/authentication/constants";
 import { LoginDto } from "@/modules/identity/authentication/dto/Login.dto";
 import { RegisterDto } from "@/modules/identity/authentication/dto/Register.dto";
-import { IAuthenticationService, IAuthServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthenticationService";
+import { IAuthenticationService, IAuthServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
 
 @Controller("api/auth")
 export class AuthenticationController {

@@ -1,4 +1,28 @@
 {
+    "common": {
+        "app": {
+            "name": "Spark"
+        },
+        "navigation": {
+            "sections": {
+                "main": {
+                    "label": "Main",
+                    "home": {
+                        "label": "Home"
+                    }
+                },
+                "auth": {
+                    "label": "Authentication",
+                    "login": {
+                        "label": "Log in"
+                    },
+                    "register": {
+                        "label": "Register"
+                    }
+                }
+            }
+        }
+    },
     "authentication": {
         "common": {
             "fields": {
@@ -63,7 +87,8 @@
                 "caption": "Please submit your email, we will send the activation link once again. Previous one will be invalidated and won't work anymore.",
                 "header": "Need another link?",
                 "submitButton": "Send",
-                "warning": "You won't receive the activation link if your account is already activated."
+                "warning": "You won't receive the activation link if your account is already activated.",
+                "loginLink": "Log in instead"
             }
         },
         "login": {

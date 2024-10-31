@@ -1,11 +1,13 @@
+@use "src/styles/tokens";
+
 .anchor {
     width: fit-content;
     outline: none;
     text-decoration: none;
-    color: var(--color-accent-text-300);
+    color: tokens.$color-accent-text-300;
 
     &:disabled {
-        color: var(--color-neutral-text-200);
+        color: tokens.$color-neutral-text-200;
         cursor: not-allowed;
     }
 
@@ -15,11 +17,11 @@
         cursor: pointer;
 
         &[data-hovered] {
-            color: var(--color-accent-text-200);
+            color: tokens.$color-accent-text-200;
         }
 
         &[data-pressed] {
-            color: var(--color-accent-text-100);
+            color: tokens.$color-accent-text-100;
         }
     }
 
