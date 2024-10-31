@@ -4,6 +4,12 @@
             "name": "Spark"
         },
         "navigation": {
+            "collapseButton": {
+                "label": {
+                    "hide": "Hide menu",
+                    "show": "Show menu"
+                }
+            },
             "sections": {
                 "main": {
                     "label": "Main",
