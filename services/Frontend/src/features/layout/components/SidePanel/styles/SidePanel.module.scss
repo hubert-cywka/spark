@@ -38,6 +38,7 @@
     }
 
     &.collapsed {
+        position: absolute;
         transform: translateX(-100%);
 
         .sidePanel {
