@@ -1,8 +1,8 @@
 import { apiClient } from "@/lib/apiClient/apiClient";
 
-const LOGIN_WITH_GOOGLE_ENDPOINT = "/oauth/google/login";
+const LOGIN_WITH_GOOGLE_ENDPOINT = "/oidc/google/login";
 
-export class GoogleOAuthService {
+export class GoogleAuthService {
     public static async login() {
         await apiClient.post(LOGIN_WITH_GOOGLE_ENDPOINT);
     }

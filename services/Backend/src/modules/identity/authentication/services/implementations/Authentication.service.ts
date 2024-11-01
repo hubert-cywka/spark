@@ -17,6 +17,7 @@ import {
 } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
 import { AuthenticationResult } from "@/modules/identity/authentication/types/authenticationResult";
 
+// TODO: Consider using Keycloak (or other auth provider)
 @Injectable()
 export class AuthenticationService implements IAuthenticationService {
     constructor(

@@ -5,7 +5,7 @@ import { Anchor } from "@/components/Anchor";
 import { Card } from "@/components/Card";
 import { Divider } from "@/components/Divider";
 import { LoginForm } from "@/features/auth/components/LoginForm";
-import { GoogleOAuthButton } from "@/features/oAuth/google/components/GoogleOAuthButton";
+import { GoogleOIDCButton } from "@/features/openIDConnect/google/components/GoogleOAuthButton";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 export default function Page() {
@@ -28,10 +28,10 @@ export default function Page() {
                     <Anchor href={AppRoute.RESET_PASSWORD}>{t("authentication.login.form.forgotPassword.link")}</Anchor>
                 </LoginForm>
 
-                <Divider>{t("authentication.oauth.divider.label")}</Divider>
+                <Divider>{t("authentication.oidc.divider.label")}</Divider>
 
-                <div className={styles.oAuthProviders}>
-                    <GoogleOAuthButton />
+                <div className={styles.openIDConnectProviders}>
+                    <GoogleOIDCButton />
                 </div>
             </Card>
         </div>

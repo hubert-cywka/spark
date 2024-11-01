@@ -10,8 +10,8 @@ export const useLoginWithGoogleEvents = () => {
 
     const onLoginSuccess = useCallback(() => {
         showToast().success({
-            message: t("authentication.oauth.google.notifications.success.body"),
-            title: t("authentication.oauth.google.notifications.success.title"),
+            message: t("authentication.oidc.google.notifications.success.body"),
+            title: t("authentication.oidc.google.notifications.success.title"),
         });
     }, [t]);
 
@@ -20,7 +20,7 @@ export const useLoginWithGoogleEvents = () => {
             logger.error({ err });
             showToast().danger({
                 message: getErrorMessage(err),
-                title: t("authentication.oauth.google.notifications.error.title"),
+                title: t("authentication.oidc.google.notifications.error.title"),
             });
         },
         [t]

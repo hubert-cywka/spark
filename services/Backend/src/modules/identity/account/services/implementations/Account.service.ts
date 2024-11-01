@@ -45,6 +45,8 @@ export class AccountService implements IAccountService {
         this.publisher.onPasswordResetRequested(account.email, passwordResetToken);
     }
 
+    // TODO: Send email confirming that password has been updated
+    // TODO: Clear all refresh tokens after updating the password
     public async updatePassword(passwordResetToken: string, password: string): Promise<void> {
         const account = await this.repository.findOne({
             where: { passwordResetToken },
@@ -64,6 +66,9 @@ export class AccountService implements IAccountService {
     }
 
     public async findByCredentials(email: string, password: string): Promise<Account> {
+        // Hubert: hashing submitted password before searching for the user to protect from timing attacks
+        const hashedPassword = await this.hashPassword(password);
+
         const account = await this.repository.findOne({
             where: { email },
         });
@@ -73,7 +78,7 @@ export class AccountService implements IAccountService {
             throw new AccountNotFoundError();
         }
 
-        if (!(await this.comparePassword(password, account.password))) {
+        if (!this.comparePasswordHashes(hashedPassword, account.password)) {
             this.logger.warn({ id: account.id }, "Account found, incorrect password.");
             throw new InvalidCredentialsError();
         }
@@ -106,6 +111,7 @@ export class AccountService implements IAccountService {
         return this.mapEntityToModel(account);
     }
 
+    // TODO: Send email confirming that account has been activated
     public async activate(activationToken: string): Promise<void> {
         const account = await this.repository.findOne({
             where: { activationToken },
@@ -160,8 +166,8 @@ export class AccountService implements IAccountService {
         return bcrypt.hash(password, this.SALT_ROUNDS);
     }
 
-    private async comparePassword(password: string, hashedPassword: string): Promise<boolean> {
-        return bcrypt.compare(password, hashedPassword);
+    private comparePasswordHashes(password: string, hashedPassword: string): boolean {
+        return password === hashedPassword;
     }
 
     private mapEntityToModel(entity: AccountEntity): Account {

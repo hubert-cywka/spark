@@ -5,10 +5,10 @@ import Image from "next/image";
 import GoogleLogo from "./assets/google-logo.svg";
 
 import { Button } from "@/components/Button/Button";
-import { useLoginWithGoogle } from "@/features/oAuth/google/hooks/useLoginWithGoogle";
+import { useLoginWithGoogle } from "@/features/openIDConnect/google/hooks/useLoginWithGoogle";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
-export const GoogleOAuthButton = () => {
+export const GoogleOIDCButton = () => {
     const t = useTranslate();
     const { mutateAsync, isPending, isSuccess } = useLoginWithGoogle();
 
@@ -25,7 +25,7 @@ export const GoogleOAuthButton = () => {
             size="3"
             leftDecorator={<Image src={GoogleLogo} alt="Google logo" width={16} height={16} />}
         >
-            {t("authentication.oauth.google.button.label")}
+            {t("authentication.oidc.google.button.label")}
         </Button>
     );
 };
