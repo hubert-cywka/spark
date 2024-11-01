@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import * as bcrypt from "bcrypt";
+import argon2 from "argon2";
 import { plainToInstance } from "class-transformer";
 import * as crypto from "crypto";
 import dayjs from "dayjs";
@@ -21,7 +21,6 @@ import { InvalidCredentialsError } from "@/modules/identity/authentication/error
 @Injectable()
 export class AccountService implements IAccountService {
     private readonly logger = new Logger(AccountService.name);
-    private readonly SALT_ROUNDS = 10;
 
     constructor(
         @InjectRepository(AccountEntity)
@@ -163,7 +162,7 @@ export class AccountService implements IAccountService {
     }
 
     private async hashPassword(password: string): Promise<string> {
-        return bcrypt.hash(password, this.SALT_ROUNDS);
+        return argon2.hash(password);
     }
 
     private comparePasswordHashes(password: string, hashedPassword: string): boolean {
