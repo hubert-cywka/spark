@@ -7,7 +7,7 @@ import { logger } from "@/lib/logger/logger";
 import { showToast } from "@/lib/notifications/showToast";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 
-export const useRegisterFormEvents = () => {
+export const useRegisterEvents = () => {
     const t = useTranslate();
 
     const onRegisterSuccess = useCallback(() => {

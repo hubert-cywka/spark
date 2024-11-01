@@ -2,12 +2,12 @@
 
 import { useCallback } from "react";
 
+import { ResetPasswordFormInputs, useResetPasswordForm } from "./hooks/useResetPasswordForm";
+
 import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 
-import { Button } from "@/components/button/Button";
-import { Field } from "@/components/input/Field";
-import { ResetPasswordFormInputs, useResetPasswordForm } from "@/features/auth/components/resetPasswordForm/hooks/useResetPasswordForm";
-import { useResetPasswordFormEvents } from "@/features/auth/components/resetPasswordForm/hooks/useResetPasswordFormEvents";
+import { Button } from "@/components/Button";
+import { Field } from "@/components/Input";
 import { useRequestPasswordResetToken } from "@/features/auth/hooks/useRequestPasswordResetToken";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
@@ -16,18 +16,12 @@ export const ResetPasswordForm = () => {
 
     const { control, handleSubmit } = useResetPasswordForm();
     const { mutateAsync, isSuccess, isPending } = useRequestPasswordResetToken();
-    const { onPasswordResetRequestError, onPasswordResetRequestSuccess } = useResetPasswordFormEvents();
 
     const internalOnSubmit = useCallback(
-        async ({ email }: ResetPasswordFormInputs) => {
-            try {
-                await mutateAsync({ email: email.trim() });
-                onPasswordResetRequestSuccess?.();
-            } catch (err) {
-                onPasswordResetRequestError?.(err);
-            }
+        ({ email }: ResetPasswordFormInputs) => {
+            void mutateAsync({ email: email.trim() });
         },
-        [onPasswordResetRequestError, onPasswordResetRequestSuccess, mutateAsync]
+        [mutateAsync]
     );
 
     return (

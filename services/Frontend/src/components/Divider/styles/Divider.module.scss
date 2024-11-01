@@ -1,0 +1,22 @@
+@use "src/styles/tokens";
+
+.dividerWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: tokens.$spacing-300;
+
+    margin-block: tokens.$spacing-500;
+    color: tokens.$color-neutral-text-300;
+    font: tokens.$typography-caption-200;
+    font-weight: 700;
+
+    .line {
+        flex: 1;
+        height: 1px;
+        background: tokens.$color-neutral-surface-300;
+    }
+}
+
+
+

@@ -1,14 +1,14 @@
 import { LoginRequestPayload, RegisterRequestPayload } from "@/features/auth/types/authentication";
 import { apiClient } from "@/lib/apiClient/apiClient";
 
-const LOGIN_ENDPOINT = "/auth/login";
+const LOGIN_WITH_CREDENTIALS_ENDPOINT = "/auth/login";
 const REGISTER_ENDPOINT = "/auth/register";
 const LOGOUT_ENDPOINT = "/auth/logout";
 const REFRESH_TOKEN_ENDPOINT = "/auth/refresh";
 
 export class AuthenticationService {
-    public static async login(payload: LoginRequestPayload) {
-        await apiClient.post(LOGIN_ENDPOINT, payload);
+    public static async loginWithCredentials(payload: LoginRequestPayload) {
+        await apiClient.post(LOGIN_WITH_CREDENTIALS_ENDPOINT, payload);
     }
 
     public static async register(payload: RegisterRequestPayload) {

@@ -3,7 +3,7 @@ import clsx from "clsx";
 import styles from "./styles/NavigationItem.module.scss";
 
 import { AppRoute } from "@/app/appRoute";
-import { Anchor } from "@/components/anchor/Anchor";
+import { Anchor } from "@/components/Anchor/Anchor";
 import { IconComponent } from "@/types/Icon";
 
 type NavigationItemProps = {

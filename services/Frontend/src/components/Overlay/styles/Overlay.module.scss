@@ -1,0 +1,14 @@
+@use "src/styles/tokens";
+
+.overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(tokens.$color-neutral-surface-300, 0.9);
+
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}

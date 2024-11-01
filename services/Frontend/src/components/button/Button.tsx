@@ -3,12 +3,23 @@
 import { Button as BaseButton } from "react-aria-components";
 import clsx from "clsx";
 
+import { ButtonProps } from "./types/Button";
+
 import styles from "./styles/Button.module.scss";
 
-import { ButtonProps } from "@/components/button/types/Button";
-import { Spinner } from "@/components/spinner/Spinner";
+import { Overlay } from "@/components/Overlay";
+import { Spinner } from "@/components/Spinner";
 
-export const Button = ({ children, isLoading, isDisabled, className, variant = "primary", size = "2", ...rest }: ButtonProps) => {
+export const Button = ({
+    children,
+    isLoading,
+    isDisabled,
+    className,
+    variant = "primary",
+    size = "2",
+    leftDecorator,
+    ...rest
+}: ButtonProps) => {
     return (
         <BaseButton
             {...rest}
@@ -17,7 +28,15 @@ export const Button = ({ children, isLoading, isDisabled, className, variant = "
             data-variant={variant}
             data-size={size}
         >
-            {isLoading ? <Spinner size="1" /> : children}
+            <>
+                {leftDecorator}
+                {children}
+                {isLoading && (
+                    <Overlay>
+                        <Spinner size="1" />
+                    </Overlay>
+                )}
+            </>
         </BaseButton>
     );
 };

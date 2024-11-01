@@ -1,11 +1,8 @@
-import { PropsWithChildren } from "react";
 import { OverlayArrow, Tooltip as TooltipPopup, TooltipTrigger } from "react-aria-components";
 
-import styles from "./styles/Tooltip.module.scss";
+import { TooltipProps } from "./types/Tooltip";
 
-type TooltipProps = PropsWithChildren<{
-    label: string;
-}>;
+import styles from "./styles/Tooltip.module.scss";
 
 export const Tooltip = ({ children, label }: TooltipProps) => {
     return (

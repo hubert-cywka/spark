@@ -2,12 +2,12 @@
 
 import { useCallback } from "react";
 
+import { UpdatePasswordFormInputs, useUpdatePasswordForm } from "./hooks/useUpdatePasswordForm";
+
 import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 
-import { Button } from "@/components/button/Button";
-import { Field } from "@/components/input/Field";
-import { UpdatePasswordFormInputs, useUpdatePasswordForm } from "@/features/auth/components/updatePasswordForm/hooks/useUpdatePasswordForm";
-import { useUpdatePasswordFormEvents } from "@/features/auth/components/updatePasswordForm/hooks/useUpdatePasswordFormEvents";
+import { Button } from "@/components/Button";
+import { Field } from "@/components/Input";
 import { useUpdatePassword } from "@/features/auth/hooks/useUpdatePassword";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
@@ -18,21 +18,13 @@ type UpdatePasswordFormProps = {
 export const UpdatePasswordForm = ({ passwordChangeToken }: UpdatePasswordFormProps) => {
     const t = useTranslate();
     const { handleSubmit, control } = useUpdatePasswordForm();
-    const { onPasswordUpdateError, onPasswordUpdateSuccess } = useUpdatePasswordFormEvents();
-    const {
-        updatePassword: { mutateAsync, isPending, isSuccess },
-    } = useUpdatePassword();
+    const { mutateAsync, isPending, isSuccess } = useUpdatePassword();
 
     const internalOnSubmit = useCallback(
-        async ({ password }: UpdatePasswordFormInputs) => {
-            try {
-                await mutateAsync({ password, passwordChangeToken });
-                onPasswordUpdateSuccess();
-            } catch (err) {
-                onPasswordUpdateError(err);
-            }
+        ({ password }: UpdatePasswordFormInputs) => {
+            void mutateAsync({ password, passwordChangeToken });
         },
-        [mutateAsync, passwordChangeToken, onPasswordUpdateSuccess, onPasswordUpdateError]
+        [mutateAsync, passwordChangeToken]
     );
 
     return (

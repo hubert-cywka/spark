@@ -5,7 +5,7 @@ import { logger } from "@/lib/logger/logger";
 import { showToast } from "@/lib/notifications/showToast";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 
-export const useLoginFormEvents = () => {
+export const useLoginEvents = () => {
     const t = useTranslate();
 
     const onLoginSuccess = useCallback(() => {

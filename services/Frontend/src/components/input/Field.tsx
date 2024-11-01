@@ -4,9 +4,9 @@ import { InputHTMLAttributes, ReactNode } from "react";
 import { FieldError, Input, Label, TextField } from "react-aria-components";
 import { Control, FieldValues, Path, useController } from "react-hook-form";
 
-import styles from "./styles/Field.module.scss";
+import { InputSize } from "./types/Input";
 
-import { InputSize } from "@/components/input/types/Input";
+import styles from "./styles/Field.module.scss";
 
 type FieldProps<T extends FieldValues> = {
     name: Path<T>;

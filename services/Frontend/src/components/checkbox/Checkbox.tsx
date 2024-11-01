@@ -1,17 +1,11 @@
 "use client";
 
-import { ReactNode } from "react";
 import { Checkbox as BaseCheckbox } from "react-aria-components";
-import { Control, FieldValues, Path, useController } from "react-hook-form";
+import { FieldValues, useController } from "react-hook-form";
+
+import { CheckboxProps } from "./types/Checkbox";
 
 import styles from "./styles/Checkbox.module.scss";
-
-export type CheckboxProps<T extends FieldValues> = {
-    name: Path<T>;
-    control: Control<T>;
-    required?: boolean;
-    children?: ReactNode;
-};
 
 export const Checkbox = <T extends FieldValues>({ children, required, control, name }: CheckboxProps<T>) => {
     const {

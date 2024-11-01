@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-import { useCommonAuthenticationRequirements } from "@/features/auth/schemas/useCommonAuthenticationRequirements";
+import { useCommonAuthenticationRequirements } from "@/features/auth/hooks/useCommonAuthenticationRequirements";
 
 export type RequestAccountActivationFormInputs = {
     email: string;

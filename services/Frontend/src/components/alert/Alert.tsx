@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { IconAlertTriangle, IconCircleCheck, IconInfoCircle, IconMessageCircle } from "@tabler/icons-react";
 
-import styles from "./styles/Alert.module.scss";
+import { AlertProps } from "./types/Alert";
 
-import { AlertProps } from "@/components/alert/types/Alert";
+import styles from "./styles/Alert.module.scss";
 
 export const Alert = ({ children, variant }: AlertProps) => {
     const Icon = useMemo(() => {

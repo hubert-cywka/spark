@@ -3,8 +3,8 @@
 import { useEffect } from "react";
 
 import { AppRoute } from "@/app/appRoute";
-import { Alert } from "@/components/alert/Alert";
-import { Anchor } from "@/components/anchor/Anchor";
+import { Alert } from "@/components/Alert";
+import { Anchor } from "@/components/Anchor";
 import { useActivateAccount } from "@/features/auth/hooks/useActivateAccount";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 import { getErrorMessage } from "@/utils/getErrorMessage";

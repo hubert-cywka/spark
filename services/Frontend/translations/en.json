@@ -30,6 +30,25 @@
         }
     },
     "authentication": {
+        "oauth": {
+            "divider": {
+                "label": "OR"
+            },
+            "google": {
+                "button": {
+                    "label": "Continue with Google"
+                },
+                "notifications": {
+                    "error": {
+                        "title": "Couldn't log in with Google"
+                    },
+                    "success": {
+                        "body": "We were able to authenticate you.",
+                        "title": "Logged in with Google"
+                    }
+                }
+            }
+        },
         "common": {
             "fields": {
                 "confirmPassword": {

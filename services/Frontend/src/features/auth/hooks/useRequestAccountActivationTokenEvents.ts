@@ -5,26 +5,26 @@ import { logger } from "@/lib/logger/logger";
 import { showToast } from "@/lib/notifications/showToast";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 
-export const useResetPasswordFormEvents = () => {
+export const useRequestAccountActivationTokenEvents = () => {
     const t = useTranslate();
 
-    const onPasswordResetRequestSuccess = useCallback(() => {
+    const onRequestActivationSuccess = useCallback(() => {
         showToast().success({
-            message: t("authentication.requestPasswordReset.notifications.success.body"),
-            title: t("authentication.requestPasswordReset.notifications.success.title"),
+            message: t("authentication.accountActivation.notifications.success.body"),
+            title: t("authentication.accountActivation.notifications.success.title"),
         });
     }, [t]);
 
-    const onPasswordResetRequestError = useCallback(
+    const onRequestActivationError = useCallback(
         (err: unknown) => {
             logger.error({ err });
             showToast().danger({
                 message: getErrorMessage(err),
-                title: t("authentication.requestPasswordReset.notifications.error.title"),
+                title: t("authentication.accountActivation.notifications.error.title"),
             });
         },
         [t]
     );
 
-    return { onPasswordResetRequestError, onPasswordResetRequestSuccess };
+    return { onRequestActivationError, onRequestActivationSuccess };
 };

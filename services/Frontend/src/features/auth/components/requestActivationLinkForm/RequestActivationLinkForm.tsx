@@ -2,23 +2,21 @@
 
 import { useCallback } from "react";
 
+import { RequestAccountActivationFormInputs, useRequestAccountActivationLinkForm } from "./hooks/useRequestAccountActivationLinkForm";
+
 import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 
-import { Button } from "@/components/button/Button";
-import { Field } from "@/components/input/Field";
-import {
-    RequestAccountActivationFormInputs,
-    useRequestAccountActivationLinkForm,
-} from "@/features/auth/components/requestActivationLinkForm/hooks/useRequestAccountActivationLinkForm";
-import { useRequestAccountActivationLinkFormEvents } from "@/features/auth/components/requestActivationLinkForm/hooks/useRequestAccountActivationLinkFormEvents";
+import { Button } from "@/components/Button";
+import { Field } from "@/components/Input";
 import { useRequestAccountActivationToken } from "@/features/auth/hooks/useRequestAccountActivationToken";
+import { useRequestAccountActivationTokenEvents } from "@/features/auth/hooks/useRequestAccountActivationTokenEvents";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 export const RequestActivationLinkForm = () => {
     const t = useTranslate();
     const { control, handleSubmit } = useRequestAccountActivationLinkForm();
     const { mutateAsync, isPending, isSuccess } = useRequestAccountActivationToken();
-    const { onRequestActivationError, onRequestActivationSuccess } = useRequestAccountActivationLinkFormEvents();
+    const { onRequestActivationError, onRequestActivationSuccess } = useRequestAccountActivationTokenEvents();
 
     const internalOnSubmit = useCallback(
         async ({ email }: RequestAccountActivationFormInputs) => {
