@@ -71,7 +71,7 @@ export class RefreshTokenService implements IRefreshTokenService {
         }
     }
 
-    private async invalidateAllByOwnerId(ownerId: string): Promise<void> {
+    public async invalidateAllByOwnerId(ownerId: string): Promise<void> {
         const now = dayjs().toDate();
         await this.refreshTokenRepository.update({ owner: { id: ownerId }, expiresAt: IsNull() }, { expiresAt: now });
     }

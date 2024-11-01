@@ -6,4 +6,5 @@ export interface IRefreshTokenService {
     sign(payload: object): Promise<string>;
     redeem(token: string): Promise<AccessTokenPayload>;
     invalidate(token: string): Promise<void>;
+    invalidateAllByOwnerId(ownerId: string): Promise<void>;
 }

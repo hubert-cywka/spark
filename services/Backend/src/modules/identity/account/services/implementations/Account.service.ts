@@ -44,8 +44,6 @@ export class AccountService implements IAccountService {
         this.publisher.onPasswordResetRequested(account.email, passwordResetToken);
     }
 
-    // TODO: Send email confirming that password has been updated
-    // TODO: Clear all refresh tokens after updating the password
     public async updatePassword(passwordResetToken: string, password: string): Promise<void> {
         const account = await this.repository.findOne({
             where: { passwordResetToken },
@@ -62,6 +60,8 @@ export class AccountService implements IAccountService {
             passwordResetToken: null,
             password: hashedPassword,
         });
+
+        this.publisher.onPasswordUpdated(account.email, account.id);
     }
 
     public async findByCredentials(email: string, password: string): Promise<Account> {
@@ -110,7 +110,6 @@ export class AccountService implements IAccountService {
         return this.mapEntityToModel(account);
     }
 
-    // TODO: Send email confirming that account has been activated
     public async activate(activationToken: string): Promise<void> {
         const account = await this.repository.findOne({
             where: { activationToken },

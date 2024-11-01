@@ -8,7 +8,7 @@ import { IEmailTemplate } from "@/modules/mail/templates/IEmailTemplate";
 
 @Injectable()
 export class MailerService implements IMailerService {
-    private readonly logger = new Logger();
+    private readonly logger = new Logger(MailerService.name);
     private readonly transporter: Transporter;
     private readonly senderName: string;
     private readonly isInDebugMode: boolean;

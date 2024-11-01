@@ -8,7 +8,7 @@ import { IUsersService, IUsersServiceToken } from "@/modules/users/services/inte
 
 @Controller()
 export class UsersSubscriber {
-    private readonly logger = new Logger();
+    private readonly logger = new Logger(UsersSubscriber.name);
 
     public constructor(@Inject(IUsersServiceToken) private usersService: IUsersService) {}
 
@@ -33,10 +33,10 @@ export class UsersSubscriber {
     @EventPattern(EventTopics.account.activated)
     async onUserActivated(@Payload() payload: AccountActivatedEventPayload) {
         this.logger.log({ payload }, `Received ${EventTopics.account.activated} event.`);
-        const { account } = payload;
+        const { id } = payload;
 
         try {
-            await this.usersService.activate(account.id);
+            await this.usersService.activate(id);
         } catch (e) {
             whenError(e).is(EntityAlreadyExistsError).throwRpcException("User already exists.").elseRethrow();
         }

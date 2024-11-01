@@ -7,7 +7,7 @@ import { DomainEvent } from "@/common/events/types/DomainEvent";
 
 @Injectable()
 export class PublisherService implements IPublisherService {
-    private readonly logger = new Logger();
+    private readonly logger = new Logger(PublisherService.name);
 
     public constructor(private client: ClientProxy) {}
 

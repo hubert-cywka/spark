@@ -3,9 +3,8 @@ import { DomainEvent } from "../DomainEvent";
 import { EventTopics } from "@/common/events";
 
 export type AccountActivatedEventPayload = {
-    account: {
-        id: string;
-    };
+    id: string;
+    email: string;
 };
 
 export class AccountActivatedEvent extends DomainEvent {

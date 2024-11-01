@@ -3,6 +3,7 @@ import { Inject } from "@nestjs/common";
 import {
     AccountActivatedEvent,
     AccountActivationTokenRequestedEvent,
+    AccountPasswordUpdatedEvent,
     AccountRequestedPasswordResetEvent,
     IPublisherServiceToken,
     PublisherService,
@@ -17,7 +18,7 @@ export class AccountPublisherService implements IAccountPublisherService {
     ) {}
 
     public onAccountActivated(account: Account): void {
-        this.publisher.publish(new AccountActivatedEvent({ account }));
+        this.publisher.publish(new AccountActivatedEvent({ id: account.id, email: account.email }));
     }
 
     public onAccountActivationTokenRequested(email: string, activationToken: string) {
@@ -34,6 +35,15 @@ export class AccountPublisherService implements IAccountPublisherService {
             new AccountRequestedPasswordResetEvent({
                 email,
                 passwordResetToken,
+            })
+        );
+    }
+
+    public onPasswordUpdated(email: string, id: string) {
+        this.publisher.publish(
+            new AccountPasswordUpdatedEvent({
+                email,
+                id,
             })
         );
     }
