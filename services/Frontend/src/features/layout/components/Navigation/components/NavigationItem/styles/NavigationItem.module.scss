@@ -16,11 +16,16 @@
        font: tokens.$typography-body-100;
 
        .icon {
+           color: tokens.$color-accent-text-300;
            height: 1.125rem;
        }
 
        &:hover, &.active, &:focus {
            color: tokens.$color-neutral-text-100;
+
+           .icon {
+               color: tokens.$color-accent-text-200;
+           }
        }
 
        &:hover {

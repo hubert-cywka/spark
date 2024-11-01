@@ -9,8 +9,10 @@ import styles from "./styles/SidePanel.module.scss";
 import { IconButton } from "@/components/iconButton/IconButton";
 import { Logo } from "@/components/logo/Logo";
 import { Navigation } from "@/features/layout/components/Navigation/Navigation";
+import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 export const SidePanel = () => {
+    const t = useTranslate();
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     const toggleCollapsedState = () => setIsCollapsed((prev) => !prev);
@@ -31,13 +33,18 @@ export const SidePanel = () => {
         >
             <div className={styles.sidePanel}>
                 <div className={styles.collapseButtonWrapper}>
-                    <IconButton size="1" variant="subtle" onPress={toggleCollapsedState}>
+                    <IconButton
+                        size="1"
+                        variant="subtle"
+                        onPress={toggleCollapsedState}
+                        aria-label={t(`common.navigation.collapseButton.label.${isCollapsed ? "show" : "hide"}`)}
+                    >
                         <IconChevronLeft />
                     </IconButton>
                 </div>
 
                 <Logo />
-                <Navigation />
+                <Navigation isDisabled={isCollapsed} />
             </div>
         </div>
     );

@@ -15,10 +15,10 @@
     .sidePanel {
         display: flex;
         flex-direction: column;
-        gap: tokens.$spacing-400;
+        gap: tokens.$spacing-700;
 
         position: relative;
-        padding: tokens.$spacing-400;
+        padding: tokens.$spacing-500;
 
         .collapseButtonWrapper {
             transition: transform 0.25s;
