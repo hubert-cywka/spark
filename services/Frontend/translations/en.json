@@ -68,7 +68,7 @@
             },
             "google": {
                 "button": {
-                    "label": "Continue with Google"
+                    "label": "Sign in with Google"
                 },
                 "notifications": {
                     "error": {
