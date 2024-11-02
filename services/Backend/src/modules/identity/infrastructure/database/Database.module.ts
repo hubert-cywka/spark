@@ -4,6 +4,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { initializeDatabase } from "@/common/utils/initializeDatabase";
 import { logger } from "@/lib/logger";
+import { HashRefreshTokens1730541294391 } from "@/modules/identity/infrastructure/database/migraions/1730541294391-HashRefreshTokens";
 import { InitMigration1730484788849 } from "@/modules/identity/infrastructure/database/migrations/1730484788849-InitMigration";
 
 @Module({
@@ -33,7 +34,7 @@ import { InitMigration1730484788849 } from "@/modules/identity/infrastructure/da
                     autoLoadEntities: true,
                     migrationsRun: true,
                     synchronize: false,
-                    migrations: [InitMigration1730484788849],
+                    migrations: [InitMigration1730484788849, HashRefreshTokens1730541294391],
                 };
             },
             inject: [ConfigService],

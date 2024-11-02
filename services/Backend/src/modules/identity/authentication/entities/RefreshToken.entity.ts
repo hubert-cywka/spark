@@ -3,13 +3,13 @@ import { Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedCol
 import { AccountEntity } from "@/modules/identity/account/entities/AccountEntity";
 
 @Entity("refresh_token")
-@Index(["value"])
+@Index(["hashedValue"])
 export class RefreshTokenEntity {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
     @Column({ type: "varchar", unique: true })
-    value!: string;
+    hashedValue!: string;
 
     @Column({ type: "timestamp" })
     expiresAt!: Date;
