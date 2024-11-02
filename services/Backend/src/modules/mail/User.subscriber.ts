@@ -33,10 +33,9 @@ export class UserSubscriber {
     @EventPattern(EventTopics.account.activationTokenRequested)
     public async onUserActivationTokenRequested(@Payload() payload: AccountActivationTokenRequestedEventPayload) {
         this.logger.log({ topic: EventTopics.account.activationTokenRequested, payload }, "Received an event.");
-        const template = new UserActivationEmail(payload.activationToken, this.appUrl);
 
         try {
-            await this.mailer.send(payload.email, template);
+            await this.mailer.send(payload.email, new UserActivationEmail(payload.activationToken, this.appUrl));
         } catch (e) {
             whenError(e).is(EmailDeliveryError).throwRpcException("Email couldn't be delivered.").elseRethrow();
         }
@@ -45,10 +44,9 @@ export class UserSubscriber {
     @EventPattern(EventTopics.account.passwordResetRequested)
     public async onPasswordResetRequested(@Payload() payload: AccountRequestedPasswordResetEventPayload) {
         this.logger.log({ topic: EventTopics.account.passwordResetRequested, payload }, "Received an event.");
-        const template = new PasswordResetRequestedEmail(payload.passwordResetToken, this.appUrl);
 
         try {
-            await this.mailer.send(payload.email, template);
+            await this.mailer.send(payload.email, new PasswordResetRequestedEmail(payload.passwordResetToken, this.appUrl));
         } catch (e) {
             whenError(e).is(EmailDeliveryError).throwRpcException("Email couldn't be delivered.").elseRethrow();
         }
@@ -57,10 +55,9 @@ export class UserSubscriber {
     @EventPattern(EventTopics.account.passwordUpdated)
     public async onPasswordUpdated(@Payload() payload: AccountPasswordUpdatedEventPayload) {
         this.logger.log({ topic: EventTopics.account.passwordUpdated, payload }, "Received an event.");
-        const template = new PasswordUpdatedEmail(this.appUrl);
 
         try {
-            await this.mailer.send(payload.email, template);
+            await this.mailer.send(payload.email, new PasswordUpdatedEmail(this.appUrl));
         } catch (e) {
             whenError(e).is(EmailDeliveryError).throwRpcException("Email couldn't be delivered.").elseRethrow();
         }
@@ -69,10 +66,9 @@ export class UserSubscriber {
     @EventPattern(EventTopics.account.activated)
     public async onUserActivated(@Payload() payload: AccountActivatedEventPayload) {
         this.logger.log({ topic: EventTopics.account.activated, payload }, "Received an event.");
-        const template = new UserActivatedEmail(this.appUrl);
 
         try {
-            await this.mailer.send(payload.email, template);
+            await this.mailer.send(payload.email, new UserActivatedEmail(this.appUrl));
         } catch (e) {
             whenError(e).is(EmailDeliveryError).throwRpcException("Email couldn't be delivered.").elseRethrow();
         }
