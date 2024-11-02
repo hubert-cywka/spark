@@ -2,6 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 
+import { Account } from "@/modules/identity/account/models/Account.model";
 import { IAccountService, IAccountServiceToken } from "@/modules/identity/account/services/interfaces/IAccount.service";
 import { CURRENT_JWT_VERSION } from "@/modules/identity/authentication/constants";
 import { LoginDto } from "@/modules/identity/authentication/dto/Login.dto";
@@ -15,6 +16,7 @@ import {
     IRefreshTokenService,
     IRefreshTokenServiceToken,
 } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
+import { AccessTokenPayload } from "@/modules/identity/authentication/types/accessTokenPayload";
 import { AuthenticationResult } from "@/modules/identity/authentication/types/authenticationResult";
 
 // TODO: Consider using Keycloak (or other auth provider)
@@ -37,14 +39,19 @@ export class AuthenticationService implements IAuthenticationService {
         this.accessTokenExpirationTimeInSeconds = configService.getOrThrow<number>("modules.auth.jwt.expirationTimeInSeconds");
     }
 
+    public async getIdentityFromAccessToken(accessToken: string): Promise<Account> {
+        const { id, email } = await this.jwtService.decode(accessToken);
+        return { id, email };
+    }
+
     public async login({ email, password }: LoginDto): Promise<AuthenticationResult> {
         const { id } = await this.accountService.findByCredentials(email, password);
-        return await this.generateTokens(id);
+        return await this.generateTokens({ id, email });
     }
 
     public async redeemRefreshToken(refreshToken: string): Promise<AuthenticationResult> {
-        const { id } = await this.refreshTokenService.redeem(refreshToken);
-        return await this.generateTokens(id);
+        const { id, email } = await this.refreshTokenService.redeem(refreshToken);
+        return await this.generateTokens({ id, email });
     }
 
     public async register({ email, password, lastName, firstName }: RegisterDto): Promise<void> {
@@ -57,15 +64,17 @@ export class AuthenticationService implements IAuthenticationService {
         return this.refreshTokenService.invalidate(refreshToken);
     }
 
-    private async generateTokens(userId: string): Promise<{ accessToken: string; refreshToken: string }> {
-        const payload = { id: userId, ver: CURRENT_JWT_VERSION };
+    private async generateTokens(account: Account): Promise<{ accessToken: string; refreshToken: string }> {
+        const payload: AccessTokenPayload = {
+            ...account,
+            ver: CURRENT_JWT_VERSION,
+        };
 
+        const refreshToken = await this.refreshTokenService.issue(payload);
         const accessToken = await this.jwtService.signAsync(payload, {
             secret: this.accessTokenSigningSecret,
             expiresIn: this.accessTokenExpirationTimeInSeconds,
         });
-
-        const refreshToken = await this.refreshTokenService.issue(payload);
 
         return { accessToken, refreshToken };
     }

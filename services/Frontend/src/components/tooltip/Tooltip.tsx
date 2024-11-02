@@ -5,6 +5,10 @@ import { TooltipProps } from "./types/Tooltip";
 import styles from "./styles/Tooltip.module.scss";
 
 export const Tooltip = ({ children, label }: TooltipProps) => {
+    if (!label) {
+        return <>{children}</>;
+    }
+
     return (
         <TooltipTrigger delay={0} closeDelay={0}>
             {children}

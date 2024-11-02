@@ -8,7 +8,7 @@ import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Input";
-import { useUpdatePassword } from "@/features/auth/hooks/useUpdatePassword";
+import { useUpdatePassword, useUpdatePasswordEvents } from "@/features/auth/hooks";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 type UpdatePasswordFormProps = {
@@ -19,12 +19,18 @@ export const UpdatePasswordForm = ({ passwordChangeToken }: UpdatePasswordFormPr
     const t = useTranslate();
     const { handleSubmit, control } = useUpdatePasswordForm();
     const { mutateAsync, isPending, isSuccess } = useUpdatePassword();
+    const { onPasswordUpdateError, onPasswordUpdateSuccess } = useUpdatePasswordEvents();
 
     const internalOnSubmit = useCallback(
-        ({ password }: UpdatePasswordFormInputs) => {
-            void mutateAsync({ password, passwordChangeToken });
+        async ({ password }: UpdatePasswordFormInputs) => {
+            try {
+                await mutateAsync({ password, passwordChangeToken });
+                onPasswordUpdateSuccess();
+            } catch (err) {
+                onPasswordUpdateError(err);
+            }
         },
-        [mutateAsync, passwordChangeToken]
+        [mutateAsync, onPasswordUpdateError, onPasswordUpdateSuccess, passwordChangeToken]
     );
 
     return (

@@ -8,7 +8,7 @@ import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Input";
-import { useRequestPasswordResetToken } from "@/features/auth/hooks/useRequestPasswordResetToken";
+import { useRequestPasswordResetToken, useRequestPasswordResetTokenEvents } from "@/features/auth/hooks";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 export const ResetPasswordForm = () => {
@@ -16,12 +16,18 @@ export const ResetPasswordForm = () => {
 
     const { control, handleSubmit } = useResetPasswordForm();
     const { mutateAsync, isSuccess, isPending } = useRequestPasswordResetToken();
+    const { onPasswordResetRequestError, onPasswordResetRequestSuccess } = useRequestPasswordResetTokenEvents();
 
     const internalOnSubmit = useCallback(
-        ({ email }: ResetPasswordFormInputs) => {
-            void mutateAsync({ email: email.trim() });
+        async ({ email }: ResetPasswordFormInputs) => {
+            try {
+                await mutateAsync({ email: email.trim() });
+                onPasswordResetRequestSuccess();
+            } catch (err) {
+                onPasswordResetRequestError(err);
+            }
         },
-        [mutateAsync]
+        [mutateAsync, onPasswordResetRequestError, onPasswordResetRequestSuccess]
     );
 
     return (

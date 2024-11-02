@@ -20,13 +20,14 @@ import {
     ISingleUseTokenServiceToken,
 } from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
 import { InvalidCredentialsError } from "@/modules/identity/authentication/errors/InvalidCredentials.error";
+import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants/connectionName";
 
 @Injectable()
 export class AccountService implements IAccountService {
     private readonly logger = new Logger(AccountService.name);
 
     constructor(
-        @InjectRepository(AccountEntity)
+        @InjectRepository(AccountEntity, IDENTITY_MODULE_DATA_SOURCE)
         private readonly repository: Repository<AccountEntity>,
         @Inject(IAccountPublisherServiceToken)
         private readonly publisher: IAccountPublisherService,

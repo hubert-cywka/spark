@@ -8,7 +8,6 @@ import { EventsModule } from "@/common/events";
 import { AppConfig } from "@/config/configuration";
 import { loggerOptions } from "@/lib/logger";
 import { IdentityModule } from "@/modules/identity/Identity.module";
-import { DatabaseModule } from "@/modules/identity/infrastructure/database/Database.module";
 import { MailModule } from "@/modules/mail/Mail.module";
 import { UsersModule } from "@/modules/users/Users.module";
 
@@ -31,7 +30,6 @@ import { UsersModule } from "@/modules/users/Users.module";
             inject: [ConfigService],
         }),
         ScheduleModule.forRoot(),
-        DatabaseModule,
         IdentityModule,
         MailModule,
         UsersModule,

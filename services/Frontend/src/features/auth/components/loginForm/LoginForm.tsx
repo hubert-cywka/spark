@@ -8,7 +8,7 @@ import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Input";
-import { useLoginWithCredentials } from "@/features/auth/hooks/useLoginWithCredentials";
+import { useLoginEvents, useLoginWithCredentials } from "@/features/auth/hooks";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 type LoginFormProps = PropsWithChildren;
@@ -17,12 +17,18 @@ export const LoginForm = ({ children }: LoginFormProps) => {
     const t = useTranslate();
     const { handleSubmit, control } = useLoginForm();
     const { mutateAsync: login, isPending, isSuccess } = useLoginWithCredentials();
+    const { onLoginSuccess, onLoginError } = useLoginEvents();
 
     const internalOnSubmit = useCallback(
-        (inputs: LoginFormInputs) => {
-            void login({ ...inputs, email: inputs.email.trim() });
+        async (inputs: LoginFormInputs) => {
+            try {
+                await login({ ...inputs, email: inputs.email.trim() });
+                onLoginSuccess();
+            } catch (err) {
+                onLoginError(err);
+            }
         },
-        [login]
+        [login, onLoginError, onLoginSuccess]
     );
 
     return (

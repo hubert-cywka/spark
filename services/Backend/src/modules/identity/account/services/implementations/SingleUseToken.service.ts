@@ -9,6 +9,7 @@ import { TokenNotFoundError } from "@/modules/identity/account/errors/TokenNotFo
 import { AccountService } from "@/modules/identity/account/services/implementations/Account.service";
 import { ISingleUseTokenService } from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
 import { SingleUseTokenRedeemData, SingleUseTokenType } from "@/modules/identity/account/types/SingleUseToken";
+import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants/connectionName";
 
 @Injectable()
 export class SingleUseTokenService implements ISingleUseTokenService {
@@ -16,7 +17,7 @@ export class SingleUseTokenService implements ISingleUseTokenService {
     private readonly EXPIRATION_TIME = 15 * 60;
 
     constructor(
-        @InjectRepository(SingleUseTokenEntity)
+        @InjectRepository(SingleUseTokenEntity, IDENTITY_MODULE_DATA_SOURCE)
         private readonly repository: Repository<SingleUseTokenEntity>
     ) {}
 

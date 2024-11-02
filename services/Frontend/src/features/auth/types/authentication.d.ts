@@ -1,3 +1,9 @@
+export type AuthenticationResponse = {
+    email: string;
+    id: string;
+    accessToken: string;
+};
+
 export type LoginRequestPayload = {
     email: string;
     password: string;

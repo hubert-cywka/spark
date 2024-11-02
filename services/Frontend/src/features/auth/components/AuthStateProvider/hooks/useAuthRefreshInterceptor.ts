@@ -1,22 +1,32 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { AxiosInstance, HttpStatusCode } from "axios";
 
-import { AuthenticationService } from "@/features/auth/api/authenticationService";
 import { logger } from "@/lib/logger/logger";
 
-export const useAuthRefreshInterceptor = (client: AxiosInstance) => {
+export const useAuthRefreshInterceptor = (client: AxiosInstance, reAuthenticate: () => Promise<string>) => {
+    const isInterceptorMountedRef = useRef<boolean | null>(null);
+
     useEffect(() => {
+        if (isInterceptorMountedRef.current) {
+            return;
+        }
+
         const refreshTokenInterceptor = client.interceptors.response.use(
             (response) => response,
             async (error) => {
                 const originalRequest = error.config;
-                const shouldReAuthenticate = error.response?.status === HttpStatusCode.Unauthorized && !originalRequest._retry;
+                const shouldReAuthenticate =
+                    error.response?.status === HttpStatusCode.Unauthorized &&
+                    !originalRequest._retry &&
+                    !!originalRequest.headers.Authorization;
 
                 if (shouldReAuthenticate) {
                     originalRequest._retry = true;
 
                     try {
-                        await AuthenticationService.refreshToken();
+                        const accessToken = await reAuthenticate();
+                        originalRequest.headers["Authorization"] = `Bearer ${accessToken}`;
+
                         return client(originalRequest);
                     } catch (refreshError) {
                         logger.error({
@@ -28,9 +38,11 @@ export const useAuthRefreshInterceptor = (client: AxiosInstance) => {
                 return Promise.reject(error);
             }
         );
+        isInterceptorMountedRef.current = true;
 
         return () => {
             client.interceptors.response.eject(refreshTokenInterceptor);
+            isInterceptorMountedRef.current = false;
         };
-    }, [client]);
+    }, [client, reAuthenticate]);
 };

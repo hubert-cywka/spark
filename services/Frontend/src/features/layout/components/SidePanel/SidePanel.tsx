@@ -8,6 +8,8 @@ import styles from "./styles/SidePanel.module.scss";
 
 import { IconButton } from "@/components/IconButton/";
 import { Logo } from "@/components/Logo/Logo";
+import { AccessGuard } from "@/features/auth/components/AccessGuard";
+import { LogoutButton } from "@/features/auth/components/LogoutButton/LogoutButton";
 import { Navigation } from "@/features/layout/components/Navigation/Navigation";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
@@ -45,6 +47,13 @@ export const SidePanel = () => {
 
                 <Logo />
                 <Navigation isDisabled={isCollapsed} />
+
+                <div className={styles.footer}>
+                    {/* TODO: Add scopes */}
+                    <AccessGuard requiredScopes={[]}>
+                        <LogoutButton />
+                    </AccessGuard>
+                </div>
             </div>
         </div>
     );

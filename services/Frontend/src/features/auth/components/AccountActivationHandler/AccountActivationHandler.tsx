@@ -6,7 +6,7 @@ import { HttpStatusCode } from "axios";
 import { AppRoute } from "@/app/appRoute";
 import { Alert } from "@/components/Alert";
 import { Anchor } from "@/components/Anchor";
-import { useActivateAccount } from "@/features/auth/hooks/useActivateAccount";
+import { useActivateAccount } from "@/features/auth/hooks";
 import { ErrorsMap, useTranslateApiError } from "@/hooks/useTranslateApiError";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 

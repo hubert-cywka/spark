@@ -10,7 +10,7 @@ import styles from "./styles/RegisterForm.module.scss";
 import { Button } from "@/components/Button";
 import { Checkbox } from "@/components/Checkbox";
 import { Field } from "@/components/Input";
-import { useRegister } from "@/features/auth/hooks/useRegister";
+import { useRegister, useRegisterEvents } from "@/features/auth/hooks";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 // TODO: Finish T&C
@@ -19,17 +19,23 @@ export const RegisterForm = () => {
 
     const { handleSubmit, control } = useRegisterForm();
     const { mutateAsync: register, isPending, isSuccess } = useRegister();
+    const { onRegisterError, onRegisterSuccess } = useRegisterEvents();
 
     const onSubmit = useCallback(
-        (inputs: RegisterFormInputs) => {
-            void register({
-                ...inputs,
-                email: inputs.email.trim(),
-                lastName: inputs.lastName.trim(),
-                firstName: inputs.firstName.trim(),
-            });
+        async (inputs: RegisterFormInputs) => {
+            try {
+                await register({
+                    ...inputs,
+                    email: inputs.email.trim(),
+                    lastName: inputs.lastName.trim(),
+                    firstName: inputs.firstName.trim(),
+                });
+                onRegisterSuccess();
+            } catch (err) {
+                onRegisterError(err);
+            }
         },
-        [register]
+        [onRegisterError, onRegisterSuccess, register]
     );
 
     return (

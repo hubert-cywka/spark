@@ -8,8 +8,7 @@ import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Input";
-import { useRequestAccountActivationToken } from "@/features/auth/hooks/useRequestAccountActivationToken";
-import { useRequestAccountActivationTokenEvents } from "@/features/auth/hooks/useRequestAccountActivationTokenEvents";
+import { useRequestAccountActivationToken, useRequestAccountActivationTokenEvents } from "@/features/auth/hooks";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 export const RequestActivationLinkForm = () => {

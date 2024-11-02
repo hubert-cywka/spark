@@ -3,6 +3,8 @@
 .container {
     height: 100vh;
     z-index: 1000;
+    display: flex;
+    flex-direction: column;
 
     background: tokens.$color-neutral-background-200;
     border-right: thin solid tokens.$color-neutral-surface-300;
@@ -17,10 +19,17 @@
     .sidePanel {
         display: flex;
         flex-direction: column;
+        flex-grow: 1;
         gap: tokens.$spacing-700;
 
         position: relative;
         padding: tokens.$spacing-500;
+
+        .footer {
+            display: flex;
+            justify-content: center;
+            margin-top: auto;
+        }
 
         .collapseButtonWrapper {
             transition: transform 0.25s;
