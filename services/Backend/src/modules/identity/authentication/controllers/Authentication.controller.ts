@@ -13,7 +13,7 @@ import { ConfigService } from "@nestjs/config";
 import { CookieOptions, Response } from "express";
 
 import { Cookies } from "@/common/decorators/Cookie.decorator";
-import { EntityAlreadyExistsError } from "@/common/errors/EntityAlreadyExists.error";
+import { EntityConflictError } from "@/common/errors/EntityConflictError";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
@@ -35,7 +35,7 @@ export class AuthenticationController {
         try {
             return await this.authService.register(dto);
         } catch (err) {
-            whenError(err).is(EntityAlreadyExistsError).throw(new ConflictException()).elseRethrow();
+            whenError(err).is(EntityConflictError).throw(new ConflictException()).elseRethrow();
         }
     }
 
@@ -124,7 +124,7 @@ export class AuthenticationController {
     }
 
     private getAccessTokenCookieOptions(): CookieOptions {
-        const maxAge = this.configService.getOrThrow<number>("modules.auth.accessToken.expirationTimeInSeconds") * 1000;
+        const maxAge = this.configService.getOrThrow<number>("modules.auth.jwt.expirationTimeInSeconds") * 1000;
         const secure = this.configService.get<string>("NODE_ENV") === "production";
 
         return {

@@ -2,7 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 
-import { IAccountService, IAccountServiceToken } from "@/modules/identity/account/services/interfaces/IAccountService";
+import { IAccountService, IAccountServiceToken } from "@/modules/identity/account/services/interfaces/IAccount.service";
 import { CURRENT_JWT_VERSION } from "@/modules/identity/authentication/constants";
 import { LoginDto } from "@/modules/identity/authentication/dto/Login.dto";
 import { RegisterDto } from "@/modules/identity/authentication/dto/Register.dto";
@@ -61,7 +61,7 @@ export class AuthenticationService implements IAuthenticationService {
             expiresIn,
         });
 
-        const refreshToken = await this.refreshTokenService.sign(payload);
+        const refreshToken = await this.refreshTokenService.issue(payload);
 
         return { accessToken, refreshToken };
     }

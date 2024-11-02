@@ -4,7 +4,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { initializeDatabase } from "@/common/utils/initializeDatabase";
 import { logger } from "@/lib/logger";
-import { InitIdentityModuleDatabase1729970567968 } from "@/modules/identity/infrastructure/database/migrations/1729970567968-InitIdentityModuleDatabase.ts";
+import { InitMigration1730484788849 } from "@/modules/identity/infrastructure/database/migrations/1730484788849-InitMigration";
 
 @Module({
     imports: [
@@ -33,7 +33,7 @@ import { InitIdentityModuleDatabase1729970567968 } from "@/modules/identity/infr
                     autoLoadEntities: true,
                     migrationsRun: true,
                     synchronize: false,
-                    migrations: [InitIdentityModuleDatabase1729970567968],
+                    migrations: [InitMigration1730484788849],
                 };
             },
             inject: [ConfigService],

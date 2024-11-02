@@ -1,4 +1,4 @@
-export class EntityAlreadyExistsError extends Error {
+export class EntityConflictError extends Error {
     constructor(message: string) {
         super(message);
     }

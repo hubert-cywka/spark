@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import { AppRoute } from "@/app/appRoute";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
@@ -9,6 +9,7 @@ import { getErrorMessage } from "@/utils/getErrorMessage";
 
 export const useRegisterEvents = () => {
     const t = useTranslate();
+    const router = useRouter();
 
     const onRegisterSuccess = useCallback(() => {
         showToast().success({
@@ -16,8 +17,8 @@ export const useRegisterEvents = () => {
             title: t("authentication.registration.notifications.success.title"),
         });
 
-        redirect(AppRoute.ACTIVATE_ACCOUNT);
-    }, [t]);
+        void router.push(AppRoute.ACTIVATE_ACCOUNT);
+    }, [router, t]);
 
     const onRegisterError = useCallback(
         (err: unknown) => {

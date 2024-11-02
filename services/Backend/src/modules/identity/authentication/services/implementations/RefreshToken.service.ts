@@ -22,7 +22,7 @@ export class RefreshTokenService implements IRefreshTokenService {
         private refreshTokenRepository: Repository<RefreshTokenEntity>
     ) {}
 
-    public async sign(payload: AccessTokenPayload): Promise<string> {
+    public async issue(payload: AccessTokenPayload): Promise<string> {
         const secret = this.configService.getOrThrow<string>("modules.auth.refreshToken.signingSecret");
         const expiresIn = this.configService.getOrThrow<number>("modules.auth.refreshToken.expirationTimeInSeconds");
 
@@ -41,6 +41,7 @@ export class RefreshTokenService implements IRefreshTokenService {
         const payload = await this.jwtService.verifyAsync<AccessTokenPayload>(token, {
             secret,
         });
+
         const tokenEntity = await this.findOneByValue(token);
 
         if (!tokenEntity || !this.isValid(tokenEntity)) {
@@ -64,22 +65,22 @@ export class RefreshTokenService implements IRefreshTokenService {
         if (token instanceof RefreshTokenEntity) {
             await this.refreshTokenRepository.save({
                 ...token,
-                expiresAt: now,
+                invalidatedAt: now,
             });
         } else {
-            await this.refreshTokenRepository.update({ value: token, expiresAt: IsNull() }, { expiresAt: now });
+            await this.refreshTokenRepository.update({ value: token, invalidatedAt: IsNull() }, { invalidatedAt: now });
         }
     }
 
     public async invalidateAllByOwnerId(ownerId: string): Promise<void> {
         const now = dayjs().toDate();
-        await this.refreshTokenRepository.update({ owner: { id: ownerId }, expiresAt: IsNull() }, { expiresAt: now });
+        await this.refreshTokenRepository.update({ owner: { id: ownerId }, invalidatedAt: IsNull() }, { invalidatedAt: now });
     }
 
     private async save(value: string, ownerId: string, expiresAt: Date): Promise<RefreshTokenEntity | null> {
         const token = this.refreshTokenRepository.create({
-            value,
             owner: { id: ownerId },
+            value,
             expiresAt,
         });
 
@@ -91,7 +92,8 @@ export class RefreshTokenService implements IRefreshTokenService {
     }
 
     private isValid(token: RefreshTokenEntity): boolean {
-        return dayjs(token.expiresAt).isAfter(new Date());
+        const now = dayjs().toDate();
+        return dayjs(token.expiresAt).isAfter(now) && !token.invalidatedAt;
     }
 
     // TODO: Test if it works

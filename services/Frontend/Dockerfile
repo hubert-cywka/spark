@@ -1,4 +1,4 @@
-FROM node:lts AS base
+FROM node:22.9-alpine AS base
 
 COPY package.json package-lock.json ./
 RUN npm ci

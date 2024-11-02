@@ -9,7 +9,7 @@ import {
     PublisherService,
 } from "@/common/events";
 import { Account } from "@/modules/identity/account/models/Account.model";
-import { IAccountPublisherService } from "@/modules/identity/account/services/interfaces/IAccountPublisherService";
+import { IAccountPublisherService } from "@/modules/identity/account/services/interfaces/IAccountPublisher.service";
 
 export class AccountPublisherService implements IAccountPublisherService {
     public constructor(

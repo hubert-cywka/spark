@@ -11,10 +11,13 @@ import { AuthenticationController } from "./authentication/controllers/Authentic
 import { ThrottlingGuard } from "@/common/guards/Throttling.guard";
 import { AccountController } from "@/modules/identity/account/controllers/Account.controller";
 import { AccountEntity } from "@/modules/identity/account/entities/AccountEntity";
+import { SingleUseTokenEntity } from "@/modules/identity/account/entities/SingleUseTokenEntity";
 import { AccountService } from "@/modules/identity/account/services/implementations/Account.service";
 import { AccountPublisherService } from "@/modules/identity/account/services/implementations/AccountPublisher.service";
-import { IAccountPublisherServiceToken } from "@/modules/identity/account/services/interfaces/IAccountPublisherService";
-import { IAccountServiceToken } from "@/modules/identity/account/services/interfaces/IAccountService";
+import { SingleUseTokenService } from "@/modules/identity/account/services/implementations/SingleUseToken.service";
+import { IAccountServiceToken } from "@/modules/identity/account/services/interfaces/IAccount.service";
+import { IAccountPublisherServiceToken } from "@/modules/identity/account/services/interfaces/IAccountPublisher.service";
+import { ISingleUseTokenServiceToken } from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
 import { AuthenticationService } from "@/modules/identity/authentication/services/implementations/Authentication.service";
 import { AuthPublisherService } from "@/modules/identity/authentication/services/implementations/AuthPublisher.service";
@@ -37,7 +40,7 @@ import { AccessTokenStrategy } from "@/modules/identity/authentication/strategie
         }),
         PassportModule,
         JwtModule,
-        TypeOrmModule.forFeature([RefreshTokenEntity, AccountEntity]),
+        TypeOrmModule.forFeature([RefreshTokenEntity, AccountEntity, SingleUseTokenEntity]),
     ],
     controllers: [AuthenticationController, AccountController],
     providers: [
@@ -45,6 +48,10 @@ import { AccessTokenStrategy } from "@/modules/identity/authentication/strategie
         { provide: IAuthServiceToken, useClass: AuthenticationService },
         { provide: IAuthPublisherServiceToken, useClass: AuthPublisherService },
         { provide: IRefreshTokenServiceToken, useClass: RefreshTokenService },
+        {
+            provide: ISingleUseTokenServiceToken,
+            useClass: SingleUseTokenService,
+        },
         { provide: IAccountServiceToken, useClass: AccountService },
         {
             provide: IAccountPublisherServiceToken,
