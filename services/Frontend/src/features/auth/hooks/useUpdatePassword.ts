@@ -1,11 +1,14 @@
 import { useMutation } from "@tanstack/react-query";
 
 import { PasswordService } from "@/features/auth/api/passwordService";
+import { useUpdatePasswordEvents } from "@/features/auth/hooks/useUpdatePasswordEvents";
 
 export const useUpdatePassword = () => {
-    const updatePassword = useMutation({
-        mutationFn: PasswordService.updatePassword,
-    });
+    const { onPasswordUpdateError, onPasswordUpdateSuccess } = useUpdatePasswordEvents();
 
-    return { updatePassword };
+    return useMutation({
+        mutationFn: PasswordService.updatePassword,
+        onError: onPasswordUpdateError,
+        onSuccess: onPasswordUpdateSuccess,
+    });
 };

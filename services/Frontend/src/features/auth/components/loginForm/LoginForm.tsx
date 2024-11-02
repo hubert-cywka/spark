@@ -2,13 +2,13 @@
 
 import { PropsWithChildren, useCallback } from "react";
 
+import { LoginFormInputs, useLoginForm } from "./hooks/useLoginForm";
+
 import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 
-import { Button } from "@/components/button/Button";
-import { Field } from "@/components/input/Field";
-import { LoginFormInputs, useLoginForm } from "@/features/auth/components/loginForm/hooks/useLoginForm";
-import { useLoginFormEvents } from "@/features/auth/components/loginForm/hooks/useLoginFormEvents";
-import { useLogin } from "@/features/auth/hooks/useLogin";
+import { Button } from "@/components/Button";
+import { Field } from "@/components/Input";
+import { useLoginWithCredentials } from "@/features/auth/hooks/useLoginWithCredentials";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 type LoginFormProps = PropsWithChildren;
@@ -16,19 +16,13 @@ type LoginFormProps = PropsWithChildren;
 export const LoginForm = ({ children }: LoginFormProps) => {
     const t = useTranslate();
     const { handleSubmit, control } = useLoginForm();
-    const { mutateAsync: login, isPending, isSuccess } = useLogin();
-    const { onLoginError, onLoginSuccess } = useLoginFormEvents();
+    const { mutateAsync: login, isPending, isSuccess } = useLoginWithCredentials();
 
     const internalOnSubmit = useCallback(
-        async (inputs: LoginFormInputs) => {
-            try {
-                await login({ ...inputs, email: inputs.email.trim() });
-                onLoginSuccess();
-            } catch (e) {
-                onLoginError(e);
-            }
+        (inputs: LoginFormInputs) => {
+            void login({ ...inputs, email: inputs.email.trim() });
         },
-        [login, onLoginError, onLoginSuccess]
+        [login]
     );
 
     return (
@@ -53,7 +47,6 @@ export const LoginForm = ({ children }: LoginFormProps) => {
                 />
                 {children}
             </div>
-
             <Button isLoading={isPending} size="3" type="submit" isDisabled={isSuccess}>
                 {t("authentication.login.form.submitButton")}
             </Button>

@@ -1,6 +1,6 @@
-import styles from "./styles/Card.module.scss";
+import { CardProps } from "./types/Card";
 
-import { CardProps } from "@/components/card/types/Card";
+import styles from "./styles/Card.module.scss";
 
 export const Card = ({ children, size = "2" }: CardProps) => {
     return (

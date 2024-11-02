@@ -10,6 +10,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: tokens.$spacing-300;
 
     &[data-size="1"] {
         font: tokens.$typography-body-100;
@@ -27,25 +28,25 @@
     }
 
     &[data-variant="primary"] {
-        border: tokens.$spacing-100 solid tokens.$color-accent-solid-300;
+        border: 1px solid tokens.$color-accent-solid-300;
         color: tokens.$color-accent-text-100;
         background: tokens.$color-accent-solid-300;
     }
 
     &[data-variant="secondary"] {
-        border: tokens.$spacing-100 solid tokens.$color-neutral-surface-100;
-        color: tokens.$color-neutral-text-200;
-        background: tokens.$color-neutral-background-200;
+        border: 1px solid tokens.$color-neutral-surface-200;
+        color: tokens.$color-neutral-text-100;
+        background: tokens.$color-neutral-surface-300;
     }
 
     &[data-variant="danger"] {
-        border: tokens.$spacing-100 solid tokens.$color-danger-solid-300;
+        border: 1px solid tokens.$color-danger-solid-300;
         color: tokens.$color-danger-text-200;
         background: tokens.$color-danger-surface-300;
     }
 
     &[data-variant="confirm"] {
-        border: tokens.$spacing-100 solid tokens.$color-success-solid-300;
+        border: 1px solid tokens.$color-success-solid-300;
         color: tokens.$color-success-text-300;
         background: tokens.$color-success-surface-300;
     }

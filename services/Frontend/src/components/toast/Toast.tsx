@@ -1,9 +1,10 @@
 import { IconX } from "@tabler/icons-react";
 
+import { ToastProps } from "./types/Toast";
+
 import styles from "./styles/Toast.module.scss";
 
-import { IconButton } from "@/components/iconButton/IconButton";
-import { ToastProps } from "@/components/toast/types/Toast";
+import { IconButton } from "@/components/IconButton";
 
 export const Toast = ({ onClose, title, message, variant = "info" }: ToastProps) => {
     return (

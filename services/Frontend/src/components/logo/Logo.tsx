@@ -10,7 +10,7 @@ export const Logo = () => {
     return (
         <div className={styles.logo}>
             <IconNorthStar />
-            <p>{t("common.app.name")}</p>
+            <span>{t("common.app.name")}</span>
         </div>
     );
 };

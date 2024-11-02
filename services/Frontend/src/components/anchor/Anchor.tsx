@@ -1,10 +1,9 @@
-import { PropsWithChildren } from "react";
 import clsx from "clsx";
-import Link, { LinkProps } from "next/link";
+import Link from "next/link";
+
+import { AnchorProps } from "./types/Anchor";
 
 import styles from "./styles/Anchor.module.scss";
-
-type AnchorProps = PropsWithChildren<LinkProps> & { className?: string };
 
 export const Anchor = ({ children, className, ...props }: AnchorProps) => {
     return (

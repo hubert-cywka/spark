@@ -1,8 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import * as bcrypt from "bcrypt";
+import argon2 from "argon2";
 import { plainToInstance } from "class-transformer";
-import * as crypto from "crypto";
 import dayjs from "dayjs";
 import { Repository } from "typeorm";
 
@@ -11,23 +10,28 @@ import { AccountAlreadyActivatedError } from "@/modules/identity/account/errors/
 import { AccountAlreadyExistsError } from "@/modules/identity/account/errors/AccountAlreadyExists.error";
 import { AccountNotFoundError } from "@/modules/identity/account/errors/AccountNotFound.error";
 import { Account } from "@/modules/identity/account/models/Account.model";
+import { IAccountService } from "@/modules/identity/account/services/interfaces/IAccount.service";
 import {
     IAccountPublisherService,
     IAccountPublisherServiceToken,
-} from "@/modules/identity/account/services/interfaces/IAccountPublisherService";
-import { IAccountService } from "@/modules/identity/account/services/interfaces/IAccountService";
+} from "@/modules/identity/account/services/interfaces/IAccountPublisher.service";
+import {
+    ISingleUseTokenService,
+    ISingleUseTokenServiceToken,
+} from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
 import { InvalidCredentialsError } from "@/modules/identity/authentication/errors/InvalidCredentials.error";
 
 @Injectable()
 export class AccountService implements IAccountService {
     private readonly logger = new Logger(AccountService.name);
-    private readonly SALT_ROUNDS = 10;
 
     constructor(
         @InjectRepository(AccountEntity)
         private readonly repository: Repository<AccountEntity>,
         @Inject(IAccountPublisherServiceToken)
-        private readonly publisher: IAccountPublisherService
+        private readonly publisher: IAccountPublisherService,
+        @Inject(ISingleUseTokenServiceToken)
+        private readonly singleUseTokenService: ISingleUseTokenService
     ) {}
 
     public async requestPasswordChange(email: string): Promise<void> {
@@ -40,18 +44,18 @@ export class AccountService implements IAccountService {
             throw new AccountNotFoundError();
         }
 
-        const passwordResetToken = this.generateOneTimeUseToken();
-        await this.repository.save({ ...account, passwordResetToken });
+        const passwordResetToken = await this.singleUseTokenService.issuePasswordChangeToken(account.id);
         this.publisher.onPasswordResetRequested(account.email, passwordResetToken);
     }
 
-    public async updatePassword(passwordResetToken: string, password: string): Promise<void> {
+    public async updatePassword(passwordChangeToken: string, password: string): Promise<void> {
+        const { ownerId } = await this.singleUseTokenService.redeemPasswordChangeToken(passwordChangeToken);
         const account = await this.repository.findOne({
-            where: { passwordResetToken },
+            where: { id: ownerId },
         });
 
         if (!account) {
-            this.logger.warn({ passwordResetToken }, "Account with that password reset token not found.");
+            this.logger.warn({ id: ownerId, token: passwordChangeToken }, "Owner of token was not found.");
             throw new AccountNotFoundError();
         }
 
@@ -61,8 +65,11 @@ export class AccountService implements IAccountService {
             passwordResetToken: null,
             password: hashedPassword,
         });
+
+        this.publisher.onPasswordUpdated(account.email, account.id);
     }
 
+    // TODO: Protect from timing attacks to prevent leaking emails
     public async findByCredentials(email: string, password: string): Promise<Account> {
         const account = await this.repository.findOne({
             where: { email },
@@ -73,7 +80,7 @@ export class AccountService implements IAccountService {
             throw new AccountNotFoundError();
         }
 
-        if (!(await this.comparePassword(password, account.password))) {
+        if (!(await this.verifyPassword(account.password, password))) {
             this.logger.warn({ id: account.id }, "Account found, incorrect password.");
             throw new InvalidCredentialsError();
         }
@@ -107,25 +114,22 @@ export class AccountService implements IAccountService {
     }
 
     public async activate(activationToken: string): Promise<void> {
+        const { ownerId } = await this.singleUseTokenService.redeemAccountActivationToken(activationToken);
         const account = await this.repository.findOne({
-            where: { activationToken },
+            where: { id: ownerId },
         });
 
         if (!account) {
-            this.logger.warn({ activationToken }, "Account with that activation token not found.");
+            this.logger.warn({ id: ownerId, token: activationToken }, "Owner of token was not found.");
             throw new AccountNotFoundError();
         }
 
         this.assertEligibilityForActivation(account);
-
-        const updatedAccount = await this.repository.save({
+        const { email, id } = await this.repository.save({
             ...account,
             activatedAt: dayjs(),
         });
-        this.publisher.onAccountActivated({
-            email: updatedAccount.email,
-            id: updatedAccount.id,
-        });
+        this.publisher.onAccountActivated({ email, id });
     }
 
     public async requestActivation(email: string): Promise<void> {
@@ -139,9 +143,7 @@ export class AccountService implements IAccountService {
         }
 
         this.assertEligibilityForActivation(account);
-        const activationToken = this.generateOneTimeUseToken();
-
-        await this.repository.save({ ...account, activationToken });
+        const activationToken = await this.singleUseTokenService.issueAccountActivationToken(account.id);
         this.publisher.onAccountActivationTokenRequested(email, activationToken);
     }
 
@@ -152,16 +154,12 @@ export class AccountService implements IAccountService {
         }
     }
 
-    private generateOneTimeUseToken(): string {
-        return crypto.randomUUID();
-    }
-
     private async hashPassword(password: string): Promise<string> {
-        return bcrypt.hash(password, this.SALT_ROUNDS);
+        return argon2.hash(password);
     }
 
-    private async comparePassword(password: string, hashedPassword: string): Promise<boolean> {
-        return bcrypt.compare(password, hashedPassword);
+    private async verifyPassword(accountPasswordHash: string, inputPassword: string): Promise<boolean> {
+        return await argon2.verify(accountPasswordHash, inputPassword);
     }
 
     private mapEntityToModel(entity: AccountEntity): Account {

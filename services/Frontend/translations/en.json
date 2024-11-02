@@ -1,4 +1,36 @@
 {
+    "api": {
+        "common": {
+            "errors": {
+                "tooManyRequests": "Too many requests. Please try again in a moment.",
+                "internalServerError": "Something went wrong. Please report the issue and try again later.",
+                "serviceUnavailable": "App is temporarily unavailable. Please try again later."
+            }
+        },
+        "authentication": {
+            "login": {
+                "errors": {
+                    "unauthorized": "We couldn't authenticate you.",
+                    "forbidden": "Your account is not activated"
+                }
+            },
+            "register": {
+                "errors": {
+                    "conflict": "This email is already taken."
+                }
+            },
+            "activateAccount": {
+                "errors": {
+                    "notFound": "Activation token is not valid. Please request a new one."
+                }
+            },
+            "updatePassword": {
+                "errors": {
+                    "notFound": "Password change token is not valid. Please request a new one."
+                }
+            }
+        }
+    },
     "common": {
         "app": {
             "name": "Spark"
@@ -30,6 +62,25 @@
         }
     },
     "authentication": {
+        "oidc": {
+            "divider": {
+                "label": "OR"
+            },
+            "google": {
+                "button": {
+                    "label": "Sign in with Google"
+                },
+                "notifications": {
+                    "error": {
+                        "title": "Couldn't log in with Google"
+                    },
+                    "success": {
+                        "body": "We were able to authenticate you.",
+                        "title": "Logged in with Google"
+                    }
+                }
+            }
+        },
         "common": {
             "fields": {
                 "confirmPassword": {
@@ -86,6 +137,7 @@
             "alert": {
                 "info": "Please check your email to find account activation link. We always send one immediately after registration.",
                 "loading": "Activating your account...",
+                "error": "We couldn't activate your account. Reason:",
                 "success": "Your account has been activated!",
                 "logInLink": "Click here to log in"
             },

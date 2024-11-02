@@ -2,14 +2,14 @@
 
 import { useCallback } from "react";
 
+import { RegisterFormInputs, useRegisterForm } from "./hooks/useRegisterForm";
+
 import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 import styles from "./styles/RegisterForm.module.scss";
 
-import { Button } from "@/components/button/Button";
-import { Checkbox } from "@/components/checkbox/Checkbox";
-import { Field } from "@/components/input/Field";
-import { RegisterFormInputs, useRegisterForm } from "@/features/auth/components/registerForm/hooks/useRegisterForm";
-import { useRegisterFormEvents } from "@/features/auth/components/registerForm/hooks/useRegisterFormEvents";
+import { Button } from "@/components/Button";
+import { Checkbox } from "@/components/Checkbox";
+import { Field } from "@/components/Input";
 import { useRegister } from "@/features/auth/hooks/useRegister";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
@@ -19,23 +19,17 @@ export const RegisterForm = () => {
 
     const { handleSubmit, control } = useRegisterForm();
     const { mutateAsync: register, isPending, isSuccess } = useRegister();
-    const { onRegisterError, onRegisterSuccess } = useRegisterFormEvents();
 
     const onSubmit = useCallback(
-        async (inputs: RegisterFormInputs) => {
-            try {
-                await register({
-                    ...inputs,
-                    email: inputs.email.trim(),
-                    lastName: inputs.lastName.trim(),
-                    firstName: inputs.firstName.trim(),
-                });
-                onRegisterSuccess();
-            } catch (err) {
-                onRegisterError(err);
-            }
+        (inputs: RegisterFormInputs) => {
+            void register({
+                ...inputs,
+                email: inputs.email.trim(),
+                lastName: inputs.lastName.trim(),
+                firstName: inputs.firstName.trim(),
+            });
         },
-        [register, onRegisterError, onRegisterSuccess]
+        [register]
     );
 
     return (

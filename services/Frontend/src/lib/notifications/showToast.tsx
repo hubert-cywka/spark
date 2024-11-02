@@ -1,7 +1,7 @@
 import { toast } from "sonner";
 
-import { Toast } from "@/components/toast/Toast";
-import { ToastVariant } from "@/components/toast/types/Toast";
+import { Toast } from "@/components/Toast/Toast";
+import { ToastVariant } from "@/components/Toast/types/Toast";
 
 export const showToast = () => {
     const createToast = (variant: ToastVariant) => (options: { message: string; title: string }) =>

@@ -2,6 +2,8 @@
 
 .container {
     height: 100vh;
+    z-index: 1000;
+
     background: tokens.$color-neutral-background-200;
     border-right: thin solid tokens.$color-neutral-surface-300;
     transition: transform 0.25s;
@@ -30,9 +32,6 @@
 
             button {
                 border-radius: tokens.$radius-500;
-                border: thin solid tokens.$color-neutral-surface-200;
-                background: tokens.$color-neutral-background-100;
-                color: tokens.$color-neutral-text-200;
             }
         }
     }

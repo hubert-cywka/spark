@@ -10,7 +10,7 @@ import { IUsersService } from "@/modules/users/services/interfaces/IUsers.servic
 
 @Injectable()
 export class UsersService implements IUsersService {
-    private readonly logger = new Logger();
+    private readonly logger = new Logger(UsersService.name);
 
     public constructor(
         @InjectRepository(UserEntity)

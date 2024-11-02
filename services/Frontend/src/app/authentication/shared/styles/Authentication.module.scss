@@ -18,4 +18,14 @@
         margin-block: tokens.$spacing-300;
         color: tokens.$color-neutral-text-200;
     }
+
+    .openIDConnectProviders {
+        display: flex;
+        flex-direction: column;
+        margin-top: tokens.$spacing-300;
+
+        button {
+            border-radius: tokens.$radius-400;
+        }
+    }
 }

@@ -1,10 +1,10 @@
 import styles from "@/app/authentication/shared/styles/Authentication.module.scss";
 
 import { AppRoute } from "@/app/appRoute";
-import { Anchor } from "@/components/anchor/Anchor";
-import { Card } from "@/components/card/Card";
-import { ResetPasswordForm } from "@/features/auth/components/resetPasswordForm/ResetPasswordForm";
-import { UpdatePasswordForm } from "@/features/auth/components/updatePasswordForm/UpdatePasswordForm";
+import { Anchor } from "@/components/Anchor";
+import { Card } from "@/components/Card";
+import { ResetPasswordForm } from "@/features/auth/components/ResetPasswordForm";
+import { UpdatePasswordForm } from "@/features/auth/components/UpdatePasswordForm";
 import { getTranslationsAsync } from "@/lib/i18n/hooks/useTranslate";
 import { PageSearchParams } from "@/types/Page";
 

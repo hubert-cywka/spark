@@ -1,7 +1,9 @@
+import clsx from "clsx";
+
+import { SpinnerProps } from "./types/Spinner";
+
 import styles from "./styles/Spinner.module.scss";
 
-import { SpinnerProps } from "@/components/spinner/types/Spinner";
-
-export const Spinner = ({ size = "2" }: SpinnerProps) => {
-    return <div className={styles.spinner} data-size={size} />;
+export const Spinner = ({ size = "2", className }: SpinnerProps) => {
+    return <div className={clsx(styles.spinner, className)} data-size={size} />;
 };

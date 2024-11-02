@@ -1,9 +1,11 @@
 import styles from "../shared/styles/Authentication.module.scss";
 
 import { AppRoute } from "@/app/appRoute";
-import { Anchor } from "@/components/anchor/Anchor";
-import { Card } from "@/components/card/Card";
-import { LoginForm } from "@/features/auth/components/loginForm/LoginForm";
+import { Anchor } from "@/components/Anchor";
+import { Card } from "@/components/Card";
+import { Divider } from "@/components/Divider";
+import { LoginForm } from "@/features/auth/components/LoginForm";
+import { GoogleOIDCButton } from "@/features/openIDConnect/google/components/GoogleOIDCButton";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 export default function Page() {
@@ -25,6 +27,12 @@ export default function Page() {
                 <LoginForm>
                     <Anchor href={AppRoute.RESET_PASSWORD}>{t("authentication.login.form.forgotPassword.link")}</Anchor>
                 </LoginForm>
+
+                <Divider>{t("authentication.oidc.divider.label")}</Divider>
+
+                <div className={styles.openIDConnectProviders}>
+                    <GoogleOIDCButton />
+                </div>
             </Card>
         </div>
     );

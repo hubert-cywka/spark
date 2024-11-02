@@ -3,10 +3,10 @@ import { Suspense } from "react";
 import styles from "@/app/authentication/shared/styles/Authentication.module.scss";
 
 import { AppRoute } from "@/app/appRoute";
-import { Anchor } from "@/components/anchor/Anchor";
-import { Card } from "@/components/card/Card";
-import { AccountActivationHandler } from "@/features/auth/components/accountActivationHandler/AccountActivationHandler";
-import { RequestActivationLinkForm } from "@/features/auth/components/requestActivationLinkForm/RequestAccountActivationLinkForm";
+import { Anchor } from "@/components/Anchor";
+import { Card } from "@/components/Card";
+import { AccountActivationHandler } from "@/features/auth/components/AccountActivationHandler";
+import { RequestActivationLinkForm } from "@/features/auth/components/RequestActivationLinkForm";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 export default function Page() {

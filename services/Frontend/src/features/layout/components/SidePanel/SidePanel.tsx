@@ -6,8 +6,8 @@ import clsx from "clsx";
 
 import styles from "./styles/SidePanel.module.scss";
 
-import { IconButton } from "@/components/iconButton/IconButton";
-import { Logo } from "@/components/logo/Logo";
+import { IconButton } from "@/components/IconButton/";
+import { Logo } from "@/components/Logo/Logo";
 import { Navigation } from "@/features/layout/components/Navigation/Navigation";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
@@ -35,7 +35,7 @@ export const SidePanel = () => {
                 <div className={styles.collapseButtonWrapper}>
                     <IconButton
                         size="1"
-                        variant="subtle"
+                        variant="secondary"
                         onPress={toggleCollapsedState}
                         aria-label={t(`common.navigation.collapseButton.label.${isCollapsed ? "show" : "hide"}`)}
                     >

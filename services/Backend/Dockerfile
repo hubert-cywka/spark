@@ -1,6 +1,6 @@
 ARG ENV=dev
 
-FROM node:lts AS preparation
+FROM node:22.9-alpine AS preparation
 WORKDIR /app
 
 COPY src src

@@ -1,6 +1,6 @@
-import { EntityAlreadyExistsError } from "@/common/errors/EntityAlreadyExists.error";
+import { EntityConflictError } from "@/common/errors/EntityConflictError";
 
-export class UserAlreadyExistsError extends EntityAlreadyExistsError {
+export class UserAlreadyExistsError extends EntityConflictError {
     constructor() {
         super("User already exists.");
     }

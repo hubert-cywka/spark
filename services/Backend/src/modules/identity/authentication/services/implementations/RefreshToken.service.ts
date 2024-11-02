@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { Cron } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
+import bcrypt from "bcrypt";
 import dayjs from "dayjs";
 import { IsNull, LessThanOrEqual, Repository } from "typeorm";
 
@@ -13,38 +14,48 @@ import { AccessTokenPayload } from "@/modules/identity/authentication/types/acce
 
 @Injectable()
 export class RefreshTokenService implements IRefreshTokenService {
-    private logger = new Logger(RefreshTokenService.name);
+    private readonly logger: Logger;
+    private readonly signingSecret: string;
+    private readonly expirationTimeInSeconds: number;
+    private readonly SALT_ROUNDS = 10;
 
     constructor(
         private configService: ConfigService,
         private jwtService: JwtService,
         @InjectRepository(RefreshTokenEntity)
         private refreshTokenRepository: Repository<RefreshTokenEntity>
-    ) {}
+    ) {
+        this.logger = new Logger(RefreshTokenService.name);
+        this.signingSecret = configService.getOrThrow<string>("modules.auth.refreshToken.signingSecret");
+        this.expirationTimeInSeconds = configService.getOrThrow<number>("modules.auth.refreshToken.expirationTimeInSeconds");
+    }
 
-    public async sign(payload: AccessTokenPayload): Promise<string> {
-        const secret = this.configService.getOrThrow<string>("modules.auth.refreshToken.signingSecret");
-        const expiresIn = this.configService.getOrThrow<number>("modules.auth.refreshToken.expirationTimeInSeconds");
-
-        const expiresAt = dayjs().add(expiresIn, "seconds").toDate();
+    public async issue(payload: AccessTokenPayload): Promise<string> {
+        const expiresAt = dayjs().add(this.expirationTimeInSeconds, "seconds").toDate();
         const token = await this.jwtService.signAsync(payload, {
-            secret,
-            expiresIn,
+            secret: this.signingSecret,
+            expiresIn: this.expirationTimeInSeconds,
         });
-        await this.save(token, payload.id, expiresAt);
+
+        const hashedValue = await this.hashToken(token);
+        await this.refreshTokenRepository.save({
+            owner: { id: payload.id },
+            hashedValue,
+            expiresAt,
+        });
 
         return token;
     }
 
     public async redeem(token: string): Promise<AccessTokenPayload> {
-        const secret = this.configService.getOrThrow<string>("modules.auth.refreshToken.signingSecret");
         const payload = await this.jwtService.verifyAsync<AccessTokenPayload>(token, {
-            secret,
+            secret: this.signingSecret,
         });
-        const tokenEntity = await this.findOneByValue(token);
+
+        const tokenEntity = await this.findOneByHashedValue(token);
 
         if (!tokenEntity || !this.isValid(tokenEntity)) {
-            this.logger.error("Refresh token not found or already invalidated.", {
+            this.logger.error("No valid refresh tokens found.", {
                 payload: payload,
                 invalidatedAt: tokenEntity?.invalidatedAt ?? null,
             });
@@ -64,46 +75,57 @@ export class RefreshTokenService implements IRefreshTokenService {
         if (token instanceof RefreshTokenEntity) {
             await this.refreshTokenRepository.save({
                 ...token,
-                expiresAt: now,
+                invalidatedAt: now,
             });
         } else {
-            await this.refreshTokenRepository.update({ value: token, expiresAt: IsNull() }, { expiresAt: now });
+            const hashedValue = await this.hashToken(token);
+            await this.refreshTokenRepository.update(
+                {
+                    hashedValue,
+                    invalidatedAt: IsNull(),
+                },
+                { invalidatedAt: now }
+            );
         }
     }
 
-    private async invalidateAllByOwnerId(ownerId: string): Promise<void> {
+    public async invalidateAllByOwnerId(ownerId: string): Promise<void> {
         const now = dayjs().toDate();
-        await this.refreshTokenRepository.update({ owner: { id: ownerId }, expiresAt: IsNull() }, { expiresAt: now });
+        await this.refreshTokenRepository.update(
+            {
+                owner: { id: ownerId },
+                invalidatedAt: IsNull(),
+            },
+            { invalidatedAt: now }
+        );
     }
 
-    private async save(value: string, ownerId: string, expiresAt: Date): Promise<RefreshTokenEntity | null> {
-        const token = this.refreshTokenRepository.create({
-            value,
-            owner: { id: ownerId },
-            expiresAt,
-        });
-
-        return this.refreshTokenRepository.save(token);
+    private async findOneByHashedValue(hashedValue: string): Promise<RefreshTokenEntity | null> {
+        return this.refreshTokenRepository.findOne({ where: { hashedValue } });
     }
 
-    private async findOneByValue(value: string): Promise<RefreshTokenEntity | null> {
-        return this.refreshTokenRepository.findOne({ where: { value } });
+    private async hashToken(value: string): Promise<string> {
+        return await bcrypt.hash(value, this.SALT_ROUNDS);
     }
 
     private isValid(token: RefreshTokenEntity): boolean {
-        return dayjs(token.expiresAt).isAfter(new Date());
+        const now = dayjs().toDate();
+        return dayjs(token.expiresAt).isAfter(now) && !token.invalidatedAt;
     }
 
-    // TODO: Test if it works
     @Cron("0 1 * * *")
     private async deleteAllExpired(): Promise<void> {
         const now = dayjs().toDate();
         const result = await this.refreshTokenRepository.delete({
             expiresAt: LessThanOrEqual(now),
         });
-        this.logger.log("Deleted expired tokens.", {
-            count: result.affected,
-            olderThan: now.toISOString(),
-        });
+
+        this.logger.log(
+            {
+                count: result.affected,
+                olderThan: now.toISOString(),
+            },
+            "Deleted expired tokens."
+        );
     }
 }

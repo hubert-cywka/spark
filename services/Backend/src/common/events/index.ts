@@ -8,5 +8,6 @@ export { IPublisherServiceToken, PublisherService };
 export { EventTopics };
 export * from "./types/account/AccountActivatedEvent";
 export * from "./types/account/AccountActivationTokenRequestedEvent";
+export * from "./types/account/AccountPasswordUpdatedEvent";
 export * from "./types/account/AccountRegisteredEvent";
 export * from "./types/account/AccountRequestedPasswordResetEvent";
