@@ -1,12 +1,13 @@
 import { useCallback } from "react";
 
+import { useTranslateApiError } from "@/hooks/useTranslateApiError";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 import { logger } from "@/lib/logger/logger";
 import { showToast } from "@/lib/notifications/showToast";
-import { getErrorMessage } from "@/utils/getErrorMessage";
 
 export const useRequestPasswordResetTokenEvents = () => {
     const t = useTranslate();
+    const getErrorMessage = useTranslateApiError();
 
     const onPasswordResetRequestSuccess = useCallback(() => {
         showToast().success({
@@ -23,7 +24,7 @@ export const useRequestPasswordResetTokenEvents = () => {
                 title: t("authentication.requestPasswordReset.notifications.error.title"),
             });
         },
-        [t]
+        [getErrorMessage, t]
     );
 
     return { onPasswordResetRequestError, onPasswordResetRequestSuccess };

@@ -12,7 +12,7 @@ import { DatabaseModule } from "@/modules/identity/infrastructure/database/Datab
 import { MailModule } from "@/modules/mail/Mail.module";
 import { UsersModule } from "@/modules/users/Users.module";
 
-// TODO: Use csrf-csrf package to protect from CSRF
+// TODO: Use csrf-csrf package to protect from CSRF if 'SameSite: Strict' attribute of cookies is not enough
 @Module({
     imports: [
         ConfigModule.forRoot({

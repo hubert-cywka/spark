@@ -1,18 +1,20 @@
 "use client";
 
 import { useEffect } from "react";
+import { HttpStatusCode } from "axios";
 
 import { AppRoute } from "@/app/appRoute";
 import { Alert } from "@/components/Alert";
 import { Anchor } from "@/components/Anchor";
 import { useActivateAccount } from "@/features/auth/hooks/useActivateAccount";
+import { ErrorsMap, useTranslateApiError } from "@/hooks/useTranslateApiError";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
-import { getErrorMessage } from "@/utils/getErrorMessage";
 
 export const AccountActivationHandler = () => {
     const t = useTranslate();
     const { activateAccount, activationToken } = useActivateAccount();
     const { mutateAsync, isSuccess, isPending, error } = activateAccount;
+    const getErrorMessage = useTranslateApiError();
 
     useEffect(() => {
         if (activationToken) {
@@ -34,8 +36,14 @@ export const AccountActivationHandler = () => {
     }
 
     if (error) {
-        return <Alert variant="danger">{getErrorMessage(error)}</Alert>;
+        return (
+            <Alert variant="danger">{`${t("authentication.accountActivation.alert.error")} "${getErrorMessage(error, errorsMap)}"`}</Alert>
+        );
     }
 
     return <Alert variant="info">{t("authentication.accountActivation.alert.info")}</Alert>;
+};
+
+const errorsMap: ErrorsMap = {
+    [HttpStatusCode.NotFound]: "api.authentication.activateAccount.errors.notFound",
 };

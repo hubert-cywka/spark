@@ -1,12 +1,13 @@
 import { useCallback } from "react";
 
+import { useTranslateApiError } from "@/hooks/useTranslateApiError";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 import { logger } from "@/lib/logger/logger";
 import { showToast } from "@/lib/notifications/showToast";
-import { getErrorMessage } from "@/utils/getErrorMessage";
 
 export const useRequestAccountActivationTokenEvents = () => {
     const t = useTranslate();
+    const getErrorMessage = useTranslateApiError();
 
     const onRequestActivationSuccess = useCallback(() => {
         showToast().success({
@@ -23,7 +24,7 @@ export const useRequestAccountActivationTokenEvents = () => {
                 title: t("authentication.accountActivation.notifications.error.title"),
             });
         },
-        [t]
+        [getErrorMessage, t]
     );
 
     return { onRequestActivationError, onRequestActivationSuccess };

@@ -1,4 +1,4 @@
-import { Body, Controller, ForbiddenException, HttpCode, Inject, NotFoundException, Post, Put } from "@nestjs/common";
+import { Body, Controller, HttpCode, Inject, NotFoundException, Post, Put } from "@nestjs/common";
 
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
@@ -40,7 +40,7 @@ export class AccountController {
                 .is(EntityNotFoundError)
                 .throw(new NotFoundException())
                 .is(ForbiddenError)
-                .throw(new ForbiddenException())
+                .throw(new NotFoundException())
                 .elseRethrow();
         }
     }
@@ -56,7 +56,7 @@ export class AccountController {
                 .is(EntityNotFoundError)
                 .throw(new NotFoundException())
                 .is(ForbiddenError)
-                .throw(new ForbiddenException())
+                .throw(new NotFoundException())
                 .elseRethrow();
         }
     }

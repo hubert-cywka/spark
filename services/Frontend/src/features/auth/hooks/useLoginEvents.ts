@@ -1,12 +1,14 @@
 import { useCallback } from "react";
+import { HttpStatusCode } from "axios";
 
+import { ErrorsMap, useTranslateApiError } from "@/hooks/useTranslateApiError";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 import { logger } from "@/lib/logger/logger";
 import { showToast } from "@/lib/notifications/showToast";
-import { getErrorMessage } from "@/utils/getErrorMessage";
 
 export const useLoginEvents = () => {
     const t = useTranslate();
+    const getErrorMessage = useTranslateApiError();
 
     const onLoginSuccess = useCallback(() => {
         showToast().success({
@@ -19,12 +21,17 @@ export const useLoginEvents = () => {
         (err: unknown) => {
             logger.error({ err });
             showToast().danger({
-                message: getErrorMessage(err),
+                message: getErrorMessage(err, errorsMap),
                 title: t("authentication.login.notifications.error.title"),
             });
         },
-        [t]
+        [getErrorMessage, t]
     );
 
     return { onLoginError, onLoginSuccess };
+};
+
+const errorsMap: ErrorsMap = {
+    [HttpStatusCode.Unauthorized]: "api.authentication.login.errors.unauthorized",
+    [HttpStatusCode.Forbidden]: "api.authentication.register.errors.forbidden",
 };

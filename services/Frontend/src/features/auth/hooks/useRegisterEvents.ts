@@ -1,14 +1,16 @@
 import { useCallback } from "react";
+import { HttpStatusCode } from "axios";
 import { useRouter } from "next/navigation";
 
 import { AppRoute } from "@/app/appRoute";
+import { ErrorsMap, useTranslateApiError } from "@/hooks/useTranslateApiError";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 import { logger } from "@/lib/logger/logger";
 import { showToast } from "@/lib/notifications/showToast";
-import { getErrorMessage } from "@/utils/getErrorMessage";
 
 export const useRegisterEvents = () => {
     const t = useTranslate();
+    const getErrorMessage = useTranslateApiError();
     const router = useRouter();
 
     const onRegisterSuccess = useCallback(() => {
@@ -24,12 +26,16 @@ export const useRegisterEvents = () => {
         (err: unknown) => {
             logger.error({ err });
             showToast().danger({
-                message: getErrorMessage(err),
+                message: getErrorMessage(err, errorsMap),
                 title: t("authentication.registration.notifications.error.title"),
             });
         },
-        [t]
+        [getErrorMessage, t]
     );
 
     return { onRegisterError, onRegisterSuccess };
+};
+
+const errorsMap: ErrorsMap = {
+    [HttpStatusCode.Conflict]: "api.authentication.register.errors.conflict",
 };
