@@ -6,7 +6,7 @@ import clsx from "clsx";
 
 import styles from "./styles/SidePanel.module.scss";
 
-import { IconButton } from "@/components/IconButton/IconButton";
+import { IconButton } from "@/components/IconButton/";
 import { Logo } from "@/components/Logo/Logo";
 import { Navigation } from "@/features/layout/components/Navigation/Navigation";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
