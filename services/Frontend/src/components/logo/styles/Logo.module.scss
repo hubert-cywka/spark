@@ -1,9 +1,0 @@
-@use "src/styles/tokens";
-
-.logo {
-    display: flex;
-    gap: tokens.$spacing-200;
-
-    color: tokens.$color-accent-text-300;
-    font-weight: 700;
-}

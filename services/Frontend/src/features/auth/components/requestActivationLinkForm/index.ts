@@ -1,1 +1,0 @@
-export { RequestActivationLinkForm } from "./RequestActivationLinkForm";
