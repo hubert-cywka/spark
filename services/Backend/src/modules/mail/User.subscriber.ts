@@ -19,18 +19,21 @@ import { UserActivationEmail } from "@/modules/mail/templates/UserActivationEmai
 
 @Controller()
 export class UserSubscriber {
-    private readonly logger = new Logger(UserSubscriber.name);
+    private readonly logger: Logger;
+    private readonly appUrl: string;
 
     public constructor(
         @Inject(IMailerServiceToken) private mailer: IMailerService,
         private configService: ConfigService
-    ) {}
+    ) {
+        this.logger = new Logger(UserSubscriber.name);
+        this.appUrl = configService.getOrThrow<string>("appUrl");
+    }
 
     @EventPattern(EventTopics.account.activationTokenRequested)
     public async onUserActivationTokenRequested(@Payload() payload: AccountActivationTokenRequestedEventPayload) {
         this.logger.log({ topic: EventTopics.account.activationTokenRequested, payload }, "Received an event.");
-
-        const template = new UserActivationEmail(payload.activationToken, this.configService.getOrThrow<string>("appUrl"));
+        const template = new UserActivationEmail(payload.activationToken, this.appUrl);
 
         try {
             await this.mailer.send(payload.email, template);
@@ -42,8 +45,7 @@ export class UserSubscriber {
     @EventPattern(EventTopics.account.passwordResetRequested)
     public async onPasswordResetRequested(@Payload() payload: AccountRequestedPasswordResetEventPayload) {
         this.logger.log({ topic: EventTopics.account.passwordResetRequested, payload }, "Received an event.");
-
-        const template = new PasswordResetRequestedEmail(payload.passwordResetToken, this.configService.getOrThrow<string>("appUrl"));
+        const template = new PasswordResetRequestedEmail(payload.passwordResetToken, this.appUrl);
 
         try {
             await this.mailer.send(payload.email, template);
@@ -55,8 +57,7 @@ export class UserSubscriber {
     @EventPattern(EventTopics.account.passwordUpdated)
     public async onPasswordUpdated(@Payload() payload: AccountPasswordUpdatedEventPayload) {
         this.logger.log({ topic: EventTopics.account.passwordUpdated, payload }, "Received an event.");
-
-        const template = new PasswordUpdatedEmail(this.configService.getOrThrow<string>("appUrl"));
+        const template = new PasswordUpdatedEmail(this.appUrl);
 
         try {
             await this.mailer.send(payload.email, template);
@@ -68,8 +69,7 @@ export class UserSubscriber {
     @EventPattern(EventTopics.account.activated)
     public async onUserActivated(@Payload() payload: AccountActivatedEventPayload) {
         this.logger.log({ topic: EventTopics.account.activated, payload }, "Received an event.");
-
-        const template = new UserActivatedEmail(this.configService.getOrThrow<string>("appUrl"));
+        const template = new UserActivatedEmail(this.appUrl);
 
         try {
             await this.mailer.send(payload.email, template);

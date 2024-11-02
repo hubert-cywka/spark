@@ -24,10 +24,18 @@ import { IAuthenticationService, IAuthServiceToken } from "@/modules/identity/au
 
 @Controller("api/auth")
 export class AuthenticationController {
+    private readonly accessTokenCookieMaxAge: number;
+    private readonly refreshTokenCookieMaxAge: number;
+    private readonly shouldIssueSecureCookies: boolean;
+
     constructor(
         @Inject(IAuthServiceToken) private authService: IAuthenticationService,
         private configService: ConfigService
-    ) {}
+    ) {
+        this.accessTokenCookieMaxAge = configService.getOrThrow<number>("modules.auth.jwt.expirationTimeInSeconds") * 1000;
+        this.refreshTokenCookieMaxAge = configService.getOrThrow<number>("modules.auth.refreshToken.expirationTimeInSeconds") * 1000;
+        this.shouldIssueSecureCookies = configService.get<string>("NODE_ENV") === "production";
+    }
 
     @HttpCode(201)
     @Post("register")
@@ -110,30 +118,24 @@ export class AuthenticationController {
     }
 
     private getRefreshTokenCookieOptions(): CookieOptions {
-        const maxAge = this.configService.getOrThrow<number>("modules.auth.refreshToken.expirationTimeInSeconds") * 1000;
-        const secure = this.configService.get<string>("NODE_ENV") === "production";
-
         return {
             partitioned: true,
             httpOnly: true,
-            secure,
+            secure: this.shouldIssueSecureCookies,
+            maxAge: this.refreshTokenCookieMaxAge,
             sameSite: "strict",
             path: "/api/auth",
-            maxAge,
         };
     }
 
     private getAccessTokenCookieOptions(): CookieOptions {
-        const maxAge = this.configService.getOrThrow<number>("modules.auth.jwt.expirationTimeInSeconds") * 1000;
-        const secure = this.configService.get<string>("NODE_ENV") === "production";
-
         return {
             partitioned: true,
             httpOnly: true,
-            secure,
+            secure: this.shouldIssueSecureCookies,
+            maxAge: this.accessTokenCookieMaxAge,
             sameSite: "strict",
             path: "/",
-            maxAge,
         };
     }
 }

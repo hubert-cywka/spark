@@ -13,39 +13,46 @@ import { AccessTokenPayload } from "@/modules/identity/authentication/types/acce
 
 @Injectable()
 export class RefreshTokenService implements IRefreshTokenService {
-    private logger = new Logger(RefreshTokenService.name);
+    private readonly logger: Logger;
+    private readonly signingSecret: string;
+    private readonly expirationTimeInSeconds: number;
 
     constructor(
         private configService: ConfigService,
         private jwtService: JwtService,
         @InjectRepository(RefreshTokenEntity)
         private refreshTokenRepository: Repository<RefreshTokenEntity>
-    ) {}
+    ) {
+        this.logger = new Logger(RefreshTokenService.name);
+        this.signingSecret = configService.getOrThrow<string>("modules.auth.refreshToken.signingSecret");
+        this.expirationTimeInSeconds = configService.getOrThrow<number>("modules.auth.refreshToken.expirationTimeInSeconds");
+    }
 
     public async issue(payload: AccessTokenPayload): Promise<string> {
-        const secret = this.configService.getOrThrow<string>("modules.auth.refreshToken.signingSecret");
-        const expiresIn = this.configService.getOrThrow<number>("modules.auth.refreshToken.expirationTimeInSeconds");
-
-        const expiresAt = dayjs().add(expiresIn, "seconds").toDate();
+        const expiresAt = dayjs().add(this.expirationTimeInSeconds, "seconds").toDate();
         const token = await this.jwtService.signAsync(payload, {
-            secret,
-            expiresIn,
+            secret: this.signingSecret,
+            expiresIn: this.expirationTimeInSeconds,
         });
-        await this.save(token, payload.id, expiresAt);
+
+        await this.refreshTokenRepository.save({
+            owner: { id: payload.id },
+            value: token,
+            expiresAt,
+        });
 
         return token;
     }
 
     public async redeem(token: string): Promise<AccessTokenPayload> {
-        const secret = this.configService.getOrThrow<string>("modules.auth.refreshToken.signingSecret");
         const payload = await this.jwtService.verifyAsync<AccessTokenPayload>(token, {
-            secret,
+            secret: this.signingSecret,
         });
 
         const tokenEntity = await this.findOneByValue(token);
 
         if (!tokenEntity || !this.isValid(tokenEntity)) {
-            this.logger.error("Refresh token not found or already invalidated.", {
+            this.logger.error("No valid refresh tokens found.", {
                 payload: payload,
                 invalidatedAt: tokenEntity?.invalidatedAt ?? null,
             });
@@ -68,23 +75,25 @@ export class RefreshTokenService implements IRefreshTokenService {
                 invalidatedAt: now,
             });
         } else {
-            await this.refreshTokenRepository.update({ value: token, invalidatedAt: IsNull() }, { invalidatedAt: now });
+            await this.refreshTokenRepository.update(
+                {
+                    value: token,
+                    invalidatedAt: IsNull(),
+                },
+                { invalidatedAt: now }
+            );
         }
     }
 
     public async invalidateAllByOwnerId(ownerId: string): Promise<void> {
         const now = dayjs().toDate();
-        await this.refreshTokenRepository.update({ owner: { id: ownerId }, invalidatedAt: IsNull() }, { invalidatedAt: now });
-    }
-
-    private async save(value: string, ownerId: string, expiresAt: Date): Promise<RefreshTokenEntity | null> {
-        const token = this.refreshTokenRepository.create({
-            owner: { id: ownerId },
-            value,
-            expiresAt,
-        });
-
-        return this.refreshTokenRepository.save(token);
+        await this.refreshTokenRepository.update(
+            {
+                owner: { id: ownerId },
+                invalidatedAt: IsNull(),
+            },
+            { invalidatedAt: now }
+        );
     }
 
     private async findOneByValue(value: string): Promise<RefreshTokenEntity | null> {

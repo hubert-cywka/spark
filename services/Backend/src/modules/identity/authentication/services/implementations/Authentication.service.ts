@@ -20,6 +20,9 @@ import { AuthenticationResult } from "@/modules/identity/authentication/types/au
 // TODO: Consider using Keycloak (or other auth provider)
 @Injectable()
 export class AuthenticationService implements IAuthenticationService {
+    private readonly accessTokenSigningSecret: string;
+    private readonly accessTokenExpirationTimeInSeconds: number;
+
     constructor(
         private configService: ConfigService,
         private jwtService: JwtService,
@@ -29,7 +32,10 @@ export class AuthenticationService implements IAuthenticationService {
         private refreshTokenService: IRefreshTokenService,
         @Inject(IAuthPublisherServiceToken)
         private publisher: IAuthPublisherService
-    ) {}
+    ) {
+        this.accessTokenSigningSecret = configService.getOrThrow<string>("modules.auth.jwt.signingSecret");
+        this.accessTokenExpirationTimeInSeconds = configService.getOrThrow<number>("modules.auth.jwt.expirationTimeInSeconds");
+    }
 
     public async login({ email, password }: LoginDto): Promise<AuthenticationResult> {
         const { id } = await this.accountService.findByCredentials(email, password);
@@ -53,12 +59,10 @@ export class AuthenticationService implements IAuthenticationService {
 
     private async generateTokens(userId: string): Promise<{ accessToken: string; refreshToken: string }> {
         const payload = { id: userId, ver: CURRENT_JWT_VERSION };
-        const secret = this.configService.getOrThrow<string>("modules.auth.jwt.signingSecret");
-        const expiresIn = this.configService.getOrThrow<number>("modules.auth.jwt.expirationTimeInSeconds");
 
         const accessToken = await this.jwtService.signAsync(payload, {
-            secret,
-            expiresIn,
+            secret: this.accessTokenSigningSecret,
+            expiresIn: this.accessTokenExpirationTimeInSeconds,
         });
 
         const refreshToken = await this.refreshTokenService.issue(payload);

@@ -14,15 +14,15 @@ export class MailerService implements IMailerService {
     private readonly isInDebugMode: boolean;
 
     public constructor(private configService: ConfigService) {
-        this.senderName = this.configService.getOrThrow<string>("modules.mail.sender.name");
-        this.isInDebugMode = this.configService.getOrThrow<boolean>("modules.mail.isDebugMode");
+        this.senderName = configService.getOrThrow<string>("modules.mail.sender.name");
+        this.isInDebugMode = configService.getOrThrow<boolean>("modules.mail.isDebugMode");
 
         this.transporter = createTransport({
-            host: this.configService.getOrThrow<string>("modules.mail.sender.host"),
-            port: this.configService.getOrThrow<number>("modules.mail.sender.port"),
+            host: configService.getOrThrow<string>("modules.mail.sender.host"),
+            port: configService.getOrThrow<number>("modules.mail.sender.port"),
             auth: {
-                user: this.configService.getOrThrow<string>("modules.mail.sender.user"),
-                pass: this.configService.getOrThrow<string>("modules.mail.sender.password"),
+                user: configService.getOrThrow<string>("modules.mail.sender.user"),
+                pass: configService.getOrThrow<string>("modules.mail.sender.password"),
             },
         });
     }
