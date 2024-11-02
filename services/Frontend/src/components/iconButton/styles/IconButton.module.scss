@@ -1,7 +1,6 @@
 @use "src/styles/tokens";
 
-// TODO: Fix specificity
-.iconButton.iconButton {
+button.iconButton {
     aspect-ratio: 1;
 
     &[data-size="1"] {

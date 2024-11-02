@@ -12,17 +12,12 @@ import { logger } from "@/lib/logger/logger";
 export const AuthStateProvider = ({ children }: PropsWithChildren) => {
     const { onRefreshSuccess } = useRefreshSessionEvents();
     const { mutateAsync: refreshSession, isPending } = useRefreshSession();
-
     const accessToken = useAuthStore().accessToken;
-    const storeAccessToken = useAuthStore().storeAccessToken;
-    const storeIdentity = useAuthStore().storeIdentity;
 
     const reAuthenticate = useCallback(async (): Promise<string> => {
-        const { accessToken, id, email } = await refreshSession();
-        storeIdentity({ id, email });
-        storeAccessToken(accessToken);
+        const { accessToken } = await refreshSession();
         return accessToken;
-    }, [refreshSession, storeAccessToken, storeIdentity]);
+    }, [refreshSession]);
 
     const restoreSession = useCallback(async (): Promise<void> => {
         try {

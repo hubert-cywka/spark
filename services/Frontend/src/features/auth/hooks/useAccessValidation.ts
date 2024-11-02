@@ -4,7 +4,7 @@ import { useAuthStore } from "@/features/auth/hooks/useAuthStore";
 import { AccessScope } from "@/features/auth/types/Identity";
 
 export const useAccessValidation = () => {
-    const userScopes = useAuthStore().identity?.scopes;
+    const accessScopes = useAuthStore().scopes;
 
     const validate = useCallback(
         (requiredScopes: AccessScope[]) => {
@@ -12,13 +12,13 @@ export const useAccessValidation = () => {
                 return true;
             }
 
-            if (!userScopes?.length) {
+            if (!accessScopes?.length) {
                 return false;
             }
 
-            return requiredScopes.every((required) => userScopes.includes(required));
+            return requiredScopes.every((required) => accessScopes.includes(required));
         },
-        [userScopes]
+        [accessScopes]
     );
 
     return { validate };

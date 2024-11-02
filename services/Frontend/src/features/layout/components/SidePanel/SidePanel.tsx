@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useLayoutEffect, useState } from "react";
 import { IconChevronLeft } from "@tabler/icons-react";
 import clsx from "clsx";
 
@@ -15,7 +15,7 @@ import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 export const SidePanel = () => {
     const t = useTranslate();
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(true);
 
     const toggleCollapsedState = () => setIsCollapsed((prev) => !prev);
 
@@ -25,7 +25,7 @@ export const SidePanel = () => {
         }
     }, []);
 
-    useEffect(autoExpandOnDesktop, [autoExpandOnDesktop]);
+    useLayoutEffect(autoExpandOnDesktop, [autoExpandOnDesktop]);
 
     return (
         <div
@@ -49,8 +49,7 @@ export const SidePanel = () => {
                 <Navigation isDisabled={isCollapsed} />
 
                 <div className={styles.footer}>
-                    {/* TODO: Add scopes */}
-                    <AccessGuard requiredScopes={[]}>
+                    <AccessGuard requiredScopes={["browse_as_authenticated"]}>
                         <LogoutButton />
                     </AccessGuard>
                 </div>

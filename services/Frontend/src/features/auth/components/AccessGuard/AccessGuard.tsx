@@ -1,3 +1,5 @@
+"use client";
+
 import { PropsWithChildren } from "react";
 
 import { useAccessValidation } from "@/features/auth/hooks/useAccessValidation";
