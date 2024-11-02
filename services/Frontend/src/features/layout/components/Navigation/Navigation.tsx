@@ -8,6 +8,8 @@ import { useNavigation } from "./hooks/useNavigation";
 
 import styles from "./styles/Navigation.module.scss";
 
+import { AccessGuard } from "@/features/auth/components/AccessGuard/AccessGuard";
+
 type NavigationProps = {
     isDisabled: boolean;
 };
@@ -19,11 +21,13 @@ export const Navigation = ({ isDisabled }: NavigationProps) => {
     return (
         <nav className={styles.navigation} inert={isDisabled}>
             {sections.map((section) => (
-                <NavigationSection key={section.label} label={section.label}>
-                    {section.routes.map((route) => (
-                        <NavigationItem key={route.label} {...route} isActive={route.target === pathname} />
-                    ))}
-                </NavigationSection>
+                <AccessGuard key={section.label} requiredScopes={section.requiredScopes}>
+                    <NavigationSection label={section.label}>
+                        {section.routes.map((route) => (
+                            <NavigationItem key={route.label} {...route} isActive={route.target === pathname} />
+                        ))}
+                    </NavigationSection>
+                </AccessGuard>
             ))}
         </nav>
     );

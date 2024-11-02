@@ -8,6 +8,16 @@
             }
         },
         "authentication": {
+            "refresh": {
+                "errors": {
+                    "unauthorized": "We couldn't re-authenticate you."
+                }
+            },
+            "logout": {
+                "errors": {
+                    "unauthorized": "We couldn't log you out. You can force logout by clearing app cookies."
+                }
+            },
             "login": {
                 "errors": {
                     "unauthorized": "We couldn't authenticate you.",
@@ -35,7 +45,15 @@
         "app": {
             "name": "Spark"
         },
+        "notifications": {
+            "closeButton": {
+                "label": "Close notification"
+            }
+        },
         "navigation": {
+            "logoutButton": {
+                "label": "Logout"
+            },
             "collapseButton": {
                 "label": {
                     "hide": "Hide menu",
@@ -147,6 +165,28 @@
                 "submitButton": "Send",
                 "warning": "You won't receive the activation link if your account is already activated.",
                 "loginLink": "Log in instead"
+            }
+        },
+        "refresh": {
+            "notifications": {
+                "error": {
+                    "title": "Re-authentication failed"
+                },
+                "success": {
+                    "body": "We were able to re-authenticate you.",
+                    "title": "Session restored"
+                }
+            }
+        },
+        "logout": {
+            "notifications": {
+                "error": {
+                    "title": "Logout failed"
+                },
+                "success": {
+                    "body": "See you later!",
+                    "title": "Logged out"
+                }
             }
         },
         "login": {

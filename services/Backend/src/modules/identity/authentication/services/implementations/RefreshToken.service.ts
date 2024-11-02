@@ -3,7 +3,6 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { Cron } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
-import bcrypt from "bcrypt";
 import dayjs from "dayjs";
 import { IsNull, LessThanOrEqual, Repository } from "typeorm";
 
@@ -11,18 +10,18 @@ import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/R
 import { RefreshTokenNotFoundError } from "@/modules/identity/authentication/errors/RefreshTokenNotFound.error";
 import { IRefreshTokenService } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
 import { AccessTokenPayload } from "@/modules/identity/authentication/types/accessTokenPayload";
+import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants/connectionName";
 
 @Injectable()
 export class RefreshTokenService implements IRefreshTokenService {
     private readonly logger: Logger;
     private readonly signingSecret: string;
     private readonly expirationTimeInSeconds: number;
-    private readonly SALT_ROUNDS = 10;
 
     constructor(
         private configService: ConfigService,
         private jwtService: JwtService,
-        @InjectRepository(RefreshTokenEntity)
+        @InjectRepository(RefreshTokenEntity, IDENTITY_MODULE_DATA_SOURCE)
         private refreshTokenRepository: Repository<RefreshTokenEntity>
     ) {
         this.logger = new Logger(RefreshTokenService.name);
@@ -52,7 +51,7 @@ export class RefreshTokenService implements IRefreshTokenService {
             secret: this.signingSecret,
         });
 
-        const tokenEntity = await this.findOneByHashedValue(token);
+        const tokenEntity = await this.findOneByHash(token);
 
         if (!tokenEntity || !this.isValid(tokenEntity)) {
             this.logger.error("No valid refresh tokens found.", {
@@ -100,12 +99,17 @@ export class RefreshTokenService implements IRefreshTokenService {
         );
     }
 
-    private async findOneByHashedValue(hashedValue: string): Promise<RefreshTokenEntity | null> {
+    private async findOneByHash(token: string): Promise<RefreshTokenEntity | null> {
+        const hashedValue = await this.hashToken(token);
         return this.refreshTokenRepository.findOne({ where: { hashedValue } });
     }
 
     private async hashToken(value: string): Promise<string> {
-        return await bcrypt.hash(value, this.SALT_ROUNDS);
+        const encoder = new TextEncoder();
+        const data = encoder.encode(value);
+        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
     }
 
     private isValid(token: RefreshTokenEntity): boolean {

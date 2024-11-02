@@ -1,0 +1,14 @@
+@use "src/styles/tokens";
+
+.tooltipPopup {
+    background: tokens.$color-accent-solid-200;
+    border-radius: tokens.$radius-400;
+    padding: tokens.$spacing-200 tokens.$spacing-400;
+
+    font: tokens.$typography-body-100;
+    color: tokens.$color-accent-text-100;
+
+    svg {
+        fill: tokens.$color-accent-solid-200;
+    }
+}

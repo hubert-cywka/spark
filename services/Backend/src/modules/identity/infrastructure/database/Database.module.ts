@@ -4,12 +4,14 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { initializeDatabase } from "@/common/utils/initializeDatabase";
 import { logger } from "@/lib/logger";
-import { HashRefreshTokens1730541294391 } from "@/modules/identity/infrastructure/database/migraions/1730541294391-HashRefreshTokens";
+import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants/connectionName";
 import { InitMigration1730484788849 } from "@/modules/identity/infrastructure/database/migrations/1730484788849-InitMigration";
+import { HashRefreshTokens1730541294391 } from "@/modules/identity/infrastructure/database/migrations/1730541294391-HashRefreshTokens";
 
 @Module({
     imports: [
         TypeOrmModule.forRootAsync({
+            name: IDENTITY_MODULE_DATA_SOURCE,
             useFactory: async (configService: ConfigService) => {
                 const options = {
                     port: configService.getOrThrow<number>("modules.auth.database.port"),

@@ -17,24 +17,20 @@ import { EntityConflictError } from "@/common/errors/EntityConflictError";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
-import { ACCESS_TOKEN_COOKIE_NAME, REFRESH_TOKEN_COOKIE_NAME } from "@/modules/identity/authentication/constants";
+import { REFRESH_TOKEN_COOKIE_NAME } from "@/modules/identity/authentication/constants";
 import { LoginDto } from "@/modules/identity/authentication/dto/Login.dto";
 import { RegisterDto } from "@/modules/identity/authentication/dto/Register.dto";
 import { IAuthenticationService, IAuthServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
 
 @Controller("api/auth")
 export class AuthenticationController {
-    private readonly accessTokenCookieMaxAge: number;
     private readonly refreshTokenCookieMaxAge: number;
-    private readonly shouldIssueSecureCookies: boolean;
 
     constructor(
         @Inject(IAuthServiceToken) private authService: IAuthenticationService,
         private configService: ConfigService
     ) {
-        this.accessTokenCookieMaxAge = configService.getOrThrow<number>("modules.auth.jwt.expirationTimeInSeconds") * 1000;
         this.refreshTokenCookieMaxAge = configService.getOrThrow<number>("modules.auth.refreshToken.expirationTimeInSeconds") * 1000;
-        this.shouldIssueSecureCookies = configService.get<string>("NODE_ENV") === "production";
     }
 
     @HttpCode(201)
@@ -53,8 +49,9 @@ export class AuthenticationController {
         try {
             const { accessToken, refreshToken } = await this.authService.login(dto);
             this.setRefreshToken(response, refreshToken);
-            this.setAccessToken(response, accessToken);
-            return response.send();
+
+            const identity = await this.authService.getIdentityFromAccessToken(accessToken);
+            return response.send({ ...identity, accessToken });
         } catch (err) {
             whenError(err)
                 .is(EntityNotFoundError)
@@ -75,8 +72,9 @@ export class AuthenticationController {
         try {
             const { accessToken, refreshToken } = await this.authService.redeemRefreshToken(token);
             this.setRefreshToken(response, refreshToken);
-            this.setAccessToken(response, accessToken);
-            return response.send();
+
+            const identity = await this.authService.getIdentityFromAccessToken(accessToken);
+            return response.send({ ...identity, accessToken });
         } catch (err) {
             whenError(err).is(EntityNotFoundError).throw(new UnauthorizedException()).elseRethrow();
         }
@@ -90,7 +88,6 @@ export class AuthenticationController {
         }
 
         this.clearRefreshToken(response);
-        this.clearAccessToken(response);
         await this.authService.logout(token);
         return response.send();
     }
@@ -106,36 +103,14 @@ export class AuthenticationController {
         });
     }
 
-    private setAccessToken(response: Response, accessToken: string) {
-        response.cookie(ACCESS_TOKEN_COOKIE_NAME, accessToken, this.getAccessTokenCookieOptions());
-    }
-
-    private clearAccessToken(response: Response) {
-        response.cookie(ACCESS_TOKEN_COOKIE_NAME, "", {
-            ...this.getAccessTokenCookieOptions(),
-            maxAge: 0,
-        });
-    }
-
     private getRefreshTokenCookieOptions(): CookieOptions {
         return {
             partitioned: true,
             httpOnly: true,
-            secure: this.shouldIssueSecureCookies,
+            secure: true,
             maxAge: this.refreshTokenCookieMaxAge,
             sameSite: "strict",
             path: "/api/auth",
-        };
-    }
-
-    private getAccessTokenCookieOptions(): CookieOptions {
-        return {
-            partitioned: true,
-            httpOnly: true,
-            secure: this.shouldIssueSecureCookies,
-            maxAge: this.accessTokenCookieMaxAge,
-            sameSite: "strict",
-            path: "/",
         };
     }
 }

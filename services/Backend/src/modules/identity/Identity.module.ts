@@ -26,9 +26,12 @@ import { IAuthServiceToken } from "@/modules/identity/authentication/services/in
 import { IAuthPublisherServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthPublisher.service";
 import { IRefreshTokenServiceToken } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
 import { AccessTokenStrategy } from "@/modules/identity/authentication/strategies/AccessToken.strategy";
+import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants/connectionName";
+import { DatabaseModule } from "@/modules/identity/infrastructure/database/Database.module";
 
 @Module({
     imports: [
+        DatabaseModule,
         ThrottlerModule.forRootAsync({
             useFactory: (configService: ConfigService) => [
                 {
@@ -40,7 +43,7 @@ import { AccessTokenStrategy } from "@/modules/identity/authentication/strategie
         }),
         PassportModule,
         JwtModule,
-        TypeOrmModule.forFeature([RefreshTokenEntity, AccountEntity, SingleUseTokenEntity]),
+        TypeOrmModule.forFeature([RefreshTokenEntity, AccountEntity, SingleUseTokenEntity], IDENTITY_MODULE_DATA_SOURCE),
     ],
     controllers: [AuthenticationController, AccountController],
     providers: [

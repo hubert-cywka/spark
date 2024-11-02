@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useLayoutEffect, useState } from "react";
 import { IconChevronLeft } from "@tabler/icons-react";
 import clsx from "clsx";
 
@@ -8,12 +8,14 @@ import styles from "./styles/SidePanel.module.scss";
 
 import { IconButton } from "@/components/IconButton/";
 import { Logo } from "@/components/Logo/Logo";
+import { AccessGuard } from "@/features/auth/components/AccessGuard";
+import { LogoutButton } from "@/features/auth/components/LogoutButton/LogoutButton";
 import { Navigation } from "@/features/layout/components/Navigation/Navigation";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 export const SidePanel = () => {
     const t = useTranslate();
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(true);
 
     const toggleCollapsedState = () => setIsCollapsed((prev) => !prev);
 
@@ -23,7 +25,7 @@ export const SidePanel = () => {
         }
     }, []);
 
-    useEffect(autoExpandOnDesktop, [autoExpandOnDesktop]);
+    useLayoutEffect(autoExpandOnDesktop, [autoExpandOnDesktop]);
 
     return (
         <div
@@ -45,6 +47,12 @@ export const SidePanel = () => {
 
                 <Logo />
                 <Navigation isDisabled={isCollapsed} />
+
+                <div className={styles.footer}>
+                    <AccessGuard requiredScopes={["browse_as_authenticated"]}>
+                        <LogoutButton />
+                    </AccessGuard>
+                </div>
             </div>
         </div>
     );
