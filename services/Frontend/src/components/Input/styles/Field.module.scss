@@ -1,0 +1,70 @@
+@use "src/styles/tokens";
+
+.controller {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$spacing-200;
+}
+
+.error {
+    font: tokens.$typography-body-100;
+    color: tokens.$color-danger-solid-200;
+}
+
+.label {
+    font: tokens.$typography-body-100;
+}
+
+.highlight {
+    color: tokens.$color-danger-text-300;
+}
+
+.input {
+    width: 100%;
+    color: tokens.$color-neutral-text-100;
+    background: tokens.$color-neutral-background-100;
+
+    border: thin solid tokens.$color-neutral-surface-200;
+    border-radius: tokens.$radius-100;
+
+    // Hubert: Chrome and Safari highlight the input whenever autocomplete was used
+    &:-webkit-autofill {
+        color-scheme: dark;
+        transition: background-color 10000s ease-in-out 0s;
+    }
+
+    &[data-size="1"] {
+        font: tokens.$typography-body-100;
+        padding: tokens.$spacing-100 tokens.$spacing-300;
+    }
+
+    &[data-size="2"] {
+        font: tokens.$typography-body-200;
+        padding: tokens.$spacing-200 tokens.$spacing-300;
+    }
+
+    &[data-size="3"] {
+        font: tokens.$typography-body-200;
+        padding: tokens.$spacing-300 tokens.$spacing-400;
+    }
+
+    &[data-disabled] {
+        color: tokens.$color-neutral-text-300;
+        background: tokens.$color-neutral-background-100;
+        cursor: not-allowed;
+    }
+
+    &:not(&[data-disabled]) {
+        &[data-invalid] {
+            border-color: tokens.$color-danger-surface-100;
+        }
+
+        &[data-hovered] {
+            outline: 1px solid tokens.$color-neutral-surface-100;
+        }
+
+        &[data-focused] {
+            outline: 2px solid tokens.$color-accent-solid-200;
+        }
+    }
+}

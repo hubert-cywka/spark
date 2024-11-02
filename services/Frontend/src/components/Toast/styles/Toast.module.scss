@@ -1,0 +1,36 @@
+@use "src/styles/tokens";
+
+.container {
+    padding: tokens.$spacing-400;
+    border-radius: tokens.$radius-200;
+    color: tokens.$color-neutral-text-100;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: tokens.$spacing-600;
+    min-width: 300px;
+
+    &[data-variant="success"] {
+        background-color: tokens.$color-success-solid-300;
+    }
+
+    &[data-variant="danger"] {
+        background-color: tokens.$color-danger-solid-300;
+    }
+
+    &[data-variant="info"] {
+        background-color: tokens.$color-info-solid-300;
+    }
+
+    .title {
+        font: tokens.$typography-body-100;
+        font-weight: bolder;
+    }
+
+    .message {
+        font: tokens.$typography-body-100;
+    }
+}
+

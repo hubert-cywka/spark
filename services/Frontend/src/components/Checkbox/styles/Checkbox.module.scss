@@ -1,0 +1,76 @@
+@use "src/styles/tokens";
+
+.checkbox {
+    --selected-color: tokens.$color-neutral-surface-200;
+    --selected-color-pressed: tokens.$color-neutral-surface-100;
+    --checkmark-color: tokens.$color-neutral-text-100;
+
+    display: flex;
+    align-items: center;
+    gap: tokens.$spacing-200;
+
+    font: tokens.$typography-body-100;
+
+    &[data-invalid] .svgWrapper {
+        border-color: tokens.$color-danger-solid-200;
+    }
+
+    &[data-pressed] .svgWrapper {
+        border-color: tokens.$color-accent-solid-200;
+    }
+
+    &[data-focus-visible] .svgWrapper {
+        outline: 2px solid tokens.$color-accent-solid-200;
+    }
+
+    &[data-selected],
+    &[data-indeterminate] {
+        .svgWrapper {
+            border-color: tokens.$color-accent-solid-200;
+            background: tokens.$color-accent-solid-200;
+
+            svg {
+                stroke-dashoffset: 44;
+            }
+        }
+    }
+
+    &[data-indeterminate] {
+        & svg {
+            stroke: none;
+        }
+    }
+
+    .svgWrapper {
+        border: 1px solid tokens.$color-neutral-solid-200;
+        border-radius: tokens.$radius-100;
+
+        margin-right: tokens.$spacing-200;
+        width: 1.25rem;
+        height: 1.25rem;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        transition: border-color 200ms;
+
+        svg {
+            width: 1.25rem;
+            height: 1.25rem;
+
+            fill: none;
+            stroke: tokens.$color-neutral-text-100;
+
+            stroke-width: 3px;
+            stroke-dasharray: 22px;
+            stroke-dashoffset: 66;
+
+            transition: all 200ms;
+        }
+    }
+
+    .requiredMark {
+        color: tokens.$color-danger-text-200;
+    }
+}

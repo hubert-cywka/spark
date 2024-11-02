@@ -1,0 +1,79 @@
+@use "src/styles/tokens";
+
+.button {
+    height: fit-content;
+    border-radius: tokens.$radius-100;
+
+    cursor: pointer;
+    transition: transform 150ms ease;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: tokens.$spacing-300;
+
+    &[data-size="1"] {
+        font: tokens.$typography-body-100;
+        padding: tokens.$spacing-100 tokens.$spacing-300;
+    }
+
+    &[data-size="2"] {
+        font: tokens.$typography-body-200;
+        padding: tokens.$spacing-200 tokens.$spacing-400;
+    }
+
+    &[data-size="3"] {
+        font: tokens.$typography-body-200;
+        padding: tokens.$spacing-300 tokens.$spacing-500;
+    }
+
+    &[data-variant="primary"] {
+        border: 1px solid tokens.$color-accent-solid-300;
+        color: tokens.$color-accent-text-100;
+        background: tokens.$color-accent-solid-300;
+    }
+
+    &[data-variant="secondary"] {
+        border: 1px solid tokens.$color-neutral-surface-200;
+        color: tokens.$color-neutral-text-100;
+        background: tokens.$color-neutral-surface-300;
+    }
+
+    &[data-variant="danger"] {
+        border: 1px solid tokens.$color-danger-solid-300;
+        color: tokens.$color-danger-text-200;
+        background: tokens.$color-danger-surface-300;
+    }
+
+    &[data-variant="confirm"] {
+        border: 1px solid tokens.$color-success-solid-300;
+        color: tokens.$color-success-text-300;
+        background: tokens.$color-success-surface-300;
+    }
+
+    &[data-variant="subtle"] {
+        color: tokens.$color-neutral-text-100;
+        background: rgba(tokens.$color-accent-solid-300, 0.1);
+        border: none;
+    }
+
+    &[data-disabled] {
+        filter: grayscale(0.9);
+        cursor: not-allowed;
+    }
+
+    &:not(&[data-disabled]) {
+        &[data-hovered] {
+            transform: scale(1.02);
+        }
+
+        &[data-pressed] {
+            transform: scale(0.98);
+        }
+    }
+
+    &[data-focused] {
+        outline-offset: tokens.$spacing-100;
+        outline: tokens.$spacing-100 solid tokens.$color-accent-solid-200;
+    }
+}

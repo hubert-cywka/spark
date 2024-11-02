@@ -1,0 +1,15 @@
+@use "src/styles/tokens";
+
+.nameFieldsWrapper {
+    display: flex;
+    justify-content: space-between;
+    gap: tokens.$spacing-600;
+
+    div {
+        flex-grow: 1;
+    }
+}
+
+.agreementsWrapper {
+    margin-top: tokens.$spacing-400;
+}
