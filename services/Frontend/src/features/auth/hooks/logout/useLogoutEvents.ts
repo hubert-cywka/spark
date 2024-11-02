@@ -1,9 +1,10 @@
 import { useCallback } from "react";
+import { HttpStatusCode } from "axios";
 import { useRouter } from "next/navigation";
 
 import { AppRoute } from "@/app/appRoute";
 import { useAuthStore } from "@/features/auth/hooks";
-import { useTranslateApiError } from "@/hooks/useTranslateApiError";
+import { ErrorsMap, useTranslateApiError } from "@/hooks/useTranslateApiError";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 import { logger } from "@/lib/logger/logger";
 import { showToast } from "@/lib/notifications/showToast";
@@ -30,7 +31,7 @@ export const useLogoutEvents = () => {
         (err: unknown) => {
             logger.error({ err });
             showToast().danger({
-                message: getErrorMessage(err),
+                message: getErrorMessage(err, errorsMap),
                 title: t("authentication.logout.notifications.error.title"),
             });
         },
@@ -38,4 +39,8 @@ export const useLogoutEvents = () => {
     );
 
     return { onLogoutSuccess, onLogoutError };
+};
+
+const errorsMap: ErrorsMap = {
+    [HttpStatusCode.Unauthorized]: "api.authentication.logout.errors.unauthorized",
 };
