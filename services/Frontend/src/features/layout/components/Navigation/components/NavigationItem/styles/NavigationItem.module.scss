@@ -1,8 +1,7 @@
 @use "src/styles/tokens";
 
 .navigationItem {
-    // TODO: Find another way to increase specificity
-   .link.link {
+   a.link {
        width: 100%;
        display: flex;
        gap: tokens.$spacing-200;

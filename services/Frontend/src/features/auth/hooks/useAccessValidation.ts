@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { useAuthSession } from "@/features/auth/hooks/useAuthSession";
+import { useAuthSession } from "@/features/auth/hooks";
 import { AccessScope } from "@/features/auth/types/Identity";
 
 export const useAccessValidation = () => {
