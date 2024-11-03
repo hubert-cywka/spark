@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useLayoutEffect, useState } from "react";
+import { useState } from "react";
 import { IconChevronLeft } from "@tabler/icons-react";
 import clsx from "clsx";
 
@@ -15,22 +15,14 @@ import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 export const SidePanel = () => {
     const t = useTranslate();
-    const [isCollapsed, setIsCollapsed] = useState(true);
-
-    const toggleCollapsedState = () => setIsCollapsed((prev) => !prev);
-
-    const autoExpandOnDesktop = useCallback(() => {
-        if (window.innerWidth >= 768) {
-            setIsCollapsed(false);
-        }
-    }, []);
-
-    useLayoutEffect(autoExpandOnDesktop, [autoExpandOnDesktop]);
+    // Hubert: On mobile this component should be hidden by default. We are using css to achieve that to prevent layout shifts, but the user still needs to be able to open the component.
+    const [isCollapsedOnMobile, setIsCollapsedOnMobile] = useState(true);
+    const toggleCollapsedState = () => setIsCollapsedOnMobile((prev) => !prev);
 
     return (
         <div
             className={clsx(styles.container, {
-                [styles.collapsed]: isCollapsed,
+                [styles.collapsed]: isCollapsedOnMobile,
             })}
         >
             <div className={styles.sidePanel}>
@@ -39,14 +31,14 @@ export const SidePanel = () => {
                         size="1"
                         variant="secondary"
                         onPress={toggleCollapsedState}
-                        aria-label={t(`common.navigation.collapseButton.label.${isCollapsed ? "show" : "hide"}`)}
+                        aria-label={t(`common.navigation.collapseButton.label.${isCollapsedOnMobile ? "show" : "hide"}`)}
                     >
                         <IconChevronLeft />
                     </IconButton>
                 </div>
 
-                <Logo />
-                <Navigation isDisabled={isCollapsed} />
+                <Logo className={styles.logo} />
+                <Navigation isDisabled={isCollapsedOnMobile} />
 
                 <div className={styles.footer}>
                     <AccessGuard requiredScopes={["browse_as_authenticated"]}>
