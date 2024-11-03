@@ -4,7 +4,7 @@ import { AuthenticationService } from "@/features/auth/api/authenticationService
 import { useAuthSession } from "@/features/auth/hooks";
 
 export const useLoginWithCredentials = () => {
-    const storeSession = useAuthSession().storeSession;
+    const storeSession = useAuthSession((state) => state.storeSession);
 
     return useMutation({
         mutationFn: AuthenticationService.loginWithCredentials,

@@ -10,4 +10,5 @@ export interface ButtonProps extends BaseButtonProps {
     name?: string;
     isLoading?: boolean;
     leftDecorator?: ReactNode;
+    rightDecorator?: ReactNode;
 }

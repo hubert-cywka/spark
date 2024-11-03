@@ -4,7 +4,7 @@ import { useAuthSession } from "@/features/auth/hooks";
 import { AccessScope } from "@/features/auth/types/Identity";
 
 export const useAccessValidation = () => {
-    const accessScopes = useAuthSession().scopes;
+    const accessScopes = useAuthSession((state) => state.scopes);
 
     const validate = useCallback(
         (requiredScopes: AccessScope[]) => {

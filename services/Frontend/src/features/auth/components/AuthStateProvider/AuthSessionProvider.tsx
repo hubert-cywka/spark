@@ -9,10 +9,10 @@ import { useAuthSession, useRefreshSession, useRefreshSessionEvents } from "@/fe
 import { apiClient } from "@/lib/apiClient/apiClient";
 import { logger } from "@/lib/logger/logger";
 
-export const AuthStateProvider = ({ children }: PropsWithChildren) => {
+export const AuthSessionProvider = ({ children }: PropsWithChildren) => {
     const { onRefreshSuccess } = useRefreshSessionEvents();
     const { mutateAsync: refreshSession, isPending } = useRefreshSession();
-    const accessToken = useAuthSession().accessToken;
+    const accessToken = useAuthSession((state) => state.accessToken);
 
     const reAuthenticate = useCallback(async (): Promise<string> => {
         const { accessToken } = await refreshSession();

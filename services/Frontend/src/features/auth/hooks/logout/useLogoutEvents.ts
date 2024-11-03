@@ -14,18 +14,16 @@ export const useLogoutEvents = () => {
     const router = useRouter();
     const getErrorMessage = useTranslateApiError();
 
-    const removeIdentity = useAuthSession((state) => state.removeIdentity);
-    const removeAccessToken = useAuthSession((state) => state.removeAccessToken);
+    const endSession = useAuthSession((state) => state.endSession);
 
     const onLogoutSuccess = useCallback(() => {
+        endSession();
+        router.push(AppRoute.LOGIN);
         showToast().success({
             message: t("authentication.logout.notifications.success.body"),
             title: t("authentication.logout.notifications.success.title"),
         });
-        removeIdentity();
-        removeAccessToken();
-        router.push(AppRoute.LOGIN);
-    }, [removeAccessToken, removeIdentity, router, t]);
+    }, [endSession, router, t]);
 
     const onLogoutError = useCallback(
         (err: unknown) => {
