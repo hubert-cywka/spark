@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { IconPower } from "@tabler/icons-react";
 
-import { IconButton } from "@/components/IconButton";
+import { Button } from "@/components/Button";
 import { useLogout, useLogoutEvents } from "@/features/auth/hooks";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
@@ -20,14 +20,8 @@ export const LogoutButton = () => {
     }, [logout, onLogoutError, onLogoutSuccess]);
 
     return (
-        <IconButton
-            onPress={handleLogout}
-            isLoading={isPending}
-            variant="secondary"
-            tooltip={t("common.navigation.logoutButton.label")}
-            aria-label={t("common.navigation.logoutButton.label")}
-        >
-            <IconPower />
-        </IconButton>
+        <Button onPress={handleLogout} isLoading={isPending} variant="secondary" size="1" rightDecorator={<IconPower />}>
+            {t("common.navigation.logoutButton.label")}
+        </Button>
     );
 };

@@ -13,6 +13,6 @@ export { useRefreshSession } from "./refresh/useRefreshSession";
 export { useRefreshSessionEvents } from "./refresh/useRefreshSessionEvents";
 export { useRegister } from "./register/useRegister";
 export { useRegisterEvents } from "./register/useRegisterEvents";
+export { useAuthSession } from "./session/useAuthSession";
 export { useAccessValidation } from "./useAccessValidation";
-export { useAuthStore } from "./useAuthStore";
 export { useCommonAuthenticationRequirements } from "./useCommonAuthenticationRequirements";

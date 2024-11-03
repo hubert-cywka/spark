@@ -1,24 +1,13 @@
-import { useCallback } from "react";
 import { useMutation } from "@tanstack/react-query";
 
 import { AuthenticationService } from "@/features/auth/api/authenticationService";
-import { useAuthStore } from "@/features/auth/hooks";
-import { AuthenticationResponse } from "@/features/auth/types/authentication";
+import { useAuthSession } from "@/features/auth/hooks";
 
 export const useRefreshSession = () => {
-    const storeAccessToken = useAuthStore().storeAccessToken;
-    const storeIdentity = useAuthStore().storeIdentity;
-
-    const setSession = useCallback(
-        ({ id, email, accessToken }: AuthenticationResponse) => {
-            storeIdentity({ id, email });
-            storeAccessToken(accessToken);
-        },
-        [storeAccessToken, storeIdentity]
-    );
+    const storeSession = useAuthSession((state) => state.storeSession);
 
     return useMutation({
         mutationFn: AuthenticationService.refreshSession,
-        onSuccess: setSession,
+        onSuccess: ({ accessToken, id, email }) => storeSession({ identity: { id, email }, accessToken }),
     });
 };

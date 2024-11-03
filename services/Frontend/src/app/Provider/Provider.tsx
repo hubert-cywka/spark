@@ -4,7 +4,7 @@ import React, { PropsWithChildren } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 
-import { AuthStateProvider } from "@/features/auth/components/AuthStateProvider/AuthStateProvider";
+import { AuthSessionProvider } from "@/features/auth/components/AuthStateProvider/AuthSessionProvider";
 
 type ProviderProps = PropsWithChildren;
 
@@ -13,10 +13,8 @@ export const Provider = ({ children }: ProviderProps) => {
 
     return (
         <QueryClientProvider client={queryClient}>
-            <AuthStateProvider>
-                {children}
-                <Toaster position="bottom-right" />
-            </AuthStateProvider>
+            <Toaster position="bottom-right" />
+            <AuthSessionProvider>{children}</AuthSessionProvider>
         </QueryClientProvider>
     );
 };

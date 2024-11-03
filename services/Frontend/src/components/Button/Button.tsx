@@ -18,6 +18,7 @@ export const Button = ({
     variant = "primary",
     size = "2",
     leftDecorator,
+    rightDecorator,
     ...rest
 }: ButtonProps) => {
     return (
@@ -31,6 +32,7 @@ export const Button = ({
             <>
                 {leftDecorator}
                 {children}
+                {rightDecorator}
                 {isLoading && (
                     <Overlay>
                         <Spinner size="1" />
