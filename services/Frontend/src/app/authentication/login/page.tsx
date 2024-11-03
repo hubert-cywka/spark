@@ -1,4 +1,5 @@
 import styles from "../shared/styles/Authentication.module.scss";
+import "server-only";
 
 import { AppRoute } from "@/app/appRoute";
 import { Anchor } from "@/components/Anchor";

@@ -1,6 +1,7 @@
 import { PropsWithChildren } from "react";
 
 import styles from "./styles/Shell.module.scss";
+import "server-only";
 
 import { SidePanel } from "@/features/layout/components/SidePanel/SidePanel";
 
