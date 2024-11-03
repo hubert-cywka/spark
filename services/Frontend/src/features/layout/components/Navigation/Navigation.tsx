@@ -11,7 +11,7 @@ import styles from "./styles/Navigation.module.scss";
 import { AccessGuard } from "@/features/auth/components/AccessGuard/AccessGuard";
 
 type NavigationProps = {
-    isDisabled: boolean;
+    isDisabled?: boolean;
 };
 
 export const Navigation = ({ isDisabled }: NavigationProps) => {

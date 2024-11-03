@@ -1,6 +1,7 @@
 @use "src/styles/tokens";
 
 .container {
+    position: relative;
     height: 100vh;
     min-width: 150px;
 
@@ -12,12 +13,6 @@
     border-right: thin solid tokens.$color-neutral-surface-300;
     transition: transform 0.25s;
 
-    @media (max-width: tokens.$breakpoint-sm) {
-        position: absolute;
-        left: 0;
-        top: 0;
-    }
-
     .sidePanel {
         display: flex;
         flex-direction: column;
@@ -27,9 +22,14 @@
         position: relative;
         padding: tokens.$spacing-500;
 
+        .logo {
+            margin-inline: auto;
+        }
+
         .footer {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
             margin-top: auto;
         }
 
@@ -47,11 +47,32 @@
         }
     }
 
-    &.collapsed {
-        position: absolute;
-        transform: translateX(-100%);
+    @media (min-width: tokens.$breakpoint-sm) {
+        .collapseButtonWrapper {
+            display: none;
+        }
+    }
 
-        .sidePanel {
+    @media (max-width: tokens.$breakpoint-sm) {
+        position: absolute;
+        left: 0;
+        top: 0;
+
+        .collapseButtonWrapper {
+            display: block;
+        }
+
+        &:not(.collapsed) {
+            position: absolute;
+
+            .collapseButtonWrapper {
+                transform: translateX(50%);
+            }
+        }
+
+        &.collapsed {
+            transform: translateX(-100%);
+
             .collapseButtonWrapper {
                 transform: translateX(150%) rotate(180deg);
             }
