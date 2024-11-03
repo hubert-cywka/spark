@@ -3,7 +3,7 @@ import { HttpStatusCode } from "axios";
 import { useRouter } from "next/navigation";
 
 import { AppRoute } from "@/app/appRoute";
-import { useAuthStore } from "@/features/auth/hooks";
+import { useAuthSession } from "@/features/auth/hooks";
 import { ErrorsMap, useTranslateApiError } from "@/hooks/useTranslateApiError";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 import { logger } from "@/lib/logger/logger";
@@ -14,8 +14,8 @@ export const useLogoutEvents = () => {
     const router = useRouter();
     const getErrorMessage = useTranslateApiError();
 
-    const removeIdentity = useAuthStore((state) => state.removeIdentity);
-    const removeAccessToken = useAuthStore((state) => state.removeAccessToken);
+    const removeIdentity = useAuthSession((state) => state.removeIdentity);
+    const removeAccessToken = useAuthSession((state) => state.removeAccessToken);
 
     const onLogoutSuccess = useCallback(() => {
         showToast().success({
