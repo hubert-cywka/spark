@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 
 import styles from "@/app/authentication/shared/styles/Authentication.module.scss";
+import "server-only";
 
 import { AppRoute } from "@/app/appRoute";
 import { Anchor } from "@/components/Anchor";
