@@ -35,6 +35,11 @@ resource "kubernetes_deployment" "backend" {
                     }
 
                     env {
+                        name  = "APP_URL"
+                        value = var.APP_URL
+                    }
+
+                    env {
                         name  = "DATABASE_PORT"
                         value = var.DATABASE_PORT
                     }
