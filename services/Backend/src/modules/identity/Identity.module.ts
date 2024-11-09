@@ -12,18 +12,22 @@ import { ThrottlingGuard } from "@/common/guards/Throttling.guard";
 import { AccountController } from "@/modules/identity/account/controllers/Account.controller";
 import { AccountEntity } from "@/modules/identity/account/entities/AccountEntity";
 import { SingleUseTokenEntity } from "@/modules/identity/account/entities/SingleUseTokenEntity";
-import { AccountService } from "@/modules/identity/account/services/implementations/Account.service";
 import { AccountPublisherService } from "@/modules/identity/account/services/implementations/AccountPublisher.service";
+import { FederatedAccountService } from "@/modules/identity/account/services/implementations/FederatedAccount.service";
+import { ManagedAccountService } from "@/modules/identity/account/services/implementations/ManagedAccount.service";
 import { SingleUseTokenService } from "@/modules/identity/account/services/implementations/SingleUseToken.service";
-import { IAccountServiceToken } from "@/modules/identity/account/services/interfaces/IAccount.service";
 import { IAccountPublisherServiceToken } from "@/modules/identity/account/services/interfaces/IAccountPublisher.service";
+import { IFederatedAccountServiceToken } from "@/modules/identity/account/services/interfaces/IFederatedAccount.service";
+import { IManagedAccountServiceToken } from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
 import { ISingleUseTokenServiceToken } from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
 import { AuthenticationService } from "@/modules/identity/authentication/services/implementations/Authentication.service";
 import { AuthPublisherService } from "@/modules/identity/authentication/services/implementations/AuthPublisher.service";
+import { GoogleOIDCProviderService } from "@/modules/identity/authentication/services/implementations/GoogleOIDCProvider.service";
 import { RefreshTokenService } from "@/modules/identity/authentication/services/implementations/RefreshToken.service";
-import { IAuthServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
+import { IAuthenticationServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
 import { IAuthPublisherServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthPublisher.service";
+import { IGoogleOIDCProviderServiceToken } from "@/modules/identity/authentication/services/interfaces/IGoogleOIDCProvider.service";
 import { IRefreshTokenServiceToken } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
 import { AccessTokenStrategy } from "@/modules/identity/authentication/strategies/AccessToken.strategy";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants/connectionName";
@@ -48,14 +52,28 @@ import { DatabaseModule } from "@/modules/identity/infrastructure/database/Datab
     controllers: [AuthenticationController, AccountController],
     providers: [
         { provide: APP_GUARD, useClass: ThrottlingGuard },
-        { provide: IAuthServiceToken, useClass: AuthenticationService },
+        {
+            provide: IAuthenticationServiceToken,
+            useClass: AuthenticationService,
+        },
+        {
+            provide: IGoogleOIDCProviderServiceToken,
+            useClass: GoogleOIDCProviderService,
+        },
         { provide: IAuthPublisherServiceToken, useClass: AuthPublisherService },
         { provide: IRefreshTokenServiceToken, useClass: RefreshTokenService },
         {
             provide: ISingleUseTokenServiceToken,
             useClass: SingleUseTokenService,
         },
-        { provide: IAccountServiceToken, useClass: AccountService },
+        {
+            provide: IManagedAccountServiceToken,
+            useClass: ManagedAccountService,
+        },
+        {
+            provide: IFederatedAccountServiceToken,
+            useClass: FederatedAccountService,
+        },
         {
             provide: IAccountPublisherServiceToken,
             useClass: AccountPublisherService,

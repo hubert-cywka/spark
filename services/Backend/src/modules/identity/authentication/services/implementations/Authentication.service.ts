@@ -2,22 +2,30 @@ import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 
-import { Account } from "@/modules/identity/account/models/Account.model";
-import { IAccountService, IAccountServiceToken } from "@/modules/identity/account/services/interfaces/IAccount.service";
-import { CURRENT_JWT_VERSION } from "@/modules/identity/authentication/constants";
-import { LoginDto } from "@/modules/identity/authentication/dto/Login.dto";
-import { RegisterDto } from "@/modules/identity/authentication/dto/Register.dto";
-import { IAuthenticationService } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
+import type { Account } from "@/modules/identity/account/models/Account.model";
 import {
-    IAuthPublisherService,
+    type IFederatedAccountService,
+    IFederatedAccountServiceToken,
+} from "@/modules/identity/account/services/interfaces/IFederatedAccount.service";
+import {
+    type IManagedAccountService,
+    IManagedAccountServiceToken,
+} from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
+import { CURRENT_JWT_VERSION } from "@/modules/identity/authentication/constants";
+import type { LoginDto } from "@/modules/identity/authentication/dto/Login.dto";
+import type { RegisterWithCredentialsDto } from "@/modules/identity/authentication/dto/RegisterWithCredentials.dto";
+import { type IAuthenticationService } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
+import {
+    type IAuthPublisherService,
     IAuthPublisherServiceToken,
 } from "@/modules/identity/authentication/services/interfaces/IAuthPublisher.service";
 import {
-    IRefreshTokenService,
+    type IRefreshTokenService,
     IRefreshTokenServiceToken,
 } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
-import { AccessTokenPayload } from "@/modules/identity/authentication/types/accessTokenPayload";
-import { AuthenticationResult } from "@/modules/identity/authentication/types/authenticationResult";
+import type { AccountProvider } from "@/modules/identity/authentication/types/AccountProvider";
+import { type AccessTokenPayload, type AuthenticationResult } from "@/modules/identity/authentication/types/Authentication";
+import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
 
 // TODO: Consider using Keycloak (or other auth provider)
 @Injectable()
@@ -28,8 +36,10 @@ export class AuthenticationService implements IAuthenticationService {
     constructor(
         private configService: ConfigService,
         private jwtService: JwtService,
-        @Inject(IAccountServiceToken)
-        private accountService: IAccountService,
+        @Inject(IManagedAccountServiceToken)
+        private accountService: IManagedAccountService,
+        @Inject(IFederatedAccountServiceToken)
+        private externalAccountService: IFederatedAccountService,
         @Inject(IRefreshTokenServiceToken)
         private refreshTokenService: IRefreshTokenService,
         @Inject(IAuthPublisherServiceToken)
@@ -39,29 +49,41 @@ export class AuthenticationService implements IAuthenticationService {
         this.accessTokenExpirationTimeInSeconds = configService.getOrThrow<number>("modules.auth.jwt.expirationTimeInSeconds");
     }
 
-    public async getIdentityFromAccessToken(accessToken: string): Promise<Account> {
-        const { id, email } = await this.jwtService.decode(accessToken);
-        return { id, email };
+    public async loginWithCredentials({ email, password }: LoginDto): Promise<AuthenticationResult> {
+        const account = await this.accountService.findActivatedByCredentials(email, password);
+        return await this.createAuthenticationResult(account);
     }
 
-    public async login({ email, password }: LoginDto): Promise<AuthenticationResult> {
-        const { id } = await this.accountService.findByCredentials(email, password);
-        return await this.generateTokens({ id, email });
-    }
-
-    public async redeemRefreshToken(refreshToken: string): Promise<AuthenticationResult> {
-        const { id, email } = await this.refreshTokenService.redeem(refreshToken);
-        return await this.generateTokens({ id, email });
-    }
-
-    public async register({ email, password, lastName, firstName }: RegisterDto): Promise<void> {
-        const user = await this.accountService.save(email, password);
+    public async registerWithCredentials({ email, password, lastName, firstName }: RegisterWithCredentialsDto): Promise<void> {
+        const user = await this.accountService.createAccountWithCredentials(email, password);
         this.publisher.onAccountRegistered({ ...user, firstName, lastName });
         await this.accountService.requestActivation(email);
     }
 
+    public async loginWithExternalIdentity(identity: ExternalIdentity, providerId: AccountProvider): Promise<AuthenticationResult> {
+        const account = await this.externalAccountService.findByExternalIdentity(identity, providerId);
+        return await this.createAuthenticationResult(account);
+    }
+
+    public async registerWithExternalIdentity(identity: ExternalIdentity, providerId: AccountProvider): Promise<AuthenticationResult> {
+        const account = await this.externalAccountService.createAccountWithExternalIdentity(identity, providerId);
+        // TODO: OIDC
+        // this.publisher.onAccountRegistered({ ...user, firstName, lastName });
+        return await this.createAuthenticationResult(account);
+    }
+
+    public async redeemRefreshToken(refreshToken: string): Promise<AuthenticationResult> {
+        const account = await this.refreshTokenService.redeem(refreshToken);
+        return await this.createAuthenticationResult(account);
+    }
+
     public async logout(refreshToken: string): Promise<void> {
         return this.refreshTokenService.invalidate(refreshToken);
+    }
+
+    private async createAuthenticationResult(account: Account): Promise<AuthenticationResult> {
+        const tokens = await this.generateTokens(account);
+        return { ...tokens, account };
     }
 
     private async generateTokens(account: Account): Promise<{ accessToken: string; refreshToken: string }> {

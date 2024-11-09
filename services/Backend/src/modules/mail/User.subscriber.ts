@@ -4,14 +4,14 @@ import { EventPattern, Payload } from "@nestjs/microservices";
 
 import { whenError } from "@/common/errors/whenError";
 import {
-    AccountActivatedEventPayload,
-    AccountActivationTokenRequestedEventPayload,
-    AccountPasswordUpdatedEventPayload,
-    AccountRequestedPasswordResetEventPayload,
+    type AccountActivatedEventPayload,
+    type AccountActivationTokenRequestedEventPayload,
+    type AccountPasswordUpdatedEventPayload,
+    type AccountRequestedPasswordResetEventPayload,
     EventTopics,
 } from "@/common/events";
 import { EmailDeliveryError } from "@/modules/mail/errors/EmailDelivery.error";
-import { IMailerService, IMailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
+import { type IMailerService, IMailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
 import { PasswordResetRequestedEmail } from "@/modules/mail/templates/PasswordResetRequestedEmail";
 import { PasswordUpdatedEmail } from "@/modules/mail/templates/PasswordUpdatedEmail";
 import { UserActivatedEmail } from "@/modules/mail/templates/UserActivatedEmail";

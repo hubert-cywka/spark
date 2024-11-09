@@ -38,7 +38,6 @@ resource "kubernetes_config_map" "app_config" {
         USERS_DATABASE_NAME                                 = var.USERS_DATABASE_NAME
 
         FRONTEND_PORT                                       = var.FRONTEND_PORT
-        FRONTEND_STATIC_FILES_DIR                           = var.FRONTEND_STATIC_FILES_DIR
 
         GATEWAY_PORT                                        = var.GATEWAY_PORT
         GATEWAY_ALLOWED_ORIGINS                             = var.GATEWAY_ALLOWED_ORIGINS
@@ -49,6 +48,12 @@ resource "kubernetes_config_map" "app_config" {
         MAIL_SENDER_PASSWORD                                = var.MAIL_SENDER_PASSWORD
         MAIL_SENDER_PORT                                    = var.MAIL_SENDER_PORT
         MAIL_DEBUG_MODE                                     = var.MAIL_DEBUG_MODE
+
+        GOOGLE_CLIENT_ID                                    = var.GOOGLE_CLIENT_ID
+        GOOGLE_CLIENT_SECRET                                = var.GOOGLE_CLIENT_SECRET
+        GOOGLE_OIDC_REDIRECT_URL                            = var.GOOGLE_OIDC_REDIRECT_URL
+
+        COOKIES_SECRET                                      = var.COOKIES_SECRET
     }
 }
 

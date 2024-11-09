@@ -62,10 +62,6 @@ variable "USERS_DATABASE_NAME" {
     type        = string
 }
 
-variable "FRONTEND_STATIC_FILES_DIR" {
-    type        = string
-}
-
 variable "GATEWAY_ALLOWED_ORIGINS" {
     type        = string
 }
@@ -91,5 +87,21 @@ variable "MAIL_SENDER_PORT" {
 }
 
 variable "MAIL_DEBUG_MODE" {
+    type        = string
+}
+
+variable "GOOGLE_CLIENT_ID" {
+    type        = string
+}
+
+variable "GOOGLE_CLIENT_SECRET" {
+    type        = string
+}
+
+variable "GOOGLE_OIDC_REDIRECT_URL" {
+    type        = string
+}
+
+variable "COOKIES_SECRET" {
     type        = string
 }

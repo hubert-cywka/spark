@@ -8,7 +8,6 @@ import {
     IPublisherServiceToken,
     PublisherService,
 } from "@/common/events";
-import { Account } from "@/modules/identity/account/models/Account.model";
 import { IAccountPublisherService } from "@/modules/identity/account/services/interfaces/IAccountPublisher.service";
 
 export class AccountPublisherService implements IAccountPublisherService {
@@ -17,8 +16,8 @@ export class AccountPublisherService implements IAccountPublisherService {
         private publisher: PublisherService
     ) {}
 
-    public onAccountActivated(account: Account): void {
-        this.publisher.publish(new AccountActivatedEvent({ id: account.id, email: account.email }));
+    public onAccountActivated(email: string, id: string): void {
+        this.publisher.publish(new AccountActivatedEvent({ email, id }));
     }
 
     public onAccountActivationTokenRequested(email: string, activationToken: string) {

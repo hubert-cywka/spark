@@ -2,7 +2,7 @@ import { Inject } from "@nestjs/common";
 import { Args, Query, Resolver } from "@nestjs/graphql";
 
 import { UserObject } from "@/modules/users/objects/User.object";
-import { IUsersService, IUsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
+import { type IUsersService, IUsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
 
 @Resolver(UserObject)
 export class UsersResolver {

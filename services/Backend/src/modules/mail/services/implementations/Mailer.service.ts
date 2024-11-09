@@ -1,10 +1,11 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { createTransport, Transporter } from "nodemailer";
+import type { Transporter } from "nodemailer";
+import { createTransport } from "nodemailer";
 
 import { EmailDeliveryError } from "@/modules/mail/errors/EmailDelivery.error";
-import { IMailerService } from "@/modules/mail/services/interfaces/IMailer.service";
-import { IEmailTemplate } from "@/modules/mail/templates/IEmailTemplate";
+import { type IMailerService } from "@/modules/mail/services/interfaces/IMailer.service";
+import { type IEmailTemplate } from "@/modules/mail/templates/IEmailTemplate";
 
 @Injectable()
 export class MailerService implements IMailerService {

@@ -124,6 +124,11 @@ resource "kubernetes_deployment" "backend" {
                         name  = "MAIL_DEBUG_MODE"
                         value = var.MAIL_DEBUG_MODE
                     }
+
+                    env {
+                        name  = "COOKIES_SECRET"
+                        value = var.COOKIES_SECRET
+                    }
                 }
             }
         }

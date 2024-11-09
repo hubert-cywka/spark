@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { type Relation, Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 import { AccountEntity } from "@/modules/identity/account/entities/AccountEntity";
 
@@ -21,5 +21,5 @@ export class RefreshTokenEntity {
     invalidatedAt!: Date | null;
 
     @ManyToOne((type) => AccountEntity, (user) => user.refreshTokens)
-    owner!: AccountEntity;
+    owner!: Relation<AccountEntity>;
 }

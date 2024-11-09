@@ -33,8 +33,8 @@ resource "kubernetes_deployment" "frontend" {
                         value = var.FRONTEND_PORT
                     }
                     env {
-                        name  = "STATIC_FILES_DIR"
-                        value = var.FRONTEND_STATIC_FILES_DIR
+                        name  = "NEXT_PUBLIC_API_URL"
+                        value = var.APP_URL
                     }
                 }
             }

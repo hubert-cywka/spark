@@ -4,12 +4,13 @@ import { JwtService } from "@nestjs/jwt";
 import { Cron } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import dayjs from "dayjs";
-import { IsNull, LessThanOrEqual, Repository } from "typeorm";
+import type { Repository } from "typeorm";
+import { IsNull, LessThanOrEqual } from "typeorm";
 
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
 import { RefreshTokenNotFoundError } from "@/modules/identity/authentication/errors/RefreshTokenNotFound.error";
-import { IRefreshTokenService } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
-import { AccessTokenPayload } from "@/modules/identity/authentication/types/accessTokenPayload";
+import { type IRefreshTokenService } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
+import { type AccessTokenPayload } from "@/modules/identity/authentication/types/Authentication";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants/connectionName";
 
 @Injectable()

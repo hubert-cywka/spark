@@ -1,20 +1,27 @@
-import { Body, Controller, HttpCode, Inject, NotFoundException, Post, Put } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Inject, NotFoundException, Post, Put } from "@nestjs/common";
 
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
-import { RedeemActivationTokenDto } from "@/modules/identity/account/dto/RedeemActivationToken.dto";
-import { RequestActivationTokenDto } from "@/modules/identity/account/dto/RequestActivationToken.dto";
-import { RequestPasswordResetDto } from "@/modules/identity/account/dto/RequestPasswordReset.dto";
-import { UpdatePasswordDto } from "@/modules/identity/account/dto/UpdatePassword.dto";
+import type { RedeemActivationTokenDto } from "@/modules/identity/account/dto/RedeemActivationToken.dto";
+import type { RequestActivationTokenDto } from "@/modules/identity/account/dto/RequestActivationToken.dto";
+import type { RequestPasswordResetDto } from "@/modules/identity/account/dto/RequestPasswordReset.dto";
+import type { UpdatePasswordDto } from "@/modules/identity/account/dto/UpdatePassword.dto";
 import { AccountAlreadyActivatedError } from "@/modules/identity/account/errors/AccountAlreadyActivated.error";
 import { AccountNotFoundError } from "@/modules/identity/account/errors/AccountNotFound.error";
-import { IAccountService, IAccountServiceToken } from "@/modules/identity/account/services/interfaces/IAccount.service";
+import {
+    type IManagedAccountService,
+    IManagedAccountServiceToken,
+} from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
 
 @Controller("api/account")
 export class AccountController {
-    constructor(@Inject(IAccountServiceToken) private accountService: IAccountService) {}
+    constructor(
+        @Inject(IManagedAccountServiceToken)
+        private accountService: IManagedAccountService
+    ) {}
 
+    @HttpCode(HttpStatus.CREATED)
     @Post("password/reset")
     async requestPasswordChange(@Body() { email }: RequestPasswordResetDto) {
         try {
@@ -30,6 +37,7 @@ export class AccountController {
         }
     }
 
+    @HttpCode(HttpStatus.CREATED)
     @Put("password")
     async updatePassword(@Body() { password, passwordChangeToken }: UpdatePasswordDto) {
         try {
@@ -45,7 +53,7 @@ export class AccountController {
         }
     }
 
-    @HttpCode(201)
+    @HttpCode(HttpStatus.CREATED)
     @Post("activation/redeem")
     async redeemActivationToken(@Body() { activationToken }: RedeemActivationTokenDto) {
         try {
@@ -61,7 +69,7 @@ export class AccountController {
         }
     }
 
-    @HttpCode(201)
+    @HttpCode(HttpStatus.CREATED)
     @Post("activation/request")
     async requestActivationToken(@Body() { email }: RequestActivationTokenDto) {
         try {

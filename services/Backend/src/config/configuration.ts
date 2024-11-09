@@ -2,6 +2,10 @@ export const AppConfig = () => ({
     appUrl: process.env.APP_URL,
     port: parseInt(process.env.PORT ?? ""),
 
+    cookies: {
+        secret: process.env.COOKIES_SECRET,
+    },
+
     pubsub: {
         host: process.env.PUBSUB_HOST,
         port: parseInt(process.env.PUBSUB_PORT ?? ""),
@@ -48,6 +52,13 @@ export const AppConfig = () => ({
             throttle: {
                 ttl: parseInt(process.env.AUTH_THROTTLE_TTL_IN_MS ?? ""),
                 limit: parseInt(process.env.AUTH_THROTTLE_LIMIT ?? ""),
+            },
+            oidc: {
+                google: {
+                    clientId: process.env.GOOGLE_CLIENT_ID,
+                    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+                    redirectUrl: process.env.GOOGLE_OIDC_REDIRECT_URL,
+                },
             },
         },
     },

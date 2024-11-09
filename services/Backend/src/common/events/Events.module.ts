@@ -1,9 +1,9 @@
-import { DynamicModule, Module, Provider } from "@nestjs/common";
+import { type DynamicModule, type Provider, Module } from "@nestjs/common";
 import { ClientProxyFactory, Transport } from "@nestjs/microservices";
 
 import { IPublisherServiceToken } from "./services/IPublisher.service";
 import { PublisherService } from "./services/Publisher.service";
-import { EventsModuleOptions } from "./types";
+import { type EventsModuleOptions } from "./types";
 
 const MODULE_OPTIONS_TOKEN = Symbol("PubSubModuleOptions");
 

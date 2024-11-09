@@ -1,5 +1,5 @@
-import { LoggerService } from "@nestjs/common";
-import { Client } from "pg";
+import { type LoggerService } from "@nestjs/common";
+import pg from "pg";
 
 import { pollResource } from "@/common/utils/pollResource";
 
@@ -56,8 +56,8 @@ export async function initializeDatabase(
     await client.end();
 }
 
-function createClient({ password, host, username, port }: DBConnectionOptions): Client {
-    return new Client({
+function createClient({ password, host, username, port }: DBConnectionOptions): pg.Client {
+    return new pg.Client({
         database: "postgres",
         user: username,
         password,

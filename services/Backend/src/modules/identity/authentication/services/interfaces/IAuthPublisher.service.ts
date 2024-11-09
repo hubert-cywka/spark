@@ -1,4 +1,4 @@
-import { Account } from "@/modules/identity/account/models/Account.model";
+import type { Account } from "@/modules/identity/account/models/Account.model";
 
 export const IAuthPublisherServiceToken = Symbol("IAuthPublisherServiceToken");
 

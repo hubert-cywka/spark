@@ -2,7 +2,7 @@ import { Equals, IsBoolean, IsEmail, IsString, Matches, MinLength } from "class-
 
 import { PASSWORD_LENGTH, USER_NAME_REGEX } from "@/modules/identity/shared/constants";
 
-export class RegisterDto {
+export class RegisterWithCredentialsDto {
     @IsEmail()
     email!: string;
 
