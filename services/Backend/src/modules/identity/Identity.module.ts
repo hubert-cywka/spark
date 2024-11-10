@@ -10,7 +10,9 @@ import { AuthenticationController } from "./authentication/controllers/Authentic
 
 import { ThrottlingGuard } from "@/common/guards/Throttling.guard";
 import { AccountController } from "@/modules/identity/account/controllers/Account.controller";
-import { AccountEntity } from "@/modules/identity/account/entities/AccountEntity";
+import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccountEntity";
+import { FederatedAccountEntity } from "@/modules/identity/account/entities/FederatedAccountEntity";
+import { ManagedAccountEntity } from "@/modules/identity/account/entities/ManagedAccountEntity";
 import { SingleUseTokenEntity } from "@/modules/identity/account/entities/SingleUseTokenEntity";
 import { AccountPublisherService } from "@/modules/identity/account/services/implementations/AccountPublisher.service";
 import { FederatedAccountService } from "@/modules/identity/account/services/implementations/FederatedAccount.service";
@@ -47,7 +49,10 @@ import { DatabaseModule } from "@/modules/identity/infrastructure/database/Datab
         }),
         PassportModule,
         JwtModule,
-        TypeOrmModule.forFeature([RefreshTokenEntity, AccountEntity, SingleUseTokenEntity], IDENTITY_MODULE_DATA_SOURCE),
+        TypeOrmModule.forFeature(
+            [RefreshTokenEntity, SingleUseTokenEntity, BaseAccountEntity, ManagedAccountEntity, FederatedAccountEntity],
+            IDENTITY_MODULE_DATA_SOURCE
+        ),
     ],
     controllers: [AuthenticationController, AccountController],
     providers: [

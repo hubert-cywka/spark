@@ -5,8 +5,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { initializeDatabase } from "@/common/utils/initializeDatabase";
 import { logger } from "@/lib/logger";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants/connectionName";
-import { InitMigration1731161534071 } from "@/modules/identity/infrastructure/database/migrations/1731161534071-InitMigration";
-import { TermsAndConditionsTimestamp1731171265286 } from "@/modules/identity/infrastructure/database/migrations/1731171265286-TermsAndConditionsTimestamp";
+import { RenameEntities1731233063970 } from "@/modules/identity/infrastructure/database/migrations/1731233063970-RenameEntities";
 
 @Module({
     imports: [
@@ -36,7 +35,7 @@ import { TermsAndConditionsTimestamp1731171265286 } from "@/modules/identity/inf
                     autoLoadEntities: true,
                     migrationsRun: true,
                     synchronize: false,
-                    migrations: [InitMigration1731161534071, TermsAndConditionsTimestamp1731171265286],
+                    migrations: [RenameEntities1731233063970],
                 };
             },
             inject: [ConfigService],

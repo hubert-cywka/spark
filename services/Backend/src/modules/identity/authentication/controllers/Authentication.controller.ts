@@ -8,7 +8,6 @@ import {
     HttpCode,
     HttpStatus,
     Inject,
-    InternalServerErrorException,
     Post,
     Query,
     Res,
@@ -19,7 +18,6 @@ import { OAuth2RequestError } from "arctic";
 import { type CookieOptions, type Response } from "express";
 
 import { Cookies } from "@/common/decorators/Cookie.decorator";
-import { DataCorruptionError } from "@/common/errors/DataCorruption.error";
 import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
@@ -41,7 +39,7 @@ import {
     type IGoogleOIDCProviderService,
     IGoogleOIDCProviderServiceToken,
 } from "@/modules/identity/authentication/services/interfaces/IGoogleOIDCProvider.service";
-import { AccountProvider } from "@/modules/identity/authentication/types/AccountProvider";
+import { FederatedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
 
 @Controller("api/auth")
@@ -81,8 +79,6 @@ export class AuthenticationController {
                 .throw(new UnauthorizedException())
                 .is(ForbiddenError)
                 .throw(new ForbiddenException())
-                .is(DataCorruptionError)
-                .throw(new InternalServerErrorException())
                 .elseRethrow();
         }
     }
@@ -153,7 +149,7 @@ export class AuthenticationController {
 
             const { accessToken, refreshToken, account } = await this.authService.loginWithExternalIdentity(
                 externalIdentity,
-                AccountProvider.GOOGLE
+                FederatedAccountProvider.GOOGLE
             );
 
             this.setRefreshToken(response, refreshToken);
@@ -190,7 +186,7 @@ export class AuthenticationController {
         try {
             const { accessToken, refreshToken, account } = await this.authService.registerWithExternalIdentity(
                 externalIdentity,
-                AccountProvider.GOOGLE
+                FederatedAccountProvider.GOOGLE
             );
 
             this.setRefreshToken(response, refreshToken);

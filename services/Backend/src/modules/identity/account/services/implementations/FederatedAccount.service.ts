@@ -4,12 +4,12 @@ import { plainToInstance } from "class-transformer";
 import dayjs from "dayjs";
 import type { Repository } from "typeorm";
 
-import { AccountEntity } from "@/modules/identity/account/entities/AccountEntity";
+import { FederatedAccountEntity } from "@/modules/identity/account/entities/FederatedAccountEntity";
 import { AccountAlreadyExistsError } from "@/modules/identity/account/errors/AccountAlreadyExists.error";
 import { AccountNotFoundError } from "@/modules/identity/account/errors/AccountNotFound.error";
 import { Account } from "@/modules/identity/account/models/Account.model";
 import { type IFederatedAccountService } from "@/modules/identity/account/services/interfaces/IFederatedAccount.service";
-import type { AccountProvider } from "@/modules/identity/authentication/types/AccountProvider";
+import { FederatedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants/connectionName";
 
@@ -18,11 +18,11 @@ export class FederatedAccountService implements IFederatedAccountService {
     private readonly logger = new Logger(FederatedAccountService.name);
 
     constructor(
-        @InjectRepository(AccountEntity, IDENTITY_MODULE_DATA_SOURCE)
-        private readonly repository: Repository<AccountEntity>
+        @InjectRepository(FederatedAccountEntity, IDENTITY_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<FederatedAccountEntity>
     ) {}
 
-    public async findByExternalIdentity(identity: ExternalIdentity, providerId: AccountProvider): Promise<Account> {
+    public async findByExternalIdentity(identity: ExternalIdentity, providerId: FederatedAccountProvider): Promise<Account> {
         const account = await this.repository.findOne({
             where: { providerAccountId: identity.id, providerId },
         });
@@ -35,7 +35,7 @@ export class FederatedAccountService implements IFederatedAccountService {
         return this.mapEntityToModel(account);
     }
 
-    public async createAccountWithExternalIdentity(identity: ExternalIdentity, providerId: AccountProvider): Promise<Account> {
+    public async createAccountWithExternalIdentity(identity: ExternalIdentity, providerId: FederatedAccountProvider): Promise<Account> {
         const existingAccount = await this.repository.findOne({
             where: { providerAccountId: identity.id, providerId },
         });
@@ -59,7 +59,7 @@ export class FederatedAccountService implements IFederatedAccountService {
         return this.mapEntityToModel(account);
     }
 
-    private mapEntityToModel(entity: AccountEntity): Account {
+    private mapEntityToModel(entity: FederatedAccountEntity): Account {
         return plainToInstance(Account, {
             id: entity.id,
             email: entity.email,

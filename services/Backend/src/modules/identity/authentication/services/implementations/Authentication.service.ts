@@ -23,8 +23,8 @@ import {
     type IRefreshTokenService,
     IRefreshTokenServiceToken,
 } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
-import type { AccountProvider } from "@/modules/identity/authentication/types/AccountProvider";
 import { type AccessTokenPayload, type AuthenticationResult } from "@/modules/identity/authentication/types/Authentication";
+import { FederatedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
 
 // TODO: Consider using Keycloak (or other auth provider)
@@ -60,12 +60,18 @@ export class AuthenticationService implements IAuthenticationService {
         await this.accountService.requestActivation(email);
     }
 
-    public async loginWithExternalIdentity(identity: ExternalIdentity, providerId: AccountProvider): Promise<AuthenticationResult> {
+    public async loginWithExternalIdentity(
+        identity: ExternalIdentity,
+        providerId: FederatedAccountProvider
+    ): Promise<AuthenticationResult> {
         const account = await this.externalAccountService.findByExternalIdentity(identity, providerId);
         return await this.createAuthenticationResult(account);
     }
 
-    public async registerWithExternalIdentity(identity: ExternalIdentity, providerId: AccountProvider): Promise<AuthenticationResult> {
+    public async registerWithExternalIdentity(
+        identity: ExternalIdentity,
+        providerId: FederatedAccountProvider
+    ): Promise<AuthenticationResult> {
         const account = await this.externalAccountService.createAccountWithExternalIdentity(identity, providerId);
         // TODO: OIDC
         // this.publisher.onAccountRegistered({ ...user, firstName, lastName });

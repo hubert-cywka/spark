@@ -5,10 +5,9 @@ import { plainToInstance } from "class-transformer";
 import dayjs from "dayjs";
 import type { Repository } from "typeorm";
 
-import { AccountEntity } from "@/modules/identity/account/entities/AccountEntity";
+import { ManagedAccountEntity } from "@/modules/identity/account/entities/ManagedAccountEntity";
 import { AccountAlreadyActivatedError } from "@/modules/identity/account/errors/AccountAlreadyActivated.error";
 import { AccountAlreadyExistsError } from "@/modules/identity/account/errors/AccountAlreadyExists.error";
-import { AccountCorruptedError } from "@/modules/identity/account/errors/AccountCorrupted.error";
 import { AccountNotActivatedError } from "@/modules/identity/account/errors/AccountNotActivated.error";
 import { AccountNotFoundError } from "@/modules/identity/account/errors/AccountNotFound.error";
 import { Account } from "@/modules/identity/account/models/Account.model";
@@ -22,7 +21,7 @@ import {
     ISingleUseTokenServiceToken,
 } from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
 import { InvalidCredentialsError } from "@/modules/identity/authentication/errors/InvalidCredentials.error";
-import { AccountProvider } from "@/modules/identity/authentication/types/AccountProvider";
+import { ManagedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants/connectionName";
 
 @Injectable()
@@ -31,8 +30,8 @@ export class ManagedAccountService implements IManagedAccountService {
     private readonly logger = new Logger(ManagedAccountService.name);
 
     constructor(
-        @InjectRepository(AccountEntity, IDENTITY_MODULE_DATA_SOURCE)
-        private readonly repository: Repository<AccountEntity>,
+        @InjectRepository(ManagedAccountEntity, IDENTITY_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<ManagedAccountEntity>,
         @Inject(IAccountPublisherServiceToken)
         private readonly publisher: IAccountPublisherService,
         @Inject(ISingleUseTokenServiceToken)
@@ -42,11 +41,6 @@ export class ManagedAccountService implements IManagedAccountService {
     // TODO: Protect from timing attacks to prevent leaking emails
     public async findActivatedByCredentials(email: string, password: string): Promise<Account> {
         const account = await this.findOne(email);
-
-        // Hubert: This should never happen and the user has no option to fix this so treat this as server error.
-        if (!account.assertManagedAccountInvariants()) {
-            throw new AccountCorruptedError();
-        }
 
         if (!(await this.verifyPassword(account.password, password))) {
             this.logger.warn({ id: account.id }, "Account found, incorrect password.");
@@ -63,7 +57,7 @@ export class ManagedAccountService implements IManagedAccountService {
 
     public async createAccountWithCredentials(email: string, password: string): Promise<Account> {
         const existingAccount = await this.repository.findOne({
-            where: { email, providerId: AccountProvider.CREDENTIALS },
+            where: { email, providerId: ManagedAccountProvider.CREDENTIALS },
         });
 
         if (existingAccount) {
@@ -75,7 +69,7 @@ export class ManagedAccountService implements IManagedAccountService {
         const accountEntity = this.repository.create({
             email,
             password: hashedPassword,
-            providerId: AccountProvider.CREDENTIALS,
+            providerId: ManagedAccountProvider.CREDENTIALS,
             providerAccountId: email,
             termsAndConditionsAcceptedAt: dayjs(),
         });
@@ -138,23 +132,29 @@ export class ManagedAccountService implements IManagedAccountService {
         this.publisher.onAccountActivationTokenRequested(email, activationToken);
     }
 
-    private async findOne(providerAccountId: string): Promise<AccountEntity> {
+    private async findOne(providerAccountId: string): Promise<ManagedAccountEntity> {
         const account = await this.repository.findOne({
             where: {
                 providerAccountId,
-                providerId: AccountProvider.CREDENTIALS,
+                providerId: ManagedAccountProvider.CREDENTIALS,
             },
         });
 
         if (!account) {
-            this.logger.warn({ providerAccountId, providerId: AccountProvider.CREDENTIALS }, "Account not found.");
+            this.logger.warn(
+                {
+                    providerAccountId,
+                    providerId: ManagedAccountProvider.CREDENTIALS,
+                },
+                "Account not found."
+            );
             throw new AccountNotFoundError();
         }
 
         return account;
     }
 
-    private assertEligibilityForActivation(account: AccountEntity): void {
+    private assertEligibilityForActivation(account: ManagedAccountEntity): void {
         if (account.activatedAt) {
             this.logger.warn({ userId: account.id, activatedAt: account.activatedAt }, "Account already activated.");
             throw new AccountAlreadyActivatedError();
@@ -169,7 +169,7 @@ export class ManagedAccountService implements IManagedAccountService {
         return await argon2.verify(accountPasswordHash, inputPassword);
     }
 
-    private mapEntityToModel(entity: AccountEntity): Account {
+    private mapEntityToModel(entity: ManagedAccountEntity): Account {
         return plainToInstance(Account, {
             id: entity.id,
             email: entity.email,

@@ -1,6 +1,6 @@
 import { type Relation, Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
-import { AccountEntity } from "@/modules/identity/account/entities/AccountEntity";
+import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccountEntity";
 
 @Entity("refresh_token")
 @Index(["hashedValue"])
@@ -20,6 +20,6 @@ export class RefreshTokenEntity {
     @Column({ type: "timestamp", nullable: true })
     invalidatedAt!: Date | null;
 
-    @ManyToOne((type) => AccountEntity, (user) => user.refreshTokens)
-    owner!: Relation<AccountEntity>;
+    @ManyToOne((type) => BaseAccountEntity, (user) => user.refreshTokens)
+    owner!: Relation<BaseAccountEntity>;
 }
