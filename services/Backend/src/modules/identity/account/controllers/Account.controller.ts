@@ -14,7 +14,7 @@ import {
     IManagedAccountServiceToken,
 } from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
 
-@Controller("api/account")
+@Controller("account")
 export class AccountController {
     constructor(
         @Inject(IManagedAccountServiceToken)

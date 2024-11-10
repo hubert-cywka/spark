@@ -22,7 +22,7 @@ import {
 } from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
 import { InvalidCredentialsError } from "@/modules/identity/authentication/errors/InvalidCredentials.error";
 import { ManagedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
-import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants/connectionName";
+import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
 @Injectable()
 export class ManagedAccountService implements IManagedAccountService {

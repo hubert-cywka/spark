@@ -10,7 +10,7 @@ import { TokenNotFoundError } from "@/modules/identity/account/errors/TokenNotFo
 import { ManagedAccountService } from "@/modules/identity/account/services/implementations/ManagedAccount.service";
 import { type ISingleUseTokenService } from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
 import { type SingleUseTokenRedeemData, type SingleUseTokenType } from "@/modules/identity/account/types/SingleUseToken";
-import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants/connectionName";
+import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
 @Injectable()
 export class SingleUseTokenService implements ISingleUseTokenService {

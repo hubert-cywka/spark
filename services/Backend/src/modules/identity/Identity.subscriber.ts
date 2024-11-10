@@ -1,5 +1,4 @@
 import { Controller, Inject, Logger } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import { EventPattern, Payload } from "@nestjs/microservices";
 
 import { type AccountPasswordUpdatedEventPayload, EventTopics } from "@/common/events";
@@ -14,8 +13,7 @@ export class IdentitySubscriber {
 
     public constructor(
         @Inject(IRefreshTokenServiceToken)
-        private refreshTokenService: IRefreshTokenService,
-        private configService: ConfigService
+        private refreshTokenService: IRefreshTokenService
     ) {}
 
     @EventPattern(EventTopics.account.passwordUpdated)

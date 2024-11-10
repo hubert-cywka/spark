@@ -11,7 +11,7 @@ import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/R
 import { RefreshTokenNotFoundError } from "@/modules/identity/authentication/errors/RefreshTokenNotFound.error";
 import { type IRefreshTokenService } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
 import { type AccessTokenPayload } from "@/modules/identity/authentication/types/Authentication";
-import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants/connectionName";
+import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
 @Injectable()
 export class RefreshTokenService implements IRefreshTokenService {

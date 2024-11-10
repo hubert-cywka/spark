@@ -11,7 +11,7 @@ import { Account } from "@/modules/identity/account/models/Account.model";
 import { type IFederatedAccountService } from "@/modules/identity/account/services/interfaces/IFederatedAccount.service";
 import { FederatedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
-import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants/connectionName";
+import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
 @Injectable()
 export class FederatedAccountService implements IFederatedAccountService {

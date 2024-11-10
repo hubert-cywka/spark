@@ -22,6 +22,7 @@ import { IAccountPublisherServiceToken } from "@/modules/identity/account/servic
 import { IFederatedAccountServiceToken } from "@/modules/identity/account/services/interfaces/IFederatedAccount.service";
 import { IManagedAccountServiceToken } from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
 import { ISingleUseTokenServiceToken } from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
+import { OpenIDConnectController } from "@/modules/identity/authentication/controllers/OpenIDConnect.controller";
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
 import { AuthenticationService } from "@/modules/identity/authentication/services/implementations/Authentication.service";
 import { AuthPublisherService } from "@/modules/identity/authentication/services/implementations/AuthPublisher.service";
@@ -31,8 +32,10 @@ import { IAuthenticationServiceToken } from "@/modules/identity/authentication/s
 import { IAuthPublisherServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthPublisher.service";
 import { IGoogleOIDCProviderServiceToken } from "@/modules/identity/authentication/services/interfaces/IGoogleOIDCProvider.service";
 import { IRefreshTokenServiceToken } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
-import { AccessTokenStrategy } from "@/modules/identity/authentication/strategies/AccessToken.strategy";
-import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants/connectionName";
+import { AccessTokenStrategy } from "@/modules/identity/authentication/strategies/passport/AccessToken.strategy";
+import { IRefreshTokenCookieStrategyToken } from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
+import { SecureRefreshTokenCookieStrategy } from "@/modules/identity/authentication/strategies/refreshToken/SecureRefreshTokenCookie.strategy";
+import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 import { DatabaseModule } from "@/modules/identity/infrastructure/database/Database.module";
 
 @Module({
@@ -54,7 +57,7 @@ import { DatabaseModule } from "@/modules/identity/infrastructure/database/Datab
             IDENTITY_MODULE_DATA_SOURCE
         ),
     ],
-    controllers: [AuthenticationController, AccountController],
+    controllers: [AuthenticationController, OpenIDConnectController, AccountController],
     providers: [
         { provide: APP_GUARD, useClass: ThrottlingGuard },
         {
@@ -65,8 +68,14 @@ import { DatabaseModule } from "@/modules/identity/infrastructure/database/Datab
             provide: IGoogleOIDCProviderServiceToken,
             useClass: GoogleOIDCProviderService,
         },
-        { provide: IAuthPublisherServiceToken, useClass: AuthPublisherService },
-        { provide: IRefreshTokenServiceToken, useClass: RefreshTokenService },
+        {
+            provide: IAuthPublisherServiceToken,
+            useClass: AuthPublisherService,
+        },
+        {
+            provide: IRefreshTokenServiceToken,
+            useClass: RefreshTokenService,
+        },
         {
             provide: ISingleUseTokenServiceToken,
             useClass: SingleUseTokenService,
@@ -82,6 +91,10 @@ import { DatabaseModule } from "@/modules/identity/infrastructure/database/Datab
         {
             provide: IAccountPublisherServiceToken,
             useClass: AccountPublisherService,
+        },
+        {
+            provide: IRefreshTokenCookieStrategyToken,
+            useClass: SecureRefreshTokenCookieStrategy,
         },
         AccessTokenStrategy,
     ],

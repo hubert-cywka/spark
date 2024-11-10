@@ -17,6 +17,7 @@ async function bootstrap() {
     });
 
     app.useLogger(app.get(Logger));
+    app.setGlobalPrefix("api");
 
     app.use(cookieParser(config.getOrThrow<string>("cookies.secret")));
     app.set("trust proxy", true);
