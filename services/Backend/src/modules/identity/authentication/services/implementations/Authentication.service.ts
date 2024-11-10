@@ -55,8 +55,16 @@ export class AuthenticationService implements IAuthenticationService {
     }
 
     public async registerWithCredentials({ email, password, lastName, firstName }: RegisterWithCredentialsDto): Promise<void> {
-        const user = await this.accountService.createAccountWithCredentials(email, password);
-        this.publisher.onAccountRegistered({ ...user, firstName, lastName });
+        const account = await this.accountService.createAccountWithCredentials(email, password);
+        this.publisher.onAccountRegistered({
+            account: {
+                firstName,
+                lastName,
+                email,
+                id: account.id,
+                isActivated: false,
+            },
+        });
         await this.accountService.requestActivation(email);
     }
 
@@ -73,8 +81,17 @@ export class AuthenticationService implements IAuthenticationService {
         providerId: FederatedAccountProvider
     ): Promise<AuthenticationResult> {
         const account = await this.externalAccountService.createAccountWithExternalIdentity(identity, providerId);
-        // TODO: OIDC
-        // this.publisher.onAccountRegistered({ ...user, firstName, lastName });
+        const { firstName, lastName, email } = identity;
+
+        this.publisher.onAccountRegistered({
+            account: {
+                firstName,
+                lastName,
+                email,
+                id: account.id,
+                isActivated: true,
+            },
+        });
         return await this.createAuthenticationResult(account);
     }
 

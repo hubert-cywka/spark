@@ -18,13 +18,7 @@ export class UsersSubscriber {
         const { account } = payload;
 
         try {
-            await this.usersService.create({
-                id: account.id,
-                email: account.email,
-                lastName: account.lastName,
-                firstName: account.firstName,
-                isActivated: false,
-            });
+            await this.usersService.create(account);
         } catch (e) {
             whenError(e).is(EntityConflictError).throwRpcException("User already exists.").elseRethrow();
         }

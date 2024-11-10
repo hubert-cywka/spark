@@ -1,7 +1,7 @@
-import type { Account } from "@/modules/identity/account/models/Account.model";
+import { AccountRegisteredEventPayload } from "@/common/events";
 
 export const IAuthPublisherServiceToken = Symbol("IAuthPublisherServiceToken");
 
 export interface IAuthPublisherService {
-    onAccountRegistered(account: { lastName: string; firstName: string } & Account): void;
+    onAccountRegistered(payload: AccountRegisteredEventPayload): void;
 }

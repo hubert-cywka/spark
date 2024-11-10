@@ -25,7 +25,6 @@ import { ManagedAccountProvider } from "@/modules/identity/authentication/types/
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants/connectionName";
 
 @Injectable()
-// TODO: OIDC Rename to CredentialsBasedAccountService, apply same change for other things
 export class ManagedAccountService implements IManagedAccountService {
     private readonly logger = new Logger(ManagedAccountService.name);
 
