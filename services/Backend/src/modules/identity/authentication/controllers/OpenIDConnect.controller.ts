@@ -45,6 +45,7 @@ import { type ExternalIdentity } from "@/modules/identity/authentication/types/O
 @Controller("oauth")
 export class OpenIDConnectController {
     private readonly refreshTokenCookieMaxAge: number;
+    private readonly clientAuthHandlerUrl: string;
 
     public constructor(
         @Inject(IGoogleOIDCProviderServiceToken)
@@ -56,6 +57,9 @@ export class OpenIDConnectController {
         private configService: ConfigService
     ) {
         this.refreshTokenCookieMaxAge = configService.getOrThrow<number>("modules.auth.refreshToken.expirationTimeInSeconds") * 1000;
+        const clientAuthHandlerPage = configService.getOrThrow<string>("client.url.googleAuthHandlerPage");
+        const clientAppUrl = configService.getOrThrow<string>("client.url.base");
+        this.clientAuthHandlerUrl = clientAppUrl.concat(clientAuthHandlerPage);
     }
 
     @HttpCode(HttpStatus.FOUND)
@@ -76,19 +80,18 @@ export class OpenIDConnectController {
         @Cookies(OIDC_STATE_COOKIE_NAME) storedState: string,
         @Cookies(OIDC_CODE_VERIFIER_COOKIE_NAME) storedCodeVerifier: string
     ) {
-        if (
-            !this.googleOIDCProvider.validateAuthorizationResponse({
-                code,
-                state,
-                storedCodeVerifier,
-                storedState,
-            })
-        ) {
+        const isAuthResponseValid = this.googleOIDCProvider.validateAuthorizationResponse({
+            code,
+            state,
+            storedCodeVerifier,
+            storedState,
+        });
+
+        if (!isAuthResponseValid) {
             throw new BadRequestException();
         }
 
-        // TODO: OIDC
-        const redirectUrl = new URL("https://honest-champion-lioness.ngrok-free.app/");
+        const redirectUrl = new URL(this.clientAuthHandlerUrl);
 
         try {
             const externalIdentity = await this.googleOIDCProvider.getIdentity(code, storedCodeVerifier);

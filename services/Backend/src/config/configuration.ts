@@ -1,6 +1,14 @@
 export const AppConfig = () => ({
-    appUrl: process.env.APP_URL,
     port: parseInt(process.env.PORT ?? ""),
+
+    client: {
+        url: {
+            base: process.env.CLIENT_URL_BASE,
+            accountActivationPage: process.env.CLIENT_ACCOUNT_ACTIVATION_PAGE,
+            forgotPasswordPage: process.env.CLIENT_FORGOT_PASSWORD_PAGE,
+            googleAuthHandlerPage: process.env.CLIENT_GOOGLE_AUTH_HANDLER_PAGE,
+        },
+    },
 
     cookies: {
         secret: process.env.COOKIES_SECRET,

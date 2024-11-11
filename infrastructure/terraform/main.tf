@@ -21,9 +21,12 @@ resource "kubernetes_config_map" "app_config" {
         DATABASE_USERNAME                                   = var.DATABASE_USERNAME
         DATABASE_PASSWORD                                   = var.DATABASE_PASSWORD
 
-        APP_URL                                             = var.APP_URL
+        CLIENT_URL_BASE                                     = var.CLIENT_URL_BASE
+        CLIENT_GOOGLE_AUTH_HANDLER_PAGE                     = var.CLIENT_GOOGLE_AUTH_HANDLER_PAGE
+        CLIENT_FORGOT_PASSWORD_PAGE                         = var.CLIENT_FORGOT_PASSWORD_PAGE
+        CLIENT_ACCOUNT_ACTIVATION_PAGE                      = var.CLIENT_ACCOUNT_ACTIVATION_PAGE
 
-        PUBSUB_PORT                                          = var.PUBSUB_PORT
+        PUBSUB_PORT                                         = var.PUBSUB_PORT
 
         BACKEND_PORT                                        = var.BACKEND_PORT
         JWT_SIGNING_SECRET                                  = var.JWT_SIGNING_SECRET
@@ -41,6 +44,7 @@ resource "kubernetes_config_map" "app_config" {
 
         GATEWAY_PORT                                        = var.GATEWAY_PORT
         GATEWAY_ALLOWED_ORIGINS                             = var.GATEWAY_ALLOWED_ORIGINS
+        GATEWAY_URL                                         = var.GATEWAY_URL
 
         MAIL_SENDER_PORT                                    = var.MAIL_SENDER_PORT
         MAIL_SENDER_NAME                                    = var.MAIL_SENDER_NAME

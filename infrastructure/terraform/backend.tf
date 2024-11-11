@@ -35,8 +35,20 @@ resource "kubernetes_deployment" "backend" {
                     }
 
                     env {
-                        name  = "APP_URL"
-                        value = var.APP_URL
+                        name  = "CLIENT_URL_BASE"
+                        value = var.CLIENT_URL_BASE
+                    }
+                    env {
+                        name  = "CLIENT_ACCOUNT_ACTIVATION_PAGE"
+                        value = var.CLIENT_ACCOUNT_ACTIVATION_PAGE
+                    }
+                    env {
+                        name  = "CLIENT_FORGOT_PASSWORD_PAGE"
+                        value = var.CLIENT_FORGOT_PASSWORD_PAGE
+                    }
+                    env {
+                        name  = "CLIENT_GOOGLE_AUTH_HANDLER_PAGE"
+                        value = var.CLIENT_GOOGLE_AUTH_HANDLER_PAGE
                     }
 
                     env {

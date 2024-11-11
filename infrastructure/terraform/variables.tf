@@ -10,7 +10,19 @@ variable "DATABASE_PASSWORD" {
     type        = string
 }
 
-variable "APP_URL" {
+variable "CLIENT_URL_BASE" {
+    type        = string
+}
+
+variable "CLIENT_ACCOUNT_ACTIVATION_PAGE" {
+    type        = string
+}
+
+variable "CLIENT_FORGOT_PASSWORD_PAGE" {
+    type        = string
+}
+
+variable "CLIENT_GOOGLE_AUTH_HANDLER_PAGE" {
     type        = string
 }
 
@@ -28,6 +40,10 @@ variable "FRONTEND_PORT" {
 
 variable "GATEWAY_PORT" {
     type        = number
+}
+
+variable "GATEWAY_URL" {
+    type        = string
 }
 
 variable "AUTH_DATABASE_NAME" {

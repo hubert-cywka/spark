@@ -34,7 +34,7 @@ resource "kubernetes_deployment" "frontend" {
                     }
                     env {
                         name  = "NEXT_PUBLIC_API_URL"
-                        value = var.APP_URL
+                        value = var.GATEWAY_URL
                     }
                 }
             }
