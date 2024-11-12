@@ -1,6 +1,6 @@
 import { AccessScope, Identity } from "@/features/auth/types/Identity";
 
-export type Session = {
+export type AuthSession = {
     identity: Identity;
     accessToken: string;
 };
@@ -9,7 +9,7 @@ export type AuthState = (AuthenticatedUserAuthState | UnauthenticatedUserAuthSta
 
 type BaseAuthState = {
     scopes: AccessScope[];
-    storeSession: (session: Session) => void;
+    storeSession: (session: AuthSession) => void;
     endSession: () => void;
 };
 

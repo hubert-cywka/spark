@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import { AuthenticationService } from "@/features/auth/api/authenticationService";
 
-export const useRegister = () => {
+export const useRegisterWithCredentials = () => {
     return useMutation({
         mutationFn: AuthenticationService.register,
     });

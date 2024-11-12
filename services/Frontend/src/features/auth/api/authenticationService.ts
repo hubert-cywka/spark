@@ -1,4 +1,4 @@
-import { AuthenticationResponse, LoginRequestPayload, RegisterRequestPayload } from "@/features/auth/types/authentication";
+import { AuthenticationResponse, LoginRequestPayload, RegisterRequestPayload } from "@/features/auth/types/Authentication";
 import { apiClient } from "@/lib/apiClient/apiClient";
 
 const LOGIN_WITH_CREDENTIALS_ENDPOINT = "/auth/login";

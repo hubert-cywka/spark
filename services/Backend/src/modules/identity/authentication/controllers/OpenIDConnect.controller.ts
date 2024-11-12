@@ -42,10 +42,11 @@ import {
 import { FederatedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
 
-@Controller("oauth")
+@Controller("open-id-connect")
 export class OpenIDConnectController {
     private readonly refreshTokenCookieMaxAge: number;
-    private readonly clientAuthHandlerUrl: string;
+    private readonly clientOIDCLoginPageUrl: string;
+    private readonly clientOIDCRegisterPageUrl: string;
 
     public constructor(
         @Inject(IGoogleOIDCProviderServiceToken)
@@ -56,19 +57,22 @@ export class OpenIDConnectController {
         private authService: IAuthenticationService,
         private configService: ConfigService
     ) {
-        this.refreshTokenCookieMaxAge = configService.getOrThrow<number>("modules.auth.refreshToken.expirationTimeInSeconds") * 1000;
-        const clientAuthHandlerPage = configService.getOrThrow<string>("client.url.googleAuthHandlerPage");
+        const oidcLoginPage = configService.getOrThrow<string>("client.url.oidcLoginPage");
+        const oidcRegisterPage = configService.getOrThrow<string>("client.url.oidcRegisterPage");
         const clientAppUrl = configService.getOrThrow<string>("client.url.base");
-        this.clientAuthHandlerUrl = clientAppUrl.concat(clientAuthHandlerPage);
+
+        this.refreshTokenCookieMaxAge = configService.getOrThrow<number>("modules.auth.refreshToken.expirationTimeInSeconds") * 1000;
+        this.clientOIDCLoginPageUrl = clientAppUrl.concat(oidcLoginPage);
+        this.clientOIDCRegisterPageUrl = clientAppUrl.concat(oidcRegisterPage);
     }
 
-    @HttpCode(HttpStatus.FOUND)
+    @HttpCode(HttpStatus.OK)
     @Get("login/google")
     async loginWithGoogle(@Res() response: Response) {
         const { url, state, codeVerifier } = this.googleOIDCProvider.startAuthorizationProcess();
         response.cookie(OIDC_CODE_VERIFIER_COOKIE_NAME, codeVerifier, this.getOIDCCookieOptions());
         response.cookie(OIDC_STATE_COOKIE_NAME, state, this.getOIDCCookieOptions());
-        return response.redirect(url.toString());
+        return response.send({ url: url.toString() });
     }
 
     @HttpCode(HttpStatus.OK)
@@ -91,11 +95,12 @@ export class OpenIDConnectController {
             throw new BadRequestException();
         }
 
-        const redirectUrl = new URL(this.clientAuthHandlerUrl);
+        const loginRedirectUrl = new URL(this.clientOIDCLoginPageUrl);
+        let externalIdentity: ExternalIdentity | null = null;
 
         try {
-            const externalIdentity = await this.googleOIDCProvider.getIdentity(code, storedCodeVerifier);
-            response.cookie(OIDC_GOOGLE_EXTERNAL_IDENTITY, JSON.stringify(externalIdentity), this.getOIDCCookieOptions());
+            externalIdentity = await this.googleOIDCProvider.getIdentity(code, storedCodeVerifier);
+            response.cookie(OIDC_GOOGLE_EXTERNAL_IDENTITY, JSON.stringify(externalIdentity), this.getExternalIdentityCookieOptions());
 
             const { accessToken, refreshToken, account } = await this.authService.loginWithExternalIdentity(
                 externalIdentity,
@@ -105,25 +110,25 @@ export class OpenIDConnectController {
             const cookieOptions = this.refreshTokenCookieStrategy.getCookieOptions(this.refreshTokenCookieMaxAge);
             response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieOptions);
 
-            redirectUrl.searchParams.set("accessToken", accessToken);
-            redirectUrl.searchParams.set("account", encodeURIComponent(JSON.stringify(account)));
+            loginRedirectUrl.searchParams.set("accessToken", accessToken);
+            loginRedirectUrl.searchParams.set("account", encodeURIComponent(JSON.stringify(account)));
         } catch (err) {
-            redirectUrl.searchParams.set("error", "1");
-
-            if (err instanceof EntityNotFoundError) {
-                redirectUrl.searchParams.set("askForRegistration", "1");
+            if (err instanceof EntityNotFoundError && !!externalIdentity) {
+                return response.redirect(this.clientOIDCRegisterPageUrl);
             }
+
+            loginRedirectUrl.searchParams.set("error", "1"); // TODO: OIDC Notify user about this error
         }
 
-        return response.redirect(redirectUrl.toString());
+        return response.redirect(loginRedirectUrl.toString());
     }
 
     @HttpCode(HttpStatus.CREATED)
-    @Post("register/google")
+    @Post("register")
     async registerWithGoogle(
         @Res() response: Response,
         @Body() dto: RegisterViaOIDCDto,
-        @Cookies(OIDC_GOOGLE_EXTERNAL_IDENTITY) externalIdentityString: string
+        @Cookies({ name: OIDC_GOOGLE_EXTERNAL_IDENTITY, signed: true }) externalIdentityString: string
     ) {
         if (!externalIdentityString || !dto.hasAcceptedTermsAndConditions) {
             throw new BadRequestException();
@@ -131,7 +136,7 @@ export class OpenIDConnectController {
 
         const externalIdentity: ExternalIdentity = JSON.parse(externalIdentityString);
 
-        if (this.googleOIDCProvider.validateExternalIdentity(externalIdentity)) {
+        if (!this.googleOIDCProvider.validateExternalIdentity(externalIdentity)) {
             throw new UnauthorizedException();
         }
 
@@ -159,9 +164,21 @@ export class OpenIDConnectController {
             partitioned: true,
             httpOnly: true,
             secure: true,
-            maxAge: 60 * 10 * 1000,
+            maxAge: 60 * 5 * 1000,
             sameSite: "lax",
             path: "/",
+        };
+    }
+
+    private getExternalIdentityCookieOptions(): CookieOptions {
+        return {
+            partitioned: true,
+            httpOnly: true,
+            secure: true,
+            maxAge: 60 * 10 * 1000,
+            sameSite: "strict",
+            path: "/api/open-id-connect/register",
+            signed: true,
         };
     }
 }

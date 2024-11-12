@@ -29,20 +29,25 @@ export const AuthSessionProvider = ({ children }: PropsWithChildren) => {
     }, [onRefreshSuccess, reAuthenticate]);
 
     useEffect(() => {
-        if (!accessToken) {
-            void restoreSession();
+        if (accessToken) {
+            return;
         }
+
+        // TODO: This is a workaround to prevent refreshing the session during OIDC flow. Not ideal, but works.
+        const timeout = setTimeout(restoreSession, 1000);
+        return () => clearTimeout(timeout);
     }, [accessToken, restoreSession]);
 
     useAuthRefreshInterceptor(apiClient, reAuthenticate);
 
-    if (isPending) {
-        return (
-            <Overlay>
-                <Spinner size="3" />
-            </Overlay>
-        );
-    }
-
-    return <>{children}</>;
+    return (
+        <>
+            {isPending && (
+                <Overlay>
+                    <Spinner />
+                </Overlay>
+            )}
+            {children}
+        </>
+    );
 };

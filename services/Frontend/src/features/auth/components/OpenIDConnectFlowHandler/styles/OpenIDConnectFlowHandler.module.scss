@@ -1,0 +1,11 @@
+@use "src/styles/tokens";
+
+.title {
+    margin-bottom: tokens.$spacing-300;
+    color: tokens.$color-success-text-200;
+}
+
+.info {
+    color: tokens.$color-neutral-text-200;
+    margin-bottom: tokens.$spacing-800;
+}

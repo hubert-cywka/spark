@@ -5,7 +5,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { initializeDatabase } from "@/common/utils/initializeDatabase";
 import { logger } from "@/lib/logger";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
-import { RenameEntities1731233063970 } from "@/modules/identity/infrastructure/database/migrations/1731233063970-RenameEntities";
+import { InitDatabase1731437155592 } from "@/modules/identity/infrastructure/database/migrations/1731437155592-InitDatabase";
 
 @Module({
     imports: [
@@ -35,7 +35,7 @@ import { RenameEntities1731233063970 } from "@/modules/identity/infrastructure/d
                     autoLoadEntities: true,
                     migrationsRun: true,
                     synchronize: false,
-                    migrations: [RenameEntities1731233063970],
+                    migrations: [InitDatabase1731437155592],
                 };
             },
             inject: [ConfigService],

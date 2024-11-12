@@ -22,7 +22,9 @@ resource "kubernetes_config_map" "app_config" {
         DATABASE_PASSWORD                                   = var.DATABASE_PASSWORD
 
         CLIENT_URL_BASE                                     = var.CLIENT_URL_BASE
-        CLIENT_GOOGLE_AUTH_HANDLER_PAGE                     = var.CLIENT_GOOGLE_AUTH_HANDLER_PAGE
+        CLIENT_OIDC_LOGIN_PAGE                              = var.CLIENT_OIDC_LOGIN_PAGE
+        CLIENT_OIDC_REGISTER_PAGE                           = var.CLIENT_OIDC_REGISTER_PAGE
+
         CLIENT_FORGOT_PASSWORD_PAGE                         = var.CLIENT_FORGOT_PASSWORD_PAGE
         CLIENT_ACCOUNT_ACTIVATION_PAGE                      = var.CLIENT_ACCOUNT_ACTIVATION_PAGE
 

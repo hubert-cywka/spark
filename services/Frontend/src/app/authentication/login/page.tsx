@@ -6,9 +6,10 @@ import { Anchor } from "@/components/Anchor";
 import { Card } from "@/components/Card";
 import { Divider } from "@/components/Divider";
 import { LoginForm } from "@/features/auth/components/LoginForm";
-import { GoogleOIDCButton } from "@/features/openIDConnect/google/components/GoogleOIDCButton";
+import { GoogleOIDCButton } from "@/features/auth/oidc/providers/google/components/GoogleOIDCButton";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
+// TODO: Prevent displaying some pages under certain conditions
 export default function Page() {
     const t = useTranslate();
 

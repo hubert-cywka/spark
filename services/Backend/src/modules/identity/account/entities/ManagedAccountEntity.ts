@@ -6,7 +6,7 @@ import { ManagedAccountProvider } from "@/modules/identity/authentication/types/
 @ChildEntity("account_managed")
 @Index(["providerId", "providerAccountId"])
 export class ManagedAccountEntity extends BaseAccountEntity {
-    @Column({ type: "enum", enum: ManagedAccountProvider })
+    @Column({ type: "varchar" })
     providerId!: ManagedAccountProvider;
 
     @Column({ type: "varchar" })

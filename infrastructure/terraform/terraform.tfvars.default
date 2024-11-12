@@ -5,7 +5,8 @@ DATABASE_PASSWORD="pgpassword"
 CLIENT_URL_BASE="http://localhost:5000"
 CLIENT_ACCOUNT_ACTIVATION_PAGE="/authentication/activate-account"
 CLIENT_FORGOT_PASSWORD_PAGE="/authentication/reset-password"
-CLIENT_GOOGLE_AUTH_HANDLER_PAGE="/authentication/open-id-connect"
+CLIENT_OIDC_LOGIN_PAGE="/authentication/open-id-connect/login"
+CLIENT_OIDC_REGISTER_PAGE="/authentication/open-id-connect/register"
 
 PUBSUB_PORT=6379
 

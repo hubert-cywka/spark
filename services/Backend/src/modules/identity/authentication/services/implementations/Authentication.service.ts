@@ -96,7 +96,7 @@ export class AuthenticationService implements IAuthenticationService {
     }
 
     public async redeemRefreshToken(refreshToken: string): Promise<AuthenticationResult> {
-        const account = await this.refreshTokenService.redeem(refreshToken);
+        const { account } = await this.refreshTokenService.redeem(refreshToken);
         return await this.createAuthenticationResult(account);
     }
 
@@ -110,8 +110,10 @@ export class AuthenticationService implements IAuthenticationService {
     }
 
     private async generateTokens(account: Account): Promise<{ accessToken: string; refreshToken: string }> {
+        console.log("\n\n", account, "\n\n");
+
         const payload: AccessTokenPayload = {
-            ...account,
+            account,
             ver: CURRENT_JWT_VERSION,
         };
 

@@ -39,7 +39,7 @@ export class RefreshTokenService implements IRefreshTokenService {
 
         const hashedValue = await this.hashToken(token);
         await this.refreshTokenRepository.save({
-            owner: { id: payload.id },
+            owner: { id: payload.account.id },
             hashedValue,
             expiresAt,
         });
@@ -59,7 +59,7 @@ export class RefreshTokenService implements IRefreshTokenService {
                 payload: payload,
                 invalidatedAt: tokenEntity?.invalidatedAt ?? null,
             });
-            await this.invalidateAllByOwnerId(payload.id);
+            await this.invalidateAllByOwnerId(payload.account.id);
             throw new RefreshTokenNotFoundError();
         }
 

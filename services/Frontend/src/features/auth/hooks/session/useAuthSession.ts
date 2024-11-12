@@ -8,6 +8,7 @@ export const useAuthSession = create<AuthState>((set) => ({
     scopes: ["browse_as_unauthenticated"],
     identity: null,
     accessToken: null,
+
     storeSession: ({ accessToken, identity }) => {
         return set(() => ({
             _type: "authenticated",
@@ -16,6 +17,7 @@ export const useAuthSession = create<AuthState>((set) => ({
             accessToken,
         }));
     },
+
     endSession: () => {
         return set(() => ({
             _type: "unauthenticated",

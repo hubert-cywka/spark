@@ -1,4 +1,4 @@
-import { ActivateAccountRequestPayload, RequestActivationTokenRequestPayload } from "@/features/auth/types/authentication";
+import { ActivateAccountRequestPayload, RequestActivationTokenRequestPayload } from "@/features/auth/types/Authentication";
 import { apiClient } from "@/lib/apiClient/apiClient";
 
 const REQUEST_ACTIVATION_TOKEN_ENDPOINT = "/account/activation/request";

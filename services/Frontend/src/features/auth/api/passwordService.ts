@@ -1,4 +1,4 @@
-import { RequestPasswordResetRequestPayload, UpdatePasswordResetRequestPayload } from "@/features/auth/types/authentication";
+import { RequestPasswordResetRequestPayload, UpdatePasswordResetRequestPayload } from "@/features/auth/types/Authentication";
 import { apiClient } from "@/lib/apiClient/apiClient";
 
 const REQUEST_PASSWORD_RESET_ENDPOINT = "/account/password/reset";

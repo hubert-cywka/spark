@@ -22,7 +22,11 @@ variable "CLIENT_FORGOT_PASSWORD_PAGE" {
     type        = string
 }
 
-variable "CLIENT_GOOGLE_AUTH_HANDLER_PAGE" {
+variable "CLIENT_OIDC_LOGIN_PAGE" {
+    type        = string
+}
+
+variable "CLIENT_OIDC_REGISTER_PAGE" {
     type        = string
 }
 

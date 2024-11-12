@@ -47,8 +47,12 @@ resource "kubernetes_deployment" "backend" {
                         value = var.CLIENT_FORGOT_PASSWORD_PAGE
                     }
                     env {
-                        name  = "CLIENT_GOOGLE_AUTH_HANDLER_PAGE"
-                        value = var.CLIENT_GOOGLE_AUTH_HANDLER_PAGE
+                        name  = "CLIENT_OIDC_LOGIN_PAGE"
+                        value = var.CLIENT_OIDC_LOGIN_PAGE
+                    }
+                    env {
+                        name  = "CLIENT_OIDC_REGISTER_PAGE"
+                        value = var.CLIENT_OIDC_REGISTER_PAGE
                     }
 
                     env {

@@ -2,7 +2,8 @@ import type { Account } from "@/modules/identity/account/models/Account.model";
 
 export type AccessTokenPayload = {
     ver: number;
-} & Account;
+    account: Account;
+};
 
 export type AuthenticationResult = {
     accessToken: string;

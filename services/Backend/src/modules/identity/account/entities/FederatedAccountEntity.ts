@@ -6,6 +6,6 @@ import { FederatedAccountProvider } from "@/modules/identity/authentication/type
 @ChildEntity("account_federated")
 @Index(["providerId", "providerAccountId"])
 export class FederatedAccountEntity extends BaseAccountEntity {
-    @Column({ type: "enum", enum: FederatedAccountProvider })
+    @Column({ type: "varchar" })
     providerId!: FederatedAccountProvider;
 }

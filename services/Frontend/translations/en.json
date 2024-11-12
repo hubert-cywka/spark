@@ -7,6 +7,15 @@
                 "serviceUnavailable": "App is temporarily unavailable. Please try again later."
             }
         },
+        "oidc": {
+            "register": {
+                "errors": {
+                    "conflict": "This account already exists. Please try to log in instead.",
+                    "badRequest": "Account information provided by external provider had expired. Try logging in again.",
+                    "unauthorized": "Account information provided by external provider is incomplete. Please try again later or report this issue."
+                }
+            }
+        },
         "authentication": {
             "refresh": {
                 "errors": {
@@ -20,8 +29,8 @@
             },
             "login": {
                 "errors": {
-                    "unauthorized": "We couldn't authenticate you.",
-                    "forbidden": "Your account is not activated"
+                    "unauthorized": "Incorrect credentials.",
+                    "forbidden": "Your account is not activated."
                 }
             },
             "register": {
@@ -84,17 +93,32 @@
             "divider": {
                 "label": "OR"
             },
-            "google": {
-                "button": {
-                    "label": "Sign in with Google"
+            "login": {
+                "redirect": {
+                    "title": "Authenticated",
+                    "info": "You will be redirected soon."
+                },
+                "google": {
+                    "button": {
+                        "label": "Sign in with Google"
+                    }
+                }
+            },
+            "register": {
+                "form": {
+                    "button": {
+                        "label": "Create an account"
+                    },
+                    "header": "Create an account",
+                    "description":  "You need to create an account before signing in. Your provider will handle everything, we just need you to accept our terms and conditions."
                 },
                 "notifications": {
                     "error": {
-                        "title": "Couldn't log in with Google"
+                        "title": "Account not created"
                     },
                     "success": {
                         "body": "We were able to authenticate you.",
-                        "title": "Logged in with Google"
+                        "title": "Account created"
                     }
                 }
             }

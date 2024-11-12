@@ -10,7 +10,7 @@ import styles from "./styles/RegisterForm.module.scss";
 import { Button } from "@/components/Button";
 import { Checkbox } from "@/components/Checkbox";
 import { Field } from "@/components/Input";
-import { useRegister, useRegisterEvents } from "@/features/auth/hooks";
+import { useRegisterWithCredentials, useRegisterWithCredentialsEvents } from "@/features/auth/hooks";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 // TODO: Finish T&C
@@ -18,8 +18,8 @@ export const RegisterForm = () => {
     const t = useTranslate();
 
     const { handleSubmit, control } = useRegisterForm();
-    const { mutateAsync: register, isPending, isSuccess } = useRegister();
-    const { onRegisterError, onRegisterSuccess } = useRegisterEvents();
+    const { mutateAsync: register, isPending, isSuccess } = useRegisterWithCredentials();
+    const { onRegisterError, onRegisterSuccess } = useRegisterWithCredentialsEvents();
 
     const onSubmit = useCallback(
         async (inputs: RegisterFormInputs) => {
