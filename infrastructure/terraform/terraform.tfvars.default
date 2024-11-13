@@ -27,7 +27,7 @@ FRONTEND_PORT=80
 
 GATEWAY_PORT=80
 GATEWAY_ALLOWED_ORIGINS="http://localhost:5100"
-GATEWAY_URL="https://honest-champion-lioness.ngrok-free.app"
+GATEWAY_URL="http://localhost:5000"
 
 MAIL_SENDER_NAME=""
 MAIL_SENDER_USER=""

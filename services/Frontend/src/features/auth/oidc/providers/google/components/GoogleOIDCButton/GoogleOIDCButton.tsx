@@ -4,18 +4,18 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import GoogleLogo from "./assets/google-logo.svg";
-import { useLoginWithGoogle } from "../../hooks/useLoginWithGoogle";
 
 import { Button } from "@/components/Button/Button";
+import { useLoginWithOIDC } from "@/features/auth/hooks/oidc/useLoginWithOIDC";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 export const GoogleOIDCButton = () => {
     const t = useTranslate();
-    const { mutateAsync: getAuthURL, isPending, isSuccess } = useLoginWithGoogle();
     const router = useRouter();
+    const { mutateAsync: getAuthURL, isPending, isSuccess } = useLoginWithOIDC();
 
     const loginWithGoogle = async () => {
-        const { url } = await getAuthURL();
+        const { url } = await getAuthURL("google");
         router.push(url);
     };
 

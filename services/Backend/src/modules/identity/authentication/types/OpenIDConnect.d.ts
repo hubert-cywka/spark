@@ -1,4 +1,6 @@
-export type GoogleAuthorizationMeans = {
+import { FederatedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
+
+export type OIDCAuthorizationMeans = {
     url: URL;
     codeVerifier: string;
     state: string;
@@ -11,7 +13,7 @@ export type GoogleClaims = {
     sub: string;
 };
 
-export type GoogleAuthorizationResponse = {
+export type OIDCAuthorizationResponse = {
     code: string;
     state: string;
     storedState: string;
@@ -23,4 +25,5 @@ export type ExternalIdentity = {
     lastName: string;
     email: string;
     id: string;
+    providerId: FederatedAccountProvider;
 };

@@ -9,7 +9,6 @@ import { AccountAlreadyExistsError } from "@/modules/identity/account/errors/Acc
 import { AccountNotFoundError } from "@/modules/identity/account/errors/AccountNotFound.error";
 import { Account } from "@/modules/identity/account/models/Account.model";
 import { type IFederatedAccountService } from "@/modules/identity/account/services/interfaces/IFederatedAccount.service";
-import { FederatedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
@@ -22,26 +21,44 @@ export class FederatedAccountService implements IFederatedAccountService {
         private readonly repository: Repository<FederatedAccountEntity>
     ) {}
 
-    public async findByExternalIdentity(identity: ExternalIdentity, providerId: FederatedAccountProvider): Promise<Account> {
+    public async findByExternalIdentity(identity: ExternalIdentity): Promise<Account> {
         const account = await this.repository.findOne({
-            where: { providerAccountId: identity.id, providerId },
+            where: {
+                providerAccountId: identity.id,
+                providerId: identity.providerId,
+            },
         });
 
         if (!account) {
-            this.logger.warn({ providerAccountId: identity.id, providerId }, "Account not found.");
+            this.logger.warn(
+                {
+                    providerAccountId: identity.id,
+                    providerId: identity.providerId,
+                },
+                "Account not found."
+            );
             throw new AccountNotFoundError();
         }
 
         return this.mapEntityToModel(account);
     }
 
-    public async createAccountWithExternalIdentity(identity: ExternalIdentity, providerId: FederatedAccountProvider): Promise<Account> {
+    public async createAccountWithExternalIdentity(identity: ExternalIdentity): Promise<Account> {
         const existingAccount = await this.repository.findOne({
-            where: { providerAccountId: identity.id, providerId },
+            where: {
+                providerAccountId: identity.id,
+                providerId: identity.providerId,
+            },
         });
 
         if (existingAccount) {
-            this.logger.warn({ providerAccountId: identity.id, providerId }, "Account already exists.");
+            this.logger.warn(
+                {
+                    providerAccountId: identity.id,
+                    providerId: identity.providerId,
+                },
+                "Account already exists."
+            );
             throw new AccountAlreadyExistsError();
         }
 
@@ -49,7 +66,7 @@ export class FederatedAccountService implements IFederatedAccountService {
 
         const accountEntity = this.repository.create({
             email: identity.email,
-            providerId,
+            providerId: identity.providerId,
             providerAccountId: identity.id,
             activatedAt: now,
             termsAndConditionsAcceptedAt: now,

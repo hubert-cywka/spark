@@ -1,16 +1,40 @@
-import { type ExecutionContext, createParamDecorator } from "@nestjs/common";
+import { type ExecutionContext, BadRequestException, createParamDecorator } from "@nestjs/common";
+import { type ClassConstructor, plainToInstance } from "class-transformer";
+import { validate } from "class-validator";
 
 type CookieDecoratorOptions =
     | {
           name: string;
           signed?: boolean;
+          parseAs?: ClassConstructor<unknown>;
       }
     | string;
 
-export const Cookies = createParamDecorator((data: CookieDecoratorOptions, ctx: ExecutionContext) => {
+export const Cookie = createParamDecorator(async (options: CookieDecoratorOptions, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    const storage = typeof data !== "string" && data?.signed ? "signedCookies" : "cookies";
-    const cookieName = typeof data === "string" ? data : data.name;
 
-    return data ? request[storage]?.[cookieName] : request[storage];
+    if (typeof options === "string") {
+        return request.cookies[options];
+    }
+
+    const storage = options?.signed ? "signedCookies" : "cookies";
+    const cookieData = request[storage]?.[options.name];
+
+    if (!options.parseAs) {
+        return cookieData;
+    }
+
+    try {
+        const parsedCookie = JSON.parse(cookieData);
+        const instance = plainToInstance(options.parseAs, parsedCookie);
+        const errors = await validate(instance as object);
+
+        if (errors.length) {
+            throw new Error(errors.toString());
+        }
+
+        return instance;
+    } catch (err) {
+        throw new BadRequestException(`Cookie '${options.name}' is invalid.`);
+    }
 });

@@ -7,6 +7,8 @@ import {
     HttpCode,
     HttpStatus,
     Inject,
+    Param,
+    ParseEnumPipe,
     Post,
     Query,
     Res,
@@ -16,25 +18,26 @@ import { ConfigService } from "@nestjs/config";
 import { OAuth2RequestError } from "arctic";
 import { type CookieOptions, type Response } from "express";
 
-import { Cookies } from "@/common/decorators/Cookie.decorator";
+import { Cookie } from "@/common/decorators/Cookie.decorator";
 import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
 import {
     OIDC_CODE_VERIFIER_COOKIE_NAME,
-    OIDC_GOOGLE_EXTERNAL_IDENTITY,
+    OIDC_EXTERNAL_IDENTITY,
     OIDC_STATE_COOKIE_NAME,
     REFRESH_TOKEN_COOKIE_NAME,
 } from "@/modules/identity/authentication/constants";
+import { ExternalIdentityDto } from "@/modules/identity/authentication/dto/ExternalIdentity.dto";
 import type { RegisterViaOIDCDto } from "@/modules/identity/authentication/dto/RegisterViaOIDC.dto";
 import {
     type IAuthenticationService,
     IAuthenticationServiceToken,
 } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
 import {
-    type IGoogleOIDCProviderService,
-    IGoogleOIDCProviderServiceToken,
-} from "@/modules/identity/authentication/services/interfaces/IGoogleOIDCProvider.service";
+    type IOIDCProviderFactory,
+    IOIDCProviderFactoryToken,
+} from "@/modules/identity/authentication/services/interfaces/IOIDCProvider.factory";
 import {
     type IRefreshTokenCookieStrategy,
     IRefreshTokenCookieStrategyToken,
@@ -49,8 +52,8 @@ export class OpenIDConnectController {
     private readonly clientOIDCRegisterPageUrl: string;
 
     public constructor(
-        @Inject(IGoogleOIDCProviderServiceToken)
-        private googleOIDCProvider: IGoogleOIDCProviderService,
+        @Inject(IOIDCProviderFactoryToken)
+        private oidcProviderFactory: IOIDCProviderFactory,
         @Inject(IRefreshTokenCookieStrategyToken)
         private refreshTokenCookieStrategy: IRefreshTokenCookieStrategy,
         @Inject(IAuthenticationServiceToken)
@@ -67,24 +70,33 @@ export class OpenIDConnectController {
     }
 
     @HttpCode(HttpStatus.OK)
-    @Get("login/google")
-    async loginWithGoogle(@Res() response: Response) {
-        const { url, state, codeVerifier } = this.googleOIDCProvider.startAuthorizationProcess();
+    @Get("login/:providerId")
+    async login(
+        @Res() response: Response,
+        @Param("providerId", new ParseEnumPipe(FederatedAccountProvider))
+        providerId: FederatedAccountProvider
+    ) {
+        const provider = this.oidcProviderFactory.create(providerId);
+        const { url, state, codeVerifier } = provider.startAuthorizationProcess();
+
         response.cookie(OIDC_CODE_VERIFIER_COOKIE_NAME, codeVerifier, this.getOIDCCookieOptions());
         response.cookie(OIDC_STATE_COOKIE_NAME, state, this.getOIDCCookieOptions());
         return response.send({ url: url.toString() });
     }
 
     @HttpCode(HttpStatus.OK)
-    @Get("login/google/callback")
-    async loginWithGoogleCallback(
+    @Get("login/:providerId/callback")
+    async loginCallback(
         @Res() response: Response,
+        @Param("providerId", new ParseEnumPipe(FederatedAccountProvider))
+        providerId: FederatedAccountProvider,
         @Query("code") code: string,
         @Query("state") state: string,
-        @Cookies(OIDC_STATE_COOKIE_NAME) storedState: string,
-        @Cookies(OIDC_CODE_VERIFIER_COOKIE_NAME) storedCodeVerifier: string
+        @Cookie(OIDC_STATE_COOKIE_NAME) storedState: string,
+        @Cookie(OIDC_CODE_VERIFIER_COOKIE_NAME) storedCodeVerifier: string
     ) {
-        const isAuthResponseValid = this.googleOIDCProvider.validateAuthorizationResponse({
+        const provider = this.oidcProviderFactory.create(providerId);
+        const isAuthResponseValid = provider.validateAuthorizationResponse({
             code,
             state,
             storedCodeVerifier,
@@ -99,17 +111,13 @@ export class OpenIDConnectController {
         let externalIdentity: ExternalIdentity | null = null;
 
         try {
-            externalIdentity = await this.googleOIDCProvider.getIdentity(code, storedCodeVerifier);
-            response.cookie(OIDC_GOOGLE_EXTERNAL_IDENTITY, JSON.stringify(externalIdentity), this.getExternalIdentityCookieOptions());
+            externalIdentity = await provider.getIdentity(code, storedCodeVerifier);
+            response.cookie(OIDC_EXTERNAL_IDENTITY, JSON.stringify(externalIdentity), this.getExternalIdentityCookieOptions());
 
-            const { accessToken, refreshToken, account } = await this.authService.loginWithExternalIdentity(
-                externalIdentity,
-                FederatedAccountProvider.GOOGLE
-            );
-
+            const { accessToken, refreshToken, account } = await this.authService.loginWithExternalIdentity(externalIdentity);
             const cookieOptions = this.refreshTokenCookieStrategy.getCookieOptions(this.refreshTokenCookieMaxAge);
-            response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieOptions);
 
+            response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieOptions);
             loginRedirectUrl.searchParams.set("accessToken", accessToken);
             loginRedirectUrl.searchParams.set("account", encodeURIComponent(JSON.stringify(account)));
         } catch (err) {
@@ -125,28 +133,26 @@ export class OpenIDConnectController {
 
     @HttpCode(HttpStatus.CREATED)
     @Post("register")
-    async registerWithGoogle(
+    async registerWithOIDC(
         @Res() response: Response,
         @Body() dto: RegisterViaOIDCDto,
-        @Cookies({ name: OIDC_GOOGLE_EXTERNAL_IDENTITY, signed: true }) externalIdentityString: string
+        @Cookie({
+            name: OIDC_EXTERNAL_IDENTITY,
+            signed: true,
+            parseAs: ExternalIdentityDto,
+        })
+        externalIdentity: ExternalIdentityDto
     ) {
-        if (!externalIdentityString || !dto.hasAcceptedTermsAndConditions) {
-            throw new BadRequestException();
-        }
+        const provider = this.oidcProviderFactory.create(externalIdentity.providerId);
 
-        const externalIdentity: ExternalIdentity = JSON.parse(externalIdentityString);
-
-        if (!this.googleOIDCProvider.validateExternalIdentity(externalIdentity)) {
+        if (!provider.validateExternalIdentity(externalIdentity)) {
             throw new UnauthorizedException();
         }
 
         try {
-            const { accessToken, refreshToken, account } = await this.authService.registerWithExternalIdentity(
-                externalIdentity,
-                FederatedAccountProvider.GOOGLE
-            );
-
+            const { accessToken, refreshToken, account } = await this.authService.registerWithExternalIdentity(externalIdentity);
             const cookieOptions = this.refreshTokenCookieStrategy.getCookieOptions(this.refreshTokenCookieMaxAge);
+
             response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieOptions);
             return response.send({ ...account, accessToken });
         } catch (err) {

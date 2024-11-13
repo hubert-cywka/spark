@@ -26,11 +26,11 @@ import { OpenIDConnectController } from "@/modules/identity/authentication/contr
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
 import { AuthenticationService } from "@/modules/identity/authentication/services/implementations/Authentication.service";
 import { AuthPublisherService } from "@/modules/identity/authentication/services/implementations/AuthPublisher.service";
-import { GoogleOIDCProviderService } from "@/modules/identity/authentication/services/implementations/GoogleOIDCProvider.service";
+import { OIDCProviderFactory } from "@/modules/identity/authentication/services/implementations/OIDCProvider.factory";
 import { RefreshTokenService } from "@/modules/identity/authentication/services/implementations/RefreshToken.service";
 import { IAuthenticationServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
 import { IAuthPublisherServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthPublisher.service";
-import { IGoogleOIDCProviderServiceToken } from "@/modules/identity/authentication/services/interfaces/IGoogleOIDCProvider.service";
+import { IOIDCProviderFactoryToken } from "@/modules/identity/authentication/services/interfaces/IOIDCProvider.factory";
 import { IRefreshTokenServiceToken } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
 import { AccessTokenStrategy } from "@/modules/identity/authentication/strategies/passport/AccessToken.strategy";
 import { IRefreshTokenCookieStrategyToken } from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
@@ -65,8 +65,8 @@ import { DatabaseModule } from "@/modules/identity/infrastructure/database/Datab
             useClass: AuthenticationService,
         },
         {
-            provide: IGoogleOIDCProviderServiceToken,
-            useClass: GoogleOIDCProviderService,
+            provide: IOIDCProviderFactoryToken,
+            useClass: OIDCProviderFactory,
         },
         {
             provide: IAuthPublisherServiceToken,

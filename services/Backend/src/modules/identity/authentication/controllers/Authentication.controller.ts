@@ -13,7 +13,7 @@ import {
 import { ConfigService } from "@nestjs/config";
 import { type Response } from "express";
 
-import { Cookies } from "@/common/decorators/Cookie.decorator";
+import { Cookie } from "@/common/decorators/Cookie.decorator";
 import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
@@ -75,7 +75,7 @@ export class AuthenticationController {
 
     @HttpCode(HttpStatus.OK)
     @Post("refresh")
-    async refresh(@Res() response: Response, @Cookies(REFRESH_TOKEN_COOKIE_NAME) token: string) {
+    async refresh(@Res() response: Response, @Cookie(REFRESH_TOKEN_COOKIE_NAME) token: string) {
         if (!token) {
             throw new UnauthorizedException();
         }
@@ -93,7 +93,7 @@ export class AuthenticationController {
 
     @HttpCode(HttpStatus.OK)
     @Post("logout")
-    async logout(@Res() response: Response, @Cookies(REFRESH_TOKEN_COOKIE_NAME) token: string) {
+    async logout(@Res() response: Response, @Cookie(REFRESH_TOKEN_COOKIE_NAME) token: string) {
         if (!token) {
             throw new UnauthorizedException();
         }

@@ -1,34 +1,32 @@
-import type { OnModuleInit } from "@nestjs/common";
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { decodeIdToken, generateCodeVerifier, generateState, Google } from "arctic";
 
-import { type IGoogleOIDCProviderService } from "@/modules/identity/authentication/services/interfaces/IGoogleOIDCProvider.service";
+import { type IOIDCProviderService } from "@/modules/identity/authentication/services/interfaces/IOIDCProvider.service";
+import { FederatedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
 import type {
     ExternalIdentity,
-    GoogleAuthorizationMeans,
-    GoogleAuthorizationResponse,
     GoogleClaims,
+    OIDCAuthorizationMeans,
+    OIDCAuthorizationResponse,
 } from "@/modules/identity/authentication/types/OpenIDConnect";
 
 @Injectable()
-export class GoogleOIDCProviderService implements IGoogleOIDCProviderService, OnModuleInit {
+export class GoogleOIDCProviderService implements IOIDCProviderService {
     private readonly logger: Logger;
-    private provider!: Google;
+    private provider: Google;
 
     constructor(private configService: ConfigService) {
-        this.logger = new Logger(GoogleOIDCProviderService.name);
-    }
-
-    async onModuleInit() {
         const clientId = this.configService.getOrThrow<string>("modules.auth.oidc.google.clientId");
         const clientSecret = this.configService.getOrThrow<string>("modules.auth.oidc.google.clientSecret");
         const redirectUrl = this.configService.getOrThrow<string>("modules.auth.oidc.google.redirectUrl");
 
+        this.logger = new Logger(GoogleOIDCProviderService.name);
+        this.provider = new Google(clientId, clientSecret, redirectUrl);
         this.provider = new Google(clientId, clientSecret, redirectUrl);
     }
 
-    public startAuthorizationProcess(): GoogleAuthorizationMeans {
+    public startAuthorizationProcess(): OIDCAuthorizationMeans {
         const scopes = ["openid", "profile", "email"];
         const state = generateState();
         const codeVerifier = generateCodeVerifier();
@@ -37,7 +35,7 @@ export class GoogleOIDCProviderService implements IGoogleOIDCProviderService, On
         return { state, codeVerifier, url };
     }
 
-    public validateAuthorizationResponse({ code, storedState, state, storedCodeVerifier }: GoogleAuthorizationResponse): boolean {
+    public validateAuthorizationResponse({ code, storedState, state, storedCodeVerifier }: OIDCAuthorizationResponse): boolean {
         return !!code && !!storedState && state === storedState && !!storedCodeVerifier;
     }
 
@@ -53,6 +51,7 @@ export class GoogleOIDCProviderService implements IGoogleOIDCProviderService, On
             lastName: claims.family_name,
             email: claims.email,
             id: claims.sub,
+            providerId: FederatedAccountProvider.GOOGLE,
         };
     }
 }
