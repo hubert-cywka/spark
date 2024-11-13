@@ -4,8 +4,9 @@ import styles from "@/app/authentication/shared/styles/Authentication.module.scs
 import "server-only";
 
 import { OpenIDConnectFlowHandler } from "@/features/auth/components/OpenIDConnectFlowHandler";
+import { onlyAsUnauthenticated } from "@/features/auth/hoc/withAuthorization";
 
-export default function Page() {
+function Page() {
     return (
         <div className={styles.container}>
             <Suspense>
@@ -14,3 +15,5 @@ export default function Page() {
         </div>
     );
 }
+
+export default onlyAsUnauthenticated(Page);

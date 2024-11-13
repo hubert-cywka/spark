@@ -6,12 +6,13 @@ import { Anchor } from "@/components/Anchor";
 import { Card } from "@/components/Card";
 import { ResetPasswordForm } from "@/features/auth/components/ResetPasswordForm";
 import { UpdatePasswordForm } from "@/features/auth/components/UpdatePasswordForm";
+import { onlyAsUnauthenticated } from "@/features/auth/hoc/withAuthorization";
 import { getTranslationsAsync } from "@/lib/i18n/hooks/useTranslate";
 import { PageSearchParams } from "@/types/Page";
 
 type ResetPasswordPageProps = { searchParams: PageSearchParams };
 
-export default async function Page({ searchParams }: ResetPasswordPageProps) {
+async function Page({ searchParams }: ResetPasswordPageProps) {
     const { token } = await searchParams;
     const t = await getTranslationsAsync();
 
@@ -42,3 +43,5 @@ export default async function Page({ searchParams }: ResetPasswordPageProps) {
         </div>
     );
 }
+
+export default onlyAsUnauthenticated(Page);
