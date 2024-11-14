@@ -2,7 +2,9 @@ import { configDotenv } from "dotenv";
 import { DataSource } from "typeorm";
 
 import { AppConfig } from "@/config/configuration";
-import { AccountEntity } from "@/modules/identity/account/entities/AccountEntity";
+import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccountEntity";
+import { FederatedAccountEntity } from "@/modules/identity/account/entities/FederatedAccountEntity";
+import { ManagedAccountEntity } from "@/modules/identity/account/entities/ManagedAccountEntity";
 import { SingleUseTokenEntity } from "@/modules/identity/account/entities/SingleUseTokenEntity";
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
 
@@ -20,6 +22,6 @@ export const dataSource = new DataSource({
     synchronize: false,
     dropSchema: false,
     migrationsRun: false,
-    entities: [AccountEntity, RefreshTokenEntity, SingleUseTokenEntity],
+    entities: [RefreshTokenEntity, SingleUseTokenEntity, FederatedAccountEntity, ManagedAccountEntity, BaseAccountEntity],
     migrations: [],
 });

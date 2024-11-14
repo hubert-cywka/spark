@@ -1,16 +1,14 @@
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
-import { RedisOptions, Transport } from "@nestjs/microservices";
-import { NestExpressApplication } from "@nestjs/platform-express";
+import type { RedisOptions } from "@nestjs/microservices";
+import { Transport } from "@nestjs/microservices";
+import type { NestExpressApplication } from "@nestjs/platform-express";
 import cookieParser from "cookie-parser";
 import { Logger } from "nestjs-pino";
 
 import { AppModule } from "@/App.module";
 import { AppConfig } from "@/config/configuration";
 import { logger } from "@/lib/logger";
-import { ModuleWithHotReload } from "@/types/hmr";
-
-declare const module: ModuleWithHotReload;
 
 async function bootstrap() {
     const config = new ConfigService(AppConfig());
@@ -19,8 +17,9 @@ async function bootstrap() {
     });
 
     app.useLogger(app.get(Logger));
+    app.setGlobalPrefix("api");
 
-    app.use(cookieParser());
+    app.use(cookieParser(config.getOrThrow<string>("cookies.secret")));
     app.set("trust proxy", true);
 
     app.connectMicroservice<RedisOptions>({
@@ -33,11 +32,6 @@ async function bootstrap() {
 
     await app.startAllMicroservices();
     await app.listen(config.getOrThrow<number>("port"));
-
-    if (module.hot) {
-        module.hot.accept();
-        module.hot.dispose(() => app.close());
-    }
 }
 
 void bootstrap();

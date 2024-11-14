@@ -8,9 +8,10 @@ import { Anchor } from "@/components/Anchor";
 import { Card } from "@/components/Card";
 import { AccountActivationHandler } from "@/features/auth/components/AccountActivationHandler";
 import { RequestActivationLinkForm } from "@/features/auth/components/RequestActivationLinkForm";
+import { onlyAsUnauthenticated } from "@/features/auth/hoc/withAuthorization";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
-export default function Page() {
+function Page() {
     const t = useTranslate();
 
     return (
@@ -28,3 +29,5 @@ export default function Page() {
         </div>
     );
 }
+
+export default onlyAsUnauthenticated(Page);

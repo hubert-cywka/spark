@@ -8,6 +8,7 @@ export type AccountRegisteredEventPayload = {
         email: string;
         lastName: string;
         firstName: string;
+        isActivated: boolean;
     };
 };
 

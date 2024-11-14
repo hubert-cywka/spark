@@ -4,14 +4,14 @@ import { EventPattern, Payload } from "@nestjs/microservices";
 
 import { whenError } from "@/common/errors/whenError";
 import {
-    AccountActivatedEventPayload,
-    AccountActivationTokenRequestedEventPayload,
-    AccountPasswordUpdatedEventPayload,
-    AccountRequestedPasswordResetEventPayload,
+    type AccountActivatedEventPayload,
+    type AccountActivationTokenRequestedEventPayload,
+    type AccountPasswordUpdatedEventPayload,
+    type AccountRequestedPasswordResetEventPayload,
     EventTopics,
 } from "@/common/events";
 import { EmailDeliveryError } from "@/modules/mail/errors/EmailDelivery.error";
-import { IMailerService, IMailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
+import { type IMailerService, IMailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
 import { PasswordResetRequestedEmail } from "@/modules/mail/templates/PasswordResetRequestedEmail";
 import { PasswordUpdatedEmail } from "@/modules/mail/templates/PasswordUpdatedEmail";
 import { UserActivatedEmail } from "@/modules/mail/templates/UserActivatedEmail";
@@ -27,7 +27,7 @@ export class UserSubscriber {
         private configService: ConfigService
     ) {
         this.logger = new Logger(UserSubscriber.name);
-        this.appUrl = configService.getOrThrow<string>("appUrl");
+        this.appUrl = configService.getOrThrow<string>("client.url.base");
     }
 
     @EventPattern(EventTopics.account.activationTokenRequested)
@@ -35,7 +35,9 @@ export class UserSubscriber {
         this.logger.log({ topic: EventTopics.account.activationTokenRequested, payload }, "Received an event.");
 
         try {
-            await this.mailer.send(payload.email, new UserActivationEmail(payload.activationToken, this.appUrl));
+            const accountActivationPage = this.configService.getOrThrow<string>("client.url.accountActivationPage");
+            const pageUrl = this.appUrl.concat(accountActivationPage);
+            await this.mailer.send(payload.email, new UserActivationEmail(payload.activationToken, pageUrl));
         } catch (e) {
             whenError(e).is(EmailDeliveryError).throwRpcException("Email couldn't be delivered.").elseRethrow();
         }
@@ -46,7 +48,9 @@ export class UserSubscriber {
         this.logger.log({ topic: EventTopics.account.passwordResetRequested, payload }, "Received an event.");
 
         try {
-            await this.mailer.send(payload.email, new PasswordResetRequestedEmail(payload.passwordResetToken, this.appUrl));
+            const forgotPasswordPage = this.configService.getOrThrow<string>("client.url.forgotPasswordPage");
+            const pageUrl = this.appUrl.concat(forgotPasswordPage);
+            await this.mailer.send(payload.email, new PasswordResetRequestedEmail(payload.passwordResetToken, pageUrl));
         } catch (e) {
             whenError(e).is(EmailDeliveryError).throwRpcException("Email couldn't be delivered.").elseRethrow();
         }

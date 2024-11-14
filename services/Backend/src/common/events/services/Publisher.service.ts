@@ -1,9 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { ClientProxy } from "@nestjs/microservices";
+import type { ClientProxy } from "@nestjs/microservices";
 
-import { IPublisherService } from "./IPublisher.service";
+import { type IPublisherService } from "./IPublisher.service";
 
-import { DomainEvent } from "@/common/events/types/DomainEvent";
+import type { DomainEvent } from "@/common/events/types/DomainEvent";
 
 @Injectable()
 export class PublisherService implements IPublisherService {

@@ -1,4 +1,4 @@
-import { SingleUseTokenRedeemData } from "@/modules/identity/account/types/SingleUseToken";
+import type { SingleUseTokenRedeemData } from "@/modules/identity/account/types/SingleUseToken";
 
 export const ISingleUseTokenServiceToken = Symbol("ISingleUseTokenServiceToken");
 

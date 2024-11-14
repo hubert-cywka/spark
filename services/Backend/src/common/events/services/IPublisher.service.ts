@@ -1,4 +1,4 @@
-import { DomainEvent } from "@/common/events/types/DomainEvent";
+import type { DomainEvent } from "@/common/events/types/DomainEvent";
 
 export const IPublisherServiceToken = Symbol("IPublisherServiceToken");
 

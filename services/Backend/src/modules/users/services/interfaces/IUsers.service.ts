@@ -1,4 +1,4 @@
-import { User } from "@/modules/users/models/User.model";
+import { type User } from "@/modules/users/models/User.model";
 
 export const IUsersServiceToken = Symbol("IUsersServiceToken");
 

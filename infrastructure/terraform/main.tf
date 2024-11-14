@@ -21,9 +21,14 @@ resource "kubernetes_config_map" "app_config" {
         DATABASE_USERNAME                                   = var.DATABASE_USERNAME
         DATABASE_PASSWORD                                   = var.DATABASE_PASSWORD
 
-        APP_URL                                             = var.APP_URL
+        CLIENT_URL_BASE                                     = var.CLIENT_URL_BASE
+        CLIENT_OIDC_LOGIN_PAGE                              = var.CLIENT_OIDC_LOGIN_PAGE
+        CLIENT_OIDC_REGISTER_PAGE                           = var.CLIENT_OIDC_REGISTER_PAGE
 
-        PUBSUB_PORT                                          = var.PUBSUB_PORT
+        CLIENT_FORGOT_PASSWORD_PAGE                         = var.CLIENT_FORGOT_PASSWORD_PAGE
+        CLIENT_ACCOUNT_ACTIVATION_PAGE                      = var.CLIENT_ACCOUNT_ACTIVATION_PAGE
+
+        PUBSUB_PORT                                         = var.PUBSUB_PORT
 
         BACKEND_PORT                                        = var.BACKEND_PORT
         JWT_SIGNING_SECRET                                  = var.JWT_SIGNING_SECRET
@@ -38,10 +43,10 @@ resource "kubernetes_config_map" "app_config" {
         USERS_DATABASE_NAME                                 = var.USERS_DATABASE_NAME
 
         FRONTEND_PORT                                       = var.FRONTEND_PORT
-        FRONTEND_STATIC_FILES_DIR                           = var.FRONTEND_STATIC_FILES_DIR
 
         GATEWAY_PORT                                        = var.GATEWAY_PORT
         GATEWAY_ALLOWED_ORIGINS                             = var.GATEWAY_ALLOWED_ORIGINS
+        GATEWAY_URL                                         = var.GATEWAY_URL
 
         MAIL_SENDER_PORT                                    = var.MAIL_SENDER_PORT
         MAIL_SENDER_NAME                                    = var.MAIL_SENDER_NAME
@@ -49,6 +54,12 @@ resource "kubernetes_config_map" "app_config" {
         MAIL_SENDER_PASSWORD                                = var.MAIL_SENDER_PASSWORD
         MAIL_SENDER_PORT                                    = var.MAIL_SENDER_PORT
         MAIL_DEBUG_MODE                                     = var.MAIL_DEBUG_MODE
+
+        GOOGLE_CLIENT_ID                                    = var.GOOGLE_CLIENT_ID
+        GOOGLE_CLIENT_SECRET                                = var.GOOGLE_CLIENT_SECRET
+        GOOGLE_OIDC_REDIRECT_URL                            = var.GOOGLE_OIDC_REDIRECT_URL
+
+        COOKIES_SECRET                                      = var.COOKIES_SECRET
     }
 }
 

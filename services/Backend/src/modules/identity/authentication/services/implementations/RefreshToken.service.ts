@@ -4,13 +4,14 @@ import { JwtService } from "@nestjs/jwt";
 import { Cron } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import dayjs from "dayjs";
-import { IsNull, LessThanOrEqual, Repository } from "typeorm";
+import type { Repository } from "typeorm";
+import { IsNull, LessThanOrEqual } from "typeorm";
 
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
 import { RefreshTokenNotFoundError } from "@/modules/identity/authentication/errors/RefreshTokenNotFound.error";
-import { IRefreshTokenService } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
-import { AccessTokenPayload } from "@/modules/identity/authentication/types/accessTokenPayload";
-import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants/connectionName";
+import { type IRefreshTokenService } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
+import { type AccessTokenPayload } from "@/modules/identity/authentication/types/Authentication";
+import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
 @Injectable()
 export class RefreshTokenService implements IRefreshTokenService {
@@ -38,7 +39,7 @@ export class RefreshTokenService implements IRefreshTokenService {
 
         const hashedValue = await this.hashToken(token);
         await this.refreshTokenRepository.save({
-            owner: { id: payload.id },
+            owner: { id: payload.account.id },
             hashedValue,
             expiresAt,
         });
@@ -58,7 +59,7 @@ export class RefreshTokenService implements IRefreshTokenService {
                 payload: payload,
                 invalidatedAt: tokenEntity?.invalidatedAt ?? null,
             });
-            await this.invalidateAllByOwnerId(payload.id);
+            await this.invalidateAllByOwnerId(payload.account.id);
             throw new RefreshTokenNotFoundError();
         }
 

@@ -1,10 +1,10 @@
 import { Controller, Inject, Logger } from "@nestjs/common";
 import { EventPattern, Payload } from "@nestjs/microservices";
 
-import { EntityConflictError } from "@/common/errors/EntityConflictError";
+import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { whenError } from "@/common/errors/whenError";
-import { AccountActivatedEventPayload, AccountRegisteredEventPayload, EventTopics } from "@/common/events";
-import { IUsersService, IUsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
+import { type AccountActivatedEventPayload, type AccountRegisteredEventPayload, EventTopics } from "@/common/events";
+import { type IUsersService, IUsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
 
 @Controller()
 export class UsersSubscriber {
@@ -18,13 +18,7 @@ export class UsersSubscriber {
         const { account } = payload;
 
         try {
-            await this.usersService.create({
-                id: account.id,
-                email: account.email,
-                lastName: account.lastName,
-                firstName: account.firstName,
-                isActivated: false,
-            });
+            await this.usersService.create(account);
         } catch (e) {
             whenError(e).is(EntityConflictError).throwRpcException("User already exists.").elseRethrow();
         }

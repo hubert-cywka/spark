@@ -1,7 +1,7 @@
-import { Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { type Relation, Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
-import { AccountEntity } from "@/modules/identity/account/entities/AccountEntity";
-import { SingleUseTokenType } from "@/modules/identity/account/types/SingleUseToken";
+import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccountEntity";
+import type { SingleUseTokenType } from "@/modules/identity/account/types/SingleUseToken";
 
 @Entity("single_use_token")
 @Index(["value"])
@@ -27,6 +27,6 @@ export class SingleUseTokenEntity {
     @Column({ type: "timestamp", nullable: true })
     usedAt!: Date | null;
 
-    @ManyToOne((type) => AccountEntity, (user) => user.singleUseTokens)
-    owner!: AccountEntity;
+    @ManyToOne((type) => BaseAccountEntity, (account) => account.singleUseTokens)
+    owner!: Relation<BaseAccountEntity>;
 }

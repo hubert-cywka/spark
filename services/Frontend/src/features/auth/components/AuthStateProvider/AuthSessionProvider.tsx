@@ -2,8 +2,6 @@
 
 import { PropsWithChildren, useCallback, useEffect } from "react";
 
-import { Overlay } from "@/components/Overlay";
-import { Spinner } from "@/components/Spinner";
 import { useAuthRefreshInterceptor } from "@/features/auth/components/AuthStateProvider/hooks/useAuthRefreshInterceptor";
 import { useAuthSession, useRefreshSession, useRefreshSessionEvents } from "@/features/auth/hooks";
 import { apiClient } from "@/lib/apiClient/apiClient";
@@ -11,7 +9,7 @@ import { logger } from "@/lib/logger/logger";
 
 export const AuthSessionProvider = ({ children }: PropsWithChildren) => {
     const { onRefreshSuccess } = useRefreshSessionEvents();
-    const { mutateAsync: refreshSession, isPending } = useRefreshSession();
+    const { mutateAsync: refreshSession } = useRefreshSession();
     const accessToken = useAuthSession((state) => state.accessToken);
 
     const reAuthenticate = useCallback(async (): Promise<string> => {
@@ -29,20 +27,16 @@ export const AuthSessionProvider = ({ children }: PropsWithChildren) => {
     }, [onRefreshSuccess, reAuthenticate]);
 
     useEffect(() => {
-        if (!accessToken) {
-            void restoreSession();
+        if (accessToken) {
+            return;
         }
+
+        // TODO: This is a workaround to prevent refreshing the session during OIDC flow. It's okay for now, but it should be fixed anyway.
+        const timeout = setTimeout(restoreSession, 1000);
+        return () => clearTimeout(timeout);
     }, [accessToken, restoreSession]);
 
     useAuthRefreshInterceptor(apiClient, reAuthenticate);
-
-    if (isPending) {
-        return (
-            <Overlay>
-                <Spinner size="3" />
-            </Overlay>
-        );
-    }
 
     return <>{children}</>;
 };

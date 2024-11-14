@@ -1,4 +1,4 @@
-import { EntityConflictError } from "@/common/errors/EntityConflictError";
+import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 
 export class AccountAlreadyExistsError extends EntityConflictError {
     constructor() {

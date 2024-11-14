@@ -1,4 +1,4 @@
-import { IEmailTemplate } from "@/modules/mail/templates/IEmailTemplate";
+import { type IEmailTemplate } from "@/modules/mail/templates/IEmailTemplate";
 
 export class PasswordUpdatedEmail implements IEmailTemplate {
     public constructor(private appUrl: string) {}

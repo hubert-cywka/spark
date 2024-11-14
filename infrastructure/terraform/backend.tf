@@ -35,8 +35,24 @@ resource "kubernetes_deployment" "backend" {
                     }
 
                     env {
-                        name  = "APP_URL"
-                        value = var.APP_URL
+                        name  = "CLIENT_URL_BASE"
+                        value = var.CLIENT_URL_BASE
+                    }
+                    env {
+                        name  = "CLIENT_ACCOUNT_ACTIVATION_PAGE"
+                        value = var.CLIENT_ACCOUNT_ACTIVATION_PAGE
+                    }
+                    env {
+                        name  = "CLIENT_FORGOT_PASSWORD_PAGE"
+                        value = var.CLIENT_FORGOT_PASSWORD_PAGE
+                    }
+                    env {
+                        name  = "CLIENT_OIDC_LOGIN_PAGE"
+                        value = var.CLIENT_OIDC_LOGIN_PAGE
+                    }
+                    env {
+                        name  = "CLIENT_OIDC_REGISTER_PAGE"
+                        value = var.CLIENT_OIDC_REGISTER_PAGE
                     }
 
                     env {
@@ -123,6 +139,11 @@ resource "kubernetes_deployment" "backend" {
                     env {
                         name  = "MAIL_DEBUG_MODE"
                         value = var.MAIL_DEBUG_MODE
+                    }
+
+                    env {
+                        name  = "COOKIES_SECRET"
+                        value = var.COOKIES_SECRET
                     }
                 }
             }

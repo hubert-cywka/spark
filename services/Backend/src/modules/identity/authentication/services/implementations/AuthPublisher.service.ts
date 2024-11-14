@@ -1,16 +1,16 @@
-import { Inject } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
-import { AccountRegisteredEvent, IPublisherServiceToken, PublisherService } from "@/common/events";
-import { Account } from "@/modules/identity/account/models/Account.model";
-import { IAuthPublisherService } from "@/modules/identity/authentication/services/interfaces/IAuthPublisher.service";
+import { AccountRegisteredEvent, AccountRegisteredEventPayload, IPublisherServiceToken, PublisherService } from "@/common/events";
+import { type IAuthPublisherService } from "@/modules/identity/authentication/services/interfaces/IAuthPublisher.service";
 
+@Injectable()
 export class AuthPublisherService implements IAuthPublisherService {
     public constructor(
         @Inject(IPublisherServiceToken)
         private publisher: PublisherService
     ) {}
 
-    public onAccountRegistered(account: { lastName: string; firstName: string } & Account): void {
-        this.publisher.publish(new AccountRegisteredEvent({ account }));
+    public onAccountRegistered(payload: AccountRegisteredEventPayload): void {
+        this.publisher.publish(new AccountRegisteredEvent(payload));
     }
 }

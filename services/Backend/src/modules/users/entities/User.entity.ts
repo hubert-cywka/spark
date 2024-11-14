@@ -5,7 +5,7 @@ export class UserEntity {
     @PrimaryColumn({ type: "varchar" })
     id!: string;
 
-    @Column({ type: "varchar", unique: true })
+    @Column({ type: "varchar" })
     email!: string;
 
     @Column({ type: "varchar" })

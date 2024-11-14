@@ -1,0 +1,87 @@
+import { Injectable, Logger } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { plainToInstance } from "class-transformer";
+import dayjs from "dayjs";
+import type { Repository } from "typeorm";
+
+import { FederatedAccountEntity } from "@/modules/identity/account/entities/FederatedAccountEntity";
+import { AccountAlreadyExistsError } from "@/modules/identity/account/errors/AccountAlreadyExists.error";
+import { AccountNotFoundError } from "@/modules/identity/account/errors/AccountNotFound.error";
+import { Account } from "@/modules/identity/account/models/Account.model";
+import { type IFederatedAccountService } from "@/modules/identity/account/services/interfaces/IFederatedAccount.service";
+import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
+import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
+
+@Injectable()
+export class FederatedAccountService implements IFederatedAccountService {
+    private readonly logger = new Logger(FederatedAccountService.name);
+
+    constructor(
+        @InjectRepository(FederatedAccountEntity, IDENTITY_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<FederatedAccountEntity>
+    ) {}
+
+    public async findByExternalIdentity(identity: ExternalIdentity): Promise<Account> {
+        const account = await this.repository.findOne({
+            where: {
+                providerAccountId: identity.id,
+                providerId: identity.providerId,
+            },
+        });
+
+        if (!account) {
+            this.logger.warn(
+                {
+                    providerAccountId: identity.id,
+                    providerId: identity.providerId,
+                },
+                "Account not found."
+            );
+            throw new AccountNotFoundError();
+        }
+
+        return this.mapEntityToModel(account);
+    }
+
+    public async createAccountWithExternalIdentity(identity: ExternalIdentity): Promise<Account> {
+        const existingAccount = await this.repository.findOne({
+            where: {
+                providerAccountId: identity.id,
+                providerId: identity.providerId,
+            },
+        });
+
+        if (existingAccount) {
+            this.logger.warn(
+                {
+                    providerAccountId: identity.id,
+                    providerId: identity.providerId,
+                },
+                "Account already exists."
+            );
+            throw new AccountAlreadyExistsError();
+        }
+
+        const now = dayjs();
+
+        const accountEntity = this.repository.create({
+            email: identity.email,
+            providerId: identity.providerId,
+            providerAccountId: identity.id,
+            activatedAt: now,
+            termsAndConditionsAcceptedAt: now,
+        });
+
+        const account = await this.repository.save(accountEntity);
+        return this.mapEntityToModel(account);
+    }
+
+    private mapEntityToModel(entity: FederatedAccountEntity): Account {
+        return plainToInstance(Account, {
+            id: entity.id,
+            email: entity.email,
+            providerId: entity.providerId,
+            providerAccountId: entity.providerAccountId,
+        });
+    }
+}

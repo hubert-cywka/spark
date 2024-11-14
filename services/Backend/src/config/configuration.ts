@@ -1,6 +1,19 @@
 export const AppConfig = () => ({
-    appUrl: process.env.APP_URL,
     port: parseInt(process.env.PORT ?? ""),
+
+    client: {
+        url: {
+            base: process.env.CLIENT_URL_BASE,
+            accountActivationPage: process.env.CLIENT_ACCOUNT_ACTIVATION_PAGE,
+            forgotPasswordPage: process.env.CLIENT_FORGOT_PASSWORD_PAGE,
+            oidcLoginPage: process.env.CLIENT_OIDC_LOGIN_PAGE,
+            oidcRegisterPage: process.env.CLIENT_OIDC_REGISTER_PAGE,
+        },
+    },
+
+    cookies: {
+        secret: process.env.COOKIES_SECRET,
+    },
 
     pubsub: {
         host: process.env.PUBSUB_HOST,
@@ -48,6 +61,13 @@ export const AppConfig = () => ({
             throttle: {
                 ttl: parseInt(process.env.AUTH_THROTTLE_TTL_IN_MS ?? ""),
                 limit: parseInt(process.env.AUTH_THROTTLE_LIMIT ?? ""),
+            },
+            oidc: {
+                google: {
+                    clientId: process.env.GOOGLE_CLIENT_ID,
+                    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+                    redirectUrl: process.env.GOOGLE_OIDC_REDIRECT_URL,
+                },
             },
         },
     },

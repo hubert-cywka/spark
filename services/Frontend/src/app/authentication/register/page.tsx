@@ -5,9 +5,10 @@ import { AppRoute } from "@/app/appRoute";
 import { Anchor } from "@/components/Anchor";
 import { Card } from "@/components/Card";
 import { RegisterForm } from "@/features/auth/components/RegisterForm";
+import { onlyAsUnauthenticated } from "@/features/auth/hoc/withAuthorization";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
-export default function Page() {
+function Page() {
     const t = useTranslate();
 
     return (
@@ -23,3 +24,5 @@ export default function Page() {
         </div>
     );
 }
+
+export default onlyAsUnauthenticated(Page);

@@ -4,54 +4,65 @@ import {
     Controller,
     ForbiddenException,
     HttpCode,
+    HttpStatus,
     Inject,
     Post,
     Res,
     UnauthorizedException,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { CookieOptions, Response } from "express";
+import { type Response } from "express";
 
-import { Cookies } from "@/common/decorators/Cookie.decorator";
-import { EntityConflictError } from "@/common/errors/EntityConflictError";
+import { Cookie } from "@/common/decorators/Cookie.decorator";
+import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
 import { REFRESH_TOKEN_COOKIE_NAME } from "@/modules/identity/authentication/constants";
-import { LoginDto } from "@/modules/identity/authentication/dto/Login.dto";
-import { RegisterDto } from "@/modules/identity/authentication/dto/Register.dto";
-import { IAuthenticationService, IAuthServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
+import type { LoginDto } from "@/modules/identity/authentication/dto/Login.dto";
+import type { RegisterWithCredentialsDto } from "@/modules/identity/authentication/dto/RegisterWithCredentials.dto";
+import {
+    type IAuthenticationService,
+    IAuthenticationServiceToken,
+} from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
+import {
+    type IRefreshTokenCookieStrategy,
+    IRefreshTokenCookieStrategyToken,
+} from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
 
-@Controller("api/auth")
+@Controller("auth")
 export class AuthenticationController {
     private readonly refreshTokenCookieMaxAge: number;
 
-    constructor(
-        @Inject(IAuthServiceToken) private authService: IAuthenticationService,
+    public constructor(
+        @Inject(IAuthenticationServiceToken)
+        private authService: IAuthenticationService,
+        @Inject(IRefreshTokenCookieStrategyToken)
+        private refreshTokenCookieStrategy: IRefreshTokenCookieStrategy,
         private configService: ConfigService
     ) {
         this.refreshTokenCookieMaxAge = configService.getOrThrow<number>("modules.auth.refreshToken.expirationTimeInSeconds") * 1000;
     }
 
-    @HttpCode(201)
+    @HttpCode(HttpStatus.CREATED)
     @Post("register")
-    async register(@Body() dto: RegisterDto) {
+    async registerWithCredentials(@Body() dto: RegisterWithCredentialsDto) {
         try {
-            return await this.authService.register(dto);
+            return await this.authService.registerWithCredentials(dto);
         } catch (err) {
             whenError(err).is(EntityConflictError).throw(new ConflictException()).elseRethrow();
         }
     }
 
-    @HttpCode(200)
+    @HttpCode(HttpStatus.OK)
     @Post("login")
     async login(@Body() dto: LoginDto, @Res() response: Response) {
         try {
-            const { accessToken, refreshToken } = await this.authService.login(dto);
-            this.setRefreshToken(response, refreshToken);
+            const { accessToken, refreshToken, account } = await this.authService.loginWithCredentials(dto);
 
-            const identity = await this.authService.getIdentityFromAccessToken(accessToken);
-            return response.send({ ...identity, accessToken });
+            const cookieOptions = this.refreshTokenCookieStrategy.getCookieOptions(this.refreshTokenCookieMaxAge);
+            response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieOptions);
+            return response.send({ ...account, accessToken });
         } catch (err) {
             whenError(err)
                 .is(EntityNotFoundError)
@@ -62,55 +73,37 @@ export class AuthenticationController {
         }
     }
 
-    @HttpCode(200)
+    @HttpCode(HttpStatus.OK)
     @Post("refresh")
-    async refresh(@Res() response: Response, @Cookies(REFRESH_TOKEN_COOKIE_NAME) token: string) {
+    async refresh(@Res() response: Response, @Cookie(REFRESH_TOKEN_COOKIE_NAME) token: string) {
         if (!token) {
             throw new UnauthorizedException();
         }
 
         try {
-            const { accessToken, refreshToken } = await this.authService.redeemRefreshToken(token);
-            this.setRefreshToken(response, refreshToken);
+            const { accessToken, refreshToken, account } = await this.authService.redeemRefreshToken(token);
 
-            const identity = await this.authService.getIdentityFromAccessToken(accessToken);
-            return response.send({ ...identity, accessToken });
+            const cookieOptions = this.refreshTokenCookieStrategy.getCookieOptions(this.refreshTokenCookieMaxAge);
+            response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieOptions);
+            return response.send({ ...account, accessToken });
         } catch (err) {
             whenError(err).is(EntityNotFoundError).throw(new UnauthorizedException()).elseRethrow();
         }
     }
 
-    @HttpCode(200)
+    @HttpCode(HttpStatus.OK)
     @Post("logout")
-    async logout(@Res() response: Response, @Cookies(REFRESH_TOKEN_COOKIE_NAME) token: string) {
+    async logout(@Res() response: Response, @Cookie(REFRESH_TOKEN_COOKIE_NAME) token: string) {
         if (!token) {
             throw new UnauthorizedException();
         }
 
-        this.clearRefreshToken(response);
         await this.authService.logout(token);
-        return response.send();
-    }
-
-    private setRefreshToken(response: Response, refreshToken: string) {
-        response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, this.getRefreshTokenCookieOptions());
-    }
-
-    private clearRefreshToken(response: Response) {
-        response.cookie(REFRESH_TOKEN_COOKIE_NAME, "", {
-            ...this.getRefreshTokenCookieOptions(),
+        const cookieOptions = {
+            ...this.refreshTokenCookieStrategy.getCookieOptions(this.refreshTokenCookieMaxAge),
             maxAge: 0,
-        });
-    }
-
-    private getRefreshTokenCookieOptions(): CookieOptions {
-        return {
-            partitioned: true,
-            httpOnly: true,
-            secure: true,
-            maxAge: this.refreshTokenCookieMaxAge,
-            sameSite: "strict",
-            path: "/api/auth",
         };
+        response.cookie(REFRESH_TOKEN_COOKIE_NAME, "", cookieOptions);
+        return response.send();
     }
 }

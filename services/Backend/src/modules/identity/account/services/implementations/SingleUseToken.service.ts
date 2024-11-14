@@ -1,19 +1,19 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import dayjs from "dayjs";
-import { IsNull, Repository } from "typeorm";
+import type { Repository } from "typeorm";
+import { IsNull } from "typeorm";
 
 import { SingleUseTokenEntity } from "@/modules/identity/account/entities/SingleUseTokenEntity";
 import { TokenInvalidError } from "@/modules/identity/account/errors/TokenInvalid.error";
 import { TokenNotFoundError } from "@/modules/identity/account/errors/TokenNotFound.error";
-import { AccountService } from "@/modules/identity/account/services/implementations/Account.service";
-import { ISingleUseTokenService } from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
-import { SingleUseTokenRedeemData, SingleUseTokenType } from "@/modules/identity/account/types/SingleUseToken";
-import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants/connectionName";
+import { type ISingleUseTokenService } from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
+import { type SingleUseTokenRedeemData, type SingleUseTokenType } from "@/modules/identity/account/types/SingleUseToken";
+import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
 @Injectable()
 export class SingleUseTokenService implements ISingleUseTokenService {
-    private readonly logger = new Logger(AccountService.name);
+    private readonly logger = new Logger(SingleUseTokenService.name);
     private readonly EXPIRATION_TIME = 15 * 60;
 
     constructor(

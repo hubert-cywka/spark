@@ -6,6 +6,7 @@ import { initializeDatabase } from "@/common/utils/initializeDatabase";
 import { logger } from "@/lib/logger";
 import { USERS_MODULE_DATA_SOURCE } from "@/modules/users/infrastructure/database/constants/connectionName";
 import { InitDatabase1730555362764 } from "@/modules/users/infrastructure/database/migrations/1730555362764-InitDatabase";
+import { AllowDuplicateEmails1731437638511 } from "@/modules/users/infrastructure/database/migrations/1731437638511-AllowDuplicateEmails";
 
 @Module({
     imports: [
@@ -35,7 +36,7 @@ import { InitDatabase1730555362764 } from "@/modules/users/infrastructure/databa
                     autoLoadEntities: true,
                     migrationsRun: true,
                     synchronize: false,
-                    migrations: [InitDatabase1730555362764],
+                    migrations: [InitDatabase1730555362764, AllowDuplicateEmails1731437638511],
                 };
             },
             inject: [ConfigService],

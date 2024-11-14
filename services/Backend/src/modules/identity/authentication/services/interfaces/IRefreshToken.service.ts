@@ -1,4 +1,4 @@
-import { AccessTokenPayload } from "@/modules/identity/authentication/types/accessTokenPayload";
+import { type AccessTokenPayload } from "@/modules/identity/authentication/types/Authentication";
 
 export const IRefreshTokenServiceToken = Symbol("IRefreshTokenService");
 

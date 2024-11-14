@@ -1,13 +1,13 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import type { Repository } from "typeorm";
 
 import { UserEntity } from "@/modules/users/entities/User.entity";
 import { UserAlreadyExistsError } from "@/modules/users/errors/UserAlreadyExists.error";
 import { UserNotFoundError } from "@/modules/users/errors/UserNotFound.error";
 import { USERS_MODULE_DATA_SOURCE } from "@/modules/users/infrastructure/database/constants/connectionName";
-import { User } from "@/modules/users/models/User.model";
-import { IUsersService } from "@/modules/users/services/interfaces/IUsers.service";
+import { type User } from "@/modules/users/models/User.model";
+import { type IUsersService } from "@/modules/users/services/interfaces/IUsers.service";
 
 @Injectable()
 export class UsersService implements IUsersService {

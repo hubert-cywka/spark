@@ -10,7 +10,23 @@ variable "DATABASE_PASSWORD" {
     type        = string
 }
 
-variable "APP_URL" {
+variable "CLIENT_URL_BASE" {
+    type        = string
+}
+
+variable "CLIENT_ACCOUNT_ACTIVATION_PAGE" {
+    type        = string
+}
+
+variable "CLIENT_FORGOT_PASSWORD_PAGE" {
+    type        = string
+}
+
+variable "CLIENT_OIDC_LOGIN_PAGE" {
+    type        = string
+}
+
+variable "CLIENT_OIDC_REGISTER_PAGE" {
     type        = string
 }
 
@@ -28,6 +44,10 @@ variable "FRONTEND_PORT" {
 
 variable "GATEWAY_PORT" {
     type        = number
+}
+
+variable "GATEWAY_URL" {
+    type        = string
 }
 
 variable "AUTH_DATABASE_NAME" {
@@ -62,10 +82,6 @@ variable "USERS_DATABASE_NAME" {
     type        = string
 }
 
-variable "FRONTEND_STATIC_FILES_DIR" {
-    type        = string
-}
-
 variable "GATEWAY_ALLOWED_ORIGINS" {
     type        = string
 }
@@ -91,5 +107,21 @@ variable "MAIL_SENDER_PORT" {
 }
 
 variable "MAIL_DEBUG_MODE" {
+    type        = string
+}
+
+variable "GOOGLE_CLIENT_ID" {
+    type        = string
+}
+
+variable "GOOGLE_CLIENT_SECRET" {
+    type        = string
+}
+
+variable "GOOGLE_OIDC_REDIRECT_URL" {
+    type        = string
+}
+
+variable "COOKIES_SECRET" {
     type        = string
 }
