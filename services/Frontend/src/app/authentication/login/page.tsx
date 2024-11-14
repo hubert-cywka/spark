@@ -10,7 +10,6 @@ import { onlyAsUnauthenticated } from "@/features/auth/hoc/withAuthorization";
 import { GoogleOIDCButton } from "@/features/auth/oidc/providers/google/components/GoogleOIDCButton";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
-// TODO: Prevent displaying some pages under certain conditions
 function Page() {
     const t = useTranslate();
 

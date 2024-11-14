@@ -17,7 +17,7 @@ export const Cookie = createParamDecorator(async (options: CookieDecoratorOption
         return request.cookies[options];
     }
 
-    const storage = options?.signed ? "signedCookies" : "cookies";
+    const storage = options.signed ? "signedCookies" : "cookies";
     const cookieData = request[storage]?.[options.name];
 
     if (!options.parseAs) {

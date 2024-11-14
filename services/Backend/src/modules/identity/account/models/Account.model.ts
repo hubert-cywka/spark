@@ -1,13 +1,14 @@
-import { IsEmail, IsEnum, IsString } from "class-validator";
+import { IsEmail, IsString } from "class-validator";
 
+import { FederatedAccountEntity } from "@/modules/identity/account/entities/FederatedAccountEntity";
 import { ManagedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
 
 export class Account {
     @IsString()
     id!: string;
 
-    @IsEnum(ManagedAccountProvider)
-    providerId!: ManagedAccountProvider;
+    @IsString()
+    providerId!: ManagedAccountProvider | FederatedAccountEntity;
 
     @IsString()
     providerAccountId!: string;

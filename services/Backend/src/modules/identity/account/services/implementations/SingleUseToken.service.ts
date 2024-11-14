@@ -7,14 +7,13 @@ import { IsNull } from "typeorm";
 import { SingleUseTokenEntity } from "@/modules/identity/account/entities/SingleUseTokenEntity";
 import { TokenInvalidError } from "@/modules/identity/account/errors/TokenInvalid.error";
 import { TokenNotFoundError } from "@/modules/identity/account/errors/TokenNotFound.error";
-import { ManagedAccountService } from "@/modules/identity/account/services/implementations/ManagedAccount.service";
 import { type ISingleUseTokenService } from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
 import { type SingleUseTokenRedeemData, type SingleUseTokenType } from "@/modules/identity/account/types/SingleUseToken";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
 @Injectable()
 export class SingleUseTokenService implements ISingleUseTokenService {
-    private readonly logger = new Logger(ManagedAccountService.name);
+    private readonly logger = new Logger(SingleUseTokenService.name);
     private readonly EXPIRATION_TIME = 15 * 60;
 
     constructor(
