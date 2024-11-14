@@ -1,5 +1,11 @@
 version: "3.4"
 services:
+    tunnel:
+        image: ngrok/ngrok:latest
+        restart: always
+        networks:
+            - services_network
+
     db:
         image: postgres:17.0
         restart: always

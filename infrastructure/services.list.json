@@ -1,4 +1,8 @@
 {
+    "tunnel": {
+        "port": 4040,
+        "detachable": false
+    },
     "db": {
         "port": 5432,
         "detachable": false

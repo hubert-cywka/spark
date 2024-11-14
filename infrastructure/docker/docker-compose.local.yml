@@ -1,5 +1,15 @@
 version: "3.4"
 services:
+    tunnel:
+        command:
+            - "http"
+            - "--url=${NGROK_DOMAIN}"
+            - "http://host.docker.internal:${GATEWAY_PORT}"
+        environment:
+            NGROK_AUTHTOKEN: ${NGROK_AUTH_TOKEN}
+        ports:
+            - "${NGROK_PORT}:4040"
+
     db:
         environment:
             POSTGRES_USER: ${DATABASE_USERNAME}
