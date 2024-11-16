@@ -13,10 +13,10 @@ COPY tsconfig.json tsconfig.json
 COPY tsconfig.build.json tsconfig.build.json
 
 FROM preparation AS pre-build-dev
-RUN echo "Stage 'pre-build-dev' is empty. Skipping..."
+ENV NODE_ENV=development
 
 FROM preparation AS pre-build-ci
-RUN echo "Stage 'pre-build-ci' is empty. Skipping..."
+ENV NODE_ENV=production
 
 FROM pre-build-${ENV} AS build
 WORKDIR /app
