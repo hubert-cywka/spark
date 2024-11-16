@@ -11,7 +11,7 @@ import { IdentityModule } from "@/modules/identity/Identity.module";
 import { MailModule } from "@/modules/mail/Mail.module";
 import { UsersModule } from "@/modules/users/Users.module";
 
-// TODO: Use csrf-csrf package to protect from CSRF if 'SameSite: Strict' attribute of cookies is not enough
+// TODO: Do we need additional protection against CSRF? Are SameSite=Strict cookies + in-memory access tokens good enough?
 @Module({
     imports: [
         ConfigModule.forRoot({

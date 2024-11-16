@@ -8,7 +8,7 @@ import { type IUsersService, IUsersServiceToken } from "@/modules/users/services
 export class UsersResolver {
     constructor(@Inject(IUsersServiceToken) private usersService: IUsersService) {}
 
-    // TODO: Add data loader
+    // TODO: Remove GraphQL completely, REST will be good enough
     @Query((returns) => UserObject)
     async user(@Args("id", { type: () => String }) id: string): Promise<UserObject> {
         return await this.usersService.findOneById(id);
