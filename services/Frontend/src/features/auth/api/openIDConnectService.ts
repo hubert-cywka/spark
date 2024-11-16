@@ -12,7 +12,7 @@ export class OpenIDConnectService {
     }
 
     public static async login(provider: "google") {
-        const response = await apiClient.get<{ url: string }>(`/${LOGIN_WITH_OIDC_ENDPOINT_BASE}/${provider}`);
+        const response = await apiClient.get<{ url: string }>(`${LOGIN_WITH_OIDC_ENDPOINT_BASE}/${provider}`);
         return response.data;
     }
 }
