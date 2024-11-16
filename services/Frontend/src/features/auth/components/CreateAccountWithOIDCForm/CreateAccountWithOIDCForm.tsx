@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/Checkbox";
 import {
     CreateAccountWithOIDCFormInputs,
     useCreateAccountWithOIDCForm,
-} from "@/features/auth/components/OIDCRegisterForm/hooks/useCreateAccountWithOIDCForm";
+} from "@/features/auth/components/CreateAccountWithOIDCForm/hooks/useCreateAccountWithOIDCForm";
 import { useCreateAccountWithOIDC } from "@/features/auth/hooks/oidc/useCreateAccountWithOIDC";
 import { useCreateAccountWithOIDCEvents } from "@/features/auth/hooks/oidc/useCreateAccountWithOIDCEvents";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";

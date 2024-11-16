@@ -36,7 +36,7 @@ resource "kubernetes_deployment" "db" {
                     }
                     env {
                         name  = "POSTGRES_DB"
-                        value = "db" // TODO
+                        value = "db"
                     }
                     volume_mount {
                         mount_path = "/var/lib/postgresql/data"

@@ -72,7 +72,7 @@ jobs:
             - name: Build Docker image
               working-directory: ${{ inputs.service-directory }}
               run: |
-                  docker build -t ${{ inputs.service-name }} .
+                  docker build -t ${{ inputs.service-name }} --build-arg ENV=ci . 
 
             - name: Tag Docker image
               run: |

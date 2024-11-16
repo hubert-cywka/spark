@@ -2,7 +2,7 @@ import styles from "@/app/authentication/shared/styles/Authentication.module.scs
 import "server-only";
 
 import { Card } from "@/components/Card";
-import { CreateAccountWithOIDCForm } from "@/features/auth/components/OIDCRegisterForm";
+import { CreateAccountWithOIDCForm } from "@/features/auth/components/CreateAccountWithOIDCForm";
 import { onlyAsUnauthenticated } from "@/features/auth/hoc/withAuthorization";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
