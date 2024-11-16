@@ -25,7 +25,7 @@ static_resources:
                               name: local_route
 
                               response_headers_to_remove:
-                                  - X-Powered-ByF
+                                  - X-Powered-By
                               response_headers_to_add:
                                     # CORS
                                   - append_action: OVERWRITE_IF_EXISTS_OR_ADD
