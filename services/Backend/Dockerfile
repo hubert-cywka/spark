@@ -12,6 +12,8 @@ COPY nest-cli.json nest-cli.json
 COPY tsconfig.json tsconfig.json
 COPY tsconfig.build.json tsconfig.build.json
 
+RUN npm ci
+
 FROM preparation AS pre-build-dev
 ENV NODE_ENV=development
 
@@ -20,7 +22,6 @@ ENV NODE_ENV=production
 
 FROM pre-build-${ENV} AS build
 WORKDIR /app
-RUN npm ci
 RUN npm run build
 
 WORKDIR /app
