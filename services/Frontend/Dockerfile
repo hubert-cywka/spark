@@ -1,4 +1,5 @@
 ARG ENV=dev
+# Pass any client-side env variables as arguments as they are required during build-time
 
 FROM node:22.9-alpine AS base
 
