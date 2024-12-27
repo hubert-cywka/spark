@@ -1,14 +1,14 @@
-import { DomainEvent } from "../DomainEvent";
+import { IntegrationEvent } from "../IntegrationEvent";
 
-import { EventTopics } from "@/common/events";
+import { IntegrationEventTopics } from "@/common/events";
 
 export type AccountActivationTokenRequestedEventPayload = {
     activationToken: string;
     email: string;
 };
 
-export class AccountActivationTokenRequestedEvent extends DomainEvent {
+export class AccountActivationTokenRequestedEvent extends IntegrationEvent {
     public constructor(payload: AccountActivationTokenRequestedEventPayload) {
-        super(EventTopics.account.activationTokenRequested, payload);
+        super(IntegrationEventTopics.account.activationTokenRequested, payload);
     }
 }

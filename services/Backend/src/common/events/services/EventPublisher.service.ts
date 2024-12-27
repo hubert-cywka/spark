@@ -1,17 +1,17 @@
 import { Injectable, Logger } from "@nestjs/common";
 import type { ClientProxy } from "@nestjs/microservices";
 
-import { type IPublisherService } from "./IPublisher.service";
+import { type IEventPublisherService } from "./IEventPublisher.service";
 
-import type { DomainEvent } from "@/common/events/types/DomainEvent";
+import type { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 
 @Injectable()
-export class PublisherService implements IPublisherService {
-    private readonly logger = new Logger(PublisherService.name);
+export class EventPublisherService implements IEventPublisherService {
+    private readonly logger = new Logger(EventPublisherService.name);
 
     public constructor(private client: ClientProxy) {}
 
-    public publish(event: DomainEvent): void {
+    public publish(event: IntegrationEvent): void {
         const payload = event.getPayload();
         const topic = event.getTopic();
 

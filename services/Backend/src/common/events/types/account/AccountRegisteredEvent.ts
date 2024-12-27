@@ -1,6 +1,6 @@
-import { DomainEvent } from "../DomainEvent";
+import { IntegrationEvent } from "../IntegrationEvent";
 
-import { EventTopics } from "@/common/events";
+import { IntegrationEventTopics } from "@/common/events";
 
 export type AccountRegisteredEventPayload = {
     account: {
@@ -12,8 +12,8 @@ export type AccountRegisteredEventPayload = {
     };
 };
 
-export class AccountRegisteredEvent extends DomainEvent {
+export class AccountRegisteredEvent extends IntegrationEvent {
     public constructor(payload: AccountRegisteredEventPayload) {
-        super(EventTopics.account.registered, payload);
+        super(IntegrationEventTopics.account.registered, payload);
     }
 }

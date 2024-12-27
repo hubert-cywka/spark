@@ -5,15 +5,15 @@ import {
     AccountActivationTokenRequestedEvent,
     AccountPasswordUpdatedEvent,
     AccountRequestedPasswordResetEvent,
-    IPublisherServiceToken,
-    PublisherService,
+    EventPublisherService,
+    IEventPublisherServiceToken,
 } from "@/common/events";
 import { IAccountPublisherService } from "@/modules/identity/account/services/interfaces/IAccountPublisher.service";
 
 export class AccountPublisherService implements IAccountPublisherService {
     public constructor(
-        @Inject(IPublisherServiceToken)
-        private publisher: PublisherService
+        @Inject(IEventPublisherServiceToken)
+        private publisher: EventPublisherService
     ) {}
 
     public onAccountActivated(email: string, id: string): void {

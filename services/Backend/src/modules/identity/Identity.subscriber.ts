@@ -1,7 +1,7 @@
 import { Controller, Inject, Logger } from "@nestjs/common";
 import { EventPattern, Payload } from "@nestjs/microservices";
 
-import { type AccountPasswordUpdatedEventPayload, EventTopics } from "@/common/events";
+import { type AccountPasswordUpdatedEventPayload, IntegrationEventTopics } from "@/common/events";
 import {
     type IRefreshTokenService,
     IRefreshTokenServiceToken,
@@ -16,9 +16,9 @@ export class IdentitySubscriber {
         private refreshTokenService: IRefreshTokenService
     ) {}
 
-    @EventPattern(EventTopics.account.passwordUpdated)
+    @EventPattern(IntegrationEventTopics.account.passwordUpdated)
     public async onPasswordUpdated(@Payload() payload: AccountPasswordUpdatedEventPayload) {
-        this.logger.log({ topic: EventTopics.account.passwordUpdated, payload }, "Received an event.");
+        this.logger.log({ topic: IntegrationEventTopics.account.passwordUpdated, payload }, "Received an event.");
         await this.refreshTokenService.invalidateAllByOwnerId(payload.id);
     }
 }

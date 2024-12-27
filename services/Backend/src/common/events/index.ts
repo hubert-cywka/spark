@@ -1,11 +1,11 @@
-import { IPublisherServiceToken } from "./services/IPublisher.service";
-import { PublisherService } from "./services/Publisher.service";
-import { EventTopics } from "./types/EventTopics";
-import { EventsModule } from "./Events.module";
+import { EventPublisherService } from "./services/EventPublisher.service";
+import { IEventPublisherServiceToken } from "./services/IEventPublisher.service";
+import { IntegrationEventTopics } from "./types/IntegrationEventTopics";
+import { IntegrationEventsModule } from "./IntegrationEvents.module";
 
-export { EventsModule };
-export { IPublisherServiceToken, PublisherService };
-export { EventTopics };
+export { IntegrationEventsModule };
+export { EventPublisherService, IEventPublisherServiceToken };
+export { IntegrationEventTopics };
 export * from "./types/account/AccountActivatedEvent";
 export * from "./types/account/AccountActivationTokenRequestedEvent";
 export * from "./types/account/AccountPasswordUpdatedEvent";

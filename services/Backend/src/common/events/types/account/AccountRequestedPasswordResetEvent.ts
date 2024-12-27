@@ -1,14 +1,14 @@
-import { DomainEvent } from "../DomainEvent";
+import { IntegrationEvent } from "../IntegrationEvent";
 
-import { EventTopics } from "@/common/events";
+import { IntegrationEventTopics } from "@/common/events";
 
 export type AccountRequestedPasswordResetEventPayload = {
     email: string;
     passwordResetToken: string;
 };
 
-export class AccountRequestedPasswordResetEvent extends DomainEvent {
+export class AccountRequestedPasswordResetEvent extends IntegrationEvent {
     public constructor(payload: AccountRequestedPasswordResetEventPayload) {
-        super(EventTopics.account.passwordResetRequested, payload);
+        super(IntegrationEventTopics.account.passwordResetRequested, payload);
     }
 }

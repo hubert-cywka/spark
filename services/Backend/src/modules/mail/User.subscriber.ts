@@ -8,7 +8,7 @@ import {
     type AccountActivationTokenRequestedEventPayload,
     type AccountPasswordUpdatedEventPayload,
     type AccountRequestedPasswordResetEventPayload,
-    EventTopics,
+    IntegrationEventTopics,
 } from "@/common/events";
 import { EmailDeliveryError } from "@/modules/mail/errors/EmailDelivery.error";
 import { type IMailerService, IMailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
@@ -30,9 +30,15 @@ export class UserSubscriber {
         this.appUrl = configService.getOrThrow<string>("client.url.base");
     }
 
-    @EventPattern(EventTopics.account.activationTokenRequested)
+    @EventPattern(IntegrationEventTopics.account.activationTokenRequested)
     public async onUserActivationTokenRequested(@Payload() payload: AccountActivationTokenRequestedEventPayload) {
-        this.logger.log({ topic: EventTopics.account.activationTokenRequested, payload }, "Received an event.");
+        this.logger.log(
+            {
+                topic: IntegrationEventTopics.account.activationTokenRequested,
+                payload,
+            },
+            "Received an event."
+        );
 
         try {
             const accountActivationPage = this.configService.getOrThrow<string>("client.url.accountActivationPage");
@@ -43,9 +49,15 @@ export class UserSubscriber {
         }
     }
 
-    @EventPattern(EventTopics.account.passwordResetRequested)
+    @EventPattern(IntegrationEventTopics.account.passwordResetRequested)
     public async onPasswordResetRequested(@Payload() payload: AccountRequestedPasswordResetEventPayload) {
-        this.logger.log({ topic: EventTopics.account.passwordResetRequested, payload }, "Received an event.");
+        this.logger.log(
+            {
+                topic: IntegrationEventTopics.account.passwordResetRequested,
+                payload,
+            },
+            "Received an event."
+        );
 
         try {
             const forgotPasswordPage = this.configService.getOrThrow<string>("client.url.forgotPasswordPage");
@@ -56,9 +68,9 @@ export class UserSubscriber {
         }
     }
 
-    @EventPattern(EventTopics.account.passwordUpdated)
+    @EventPattern(IntegrationEventTopics.account.passwordUpdated)
     public async onPasswordUpdated(@Payload() payload: AccountPasswordUpdatedEventPayload) {
-        this.logger.log({ topic: EventTopics.account.passwordUpdated, payload }, "Received an event.");
+        this.logger.log({ topic: IntegrationEventTopics.account.passwordUpdated, payload }, "Received an event.");
 
         try {
             await this.mailer.send(payload.email, new PasswordUpdatedEmail(this.appUrl));
@@ -67,9 +79,9 @@ export class UserSubscriber {
         }
     }
 
-    @EventPattern(EventTopics.account.activated)
+    @EventPattern(IntegrationEventTopics.account.activated)
     public async onUserActivated(@Payload() payload: AccountActivatedEventPayload) {
-        this.logger.log({ topic: EventTopics.account.activated, payload }, "Received an event.");
+        this.logger.log({ topic: IntegrationEventTopics.account.activated, payload }, "Received an event.");
 
         try {
             await this.mailer.send(payload.email, new UserActivatedEmail(this.appUrl));

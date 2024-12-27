@@ -4,7 +4,7 @@ import { APP_PIPE } from "@nestjs/core";
 import { ScheduleModule } from "@nestjs/schedule";
 import { LoggerModule } from "nestjs-pino";
 
-import { EventsModule } from "@/common/events";
+import { IntegrationEventsModule } from "@/common/events";
 import { AppConfig } from "@/config/configuration";
 import { loggerOptions } from "@/lib/logger";
 import { IdentityModule } from "@/modules/identity/Identity.module";
@@ -19,7 +19,7 @@ import { UsersModule } from "@/modules/users/Users.module";
             isGlobal: true,
         }),
         LoggerModule.forRoot({ pinoHttp: loggerOptions }),
-        EventsModule.forRootAsync({
+        IntegrationEventsModule.forRootAsync({
             global: true,
             useFactory: (configService: ConfigService) => ({
                 connection: {

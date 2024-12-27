@@ -3,7 +3,7 @@ import { EventPattern, Payload } from "@nestjs/microservices";
 
 import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { whenError } from "@/common/errors/whenError";
-import { type AccountActivatedEventPayload, type AccountRegisteredEventPayload, EventTopics } from "@/common/events";
+import { type AccountActivatedEventPayload, type AccountRegisteredEventPayload, IntegrationEventTopics } from "@/common/events";
 import { type IUsersService, IUsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
 
 @Controller()
@@ -12,9 +12,9 @@ export class UsersSubscriber {
 
     public constructor(@Inject(IUsersServiceToken) private usersService: IUsersService) {}
 
-    @EventPattern(EventTopics.account.registered)
+    @EventPattern(IntegrationEventTopics.account.registered)
     async onUserRegistered(@Payload() payload: AccountRegisteredEventPayload) {
-        this.logger.log({ payload }, `Received ${EventTopics.account.registered} event.`);
+        this.logger.log({ payload }, `Received ${IntegrationEventTopics.account.registered} event.`);
         const { account } = payload;
 
         try {
@@ -24,9 +24,9 @@ export class UsersSubscriber {
         }
     }
 
-    @EventPattern(EventTopics.account.activated)
+    @EventPattern(IntegrationEventTopics.account.activated)
     async onUserActivated(@Payload() payload: AccountActivatedEventPayload) {
-        this.logger.log({ payload }, `Received ${EventTopics.account.activated} event.`);
+        this.logger.log({ payload }, `Received ${IntegrationEventTopics.account.activated} event.`);
         const { id } = payload;
 
         try {

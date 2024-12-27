@@ -1,4 +1,4 @@
-export class DomainEvent {
+export class IntegrationEvent {
     private readonly topic: string;
     private readonly payload: unknown;
     private readonly id: string;
