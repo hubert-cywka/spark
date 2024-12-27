@@ -4,7 +4,10 @@ import { APP_GUARD } from "@nestjs/core";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 import { ThrottlerModule } from "@nestjs/throttler";
-import { TypeOrmModule } from "@nestjs/typeorm";
+import { getDataSourceToken, TypeOrmModule } from "@nestjs/typeorm";
+import { ClsPluginTransactional } from "@nestjs-cls/transactional";
+import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { ClsModule } from "nestjs-cls";
 
 import { AuthenticationController } from "./authentication/controllers/Authentication.controller";
 
@@ -41,6 +44,19 @@ import { DatabaseModule } from "@/modules/identity/infrastructure/database/Datab
 @Module({
     imports: [
         DatabaseModule,
+        ClsModule.forRoot({
+            middleware: {
+                mount: true,
+            },
+            plugins: [
+                new ClsPluginTransactional({
+                    connectionName: IDENTITY_MODULE_DATA_SOURCE,
+                    adapter: new TransactionalAdapterTypeOrm({
+                        dataSourceToken: getDataSourceToken(IDENTITY_MODULE_DATA_SOURCE),
+                    }),
+                }),
+            ],
+        }),
         ThrottlerModule.forRootAsync({
             useFactory: (configService: ConfigService) => [
                 {

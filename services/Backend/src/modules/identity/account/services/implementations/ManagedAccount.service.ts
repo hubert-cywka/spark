@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
+import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
+import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import argon2 from "argon2";
 import { plainToInstance } from "class-transformer";
 import dayjs from "dayjs";
@@ -27,15 +28,18 @@ import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/d
 @Injectable()
 export class ManagedAccountService implements IManagedAccountService {
     private readonly logger = new Logger(ManagedAccountService.name);
+    private readonly repository: Repository<ManagedAccountEntity>;
 
     constructor(
-        @InjectRepository(ManagedAccountEntity, IDENTITY_MODULE_DATA_SOURCE)
-        private readonly repository: Repository<ManagedAccountEntity>,
+        @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
+        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
         @Inject(IAccountPublisherServiceToken)
         private readonly publisher: IAccountPublisherService,
         @Inject(ISingleUseTokenServiceToken)
         private readonly singleUseTokenService: ISingleUseTokenService
-    ) {}
+    ) {
+        this.repository = txHost.tx.getRepository(ManagedAccountEntity);
+    }
 
     // TODO: Protect from timing attacks to prevent leaking emails
     public async findActivatedByCredentials(email: string, password: string): Promise<Account> {

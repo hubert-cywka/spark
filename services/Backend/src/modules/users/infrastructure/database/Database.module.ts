@@ -32,6 +32,7 @@ import { AllowDuplicateEmails1731437638511 } from "@/modules/users/infrastructur
 
                 return {
                     ...options,
+                    logging: true,
                     type: "postgres",
                     autoLoadEntities: true,
                     migrationsRun: true,

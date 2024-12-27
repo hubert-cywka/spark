@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
+import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
+import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import { plainToInstance } from "class-transformer";
 import dayjs from "dayjs";
 import type { Repository } from "typeorm";
@@ -15,11 +16,14 @@ import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/d
 @Injectable()
 export class FederatedAccountService implements IFederatedAccountService {
     private readonly logger = new Logger(FederatedAccountService.name);
+    private readonly repository: Repository<FederatedAccountEntity>;
 
     constructor(
-        @InjectRepository(FederatedAccountEntity, IDENTITY_MODULE_DATA_SOURCE)
-        private readonly repository: Repository<FederatedAccountEntity>
-    ) {}
+        @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
+        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
+    ) {
+        this.repository = txHost.tx.getRepository(FederatedAccountEntity);
+    }
 
     public async findByExternalIdentity(identity: ExternalIdentity): Promise<Account> {
         const account = await this.repository.findOne({

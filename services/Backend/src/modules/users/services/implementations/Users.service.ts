@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
+import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
+import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import type { Repository } from "typeorm";
 
 import { UserEntity } from "@/modules/users/entities/User.entity";
@@ -12,11 +13,14 @@ import { type IUsersService } from "@/modules/users/services/interfaces/IUsers.s
 @Injectable()
 export class UsersService implements IUsersService {
     private readonly logger = new Logger(UsersService.name);
+    private readonly repository: Repository<UserEntity>;
 
     public constructor(
-        @InjectRepository(UserEntity, USERS_MODULE_DATA_SOURCE)
-        private repository: Repository<UserEntity>
-    ) {}
+        @InjectTransactionHost(USERS_MODULE_DATA_SOURCE)
+        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
+    ) {
+        this.repository = txHost.tx.getRepository(UserEntity);
+    }
 
     public async findOneById(id: string): Promise<User> {
         const user = await this.repository.findOne({ where: { id } });

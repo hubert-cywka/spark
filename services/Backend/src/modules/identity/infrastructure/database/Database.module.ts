@@ -31,6 +31,7 @@ import { InitDatabase1731437155592 } from "@/modules/identity/infrastructure/dat
 
                 return {
                     ...options,
+                    logging: true,
                     type: "postgres",
                     autoLoadEntities: true,
                     migrationsRun: true,

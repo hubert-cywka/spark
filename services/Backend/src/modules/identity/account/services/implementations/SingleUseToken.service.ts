@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
+import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
+import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import dayjs from "dayjs";
 import type { Repository } from "typeorm";
 import { IsNull } from "typeorm";
@@ -14,12 +15,15 @@ import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/d
 @Injectable()
 export class SingleUseTokenService implements ISingleUseTokenService {
     private readonly logger = new Logger(SingleUseTokenService.name);
+    private readonly repository: Repository<SingleUseTokenEntity>;
     private readonly EXPIRATION_TIME = 15 * 60;
 
     constructor(
-        @InjectRepository(SingleUseTokenEntity, IDENTITY_MODULE_DATA_SOURCE)
-        private readonly repository: Repository<SingleUseTokenEntity>
-    ) {}
+        @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
+        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
+    ) {
+        this.repository = txHost.tx.getRepository(SingleUseTokenEntity);
+    }
 
     public async invalidateAllAccountActivationTokens(ownerId: string): Promise<void> {
         await this.invalidateAllByOwnerIdAndType(ownerId, "accountActivation");

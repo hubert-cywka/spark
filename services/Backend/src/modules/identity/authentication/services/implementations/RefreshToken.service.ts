@@ -2,10 +2,10 @@ import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { Cron } from "@nestjs/schedule";
-import { InjectRepository } from "@nestjs/typeorm";
+import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
+import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import dayjs from "dayjs";
-import type { Repository } from "typeorm";
-import { IsNull, LessThanOrEqual } from "typeorm";
+import { IsNull, LessThanOrEqual, Repository } from "typeorm";
 
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
 import { RefreshTokenNotFoundError } from "@/modules/identity/authentication/errors/RefreshTokenNotFound.error";
@@ -18,16 +18,18 @@ export class RefreshTokenService implements IRefreshTokenService {
     private readonly logger: Logger;
     private readonly signingSecret: string;
     private readonly expirationTimeInSeconds: number;
+    private readonly refreshTokenRepository: Repository<RefreshTokenEntity>;
 
     constructor(
         private configService: ConfigService,
         private jwtService: JwtService,
-        @InjectRepository(RefreshTokenEntity, IDENTITY_MODULE_DATA_SOURCE)
-        private refreshTokenRepository: Repository<RefreshTokenEntity>
+        @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
+        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
     ) {
         this.logger = new Logger(RefreshTokenService.name);
         this.signingSecret = configService.getOrThrow<string>("modules.auth.refreshToken.signingSecret");
         this.expirationTimeInSeconds = configService.getOrThrow<number>("modules.auth.refreshToken.expirationTimeInSeconds");
+        this.refreshTokenRepository = txHost.tx.getRepository(RefreshTokenEntity);
     }
 
     public async issue(payload: AccessTokenPayload): Promise<string> {
