@@ -18,7 +18,6 @@ export class RefreshTokenService implements IRefreshTokenService {
     private readonly logger: Logger;
     private readonly signingSecret: string;
     private readonly expirationTimeInSeconds: number;
-    private readonly refreshTokenRepository: Repository<RefreshTokenEntity>;
 
     constructor(
         private configService: ConfigService,
@@ -29,7 +28,6 @@ export class RefreshTokenService implements IRefreshTokenService {
         this.logger = new Logger(RefreshTokenService.name);
         this.signingSecret = configService.getOrThrow<string>("modules.auth.refreshToken.signingSecret");
         this.expirationTimeInSeconds = configService.getOrThrow<number>("modules.auth.refreshToken.expirationTimeInSeconds");
-        this.refreshTokenRepository = txHost.tx.getRepository(RefreshTokenEntity);
     }
 
     public async issue(payload: AccessTokenPayload): Promise<string> {
@@ -40,7 +38,7 @@ export class RefreshTokenService implements IRefreshTokenService {
         });
 
         const hashedValue = await this.hashToken(token);
-        await this.refreshTokenRepository.save({
+        await this.getRepository().save({
             owner: { id: payload.account.id },
             hashedValue,
             expiresAt,
@@ -75,13 +73,13 @@ export class RefreshTokenService implements IRefreshTokenService {
         const now = dayjs().toDate();
 
         if (token instanceof RefreshTokenEntity) {
-            await this.refreshTokenRepository.save({
+            await this.getRepository().save({
                 ...token,
                 invalidatedAt: now,
             });
         } else {
             const hashedValue = await this.hashToken(token);
-            await this.refreshTokenRepository.update(
+            await this.getRepository().update(
                 {
                     hashedValue,
                     invalidatedAt: IsNull(),
@@ -93,7 +91,7 @@ export class RefreshTokenService implements IRefreshTokenService {
 
     public async invalidateAllByOwnerId(ownerId: string): Promise<void> {
         const now = dayjs().toDate();
-        await this.refreshTokenRepository.update(
+        await this.getRepository().update(
             {
                 owner: { id: ownerId },
                 invalidatedAt: IsNull(),
@@ -104,7 +102,7 @@ export class RefreshTokenService implements IRefreshTokenService {
 
     private async findOneByHash(token: string): Promise<RefreshTokenEntity | null> {
         const hashedValue = await this.hashToken(token);
-        return this.refreshTokenRepository.findOne({ where: { hashedValue } });
+        return this.getRepository().findOne({ where: { hashedValue } });
     }
 
     private async hashToken(value: string): Promise<string> {
@@ -123,7 +121,7 @@ export class RefreshTokenService implements IRefreshTokenService {
     @Cron("0 1 * * *")
     private async deleteAllExpired(): Promise<void> {
         const now = dayjs().toDate();
-        const result = await this.refreshTokenRepository.delete({
+        const result = await this.getRepository().delete({
             expiresAt: LessThanOrEqual(now),
         });
 
@@ -134,5 +132,9 @@ export class RefreshTokenService implements IRefreshTokenService {
             },
             "Deleted expired tokens."
         );
+    }
+
+    private getRepository(): Repository<RefreshTokenEntity> {
+        return this.txHost.tx.getRepository(RefreshTokenEntity);
     }
 }

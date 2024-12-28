@@ -1,11 +1,10 @@
-import { type DynamicModule, type Provider, Module } from "@nestjs/common";
+import { type DynamicModule, Module } from "@nestjs/common";
 import { ClientProxyFactory, Transport } from "@nestjs/microservices";
 
-import { EventPublisherService } from "./services/EventPublisher.service";
-import { IEventPublisherServiceToken } from "./services/IEventPublisher.service";
 import { type IntegrationEventsModuleOptions } from "./types";
 
-const MODULE_OPTIONS_TOKEN = Symbol("PubSubModuleOptions");
+export const IntegrationEventsModuleOptionsToken = Symbol("IntegrationEventsModuleOptions");
+export const IntegrationEventsClientProxyToken = Symbol("IntegrationEventsClientProxy");
 
 @Module({})
 export class IntegrationEventsModule {
@@ -14,28 +13,26 @@ export class IntegrationEventsModule {
         inject?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
         global?: boolean;
     }): DynamicModule {
-        const asyncOptionsProvider: Provider = {
-            provide: MODULE_OPTIONS_TOKEN,
-            useFactory: options.useFactory,
-            inject: options.inject || [],
-        };
-
-        const publisherProvider: Provider = {
-            provide: IEventPublisherServiceToken,
-            useFactory: (moduleOptions: IntegrationEventsModuleOptions) => {
-                const client = ClientProxyFactory.create({
-                    transport: Transport.REDIS,
-                    options: moduleOptions.connection,
-                });
-                return new EventPublisherService(client);
-            },
-            inject: [MODULE_OPTIONS_TOKEN],
-        };
-
         return {
             module: IntegrationEventsModule,
-            providers: [asyncOptionsProvider, publisherProvider],
-            exports: [IEventPublisherServiceToken],
+            providers: [
+                {
+                    provide: IntegrationEventsModuleOptionsToken,
+                    useFactory: options.useFactory,
+                    inject: options.inject || [],
+                },
+                {
+                    provide: IntegrationEventsClientProxyToken,
+                    useFactory: (moduleOptions: IntegrationEventsModuleOptions) => {
+                        return ClientProxyFactory.create({
+                            transport: Transport.REDIS,
+                            options: moduleOptions.connection,
+                        });
+                    },
+                    inject: [IntegrationEventsModuleOptionsToken],
+                },
+            ],
+            exports: [IntegrationEventsClientProxyToken],
             global: options.global,
         };
     }

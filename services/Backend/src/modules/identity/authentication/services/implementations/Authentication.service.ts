@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
+import { Transactional } from "@nestjs-cls/transactional";
 
 import type { Account } from "@/modules/identity/account/models/Account.model";
 import {
@@ -25,6 +26,7 @@ import {
 } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
 import { type AccessTokenPayload, type AuthenticationResult } from "@/modules/identity/authentication/types/Authentication";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
+import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
 // TODO: Consider using Keycloak (or other auth provider)
 @Injectable()
@@ -53,9 +55,10 @@ export class AuthenticationService implements IAuthenticationService {
         return await this.createAuthenticationResult(account);
     }
 
+    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
     public async registerWithCredentials({ email, password, lastName, firstName }: RegisterWithCredentialsDto): Promise<void> {
         const account = await this.accountService.createAccountWithCredentials(email, password);
-        this.publisher.onAccountRegistered({
+        await this.publisher.onAccountRegistered({
             account: {
                 firstName,
                 lastName,
@@ -72,11 +75,12 @@ export class AuthenticationService implements IAuthenticationService {
         return await this.createAuthenticationResult(account);
     }
 
+    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
     public async registerWithExternalIdentity(identity: ExternalIdentity): Promise<AuthenticationResult> {
         const account = await this.externalAccountService.createAccountWithExternalIdentity(identity);
         const { firstName, lastName, email } = identity;
 
-        this.publisher.onAccountRegistered({
+        await this.publisher.onAccountRegistered({
             account: {
                 firstName,
                 lastName,

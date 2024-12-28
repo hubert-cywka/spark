@@ -1,6 +1,7 @@
 import { configDotenv } from "dotenv";
 import { DataSource } from "typeorm";
 
+import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { AppConfig } from "@/config/configuration";
 import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccountEntity";
 import { FederatedAccountEntity } from "@/modules/identity/account/entities/FederatedAccountEntity";
@@ -22,6 +23,13 @@ export const dataSource = new DataSource({
     synchronize: false,
     dropSchema: false,
     migrationsRun: false,
-    entities: [RefreshTokenEntity, SingleUseTokenEntity, FederatedAccountEntity, ManagedAccountEntity, BaseAccountEntity],
+    entities: [
+        OutboxEventEntity,
+        RefreshTokenEntity,
+        SingleUseTokenEntity,
+        FederatedAccountEntity,
+        ManagedAccountEntity,
+        BaseAccountEntity,
+    ],
     migrations: [],
 });

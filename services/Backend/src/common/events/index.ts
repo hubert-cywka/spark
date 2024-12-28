@@ -1,10 +1,10 @@
-import { EventPublisherService } from "./services/EventPublisher.service";
-import { IEventPublisherServiceToken } from "./services/IEventPublisher.service";
+import { Outbox } from "./services/Outbox";
+import { type OutboxFactory } from "./services/Outbox.factory";
 import { IntegrationEventTopics } from "./types/IntegrationEventTopics";
 import { IntegrationEventsModule } from "./IntegrationEvents.module";
 
 export { IntegrationEventsModule };
-export { EventPublisherService, IEventPublisherServiceToken };
+export { type OutboxFactory, Outbox };
 export { IntegrationEventTopics };
 export * from "./types/account/AccountActivatedEvent";
 export * from "./types/account/AccountActivationTokenRequestedEvent";

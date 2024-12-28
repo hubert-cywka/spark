@@ -1,8 +1,9 @@
-import { Module } from "@nestjs/common";
+import { Inject, Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { APP_GUARD } from "@nestjs/core";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
+import { Cron } from "@nestjs/schedule";
 import { ThrottlerModule } from "@nestjs/throttler";
 import { getDataSourceToken, TypeOrmModule } from "@nestjs/typeorm";
 import { ClsPluginTransactional } from "@nestjs-cls/transactional";
@@ -11,6 +12,9 @@ import { ClsModule } from "nestjs-cls";
 
 import { AuthenticationController } from "./authentication/controllers/Authentication.controller";
 
+import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import { type IOutbox, OutboxToken } from "@/common/events/services/IOutbox";
+import { OutboxFactory, OutboxFactoryToken } from "@/common/events/services/Outbox.factory";
 import { ThrottlingGuard } from "@/common/guards/Throttling.guard";
 import { AccountController } from "@/modules/identity/account/controllers/Account.controller";
 import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccountEntity";
@@ -40,6 +44,7 @@ import { IRefreshTokenCookieStrategyToken } from "@/modules/identity/authenticat
 import { SecureRefreshTokenCookieStrategy } from "@/modules/identity/authentication/strategies/refreshToken/SecureRefreshTokenCookie.strategy";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 import { DatabaseModule } from "@/modules/identity/infrastructure/database/Database.module";
+import { IdentityOutboxFactory } from "@/modules/identity/shared/services/IdentityOutbox.factory";
 
 @Module({
     imports: [
@@ -69,7 +74,7 @@ import { DatabaseModule } from "@/modules/identity/infrastructure/database/Datab
         PassportModule,
         JwtModule,
         TypeOrmModule.forFeature(
-            [RefreshTokenEntity, SingleUseTokenEntity, BaseAccountEntity, ManagedAccountEntity, FederatedAccountEntity],
+            [RefreshTokenEntity, SingleUseTokenEntity, BaseAccountEntity, ManagedAccountEntity, FederatedAccountEntity, OutboxEventEntity],
             IDENTITY_MODULE_DATA_SOURCE
         ),
     ],
@@ -112,7 +117,23 @@ import { DatabaseModule } from "@/modules/identity/infrastructure/database/Datab
             provide: IRefreshTokenCookieStrategyToken,
             useClass: SecureRefreshTokenCookieStrategy,
         },
+        {
+            provide: OutboxFactoryToken,
+            useClass: IdentityOutboxFactory,
+        },
+        {
+            provide: OutboxToken,
+            useFactory: (factory: OutboxFactory) => factory.create("IdentityOutbox"),
+            inject: [OutboxFactoryToken],
+        },
         AccessTokenStrategy,
     ],
 })
-export class IdentityModule {}
+export class IdentityModule {
+    public constructor(@Inject(OutboxToken) private readonly outbox: IOutbox) {}
+
+    @Cron("*/5 * * * * *")
+    private async processOutbox() {
+        await this.outbox.process();
+    }
+}

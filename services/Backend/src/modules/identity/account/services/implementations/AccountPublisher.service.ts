@@ -5,23 +5,22 @@ import {
     AccountActivationTokenRequestedEvent,
     AccountPasswordUpdatedEvent,
     AccountRequestedPasswordResetEvent,
-    EventPublisherService,
-    IEventPublisherServiceToken,
 } from "@/common/events";
-import { IAccountPublisherService } from "@/modules/identity/account/services/interfaces/IAccountPublisher.service";
+import { type IOutbox, OutboxToken } from "@/common/events/services/IOutbox";
+import { type IAccountPublisherService } from "@/modules/identity/account/services/interfaces/IAccountPublisher.service";
 
 export class AccountPublisherService implements IAccountPublisherService {
     public constructor(
-        @Inject(IEventPublisherServiceToken)
-        private publisher: EventPublisherService
+        @Inject(OutboxToken)
+        private readonly outbox: IOutbox
     ) {}
 
-    public onAccountActivated(email: string, id: string): void {
-        this.publisher.publish(new AccountActivatedEvent({ email, id }));
+    public async onAccountActivated(email: string, id: string) {
+        await this.outbox.enqueue(new AccountActivatedEvent({ email, id }));
     }
 
-    public onAccountActivationTokenRequested(email: string, activationToken: string) {
-        this.publisher.publish(
+    public async onAccountActivationTokenRequested(email: string, activationToken: string) {
+        await this.outbox.enqueue(
             new AccountActivationTokenRequestedEvent({
                 email,
                 activationToken,
@@ -29,8 +28,8 @@ export class AccountPublisherService implements IAccountPublisherService {
         );
     }
 
-    public onPasswordResetRequested(email: string, passwordResetToken: string) {
-        this.publisher.publish(
+    public async onPasswordResetRequested(email: string, passwordResetToken: string) {
+        await this.outbox.enqueue(
             new AccountRequestedPasswordResetEvent({
                 email,
                 passwordResetToken,
@@ -38,8 +37,8 @@ export class AccountPublisherService implements IAccountPublisherService {
         );
     }
 
-    public onPasswordUpdated(email: string, id: string) {
-        this.publisher.publish(
+    public async onPasswordUpdated(email: string, id: string) {
+        await this.outbox.enqueue(
             new AccountPasswordUpdatedEvent({
                 email,
                 id,

@@ -27,16 +27,16 @@ export class BaseAccountEntity {
     @Column({ type: "varchar" })
     email!: string;
 
-    @Column({ type: "timestamp", nullable: true })
+    @Column({ type: "timestamptz", nullable: true })
     activatedAt!: Date | null;
 
-    @Column({ type: "timestamp", nullable: true })
+    @Column({ type: "timestamptz", nullable: true })
     termsAndConditionsAcceptedAt!: Date | null;
 
-    @CreateDateColumn({ type: "timestamp" })
+    @CreateDateColumn({ type: "timestamptz" })
     createdAt!: Date;
 
-    @UpdateDateColumn({ type: "timestamp" })
+    @UpdateDateColumn({ type: "timestamptz" })
     updatedAt!: Date;
 
     @OneToMany((type) => RefreshTokenEntity, (token) => token.owner)

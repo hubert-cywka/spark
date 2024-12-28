@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
-import type { Repository } from "typeorm";
+import { Repository } from "typeorm";
 
 import { UserEntity } from "@/modules/users/entities/User.entity";
 import { UserAlreadyExistsError } from "@/modules/users/errors/UserAlreadyExists.error";
@@ -13,17 +13,14 @@ import { type IUsersService } from "@/modules/users/services/interfaces/IUsers.s
 @Injectable()
 export class UsersService implements IUsersService {
     private readonly logger = new Logger(UsersService.name);
-    private readonly repository: Repository<UserEntity>;
 
     public constructor(
         @InjectTransactionHost(USERS_MODULE_DATA_SOURCE)
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
-    ) {
-        this.repository = txHost.tx.getRepository(UserEntity);
-    }
+    ) {}
 
     public async findOneById(id: string): Promise<User> {
-        const user = await this.repository.findOne({ where: { id } });
+        const user = await this.getRepository().findOne({ where: { id } });
 
         if (!user) {
             this.logger.warn({ userId: id }, "Couldn't find user.");
@@ -34,7 +31,7 @@ export class UsersService implements IUsersService {
     }
 
     public async create(user: User): Promise<User> {
-        const savedUser = await this.repository.save(user);
+        const savedUser = await this.getRepository().save(user);
 
         if (!savedUser) {
             this.logger.warn({ userId: user.id, email: user.email }, "User already exists.");
@@ -45,7 +42,7 @@ export class UsersService implements IUsersService {
     }
 
     public async activate(id: string): Promise<User> {
-        const user = await this.repository.save({ id, isActivated: true });
+        const user = await this.getRepository().save({ id, isActivated: true });
 
         if (!user) {
             this.logger.warn({ userId: id }, "Couldn't find user.");
@@ -53,5 +50,9 @@ export class UsersService implements IUsersService {
         }
 
         return user;
+    }
+
+    private getRepository(): Repository<UserEntity> {
+        return this.txHost.tx.getRepository(UserEntity);
     }
 }

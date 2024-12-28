@@ -11,13 +11,13 @@ export class RefreshTokenEntity {
     @Column({ type: "varchar", unique: true })
     hashedValue!: string;
 
-    @Column({ type: "timestamp" })
+    @Column({ type: "timestamptz" })
     expiresAt!: Date;
 
-    @CreateDateColumn({ type: "timestamp" })
+    @CreateDateColumn({ type: "timestamptz" })
     createdAt!: Date;
 
-    @Column({ type: "timestamp", nullable: true })
+    @Column({ type: "timestamptz", nullable: true })
     invalidatedAt!: Date | null;
 
     @ManyToOne((type) => BaseAccountEntity, (user) => user.refreshTokens)
