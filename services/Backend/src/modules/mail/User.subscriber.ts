@@ -10,7 +10,7 @@ import {
     type AccountRequestedPasswordResetEventPayload,
     IntegrationEventTopics,
 } from "@/common/events";
-import { EventInboxToken, IEventInbox } from "@/common/events/services/IEventInbox";
+import { type IEventInbox, EventInboxToken } from "@/common/events/services/IEventInbox";
 import { EmailDeliveryError } from "@/modules/mail/errors/EmailDelivery.error";
 import { type IMailerService, IMailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
 import { PasswordResetRequestedEmail } from "@/modules/mail/templates/PasswordResetRequestedEmail";

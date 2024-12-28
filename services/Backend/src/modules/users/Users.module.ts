@@ -1,18 +1,18 @@
 import { Inject, Module } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { Cron } from "@nestjs/schedule";
-import { getDataSourceToken, TypeOrmModule } from "@nestjs/typeorm";
+import { getDataSourceToken } from "@nestjs/typeorm";
 import { ClsPluginTransactional } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import { ClsModule } from "nestjs-cls";
 
+import { DatabaseModule } from "@/common/database/Database.module";
+import { IntegrationEventsModule } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
-import { EventBoxFactory, EventBoxFactoryToken } from "@/common/events/services/EventBox.factory";
-import { EventInboxToken } from "@/common/events/services/IEventInbox";
 import { type IEventOutbox, EventOutboxToken } from "@/common/events/services/IEventOutbox";
 import { UserEntity } from "@/modules/users/entities/User.entity";
 import { USERS_MODULE_DATA_SOURCE } from "@/modules/users/infrastructure/database/constants";
-import { DatabaseModule } from "@/modules/users/infrastructure/database/Database.module";
 import { UsersService } from "@/modules/users/services/implementations/Users.service";
 import { UsersEventBoxFactory } from "@/modules/users/services/implementations/UsersEventBox.factory";
 import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
@@ -21,7 +21,18 @@ import { UsersSubscriber } from "@/modules/users/Users.subscriber";
 
 @Module({
     imports: [
-        DatabaseModule,
+        DatabaseModule.forRootAsync(USERS_MODULE_DATA_SOURCE, [UserEntity, OutboxEventEntity, InboxEventEntity], {
+            useFactory: (configService: ConfigService) => ({
+                port: configService.getOrThrow<number>("modules.users.database.port"),
+                username: configService.getOrThrow<string>("modules.users.database.username"),
+                password: configService.getOrThrow<string>("modules.users.database.password"),
+                host: configService.getOrThrow<string>("modules.users.database.host"),
+                database: configService.getOrThrow<string>("modules.users.database.name"),
+                migrations: [],
+            }),
+            inject: [ConfigService],
+        }),
+        IntegrationEventsModule.forFeature(UsersEventBoxFactory, UsersModule.name),
         ClsModule.forRoot({
             middleware: {
                 mount: true,
@@ -35,26 +46,8 @@ import { UsersSubscriber } from "@/modules/users/Users.subscriber";
                 }),
             ],
         }),
-        TypeOrmModule.forFeature([UserEntity, OutboxEventEntity, InboxEventEntity], USERS_MODULE_DATA_SOURCE),
     ],
-    providers: [
-        UsersResolver,
-        {
-            provide: EventBoxFactoryToken,
-            useClass: UsersEventBoxFactory,
-        },
-        {
-            provide: EventOutboxToken,
-            useFactory: (factory: EventBoxFactory) => factory.createOutbox("UsersOutbox"),
-            inject: [EventBoxFactoryToken],
-        },
-        {
-            provide: EventInboxToken,
-            useFactory: (factory: EventBoxFactory) => factory.createInbox("UsersInbox"),
-            inject: [EventBoxFactoryToken],
-        },
-        { provide: UsersServiceToken, useClass: UsersService },
-    ],
+    providers: [UsersResolver, { provide: UsersServiceToken, useClass: UsersService }],
     controllers: [UsersSubscriber],
 })
 export class UsersModule {

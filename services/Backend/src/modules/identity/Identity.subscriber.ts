@@ -2,7 +2,7 @@ import { Controller, Inject, Logger } from "@nestjs/common";
 import { EventPattern, Payload } from "@nestjs/microservices";
 
 import { type AccountPasswordUpdatedEventPayload, IntegrationEventTopics } from "@/common/events";
-import { EventInboxToken, IEventInbox } from "@/common/events/services/IEventInbox";
+import { type IEventInbox, EventInboxToken } from "@/common/events/services/IEventInbox";
 import {
     type IRefreshTokenService,
     IRefreshTokenServiceToken,

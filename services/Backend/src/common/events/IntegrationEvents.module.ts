@@ -3,7 +3,11 @@ import { ClientProxyFactory, Transport } from "@nestjs/microservices";
 
 import { type IntegrationEventsModuleOptions } from "./types";
 
-export const IntegrationEventsModuleOptionsToken = Symbol("IntegrationEventsModuleOptions");
+import { EventBoxFactoryToken, IEventBoxFactory } from "@/common/events/services/IEventBox.factory";
+import { EventInboxToken } from "@/common/events/services/IEventInbox";
+import { EventOutboxToken } from "@/common/events/services/IEventOutbox";
+
+const IntegrationEventsModuleOptionsToken = Symbol("IntegrationEventsModuleOptions");
 export const IntegrationEventsClientProxyToken = Symbol("IntegrationEventsClientProxy");
 
 @Module({})
@@ -34,6 +38,30 @@ export class IntegrationEventsModule {
             ],
             exports: [IntegrationEventsClientProxyToken],
             global: options.global,
+        };
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    static forFeature<T extends IEventBoxFactory>(factoryClass: new (...args: any[]) => T, context: string): DynamicModule {
+        return {
+            module: IntegrationEventsModule,
+            providers: [
+                {
+                    provide: EventBoxFactoryToken,
+                    useClass: factoryClass,
+                },
+                {
+                    provide: EventOutboxToken,
+                    useFactory: (factory: IEventBoxFactory) => factory.createOutbox(`${context}_Outbox`),
+                    inject: [EventBoxFactoryToken],
+                },
+                {
+                    provide: EventInboxToken,
+                    useFactory: (factory: IEventBoxFactory) => factory.createInbox(`${context}_Inbox`),
+                    inject: [EventBoxFactoryToken],
+                },
+            ],
+            exports: [EventBoxFactoryToken, EventOutboxToken, EventInboxToken],
         };
     }
 }

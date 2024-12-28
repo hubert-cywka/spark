@@ -4,7 +4,7 @@ import { EventPattern, Payload } from "@nestjs/microservices";
 import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { whenError } from "@/common/errors/whenError";
 import { type AccountActivatedEventPayload, type AccountRegisteredEventPayload, IntegrationEventTopics } from "@/common/events";
-import { EventInboxToken, IEventInbox } from "@/common/events/services/IEventInbox";
+import { type IEventInbox, EventInboxToken } from "@/common/events/services/IEventInbox";
 import { type IUsersService, UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
 
 @Controller()
