@@ -5,7 +5,7 @@ import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-t
 import dayjs from "dayjs";
 import { IsNull, Repository } from "typeorm";
 
-import { type IOutbox } from "./IOutbox";
+import { type IEventOutbox } from "./IEventOutbox";
 
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import type { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
@@ -13,7 +13,7 @@ import type { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 const MAX_PAGE_SIZE = 25;
 
 @Injectable()
-export class Outbox implements IOutbox {
+export class EventOutbox implements IEventOutbox {
     private readonly logger;
 
     public constructor(
@@ -21,7 +21,7 @@ export class Outbox implements IOutbox {
         private txHost: TransactionHost<TransactionalAdapterTypeOrm>,
         context?: string
     ) {
-        this.logger = new Logger(context ?? Outbox.name);
+        this.logger = new Logger(context ?? EventOutbox.name);
     }
 
     public async enqueue(event: IntegrationEvent): Promise<void> {

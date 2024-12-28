@@ -82,6 +82,10 @@ variable "USERS_DATABASE_NAME" {
     type        = string
 }
 
+variable "MAIL_DATABASE_NAME" {
+    type        = string
+}
+
 variable "GATEWAY_ALLOWED_ORIGINS" {
     type        = string
 }

@@ -6,13 +6,13 @@ import {
     AccountPasswordUpdatedEvent,
     AccountRequestedPasswordResetEvent,
 } from "@/common/events";
-import { type IOutbox, OutboxToken } from "@/common/events/services/IOutbox";
+import { type IEventOutbox, EventOutboxToken } from "@/common/events/services/IEventOutbox";
 import { type IAccountPublisherService } from "@/modules/identity/account/services/interfaces/IAccountPublisher.service";
 
 export class AccountPublisherService implements IAccountPublisherService {
     public constructor(
-        @Inject(OutboxToken)
-        private readonly outbox: IOutbox
+        @Inject(EventOutboxToken)
+        private readonly outbox: IEventOutbox
     ) {}
 
     public async onAccountActivated(email: string, id: string) {

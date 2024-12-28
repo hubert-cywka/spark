@@ -4,11 +4,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { initializeDatabase } from "@/common/utils/initializeDatabase";
 import { logger } from "@/lib/logger";
-import { USERS_MODULE_DATA_SOURCE } from "@/modules/users/infrastructure/database/constants/connectionName";
-import { InitDatabase1730555362764 } from "@/modules/users/infrastructure/database/migrations/1730555362764-InitDatabase";
-import { AllowDuplicateEmails1731437638511 } from "@/modules/users/infrastructure/database/migrations/1731437638511-AllowDuplicateEmails";
-import { ImplementOutbox1735337371158 } from "@/modules/users/infrastructure/database/migrations/1735337371158-ImplementOutbox";
-import { ChangeTimestampsFormat1735340469452 } from "@/modules/users/infrastructure/database/migrations/1735340469452-ChangeTimestampsFormat";
+import { USERS_MODULE_DATA_SOURCE } from "@/modules/users/infrastructure/database/constants";
 
 @Module({
     imports: [
@@ -39,12 +35,7 @@ import { ChangeTimestampsFormat1735340469452 } from "@/modules/users/infrastruct
                     autoLoadEntities: true,
                     migrationsRun: true,
                     synchronize: false,
-                    migrations: [
-                        InitDatabase1730555362764,
-                        AllowDuplicateEmails1731437638511,
-                        ImplementOutbox1735337371158,
-                        ChangeTimestampsFormat1735340469452,
-                    ],
+                    migrations: [],
                 };
             },
             inject: [ConfigService],

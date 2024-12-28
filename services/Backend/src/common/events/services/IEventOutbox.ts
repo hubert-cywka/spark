@@ -1,8 +1,8 @@
 import type { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 
-export const OutboxToken = Symbol("Outbox");
+export const EventOutboxToken = Symbol("Outbox");
 
-export interface IOutbox {
+export interface IEventOutbox {
     enqueue(event: IntegrationEvent): Promise<void>;
     process(): Promise<void>;
 }

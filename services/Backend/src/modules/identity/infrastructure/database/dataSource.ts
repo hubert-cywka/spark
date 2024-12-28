@@ -1,6 +1,7 @@
 import { configDotenv } from "dotenv";
 import { DataSource } from "typeorm";
 
+import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { AppConfig } from "@/config/configuration";
 import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccountEntity";
@@ -25,6 +26,7 @@ export const dataSource = new DataSource({
     migrationsRun: false,
     entities: [
         OutboxEventEntity,
+        InboxEventEntity,
         RefreshTokenEntity,
         SingleUseTokenEntity,
         FederatedAccountEntity,

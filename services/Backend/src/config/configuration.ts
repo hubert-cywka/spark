@@ -30,6 +30,13 @@ export const AppConfig = () => ({
                 password: process.env.MAIL_SENDER_PASSWORD,
                 host: process.env.MAIL_SENDER_HOST,
             },
+            database: {
+                port: process.env.DATABASE_PORT,
+                username: process.env.DATABASE_USERNAME,
+                password: process.env.DATABASE_PASSWORD,
+                host: process.env.DATABASE_HOST,
+                name: process.env.MAIL_DATABASE_NAME,
+            },
         },
 
         users: {

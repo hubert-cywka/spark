@@ -4,13 +4,19 @@ import { EventPattern, Payload } from "@nestjs/microservices";
 import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { whenError } from "@/common/errors/whenError";
 import { type AccountActivatedEventPayload, type AccountRegisteredEventPayload, IntegrationEventTopics } from "@/common/events";
-import { type IUsersService, IUsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
+import { EventInboxToken, IEventInbox } from "@/common/events/services/IEventInbox";
+import { type IUsersService, UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
 
 @Controller()
 export class UsersSubscriber {
     private readonly logger = new Logger(UsersSubscriber.name);
 
-    public constructor(@Inject(IUsersServiceToken) private usersService: IUsersService) {}
+    public constructor(
+        @Inject(UsersServiceToken)
+        private readonly usersService: IUsersService,
+        @Inject(EventInboxToken)
+        private readonly inbox: IEventInbox
+    ) {}
 
     @EventPattern(IntegrationEventTopics.account.registered)
     async onUserRegistered(@Payload() payload: AccountRegisteredEventPayload) {

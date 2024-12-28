@@ -10,6 +10,7 @@ import {
     type AccountRequestedPasswordResetEventPayload,
     IntegrationEventTopics,
 } from "@/common/events";
+import { EventInboxToken, IEventInbox } from "@/common/events/services/IEventInbox";
 import { EmailDeliveryError } from "@/modules/mail/errors/EmailDelivery.error";
 import { type IMailerService, IMailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
 import { PasswordResetRequestedEmail } from "@/modules/mail/templates/PasswordResetRequestedEmail";
@@ -24,7 +25,9 @@ export class UserSubscriber {
 
     public constructor(
         @Inject(IMailerServiceToken) private mailer: IMailerService,
-        private configService: ConfigService
+        private readonly configService: ConfigService,
+        @Inject(EventInboxToken)
+        private readonly inbox: IEventInbox
     ) {
         this.logger = new Logger(UserSubscriber.name);
         this.appUrl = configService.getOrThrow<string>("client.url.base");

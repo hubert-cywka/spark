@@ -1,10 +1,10 @@
-import { Outbox } from "./services/Outbox";
-import { type OutboxFactory } from "./services/Outbox.factory";
+import { type EventBoxFactory } from "./services/EventBox.factory";
+import { EventOutbox } from "./services/EventOutbox";
 import { IntegrationEventTopics } from "./types/IntegrationEventTopics";
 import { IntegrationEventsModule } from "./IntegrationEvents.module";
 
 export { IntegrationEventsModule };
-export { type OutboxFactory, Outbox };
+export { type EventBoxFactory, EventOutbox };
 export { IntegrationEventTopics };
 export * from "./types/account/AccountActivatedEvent";
 export * from "./types/account/AccountActivationTokenRequestedEvent";

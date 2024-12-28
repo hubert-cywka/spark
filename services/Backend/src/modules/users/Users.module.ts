@@ -5,15 +5,17 @@ import { ClsPluginTransactional } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import { ClsModule } from "nestjs-cls";
 
+import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
-import { type IOutbox, OutboxToken } from "@/common/events/services/IOutbox";
-import { OutboxFactory, OutboxFactoryToken } from "@/common/events/services/Outbox.factory";
+import { EventBoxFactory, EventBoxFactoryToken } from "@/common/events/services/EventBox.factory";
+import { EventInboxToken } from "@/common/events/services/IEventInbox";
+import { type IEventOutbox, EventOutboxToken } from "@/common/events/services/IEventOutbox";
 import { UserEntity } from "@/modules/users/entities/User.entity";
-import { USERS_MODULE_DATA_SOURCE } from "@/modules/users/infrastructure/database/constants/connectionName";
+import { USERS_MODULE_DATA_SOURCE } from "@/modules/users/infrastructure/database/constants";
 import { DatabaseModule } from "@/modules/users/infrastructure/database/Database.module";
 import { UsersService } from "@/modules/users/services/implementations/Users.service";
-import { UsersOutboxFactory } from "@/modules/users/services/implementations/UsersOutbox.factory";
-import { IUsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
+import { UsersEventBoxFactory } from "@/modules/users/services/implementations/UsersEventBox.factory";
+import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
 import { UsersResolver } from "@/modules/users/Users.resolver";
 import { UsersSubscriber } from "@/modules/users/Users.subscriber";
 
@@ -33,25 +35,30 @@ import { UsersSubscriber } from "@/modules/users/Users.subscriber";
                 }),
             ],
         }),
-        TypeOrmModule.forFeature([UserEntity, OutboxEventEntity], USERS_MODULE_DATA_SOURCE),
+        TypeOrmModule.forFeature([UserEntity, OutboxEventEntity, InboxEventEntity], USERS_MODULE_DATA_SOURCE),
     ],
     providers: [
         UsersResolver,
         {
-            provide: OutboxFactoryToken,
-            useClass: UsersOutboxFactory,
+            provide: EventBoxFactoryToken,
+            useClass: UsersEventBoxFactory,
         },
         {
-            provide: OutboxToken,
-            useFactory: (factory: OutboxFactory) => factory.create("UsersOutbox"),
-            inject: [OutboxFactoryToken],
+            provide: EventOutboxToken,
+            useFactory: (factory: EventBoxFactory) => factory.createOutbox("UsersOutbox"),
+            inject: [EventBoxFactoryToken],
         },
-        { provide: IUsersServiceToken, useClass: UsersService },
+        {
+            provide: EventInboxToken,
+            useFactory: (factory: EventBoxFactory) => factory.createInbox("UsersInbox"),
+            inject: [EventBoxFactoryToken],
+        },
+        { provide: UsersServiceToken, useClass: UsersService },
     ],
     controllers: [UsersSubscriber],
 })
 export class UsersModule {
-    public constructor(@Inject(OutboxToken) private readonly outbox: IOutbox) {}
+    public constructor(@Inject(EventOutboxToken) private readonly outbox: IEventOutbox) {}
 
     @Cron("*/5 * * * * *")
     private async processOutbox() {

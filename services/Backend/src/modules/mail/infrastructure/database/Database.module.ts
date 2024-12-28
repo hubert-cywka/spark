@@ -4,19 +4,19 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { initializeDatabase } from "@/common/utils/initializeDatabase";
 import { logger } from "@/lib/logger";
-import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
+import { MAIL_MODULE_DATA_SOURCE } from "@/modules/mail/infrastructure/database/constants";
 
 @Module({
     imports: [
         TypeOrmModule.forRootAsync({
-            name: IDENTITY_MODULE_DATA_SOURCE,
+            name: MAIL_MODULE_DATA_SOURCE,
             useFactory: async (configService: ConfigService) => {
                 const options = {
-                    port: configService.getOrThrow<number>("modules.auth.database.port"),
-                    username: configService.getOrThrow<string>("modules.auth.database.username"),
-                    password: configService.getOrThrow<string>("modules.auth.database.password"),
-                    host: configService.getOrThrow<string>("modules.auth.database.host"),
-                    database: configService.getOrThrow<string>("modules.auth.database.name"),
+                    port: configService.getOrThrow<number>("modules.mail.database.port"),
+                    username: configService.getOrThrow<string>("modules.mail.database.username"),
+                    password: configService.getOrThrow<string>("modules.mail.database.password"),
+                    host: configService.getOrThrow<string>("modules.mail.database.host"),
+                    database: configService.getOrThrow<string>("modules.mail.database.name"),
                 };
 
                 await initializeDatabase(
