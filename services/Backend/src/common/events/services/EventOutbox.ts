@@ -8,7 +8,7 @@ import { IsNull, Repository } from "typeorm";
 import { type IEventOutbox } from "./IEventOutbox";
 
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
-import type { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
+import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 
 const MAX_PAGE_SIZE = 25;
 
@@ -30,7 +30,7 @@ export class EventOutbox implements IEventOutbox {
         const entity = repository.create({
             id: event.getId(),
             topic: event.getTopic(),
-            payload: event.getPayload() as object,
+            payload: event.getPayload(),
             createdAt: event.getCreatedAt(),
         });
 
@@ -76,9 +76,10 @@ export class EventOutbox implements IEventOutbox {
         return results.length;
     }
 
-    private publish({ topic, payload }: OutboxEventEntity) {
-        this.client.emit(topic, payload);
-        this.logger.log({ topic, payload }, "Published event");
+    private publish(entity: OutboxEventEntity) {
+        const event = IntegrationEvent.fromEntity(entity);
+        this.client.emit(event.getTopic(), event);
+        this.logger.log(event, "Published event");
     }
 
     private getRepository(): Repository<OutboxEventEntity> {

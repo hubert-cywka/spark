@@ -7,7 +7,7 @@ export type AccountActivationTokenRequestedEventPayload = {
     email: string;
 };
 
-export class AccountActivationTokenRequestedEvent extends IntegrationEvent {
+export class AccountActivationTokenRequestedEvent extends IntegrationEvent<AccountActivationTokenRequestedEventPayload> {
     public constructor(payload: AccountActivationTokenRequestedEventPayload) {
         super(IntegrationEventTopics.account.activationTokenRequested, payload);
     }

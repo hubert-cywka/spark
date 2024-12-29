@@ -4,4 +4,5 @@ export const EventInboxToken = Symbol("EventInbox");
 
 export interface IEventInbox {
     enqueue(event: IntegrationEvent): Promise<void>;
+    process(): Promise<void>;
 }

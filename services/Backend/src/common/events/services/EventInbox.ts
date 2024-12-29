@@ -1,9 +1,10 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import dayjs from "dayjs";
 import { Repository } from "typeorm";
 
-import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { IEventInbox } from "@/common/events/services/IEventInbox";
 import type { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 
@@ -26,15 +27,21 @@ export class EventInbox implements IEventInbox {
         const entity = repository.create({
             id: event.getId(),
             topic: event.getTopic(),
-            payload: event.getPayload() as object,
+            payload: event.getPayload(),
             createdAt: event.getCreatedAt(),
+            receivedAt: dayjs(),
         });
 
         await repository.save(entity);
         this.logger.log(event, "Event enqueued.");
     }
 
-    private getRepository(): Repository<OutboxEventEntity> {
-        return this.txHost.tx.getRepository(OutboxEventEntity);
+    public async process(): Promise<void> {
+        // TODO: Implement
+        this.logger.log("Processing inbox");
+    }
+
+    private getRepository(): Repository<InboxEventEntity> {
+        return this.txHost.tx.getRepository(InboxEventEntity);
     }
 }

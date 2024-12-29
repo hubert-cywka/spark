@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("inbox_event")
-export class InboxEventEntity {
+export class InboxEventEntity<T = unknown> {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
@@ -9,7 +9,7 @@ export class InboxEventEntity {
     topic!: string;
 
     @Column({ type: "jsonb" })
-    payload!: object;
+    payload!: T;
 
     @Column({ type: "int", default: 0 })
     attempts!: number;
@@ -18,7 +18,7 @@ export class InboxEventEntity {
     createdAt!: Date;
 
     @Column({ type: "timestamptz" })
-    receivedAt!: Date | null;
+    receivedAt!: Date;
 
     @Column({ type: "timestamptz", nullable: true })
     processedAt!: Date | null;

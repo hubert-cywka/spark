@@ -1,9 +1,8 @@
-import { Inject, Module } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { APP_GUARD } from "@nestjs/core";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
-import { Cron } from "@nestjs/schedule";
 import { ThrottlerModule } from "@nestjs/throttler";
 import { getDataSourceToken } from "@nestjs/typeorm";
 import { ClsPluginTransactional } from "@nestjs-cls/transactional";
@@ -16,7 +15,6 @@ import { DatabaseModule } from "@/common/database/Database.module";
 import { IntegrationEventsModule } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
-import { type IEventOutbox, EventOutboxToken } from "@/common/events/services/IEventOutbox";
 import { ThrottlingGuard } from "@/common/guards/Throttling.guard";
 import { AccountController } from "@/modules/identity/account/controllers/Account.controller";
 import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccountEntity";
@@ -140,11 +138,4 @@ import { IdentityEventBoxFactory } from "@/modules/identity/shared/services/Iden
         AccessTokenStrategy,
     ],
 })
-export class IdentityModule {
-    public constructor(@Inject(EventOutboxToken) private readonly outbox: IEventOutbox) {}
-
-    @Cron("*/5 * * * * *")
-    private async processOutbox() {
-        await this.outbox.process();
-    }
-}
+export class IdentityModule {}

@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("outbox_event")
-export class OutboxEventEntity {
+export class OutboxEventEntity<T = unknown> {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
@@ -9,7 +9,7 @@ export class OutboxEventEntity {
     topic!: string;
 
     @Column({ type: "jsonb" })
-    payload!: object;
+    payload!: T;
 
     @Column({ type: "int", default: 0 })
     attempts!: number;

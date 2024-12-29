@@ -4,13 +4,14 @@ import { EventPattern, Payload } from "@nestjs/microservices";
 
 import { whenError } from "@/common/errors/whenError";
 import {
-    type AccountActivatedEventPayload,
-    type AccountActivationTokenRequestedEventPayload,
-    type AccountPasswordUpdatedEventPayload,
-    type AccountRequestedPasswordResetEventPayload,
+    AccountActivatedEvent,
+    AccountActivationTokenRequestedEvent,
+    AccountPasswordUpdatedEvent,
+    AccountRequestedPasswordResetEvent,
     IntegrationEventTopics,
 } from "@/common/events";
 import { type IEventInbox, EventInboxToken } from "@/common/events/services/IEventInbox";
+import { HydratePipe } from "@/common/pipes/Hydrate.pipe";
 import { EmailDeliveryError } from "@/modules/mail/errors/EmailDelivery.error";
 import { type IMailerService, IMailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
 import { PasswordResetRequestedEmail } from "@/modules/mail/templates/PasswordResetRequestedEmail";
@@ -34,7 +35,11 @@ export class UserSubscriber {
     }
 
     @EventPattern(IntegrationEventTopics.account.activationTokenRequested)
-    public async onUserActivationTokenRequested(@Payload() payload: AccountActivationTokenRequestedEventPayload) {
+    public async onUserActivationTokenRequested(
+        @Payload(new HydratePipe(AccountActivationTokenRequestedEvent))
+        event: AccountActivationTokenRequestedEvent
+    ) {
+        const payload = event.getPayload();
         this.logger.log(
             {
                 topic: IntegrationEventTopics.account.activationTokenRequested,
@@ -53,7 +58,11 @@ export class UserSubscriber {
     }
 
     @EventPattern(IntegrationEventTopics.account.passwordResetRequested)
-    public async onPasswordResetRequested(@Payload() payload: AccountRequestedPasswordResetEventPayload) {
+    public async onPasswordResetRequested(
+        @Payload(new HydratePipe(AccountRequestedPasswordResetEvent))
+        event: AccountRequestedPasswordResetEvent
+    ) {
+        const payload = event.getPayload();
         this.logger.log(
             {
                 topic: IntegrationEventTopics.account.passwordResetRequested,
@@ -72,7 +81,11 @@ export class UserSubscriber {
     }
 
     @EventPattern(IntegrationEventTopics.account.passwordUpdated)
-    public async onPasswordUpdated(@Payload() payload: AccountPasswordUpdatedEventPayload) {
+    public async onPasswordUpdated(
+        @Payload(new HydratePipe(AccountPasswordUpdatedEvent))
+        event: AccountPasswordUpdatedEvent
+    ) {
+        const payload = event.getPayload();
         this.logger.log({ topic: IntegrationEventTopics.account.passwordUpdated, payload }, "Received an event.");
 
         try {
@@ -83,7 +96,11 @@ export class UserSubscriber {
     }
 
     @EventPattern(IntegrationEventTopics.account.activated)
-    public async onUserActivated(@Payload() payload: AccountActivatedEventPayload) {
+    public async onUserActivated(
+        @Payload(new HydratePipe(AccountActivatedEvent))
+        event: AccountActivatedEvent
+    ) {
+        const payload = event.getPayload();
         this.logger.log({ topic: IntegrationEventTopics.account.activated, payload }, "Received an event.");
 
         try {

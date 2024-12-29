@@ -3,8 +3,9 @@ import { EventPattern, Payload } from "@nestjs/microservices";
 
 import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { whenError } from "@/common/errors/whenError";
-import { type AccountActivatedEventPayload, type AccountRegisteredEventPayload, IntegrationEventTopics } from "@/common/events";
+import { AccountActivatedEvent, AccountRegisteredEvent, IntegrationEventTopics } from "@/common/events";
 import { type IEventInbox, EventInboxToken } from "@/common/events/services/IEventInbox";
+import { HydratePipe } from "@/common/pipes/Hydrate.pipe";
 import { type IUsersService, UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
 
 @Controller()
@@ -19,7 +20,11 @@ export class UsersSubscriber {
     ) {}
 
     @EventPattern(IntegrationEventTopics.account.registered)
-    async onUserRegistered(@Payload() payload: AccountRegisteredEventPayload) {
+    async onUserRegistered(
+        @Payload(new HydratePipe(AccountRegisteredEvent))
+        event: AccountRegisteredEvent
+    ) {
+        const payload = event.getPayload();
         this.logger.log({ payload }, `Received ${IntegrationEventTopics.account.registered} event.`);
         const { account } = payload;
 
@@ -31,7 +36,11 @@ export class UsersSubscriber {
     }
 
     @EventPattern(IntegrationEventTopics.account.activated)
-    async onUserActivated(@Payload() payload: AccountActivatedEventPayload) {
+    async onUserActivated(
+        @Payload(new HydratePipe(AccountActivatedEvent))
+        event: AccountActivatedEvent
+    ) {
+        const payload = event.getPayload();
         this.logger.log({ payload }, `Received ${IntegrationEventTopics.account.activated} event.`);
         const { id } = payload;
 

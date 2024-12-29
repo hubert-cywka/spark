@@ -12,7 +12,7 @@ export type AccountRegisteredEventPayload = {
     };
 };
 
-export class AccountRegisteredEvent extends IntegrationEvent {
+export class AccountRegisteredEvent extends IntegrationEvent<AccountRegisteredEventPayload> {
     public constructor(payload: AccountRegisteredEventPayload) {
         super(IntegrationEventTopics.account.registered, payload);
     }
