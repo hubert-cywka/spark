@@ -6,7 +6,7 @@ import {
     AccountPasswordUpdatedEvent,
     AccountRequestedPasswordResetEvent,
 } from "@/common/events";
-import { type IEventOutbox, EventOutboxToken } from "@/common/events/services/IEventOutbox";
+import { type IEventOutbox, EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
 import { type IAccountPublisherService } from "@/modules/identity/account/services/interfaces/IAccountPublisher.service";
 
 export class AccountPublisherService implements IAccountPublisherService {

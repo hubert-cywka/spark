@@ -2,14 +2,20 @@ import { Controller, Inject, Logger } from "@nestjs/common";
 import { EventPattern, Payload } from "@nestjs/microservices";
 import { Interval } from "@nestjs/schedule";
 
-import { IInboxEventHandler, InboxEventHandlersToken, IntegrationEventTopics } from "@/common/events";
-import { type IEventInbox, EventInboxToken } from "@/common/events/services/interfaces/IEventInbox";
-import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
+import {
+    type IEventInbox,
+    EventInboxToken,
+    IInboxEventHandler,
+    InboxEventHandlersToken,
+    IntegrationEvent,
+    IntegrationEventTopics,
+} from "@/common/events";
 import { HydratePipe } from "@/common/pipes/Hydrate.pipe";
 
+// TODO: There is some duplication in all pubsub subscribers
 @Controller()
-export class UsersSubscriber {
-    private readonly logger = new Logger(UsersSubscriber.name);
+export class MailSubscriber {
+    private readonly logger = new Logger(MailSubscriber.name);
 
     public constructor(
         @Inject(EventInboxToken)
@@ -18,7 +24,12 @@ export class UsersSubscriber {
         private readonly handlers: IInboxEventHandler[]
     ) {}
 
-    @EventPattern([IntegrationEventTopics.account.registered, IntegrationEventTopics.account.activated])
+    @EventPattern([
+        IntegrationEventTopics.account.activationTokenRequested,
+        IntegrationEventTopics.account.passwordResetRequested,
+        IntegrationEventTopics.account.passwordUpdated,
+        IntegrationEventTopics.account.activated,
+    ])
     private async onEventReceived(@Payload(new HydratePipe(IntegrationEvent)) event: IntegrationEvent) {
         this.logger.log(event, `Received '${event.getTopic()}' event.`);
         await this.inbox.enqueue(event);

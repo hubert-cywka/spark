@@ -5,7 +5,7 @@ import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-t
 
 import { EventOutbox, IEventBoxFactory } from "@/common/events";
 import { IntegrationEventsClientProxyToken } from "@/common/events/IntegrationEvents.module";
-import { EventInbox } from "@/common/events/services/EventInbox";
+import { EventInbox } from "@/common/events/services/implementations/EventInbox";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
 @Injectable()

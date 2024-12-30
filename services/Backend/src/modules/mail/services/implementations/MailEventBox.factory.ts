@@ -5,15 +5,15 @@ import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-t
 
 import { EventOutbox, IEventBoxFactory } from "@/common/events";
 import { IntegrationEventsClientProxyToken } from "@/common/events/IntegrationEvents.module";
-import { EventInbox } from "@/common/events/services/EventInbox";
-import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
+import { EventInbox } from "@/common/events/services/implementations/EventInbox";
+import { MAIL_MODULE_DATA_SOURCE } from "@/modules/mail/infrastructure/database/constants";
 
 @Injectable()
 export class MailEventBoxFactory implements IEventBoxFactory {
     public constructor(
         @Inject(IntegrationEventsClientProxyToken)
         private readonly clientProxy: ClientProxy,
-        @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
+        @InjectTransactionHost(MAIL_MODULE_DATA_SOURCE)
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
     ) {}
 

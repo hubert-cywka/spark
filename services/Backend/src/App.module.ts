@@ -19,6 +19,7 @@ import { UsersModule } from "@/modules/users/Users.module";
             isGlobal: true,
         }),
         LoggerModule.forRoot({ pinoHttp: loggerOptions }),
+        // TODO: Use NATS JetStream for at-least-once delivery guarantee
         IntegrationEventsModule.forRootAsync({
             global: true,
             useFactory: (configService: ConfigService) => ({

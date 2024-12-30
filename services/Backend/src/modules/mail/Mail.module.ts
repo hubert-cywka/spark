@@ -6,16 +6,41 @@ import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-t
 import { ClsModule } from "nestjs-cls";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { IntegrationEventsModule } from "@/common/events";
+import { IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import { AccountActivatedEventHandler } from "@/modules/mail/events/AccountActivatedEvent.handler";
+import { AccountActivationTokenRequestedEventHandler } from "@/modules/mail/events/AccountActivationTokenRequestedEvent.handler";
+import { AccountPasswordUpdatedEventHandler } from "@/modules/mail/events/AccountPasswordUpdatedEvent.handler";
+import { AccountRequestedPasswordResetEventHandler } from "@/modules/mail/events/AccountRequestedPasswordResetEvent.handler";
 import { MAIL_MODULE_DATA_SOURCE } from "@/modules/mail/infrastructure/database/constants";
+import { InitializeMailModule1735496584811 } from "@/modules/mail/infrastructure/database/migrations/1735496584811-InitializeMailModule";
+import { MailSubscriber } from "@/modules/mail/Mail.subscriber";
 import { MailerService } from "@/modules/mail/services/implementations/Mailer.service";
 import { MailEventBoxFactory } from "@/modules/mail/services/implementations/MailEventBox.factory";
 import { IMailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
-import { UserSubscriber } from "@/modules/mail/User.subscriber";
 
 @Module({
+    providers: [
+        {
+            provide: IMailerServiceToken,
+            useClass: MailerService,
+        },
+        AccountActivatedEventHandler,
+        AccountActivationTokenRequestedEventHandler,
+        AccountPasswordUpdatedEventHandler,
+        AccountRequestedPasswordResetEventHandler,
+        {
+            provide: InboxEventHandlersToken,
+            useFactory: (...handlers: IInboxEventHandler[]) => handlers,
+            inject: [
+                AccountActivatedEventHandler,
+                AccountActivationTokenRequestedEventHandler,
+                AccountPasswordUpdatedEventHandler,
+                AccountRequestedPasswordResetEventHandler,
+            ],
+        },
+    ],
     imports: [
         DatabaseModule.forRootAsync(MAIL_MODULE_DATA_SOURCE, [OutboxEventEntity, InboxEventEntity], {
             useFactory: (configService: ConfigService) => ({
@@ -24,11 +49,14 @@ import { UserSubscriber } from "@/modules/mail/User.subscriber";
                 password: configService.getOrThrow<string>("modules.mail.database.password"),
                 host: configService.getOrThrow<string>("modules.mail.database.host"),
                 database: configService.getOrThrow<string>("modules.mail.database.name"),
-                migrations: [],
+                migrations: [InitializeMailModule1735496584811],
             }),
             inject: [ConfigService],
         }),
-        IntegrationEventsModule.forFeature(MailEventBoxFactory, MailModule.name),
+        IntegrationEventsModule.forFeature({
+            eventBoxFactoryClass: MailEventBoxFactory,
+            context: MailModule.name,
+        }),
         ClsModule.forRoot({
             middleware: {
                 mount: true,
@@ -43,13 +71,6 @@ import { UserSubscriber } from "@/modules/mail/User.subscriber";
             ],
         }),
     ],
-    providers: [
-        {
-            provide: IMailerServiceToken,
-            useClass: MailerService,
-        },
-    ],
-    controllers: [UserSubscriber],
-    exports: [IMailerServiceToken],
+    controllers: [MailSubscriber],
 })
 export class MailModule {}

@@ -4,9 +4,9 @@ import { SchedulerRegistry } from "@nestjs/schedule";
 
 import { type IntegrationEventsModuleOptions } from "./types";
 
-import { EventBoxFactoryToken, IEventBoxFactory } from "@/common/events/services/IEventBox.factory";
-import { EventInboxToken, IEventInbox } from "@/common/events/services/IEventInbox";
-import { EventOutboxToken, IEventOutbox } from "@/common/events/services/IEventOutbox";
+import { EventBoxFactoryToken, IEventBoxFactory } from "@/common/events/services/interfaces/IEventBox.factory";
+import { EventInboxToken } from "@/common/events/services/interfaces/IEventInbox";
+import { type IEventOutbox, EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
 
 const IntegrationEventsModuleOptionsToken = Symbol("IntegrationEventsModuleOptions");
 export const IntegrationEventsClientProxyToken = Symbol("IntegrationEventsClientProxy");
@@ -14,8 +14,11 @@ export const IntegrationEventsClientProxyToken = Symbol("IntegrationEventsClient
 @Module({})
 export class IntegrationEventsModule {
     static forRootAsync(options: {
-        useFactory: (...args: any[]) => IntegrationEventsModuleOptions | Promise<IntegrationEventsModuleOptions>; // eslint-disable-line @typescript-eslint/no-explicit-any
-        inject?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+        // TODO: Types
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        useFactory: (...args: any[]) => IntegrationEventsModuleOptions | Promise<IntegrationEventsModuleOptions>;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        inject?: any[];
         global?: boolean;
     }): DynamicModule {
         return {
@@ -42,44 +45,45 @@ export class IntegrationEventsModule {
         };
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    static forFeature<T extends IEventBoxFactory>(factoryClass: new (...args: any[]) => T, context: string): DynamicModule {
+    static forFeature<T extends IEventBoxFactory>({
+        eventBoxFactoryClass,
+        context,
+        outboxProcessingInterval = 5000,
+    }: {
+        // TODO: Types
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        eventBoxFactoryClass: new (...args: any[]) => T;
+        context: string;
+        outboxProcessingInterval?: number;
+    }): DynamicModule {
         return {
             module: IntegrationEventsModule,
             providers: [
                 {
                     provide: EventBoxFactoryToken,
-                    useClass: factoryClass,
+                    useClass: eventBoxFactoryClass,
                 },
+
                 {
                     provide: EventOutboxToken,
                     useFactory: (factory: IEventBoxFactory) => factory.createOutbox(`${context}_Outbox`),
                     inject: [EventBoxFactoryToken],
                 },
+
                 {
                     provide: EventInboxToken,
                     useFactory: (factory: IEventBoxFactory) => factory.createInbox(`${context}_Inbox`),
                     inject: [EventBoxFactoryToken],
                 },
+
                 {
-                    provide: `${context}_OutboxProcessorProvider`,
+                    provide: `${context}_OutboxProcessorJob`,
                     useFactory: (schedulerRegistry: SchedulerRegistry, outbox: IEventOutbox) => {
-                        // TODO: Make interval configurable
-                        const interval = setInterval(async () => await outbox.process(), 5000);
+                        const interval = setInterval(async () => await outbox.process(), outboxProcessingInterval);
                         schedulerRegistry.addInterval(`${context}_OutboxProcessor`, interval);
                         return interval;
                     },
                     inject: [SchedulerRegistry, EventOutboxToken],
-                },
-                {
-                    provide: `${context}_InboxProcessorProvider`,
-                    useFactory: (schedulerRegistry: SchedulerRegistry, inbox: IEventInbox) => {
-                        // TODO: Make interval configurable
-                        const interval = setInterval(async () => await inbox.process(), 5000);
-                        schedulerRegistry.addInterval(`${context}_InboxProcessor`, interval);
-                        return interval;
-                    },
-                    inject: [SchedulerRegistry, EventInboxToken],
                 },
             ],
             exports: [EventBoxFactoryToken, EventOutboxToken, EventInboxToken],

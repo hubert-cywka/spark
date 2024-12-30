@@ -1,10 +1,27 @@
-import { EventOutbox } from "./services/EventOutbox";
-import { type IEventBoxFactory } from "./services/IEventBox.factory";
+import { EventInbox } from "./services/implementations/EventInbox";
+import { EventOutbox } from "./services/implementations/EventOutbox";
+import { EventBoxFactoryToken, IEventBoxFactory } from "./services/interfaces/IEventBox.factory";
+import { EventInboxToken, IEventInbox } from "./services/interfaces/IEventInbox";
+import { EventOutboxToken, IEventOutbox } from "./services/interfaces/IEventOutbox";
+import { IInboxEventHandler, InboxEventHandlersToken } from "./services/interfaces/IInboxEventHandler";
+import { IntegrationEvent } from "./types/IntegrationEvent";
 import { IntegrationEventTopics } from "./types/IntegrationEventTopics";
 import { IntegrationEventsModule } from "./IntegrationEvents.module";
 
 export { IntegrationEventsModule };
-export { type IEventBoxFactory, EventOutbox };
+export {
+    type IEventBoxFactory,
+    type IEventInbox,
+    type IEventOutbox,
+    type IInboxEventHandler,
+    EventBoxFactoryToken,
+    EventInbox,
+    EventInboxToken,
+    EventOutbox,
+    EventOutboxToken,
+    InboxEventHandlersToken,
+    IntegrationEvent,
+};
 export { IntegrationEventTopics };
 export * from "./types/account/AccountActivatedEvent";
 export * from "./types/account/AccountActivationTokenRequestedEvent";

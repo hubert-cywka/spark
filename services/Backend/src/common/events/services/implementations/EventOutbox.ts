@@ -5,9 +5,8 @@ import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-t
 import dayjs from "dayjs";
 import { IsNull, Repository } from "typeorm";
 
-import { type IEventOutbox } from "./IEventOutbox";
-
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 
 const MAX_PAGE_SIZE = 25;
@@ -35,7 +34,7 @@ export class EventOutbox implements IEventOutbox {
         });
 
         await repository.save(entity);
-        this.logger.log(event, "Event enqueued.");
+        this.logger.log(event, "Event added to outbox.");
     }
 
     public async process() {
@@ -53,7 +52,7 @@ export class EventOutbox implements IEventOutbox {
     private async processBatch(pageSize: number, offset: number) {
         const repository = this.getRepository();
 
-        const events = await repository.find({
+        const enities = await repository.find({
             where: {
                 processedAt: IsNull(),
             },
@@ -64,16 +63,16 @@ export class EventOutbox implements IEventOutbox {
             skip: offset,
         });
 
-        events.forEach((event) => this.publish(event));
+        enities.forEach((event) => this.publish(event));
         const now = dayjs();
 
-        const processedEvents = events.map((event) => ({
+        const processedEvents = enities.map((event) => ({
             ...event,
             processedAt: now,
-            attempts: event.attempts++,
+            attempts: ++event.attempts,
         }));
-        const results = await repository.save(processedEvents);
-        return results.length;
+        await repository.save(processedEvents);
+        return enities.length;
     }
 
     private publish(entity: OutboxEventEntity) {

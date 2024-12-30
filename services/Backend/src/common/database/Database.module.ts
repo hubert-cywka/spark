@@ -10,13 +10,15 @@ type DatabaseModuleOptions = {
     password: string;
     host: string;
     database: string;
-    migrations: string[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    migrations: any[]; // TODO: Types
 };
 
 @Module({})
 export class DatabaseModule {
     static forRootAsync(
         dataSource: string,
+        // TODO: Types
         entities: Function[], // eslint-disable-line @typescript-eslint/ban-types
         options: {
             useFactory: (...args: any[]) => DatabaseModuleOptions | Promise<DatabaseModuleOptions>; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -43,7 +45,7 @@ export class DatabaseModule {
                         return {
                             ...dbOptions,
                             type: "postgres",
-                            logging: true,
+                            logging: false,
                             autoLoadEntities: true,
                             migrationsRun: true,
                             synchronize: false,

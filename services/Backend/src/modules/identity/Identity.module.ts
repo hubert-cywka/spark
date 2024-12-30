@@ -12,7 +12,7 @@ import { ClsModule } from "nestjs-cls";
 import { AuthenticationController } from "./authentication/controllers/Authentication.controller";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { IntegrationEventsModule } from "@/common/events";
+import { IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { ThrottlingGuard } from "@/common/guards/Throttling.guard";
@@ -31,6 +31,7 @@ import { IManagedAccountServiceToken } from "@/modules/identity/account/services
 import { ISingleUseTokenServiceToken } from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
 import { OpenIDConnectController } from "@/modules/identity/authentication/controllers/OpenIDConnect.controller";
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
+import { AccountPasswordUpdatedEventHandler } from "@/modules/identity/authentication/events/AccountPasswordUpdatedEvent.handler";
 import { AuthenticationService } from "@/modules/identity/authentication/services/implementations/Authentication.service";
 import { AuthPublisherService } from "@/modules/identity/authentication/services/implementations/AuthPublisher.service";
 import { OIDCProviderFactory } from "@/modules/identity/authentication/services/implementations/OIDCProvider.factory";
@@ -43,60 +44,10 @@ import { AccessTokenStrategy } from "@/modules/identity/authentication/strategie
 import { IRefreshTokenCookieStrategyToken } from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
 import { SecureRefreshTokenCookieStrategy } from "@/modules/identity/authentication/strategies/refreshToken/SecureRefreshTokenCookie.strategy";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
+import { InitializeIdentityModule1735496597920 } from "@/modules/identity/infrastructure/database/migrations/1735496597920-InitializeIdentityModule";
 import { IdentityEventBoxFactory } from "@/modules/identity/shared/services/IdentityEventBox.factory";
 
 @Module({
-    imports: [
-        DatabaseModule.forRootAsync(
-            IDENTITY_MODULE_DATA_SOURCE,
-            [
-                RefreshTokenEntity,
-                SingleUseTokenEntity,
-                BaseAccountEntity,
-                ManagedAccountEntity,
-                FederatedAccountEntity,
-                OutboxEventEntity,
-                InboxEventEntity,
-            ],
-            {
-                useFactory: (configService: ConfigService) => ({
-                    port: configService.getOrThrow<number>("modules.auth.database.port"),
-                    username: configService.getOrThrow<string>("modules.auth.database.username"),
-                    password: configService.getOrThrow<string>("modules.auth.database.password"),
-                    host: configService.getOrThrow<string>("modules.auth.database.host"),
-                    database: configService.getOrThrow<string>("modules.auth.database.name"),
-                    migrations: [],
-                }),
-                inject: [ConfigService],
-            }
-        ),
-        IntegrationEventsModule.forFeature(IdentityEventBoxFactory, IdentityModule.name),
-        ClsModule.forRoot({
-            middleware: {
-                mount: true,
-            },
-            plugins: [
-                new ClsPluginTransactional({
-                    connectionName: IDENTITY_MODULE_DATA_SOURCE,
-                    adapter: new TransactionalAdapterTypeOrm({
-                        dataSourceToken: getDataSourceToken(IDENTITY_MODULE_DATA_SOURCE),
-                    }),
-                }),
-            ],
-        }),
-        ThrottlerModule.forRootAsync({
-            useFactory: (configService: ConfigService) => [
-                {
-                    ttl: configService.getOrThrow<number>("modules.auth.throttle.ttl"),
-                    limit: configService.getOrThrow<number>("modules.auth.throttle.limit"),
-                },
-            ],
-            inject: [ConfigService],
-        }),
-        PassportModule,
-        JwtModule,
-    ],
-    controllers: [AuthenticationController, OpenIDConnectController, AccountController],
     providers: [
         { provide: APP_GUARD, useClass: ThrottlingGuard },
         {
@@ -136,6 +87,66 @@ import { IdentityEventBoxFactory } from "@/modules/identity/shared/services/Iden
             useClass: SecureRefreshTokenCookieStrategy,
         },
         AccessTokenStrategy,
+        AccountPasswordUpdatedEventHandler,
+        {
+            provide: InboxEventHandlersToken,
+            useFactory: (...handlers: IInboxEventHandler[]) => handlers,
+            inject: [AccessTokenStrategy, AccountPasswordUpdatedEventHandler],
+        },
     ],
+    imports: [
+        DatabaseModule.forRootAsync(
+            IDENTITY_MODULE_DATA_SOURCE,
+            [
+                RefreshTokenEntity,
+                SingleUseTokenEntity,
+                BaseAccountEntity,
+                ManagedAccountEntity,
+                FederatedAccountEntity,
+                OutboxEventEntity,
+                InboxEventEntity,
+            ],
+            {
+                useFactory: (configService: ConfigService) => ({
+                    port: configService.getOrThrow<number>("modules.auth.database.port"),
+                    username: configService.getOrThrow<string>("modules.auth.database.username"),
+                    password: configService.getOrThrow<string>("modules.auth.database.password"),
+                    host: configService.getOrThrow<string>("modules.auth.database.host"),
+                    database: configService.getOrThrow<string>("modules.auth.database.name"),
+                    migrations: [InitializeIdentityModule1735496597920],
+                }),
+                inject: [ConfigService],
+            }
+        ),
+        IntegrationEventsModule.forFeature({
+            eventBoxFactoryClass: IdentityEventBoxFactory,
+            context: IdentityModule.name,
+        }),
+        ClsModule.forRoot({
+            middleware: {
+                mount: true,
+            },
+            plugins: [
+                new ClsPluginTransactional({
+                    connectionName: IDENTITY_MODULE_DATA_SOURCE,
+                    adapter: new TransactionalAdapterTypeOrm({
+                        dataSourceToken: getDataSourceToken(IDENTITY_MODULE_DATA_SOURCE),
+                    }),
+                }),
+            ],
+        }),
+        ThrottlerModule.forRootAsync({
+            useFactory: (configService: ConfigService) => [
+                {
+                    ttl: configService.getOrThrow<number>("modules.auth.throttle.ttl"),
+                    limit: configService.getOrThrow<number>("modules.auth.throttle.limit"),
+                },
+            ],
+            inject: [ConfigService],
+        }),
+        PassportModule,
+        JwtModule,
+    ],
+    controllers: [AuthenticationController, OpenIDConnectController, AccountController],
 })
 export class IdentityModule {}

@@ -1,0 +1,24 @@
+import { Inject, Injectable } from "@nestjs/common";
+
+import { type IInboxEventHandler, AccountPasswordUpdatedEventPayload, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import {
+    type IRefreshTokenService,
+    IRefreshTokenServiceToken,
+} from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
+
+@Injectable()
+export class AccountPasswordUpdatedEventHandler implements IInboxEventHandler {
+    constructor(
+        @Inject(IRefreshTokenServiceToken)
+        private refreshTokenService: IRefreshTokenService
+    ) {}
+
+    public canHandle(topic: string): boolean {
+        return topic === IntegrationEventTopics.account.passwordUpdated;
+    }
+
+    public async handle(event: IntegrationEvent): Promise<void> {
+        const payload = event.getPayload() as AccountPasswordUpdatedEventPayload;
+        await this.refreshTokenService.invalidateAllByOwnerId(payload.id);
+    }
+}

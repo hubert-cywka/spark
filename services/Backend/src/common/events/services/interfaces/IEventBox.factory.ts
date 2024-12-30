@@ -1,5 +1,5 @@
-import { IEventInbox } from "@/common/events/services/IEventInbox";
-import { type IEventOutbox } from "@/common/events/services/IEventOutbox";
+import { IEventInbox } from "@/common/events/services/interfaces/IEventInbox";
+import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
 
 export const EventBoxFactoryToken = Symbol("EventBoxFactory");
 
