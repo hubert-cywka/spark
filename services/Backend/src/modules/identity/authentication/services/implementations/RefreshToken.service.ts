@@ -26,8 +26,8 @@ export class RefreshTokenService implements IRefreshTokenService {
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
     ) {
         this.logger = new Logger(RefreshTokenService.name);
-        this.signingSecret = configService.getOrThrow<string>("modules.auth.refreshToken.signingSecret");
-        this.expirationTimeInSeconds = configService.getOrThrow<number>("modules.auth.refreshToken.expirationTimeInSeconds");
+        this.signingSecret = configService.getOrThrow<string>("modules.identity.refreshToken.signingSecret");
+        this.expirationTimeInSeconds = configService.getOrThrow<number>("modules.identity.refreshToken.expirationTimeInSeconds");
     }
 
     public async issue(payload: AccessTokenPayload): Promise<string> {

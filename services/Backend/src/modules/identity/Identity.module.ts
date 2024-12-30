@@ -108,11 +108,11 @@ import { IdentityEventBoxFactory } from "@/modules/identity/shared/services/Iden
             ],
             {
                 useFactory: (configService: ConfigService) => ({
-                    port: configService.getOrThrow<number>("modules.auth.database.port"),
-                    username: configService.getOrThrow<string>("modules.auth.database.username"),
-                    password: configService.getOrThrow<string>("modules.auth.database.password"),
-                    host: configService.getOrThrow<string>("modules.auth.database.host"),
-                    database: configService.getOrThrow<string>("modules.auth.database.name"),
+                    port: configService.getOrThrow<number>("modules.identity.database.port"),
+                    username: configService.getOrThrow<string>("modules.identity.database.username"),
+                    password: configService.getOrThrow<string>("modules.identity.database.password"),
+                    host: configService.getOrThrow<string>("modules.identity.database.host"),
+                    database: configService.getOrThrow<string>("modules.identity.database.name"),
                     migrations: [InitializeIdentityModule1735496597920],
                 }),
                 inject: [ConfigService],
@@ -138,8 +138,8 @@ import { IdentityEventBoxFactory } from "@/modules/identity/shared/services/Iden
         ThrottlerModule.forRootAsync({
             useFactory: (configService: ConfigService) => [
                 {
-                    ttl: configService.getOrThrow<number>("modules.auth.throttle.ttl"),
-                    limit: configService.getOrThrow<number>("modules.auth.throttle.limit"),
+                    ttl: configService.getOrThrow<number>("modules.identity.throttle.ttl"),
+                    limit: configService.getOrThrow<number>("modules.identity.throttle.limit"),
                 },
             ],
             inject: [ConfigService],

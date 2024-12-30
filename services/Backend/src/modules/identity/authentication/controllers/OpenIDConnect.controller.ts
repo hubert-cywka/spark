@@ -64,7 +64,7 @@ export class OpenIDConnectController {
         const oidcRegisterPage = configService.getOrThrow<string>("client.url.oidcRegisterPage");
         const clientAppUrl = configService.getOrThrow<string>("client.url.base");
 
-        this.refreshTokenCookieMaxAge = configService.getOrThrow<number>("modules.auth.refreshToken.expirationTimeInSeconds") * 1000;
+        this.refreshTokenCookieMaxAge = configService.getOrThrow<number>("modules.identity.refreshToken.expirationTimeInSeconds") * 1000;
         this.clientOIDCLoginPageUrl = clientAppUrl.concat(oidcLoginPage);
         this.clientOIDCRegisterPageUrl = clientAppUrl.concat(oidcRegisterPage);
     }

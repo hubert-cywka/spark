@@ -41,7 +41,7 @@ export class AuthenticationController {
         private refreshTokenCookieStrategy: IRefreshTokenCookieStrategy,
         private configService: ConfigService
     ) {
-        this.refreshTokenCookieMaxAge = configService.getOrThrow<number>("modules.auth.refreshToken.expirationTimeInSeconds") * 1000;
+        this.refreshTokenCookieMaxAge = configService.getOrThrow<number>("modules.identity.refreshToken.expirationTimeInSeconds") * 1000;
     }
 
     @HttpCode(HttpStatus.CREATED)

@@ -46,8 +46,8 @@ export class AuthenticationService implements IAuthenticationService {
         @Inject(IAuthPublisherServiceToken)
         private publisher: IAuthPublisherService
     ) {
-        this.accessTokenSigningSecret = configService.getOrThrow<string>("modules.auth.jwt.signingSecret");
-        this.accessTokenExpirationTimeInSeconds = configService.getOrThrow<number>("modules.auth.jwt.expirationTimeInSeconds");
+        this.accessTokenSigningSecret = configService.getOrThrow<string>("modules.identity.jwt.signingSecret");
+        this.accessTokenExpirationTimeInSeconds = configService.getOrThrow<number>("modules.identity.jwt.expirationTimeInSeconds");
     }
 
     public async loginWithCredentials({ email, password }: LoginDto): Promise<AuthenticationResult> {

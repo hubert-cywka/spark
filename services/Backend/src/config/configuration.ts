@@ -49,7 +49,7 @@ export const AppConfig = () => ({
             },
         },
 
-        auth: {
+        identity: {
             jwt: {
                 signingSecret: process.env.JWT_SIGNING_SECRET,
                 expirationTimeInSeconds: parseInt(process.env.JWT_EXPIRATION_TIME_IN_SECONDS ?? ""),
