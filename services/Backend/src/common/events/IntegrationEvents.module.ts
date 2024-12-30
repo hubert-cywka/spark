@@ -7,6 +7,8 @@ import { type IntegrationEventsModuleOptions } from "./types";
 import { EventBoxFactoryToken, IEventBoxFactory } from "@/common/events/services/interfaces/IEventBox.factory";
 import { EventInboxToken } from "@/common/events/services/interfaces/IEventInbox";
 import { type IEventOutbox, EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
+import { ClassConstructor } from "@/types/Class";
+import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 
 const IntegrationEventsModuleOptionsToken = Symbol("IntegrationEventsModuleOptions");
 export const IntegrationEventsClientProxyToken = Symbol("IntegrationEventsClientProxy");
@@ -14,11 +16,8 @@ export const IntegrationEventsClientProxyToken = Symbol("IntegrationEventsClient
 @Module({})
 export class IntegrationEventsModule {
     static forRootAsync(options: {
-        // TODO: Types
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        useFactory: (...args: any[]) => IntegrationEventsModuleOptions | Promise<IntegrationEventsModuleOptions>;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        inject?: any[];
+        useFactory: UseFactory<IntegrationEventsModuleOptions>;
+        inject?: UseFactoryArgs;
         global?: boolean;
     }): DynamicModule {
         return {
@@ -50,9 +49,7 @@ export class IntegrationEventsModule {
         context,
         outboxProcessingInterval = 5000,
     }: {
-        // TODO: Types
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        eventBoxFactoryClass: new (...args: any[]) => T;
+        eventBoxFactoryClass: ClassConstructor<T>;
         context: string;
         outboxProcessingInterval?: number;
     }): DynamicModule {

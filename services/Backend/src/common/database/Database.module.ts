@@ -3,6 +3,8 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { initializeDatabase } from "@/common/utils/initializeDatabase";
 import { logger } from "@/lib/logger";
+import { EntityConstructor, MigrationConstructor } from "@/types/Database";
+import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 
 type DatabaseModuleOptions = {
     port: number;
@@ -10,19 +12,17 @@ type DatabaseModuleOptions = {
     password: string;
     host: string;
     database: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    migrations: any[]; // TODO: Types
+    migrations: MigrationConstructor[];
 };
 
 @Module({})
 export class DatabaseModule {
     static forRootAsync(
         dataSource: string,
-        // TODO: Types
-        entities: Function[], // eslint-disable-line @typescript-eslint/ban-types
+        entities: EntityConstructor[],
         options: {
-            useFactory: (...args: any[]) => DatabaseModuleOptions | Promise<DatabaseModuleOptions>; // eslint-disable-line @typescript-eslint/no-explicit-any
-            inject?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+            useFactory: UseFactory<DatabaseModuleOptions>;
+            inject?: UseFactoryArgs;
         }
     ): DynamicModule {
         return {
@@ -30,7 +30,7 @@ export class DatabaseModule {
             imports: [
                 TypeOrmModule.forRootAsync({
                     name: dataSource,
-                    useFactory: async (...args: unknown[]) => {
+                    useFactory: async (...args: UseFactoryArgs) => {
                         const dbOptions = await options.useFactory(...args);
 
                         await initializeDatabase(
