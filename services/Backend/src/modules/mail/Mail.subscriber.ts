@@ -1,6 +1,7 @@
 import { Controller, Inject, Logger } from "@nestjs/common";
-import { EventPattern, Payload } from "@nestjs/microservices";
+import { Ctx, EventPattern, Payload } from "@nestjs/microservices";
 import { Interval } from "@nestjs/schedule";
+import { NatsJetStreamContext } from "@nestjs-plugins/nestjs-nats-jetstream-transport";
 
 import {
     type IEventInbox,
@@ -25,14 +26,18 @@ export class MailSubscriber {
     ) {}
 
     @EventPattern([
-        IntegrationEventTopics.account.activationTokenRequested,
-        IntegrationEventTopics.account.passwordResetRequested,
-        IntegrationEventTopics.account.passwordUpdated,
-        IntegrationEventTopics.account.activated,
+        IntegrationEventTopics.account.activation.requested,
+        IntegrationEventTopics.account.password.resetRequested,
+        IntegrationEventTopics.account.password.updated,
+        IntegrationEventTopics.account.activation.completed,
     ])
-    private async onEventReceived(@Payload(new HydratePipe(IntegrationEvent)) event: IntegrationEvent) {
+    private async onEventReceived(
+        @Payload(new HydratePipe(IntegrationEvent)) event: IntegrationEvent,
+        @Ctx() context: NatsJetStreamContext
+    ) {
         this.logger.log(event, `Received '${event.getTopic()}' event.`);
         await this.inbox.enqueue(event);
+        context.message.ack();
     }
 
     @Interval(5000)

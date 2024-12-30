@@ -15,7 +15,7 @@ export class AccountRequestedPasswordResetEventHandler implements IInboxEventHan
     ) {}
 
     public canHandle(topic: string): boolean {
-        return topic === IntegrationEventTopics.account.passwordResetRequested;
+        return topic === IntegrationEventTopics.account.password.resetRequested;
     }
 
     public async handle(event: IntegrationEvent): Promise<void> {

@@ -15,7 +15,7 @@ export class AccountPasswordUpdatedEventHandler implements IInboxEventHandler {
     ) {}
 
     public canHandle(topic: string): boolean {
-        return topic === IntegrationEventTopics.account.passwordUpdated;
+        return topic === IntegrationEventTopics.account.password.updated;
     }
 
     public async handle(event: IntegrationEvent): Promise<void> {

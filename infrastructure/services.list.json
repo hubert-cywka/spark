@@ -7,8 +7,8 @@
         "port": 5432,
         "detachable": false
     },
-    "redis": {
-        "port": 6379,
+    "pubsub": {
+        "port": 4222,
         "detachable": false
     },
     "gateway": {

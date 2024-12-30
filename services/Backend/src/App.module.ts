@@ -19,16 +19,17 @@ import { UsersModule } from "@/modules/users/Users.module";
             isGlobal: true,
         }),
         LoggerModule.forRoot({ pinoHttp: loggerOptions }),
-        // TODO: Use NATS JetStream for at-least-once delivery guarantee
         IntegrationEventsModule.forRootAsync({
-            global: true,
-            useFactory: (configService: ConfigService) => ({
-                connection: {
-                    port: configService.getOrThrow<number>("pubsub.port"),
-                    host: configService.getOrThrow<string>("pubsub.host"),
-                },
-            }),
+            useFactory: (config: ConfigService) => {
+                return {
+                    connection: {
+                        port: config.getOrThrow<number>("pubsub.port"),
+                        host: config.getOrThrow<string>("pubsub.host"),
+                    },
+                };
+            },
             inject: [ConfigService],
+            global: true,
         }),
         ScheduleModule.forRoot(),
         IdentityModule,

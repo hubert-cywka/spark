@@ -9,6 +9,6 @@ export type AccountPasswordUpdatedEventPayload = {
 
 export class AccountPasswordUpdatedEvent extends IntegrationEvent<AccountPasswordUpdatedEventPayload> {
     public constructor(payload: AccountPasswordUpdatedEventPayload) {
-        super(IntegrationEventTopics.account.passwordUpdated, payload);
+        super(IntegrationEventTopics.account.password.updated, payload);
     }
 }

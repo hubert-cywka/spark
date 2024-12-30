@@ -12,11 +12,11 @@ services:
         networks:
             - services_network
 
-    redis:
-        image: redis:6.2-alpine
+    pubsub:
+        image: nats:2.10.24-alpine3.21
         restart: always
         volumes:
-            - redis_cache:/data
+            - pubsub_cache:/data
         networks:
             - services_network
 
@@ -27,7 +27,7 @@ services:
         networks:
             - services_network
         depends_on:
-            - redis
+            - pubsub
             - db
 
     frontend:
@@ -51,5 +51,5 @@ networks:
 volumes:
     postgres:
         external: false
-    redis_cache:
+    pubsub_cache:
         external: false

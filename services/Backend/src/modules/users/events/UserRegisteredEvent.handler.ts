@@ -10,7 +10,7 @@ export class UserRegisteredEventHandler implements IInboxEventHandler {
     public constructor(@Inject(UsersServiceToken) private readonly usersService: IUsersService) {}
 
     public canHandle(topic: string): boolean {
-        return topic === IntegrationEventTopics.account.registered;
+        return topic === IntegrationEventTopics.account.registration.completed;
     }
 
     async handle(event: IntegrationEvent): Promise<void> {

@@ -1,17 +1,15 @@
 import { type DynamicModule, Module } from "@nestjs/common";
-import { ClientProxyFactory, Transport } from "@nestjs/microservices";
 import { SchedulerRegistry } from "@nestjs/schedule";
-
-import { type IntegrationEventsModuleOptions } from "./types";
+import { NatsJetStreamTransport } from "@nestjs-plugins/nestjs-nats-jetstream-transport";
 
 import { EventBoxFactoryToken, IEventBoxFactory } from "@/common/events/services/interfaces/IEventBox.factory";
 import { EventInboxToken } from "@/common/events/services/interfaces/IEventInbox";
 import { type IEventOutbox, EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
+import { IntegrationEventsModuleOptions } from "@/common/events/types";
 import { ClassConstructor } from "@/types/Class";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 
 const IntegrationEventsModuleOptionsToken = Symbol("IntegrationEventsModuleOptions");
-export const IntegrationEventsClientProxyToken = Symbol("IntegrationEventsClientProxy");
 
 @Module({})
 export class IntegrationEventsModule {
@@ -28,18 +26,8 @@ export class IntegrationEventsModule {
                     useFactory: options.useFactory,
                     inject: options.inject || [],
                 },
-                {
-                    provide: IntegrationEventsClientProxyToken,
-                    useFactory: (moduleOptions: IntegrationEventsModuleOptions) => {
-                        return ClientProxyFactory.create({
-                            transport: Transport.REDIS,
-                            options: moduleOptions.connection,
-                        });
-                    },
-                    inject: [IntegrationEventsModuleOptionsToken],
-                },
             ],
-            exports: [IntegrationEventsClientProxyToken],
+            exports: [IntegrationEventsModuleOptionsToken],
             global: options.global,
         };
     }
@@ -82,6 +70,19 @@ export class IntegrationEventsModule {
                     },
                     inject: [SchedulerRegistry, EventOutboxToken],
                 },
+            ],
+            imports: [
+                NatsJetStreamTransport.registerAsync({
+                    useFactory: ({ connection }: IntegrationEventsModuleOptions) => {
+                        return {
+                            connectionOptions: {
+                                servers: `${connection.host}:${connection.port}`,
+                                name: `${context}_JetStreamPublisher`,
+                            },
+                        };
+                    },
+                    inject: [IntegrationEventsModuleOptionsToken],
+                }),
             ],
             exports: [EventBoxFactoryToken, EventOutboxToken, EventInboxToken],
         };

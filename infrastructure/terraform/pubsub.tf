@@ -22,7 +22,7 @@ resource "kubernetes_deployment" "pubsub" {
             spec {
                 container {
                     name  = "pubsub"
-                    image = "redis:6.2-alpine"
+                    image = "nats:2.10.24-alpine3.21"
 
                     port {
                         container_port = var.PUBSUB_PORT
@@ -31,6 +31,7 @@ resource "kubernetes_deployment" "pubsub" {
                         mount_path = "/data"
                         name       = "pubsub-storage"
                     }
+                    command = ["-js", "-m", "8222"]
                 }
                 volume {
                     name = "pubsub-storage"

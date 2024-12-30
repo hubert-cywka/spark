@@ -11,6 +11,7 @@ import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 
 const MAX_PAGE_SIZE = 10;
 
+// TODO: Implement circuit breaker (based on number of processing attempts) and remove already processed events after X days.
 @Injectable()
 export class EventInbox implements IEventInbox {
     private readonly logger;

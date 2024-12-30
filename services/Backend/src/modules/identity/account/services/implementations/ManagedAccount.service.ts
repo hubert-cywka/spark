@@ -120,11 +120,11 @@ export class ManagedAccountService implements IManagedAccountService {
         }
 
         this.assertEligibilityForActivation(account);
-        const { email, id } = await this.getRepository().save({
+        await this.getRepository().save({
             id: ownerId,
             activatedAt: dayjs(),
         });
-        await this.publisher.onAccountActivated(email, id);
+        await this.publisher.onAccountActivated(account.email, account.id);
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)

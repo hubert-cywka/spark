@@ -15,7 +15,7 @@ export class AccountActivatedEventHandler implements IInboxEventHandler {
     ) {}
 
     public canHandle(topic: string): boolean {
-        return topic === IntegrationEventTopics.account.activated;
+        return topic === IntegrationEventTopics.account.activation.completed;
     }
 
     public async handle(event: IntegrationEvent): Promise<void> {

@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
-import type { ClientProxy } from "@nestjs/microservices";
 import { TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { NatsJetStreamClientProxy, NatsJetStreamRecordBuilder } from "@nestjs-plugins/nestjs-nats-jetstream-transport";
 import dayjs from "dayjs";
 import { Repository } from "typeorm";
 
@@ -11,12 +11,13 @@ import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 
 const MAX_PAGE_SIZE = 10;
 
+// TODO: Implement circuit breaker (based on number of delivery attempts) and remove already processed events after X days.
 @Injectable()
 export class EventOutbox implements IEventOutbox {
     private readonly logger;
 
     public constructor(
-        private client: ClientProxy,
+        private client: NatsJetStreamClientProxy,
         private txHost: TransactionHost<TransactionalAdapterTypeOrm>,
         context?: string
     ) {
@@ -80,9 +81,16 @@ export class EventOutbox implements IEventOutbox {
         });
     }
 
+    // TODO: Make it awaitable, return entity only after event was ACKed, and then save all successfully sent events
     private publish(entity: OutboxEventEntity) {
         const event = IntegrationEvent.fromEntity(entity);
-        this.client.emit(event.getTopic(), event);
+
+        const builder = new NatsJetStreamRecordBuilder();
+        builder.setMsgId(event.getId());
+        builder.setPayload(event);
+        const record = builder.build();
+
+        this.client.emit(event.getTopic(), record);
         this.logger.log(event, "Published event");
     }
 

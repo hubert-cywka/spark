@@ -9,6 +9,6 @@ export type AccountRequestedPasswordResetEventPayload = {
 
 export class AccountRequestedPasswordResetEvent extends IntegrationEvent<AccountRequestedPasswordResetEventPayload> {
     public constructor(payload: AccountRequestedPasswordResetEventPayload) {
-        super(IntegrationEventTopics.account.passwordResetRequested, payload);
+        super(IntegrationEventTopics.account.password.resetRequested, payload);
     }
 }

@@ -9,6 +9,6 @@ export type AccountActivatedEventPayload = {
 
 export class AccountActivatedEvent extends IntegrationEvent<AccountActivatedEventPayload> {
     public constructor(payload: AccountActivatedEventPayload) {
-        super(IntegrationEventTopics.account.activated, payload);
+        super(IntegrationEventTopics.account.activation.completed, payload);
     }
 }

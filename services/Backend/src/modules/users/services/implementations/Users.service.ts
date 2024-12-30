@@ -31,23 +31,29 @@ export class UsersService implements IUsersService {
     }
 
     public async create(user: User): Promise<User> {
-        const savedUser = await this.getRepository().save(user);
+        const repository = this.getRepository();
+        const existingUser = await repository.findOne({
+            where: { id: user.id },
+        });
 
-        if (!savedUser) {
+        if (existingUser) {
             this.logger.warn({ userId: user.id, email: user.email }, "User already exists.");
             throw new UserAlreadyExistsError();
         }
 
-        return savedUser;
+        return await this.getRepository().save(user);
     }
 
     public async activate(id: string): Promise<User> {
-        const user = await this.getRepository().save({ id, isActivated: true });
+        const repository = this.getRepository();
+        const user = await repository.findOne({ where: { id } });
 
         if (!user) {
             this.logger.warn({ userId: id }, "Couldn't find user.");
             throw new UserNotFoundError();
         }
+
+        await repository.save({ ...user, isActivated: true });
 
         return user;
     }

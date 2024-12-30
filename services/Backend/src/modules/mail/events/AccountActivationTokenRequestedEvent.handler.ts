@@ -15,7 +15,7 @@ export class AccountActivationTokenRequestedEventHandler implements IInboxEventH
     ) {}
 
     public canHandle(topic: string): boolean {
-        return topic === IntegrationEventTopics.account.activationTokenRequested;
+        return topic === IntegrationEventTopics.account.activation.requested;
     }
 
     public async handle(event: IntegrationEvent): Promise<void> {
