@@ -3,13 +3,13 @@ import type { ClientProxy } from "@nestjs/microservices";
 import { TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import dayjs from "dayjs";
-import { IsNull, Repository } from "typeorm";
+import { Repository } from "typeorm";
 
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 
-const MAX_PAGE_SIZE = 25;
+const MAX_PAGE_SIZE = 10;
 
 @Injectable()
 export class EventOutbox implements IEventOutbox {
@@ -41,7 +41,7 @@ export class EventOutbox implements IEventOutbox {
         let totalProcessed = 0;
         let processedInRecentBatch = Infinity;
 
-        while (processedInRecentBatch >= MAX_PAGE_SIZE) {
+        while (processedInRecentBatch !== 0) {
             processedInRecentBatch = await this.processBatch(MAX_PAGE_SIZE, totalProcessed);
             totalProcessed += processedInRecentBatch;
         }
@@ -50,29 +50,34 @@ export class EventOutbox implements IEventOutbox {
     }
 
     private async processBatch(pageSize: number, offset: number) {
-        const repository = this.getRepository();
+        return await this.txHost.withTransaction(async () => {
+            const repository = this.getRepository();
 
-        const enities = await repository.find({
-            where: {
-                processedAt: IsNull(),
-            },
-            order: {
-                createdAt: "ASC",
-            },
-            take: pageSize,
-            skip: offset,
+            const entities = await repository
+                .createQueryBuilder("event")
+                .setLock("pessimistic_write")
+                .setOnLocked("skip_locked")
+                .where("event.processedAt IS NULL")
+                .orderBy("event.createdAt", "ASC")
+                .take(pageSize)
+                .skip(offset)
+                .getMany();
+
+            if (!entities.length) {
+                return 0;
+            }
+
+            entities.forEach((event) => this.publish(event));
+            const now = dayjs();
+
+            const processedEvents = entities.map((event) => ({
+                ...event,
+                processedAt: now,
+                attempts: ++event.attempts,
+            }));
+            await repository.save(processedEvents);
+            return entities.length;
         });
-
-        enities.forEach((event) => this.publish(event));
-        const now = dayjs();
-
-        const processedEvents = enities.map((event) => ({
-            ...event,
-            processedAt: now,
-            attempts: ++event.attempts,
-        }));
-        await repository.save(processedEvents);
-        return enities.length;
     }
 
     private publish(entity: OutboxEventEntity) {
