@@ -12,6 +12,7 @@ import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 const MAX_PAGE_SIZE = 10;
 const MAX_ATTEMPTS = 10;
 
+// TODO: Implement better retry mechanism
 @Injectable()
 export class EventInbox implements IEventInbox {
     private readonly logger;

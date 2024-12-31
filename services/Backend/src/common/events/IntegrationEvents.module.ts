@@ -95,7 +95,7 @@ export class IntegrationEventsModule {
                             const processedBefore = dayjs().subtract(EVENTS_RETENTION_PERIOD_IN_DAYS, "days").toDate();
                             await inbox.clearProcessedEvents(processedBefore);
                         });
-                        schedulerRegistry.addCronJob(`${context}_OutboxCleaner`, job);
+                        schedulerRegistry.addCronJob(`${context}_InboxCleaner`, job);
                         return job;
                     },
                     inject: [SchedulerRegistry, EventOutboxToken],

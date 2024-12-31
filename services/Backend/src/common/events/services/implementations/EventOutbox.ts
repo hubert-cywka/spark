@@ -4,7 +4,7 @@ import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-t
 import { NatsJetStreamClientProxy, NatsJetStreamRecordBuilder } from "@nestjs-plugins/nestjs-nats-jetstream-transport";
 import dayjs from "dayjs";
 import { PubAck } from "nats";
-import { timeout } from "rxjs";
+import { firstValueFrom, timeout } from "rxjs";
 import { And, IsNull, LessThan, Not, Repository } from "typeorm";
 
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
@@ -15,6 +15,7 @@ const MAX_PAGE_SIZE = 10;
 const MAX_ATTEMPTS = 10;
 const PUBLISH_TIMEOUT = 1000;
 
+// TODO: Implement better retry mechanism
 @Injectable()
 export class EventOutbox implements IEventOutbox {
     private readonly logger;
@@ -54,15 +55,29 @@ export class EventOutbox implements IEventOutbox {
     }
 
     public async process() {
+        let totalSuccessful = 0;
         let totalProcessed = 0;
-        let processedInRecentBatch = Infinity;
+        let breakpoint = true;
 
-        while (processedInRecentBatch !== 0) {
-            processedInRecentBatch = await this.processBatch(MAX_PAGE_SIZE, totalProcessed);
-            totalProcessed += processedInRecentBatch;
+        while (breakpoint) {
+            const { total, successful } = await this.processBatch(MAX_PAGE_SIZE, totalProcessed);
+            totalProcessed += total;
+            totalSuccessful += successful;
+
+            if (total === 0) {
+                breakpoint = false;
+            }
         }
 
-        this.logger.log({ count: totalProcessed }, "Processed events");
+        this.logger.log(
+            {
+                processed: {
+                    total: totalProcessed,
+                    successful: totalSuccessful,
+                },
+            },
+            "Processed events"
+        );
     }
 
     private async processBatch(pageSize: number, offset: number) {
@@ -80,13 +95,18 @@ export class EventOutbox implements IEventOutbox {
                 .getMany();
 
             if (!entities.length) {
-                return 0;
+                return { successful: 0, total: 0 };
             }
 
             const publishPromises = entities.map((event) => this.publish(event));
             const processedEvents = await Promise.all(publishPromises);
+            const processedSuccessfully = processedEvents.filter((event) => !!event.processedAt);
             await repository.save(processedEvents);
-            return entities.length;
+
+            return {
+                total: processedEvents.length,
+                successful: processedSuccessfully.length,
+            };
         });
     }
 
@@ -98,27 +118,16 @@ export class EventOutbox implements IEventOutbox {
         builder.setPayload(event);
         const record = builder.build();
 
-        return await new Promise((resolve) => {
-            try {
-                this.client
-                    .emit<PubAck>(event.getTopic(), record)
-                    .pipe(timeout(PUBLISH_TIMEOUT))
-                    .subscribe((ack) => {
-                        this.logger.log({ event, ack }, "Published event");
-                        return resolve({
-                            ...entity,
-                            processedAt: dayjs().toDate(),
-                            attempts: ++entity.attempts,
-                        });
-                    });
-            } catch (e) {
-                this.logger.error({ event, e }, "Failed to publish event - ACK not received");
-                return resolve({
-                    ...entity,
-                    attempts: ++entity.attempts,
-                });
-            }
-        });
+        try {
+            const ack = await firstValueFrom(this.client.emit<PubAck>(event.getTopic(), record).pipe(timeout(PUBLISH_TIMEOUT)));
+            this.logger.log({ event, ack }, "Published event");
+            entity.processedAt = dayjs().toDate();
+        } catch (e) {
+            this.logger.error({ event, e }, "Failed to publish event - ACK not received");
+        }
+
+        entity.attempts++;
+        return entity;
     }
 
     private getRepository(): Repository<OutboxEventEntity> {
