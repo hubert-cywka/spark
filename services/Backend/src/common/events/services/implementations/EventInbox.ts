@@ -13,6 +13,7 @@ const MAX_PAGE_SIZE = 10;
 const MAX_ATTEMPTS = 10;
 
 // TODO: Implement better retry mechanism
+// TODO: Is correct order of messages important for us?
 @Injectable()
 export class EventInbox implements IEventInbox {
     private readonly logger;
