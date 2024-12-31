@@ -14,6 +14,7 @@ const MAX_ATTEMPTS = 10;
 
 // TODO: Implement better retry mechanism
 // TODO: Is correct order of messages important for us?
+// TODO: How to handle 'poison' messages?
 @Injectable()
 export class EventInbox implements IEventInbox {
     private readonly logger;
@@ -60,6 +61,7 @@ export class EventInbox implements IEventInbox {
         }
     }
 
+    // TODO: Should each batch contain topics from only one topics family?
     public async process(handlers: IInboxEventHandler[]): Promise<void> {
         let totalProcessed = 0;
         let processedInRecentBatch = Infinity;
