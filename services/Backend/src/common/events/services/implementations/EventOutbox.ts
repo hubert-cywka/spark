@@ -58,7 +58,7 @@ export class EventOutbox implements IEventOutbox {
                 .createQueryBuilder("event")
                 .setLock("pessimistic_write")
                 .setOnLocked("skip_locked")
-                .where("event.processedAt IS NULL")
+                .where("event.processedAt IS NULL AND event.attempts < 10")
                 .orderBy("event.createdAt", "ASC")
                 .take(pageSize)
                 .skip(offset)

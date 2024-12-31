@@ -47,15 +47,19 @@ export class EventInbox implements IEventInbox {
     }
 
     public async process(handlers: IInboxEventHandler[]): Promise<void> {
-        let offset = 0;
+        let totalProcessed = 0;
         let processedInRecentBatch = Infinity;
 
         while (processedInRecentBatch !== 0) {
-            processedInRecentBatch = await this.processBatch(handlers, MAX_PAGE_SIZE, offset);
-            offset += processedInRecentBatch;
+            processedInRecentBatch = await this.processBatch(handlers, MAX_PAGE_SIZE, totalProcessed);
+            totalProcessed += processedInRecentBatch;
         }
 
-        this.logger.log({ count: offset }, "Processed events");
+        if (totalProcessed === 0) {
+            this.logger.log("No events to process.");
+        } else {
+            this.logger.log({ count: totalProcessed }, "Processed events");
+        }
     }
 
     private async processBatch(handlers: IInboxEventHandler[], pageSize: number, offset: number): Promise<number> {
@@ -66,7 +70,7 @@ export class EventInbox implements IEventInbox {
                 .createQueryBuilder("event")
                 .setLock("pessimistic_write")
                 .setOnLocked("skip_locked")
-                .where("event.processedAt IS NULL")
+                .where("event.processedAt IS NULL AND event.attempts < 10")
                 .orderBy("event.createdAt", "ASC")
                 .take(pageSize)
                 .skip(offset)
