@@ -2,7 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import dayjs from "dayjs";
-import { Repository } from "typeorm";
+import { And, IsNull, LessThan, Not, Repository } from "typeorm";
 
 import { IInboxEventHandler } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
@@ -10,8 +10,8 @@ import { IEventInbox } from "@/common/events/services/interfaces/IEventInbox";
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 
 const MAX_PAGE_SIZE = 10;
+const MAX_ATTEMPTS = 10;
 
-// TODO: Implement circuit breaker (based on number of processing attempts) and remove already processed events after X days.
 @Injectable()
 export class EventInbox implements IEventInbox {
     private readonly logger;
@@ -46,6 +46,18 @@ export class EventInbox implements IEventInbox {
         });
     }
 
+    public async clearProcessedEvents(processedBefore: Date): Promise<void> {
+        try {
+            const result = await this.getRepository().delete({
+                processedAt: And(LessThan(processedBefore), Not(IsNull())),
+            });
+            const count = result.affected ?? 0;
+            this.logger.log({ processedBefore, count }, "Removed old events.");
+        } catch (err) {
+            this.logger.error({ processedBefore, err }, "Failed to remove old events.");
+        }
+    }
+
     public async process(handlers: IInboxEventHandler[]): Promise<void> {
         let totalProcessed = 0;
         let processedInRecentBatch = Infinity;
@@ -70,7 +82,7 @@ export class EventInbox implements IEventInbox {
                 .createQueryBuilder("event")
                 .setLock("pessimistic_write")
                 .setOnLocked("skip_locked")
-                .where("event.processedAt IS NULL AND event.attempts < 10")
+                .where(`event.processedAt IS NULL AND event.attempts < ${MAX_ATTEMPTS}`)
                 .orderBy("event.createdAt", "ASC")
                 .take(pageSize)
                 .skip(offset)

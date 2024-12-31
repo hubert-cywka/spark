@@ -11,13 +11,22 @@ import { IntegrationEventTopics } from "@/common/events";
 import { AppConfig } from "@/config/configuration";
 import { logger } from "@/lib/logger";
 
+process.on("uncaughtException", (error) => {
+    logger.fatal({ error }, "Uncaught exception.");
+});
+
+process.on("unhandledRejection", (error) => {
+    logger.fatal({ error }, "Unhandled rejection");
+});
+
 async function bootstrap() {
     const config = new ConfigService(AppConfig());
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
         logger,
     });
 
-    app.useLogger(app.get(Logger));
+    const appLogger = app.get(Logger);
+    app.useLogger(appLogger);
     app.setGlobalPrefix("api");
 
     app.use(cookieParser(config.getOrThrow<string>("cookies.secret")));

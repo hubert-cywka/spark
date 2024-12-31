@@ -1,13 +1,17 @@
 import { type DynamicModule, Module } from "@nestjs/common";
-import { SchedulerRegistry } from "@nestjs/schedule";
+import { CronExpression, SchedulerRegistry } from "@nestjs/schedule";
 import { NatsJetStreamTransport } from "@nestjs-plugins/nestjs-nats-jetstream-transport";
+import { CronJob } from "cron";
+import dayjs from "dayjs";
 
 import { EventBoxFactoryToken, IEventBoxFactory } from "@/common/events/services/interfaces/IEventBox.factory";
-import { EventInboxToken } from "@/common/events/services/interfaces/IEventInbox";
+import { EventInboxToken, IEventInbox } from "@/common/events/services/interfaces/IEventInbox";
 import { type IEventOutbox, EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
 import { IntegrationEventsModuleOptions } from "@/common/events/types";
 import { ClassConstructor } from "@/types/Class";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
+
+const EVENTS_RETENTION_PERIOD_IN_DAYS = 7;
 
 const IntegrationEventsModuleOptionsToken = Symbol("IntegrationEventsModuleOptions");
 
@@ -67,6 +71,32 @@ export class IntegrationEventsModule {
                         const interval = setInterval(async () => await outbox.process(), outboxProcessingInterval);
                         schedulerRegistry.addInterval(`${context}_OutboxProcessor`, interval);
                         return interval;
+                    },
+                    inject: [SchedulerRegistry, EventOutboxToken],
+                },
+
+                {
+                    provide: `${context}_OutboxCleanerJob`,
+                    useFactory: (schedulerRegistry: SchedulerRegistry, outbox: IEventOutbox) => {
+                        const job = new CronJob(CronExpression.EVERY_DAY_AT_3AM, async () => {
+                            const processedBefore = dayjs().subtract(EVENTS_RETENTION_PERIOD_IN_DAYS, "days").toDate();
+                            await outbox.clearProcessedEvents(processedBefore);
+                        });
+                        schedulerRegistry.addCronJob(`${context}_OutboxCleaner`, job);
+                        return job;
+                    },
+                    inject: [SchedulerRegistry, EventOutboxToken],
+                },
+
+                {
+                    provide: `${context}_InboxCleanerJob`,
+                    useFactory: (schedulerRegistry: SchedulerRegistry, inbox: IEventInbox) => {
+                        const job = new CronJob(CronExpression.EVERY_DAY_AT_4AM, async () => {
+                            const processedBefore = dayjs().subtract(EVENTS_RETENTION_PERIOD_IN_DAYS, "days").toDate();
+                            await inbox.clearProcessedEvents(processedBefore);
+                        });
+                        schedulerRegistry.addCronJob(`${context}_OutboxCleaner`, job);
+                        return job;
                     },
                     inject: [SchedulerRegistry, EventOutboxToken],
                 },

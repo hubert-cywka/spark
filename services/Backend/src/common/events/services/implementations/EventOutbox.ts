@@ -3,15 +3,18 @@ import { TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import { NatsJetStreamClientProxy, NatsJetStreamRecordBuilder } from "@nestjs-plugins/nestjs-nats-jetstream-transport";
 import dayjs from "dayjs";
-import { Repository } from "typeorm";
+import { PubAck } from "nats";
+import { timeout } from "rxjs";
+import { And, IsNull, LessThan, Not, Repository } from "typeorm";
 
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 
 const MAX_PAGE_SIZE = 10;
+const MAX_ATTEMPTS = 10;
+const PUBLISH_TIMEOUT = 1000;
 
-// TODO: Implement circuit breaker (based on number of delivery attempts) and remove already processed events after X days.
 @Injectable()
 export class EventOutbox implements IEventOutbox {
     private readonly logger;
@@ -38,6 +41,18 @@ export class EventOutbox implements IEventOutbox {
         this.logger.log(event, "Event added to outbox.");
     }
 
+    public async clearProcessedEvents(processedBefore: Date): Promise<void> {
+        try {
+            const result = await this.getRepository().delete({
+                processedAt: And(LessThan(processedBefore), Not(IsNull())),
+            });
+            const count = result.affected ?? 0;
+            this.logger.log({ processedBefore, count }, "Removed old events.");
+        } catch (err) {
+            this.logger.error({ processedBefore, err }, "Failed to remove old events.");
+        }
+    }
+
     public async process() {
         let totalProcessed = 0;
         let processedInRecentBatch = Infinity;
@@ -58,7 +73,7 @@ export class EventOutbox implements IEventOutbox {
                 .createQueryBuilder("event")
                 .setLock("pessimistic_write")
                 .setOnLocked("skip_locked")
-                .where("event.processedAt IS NULL AND event.attempts < 10")
+                .where(`event.processedAt IS NULL AND event.attempts < ${MAX_ATTEMPTS}`)
                 .orderBy("event.createdAt", "ASC")
                 .take(pageSize)
                 .skip(offset)
@@ -68,21 +83,14 @@ export class EventOutbox implements IEventOutbox {
                 return 0;
             }
 
-            entities.forEach((event) => this.publish(event));
-            const now = dayjs();
-
-            const processedEvents = entities.map((event) => ({
-                ...event,
-                processedAt: now,
-                attempts: ++event.attempts,
-            }));
+            const publishPromises = entities.map((event) => this.publish(event));
+            const processedEvents = await Promise.all(publishPromises);
             await repository.save(processedEvents);
             return entities.length;
         });
     }
 
-    // TODO: Make it awaitable, return entity only after event was ACKed, and then save all successfully sent events
-    private publish(entity: OutboxEventEntity) {
+    private async publish(entity: OutboxEventEntity): Promise<OutboxEventEntity> {
         const event = IntegrationEvent.fromEntity(entity);
 
         const builder = new NatsJetStreamRecordBuilder();
@@ -90,8 +98,27 @@ export class EventOutbox implements IEventOutbox {
         builder.setPayload(event);
         const record = builder.build();
 
-        this.client.emit(event.getTopic(), record);
-        this.logger.log(event, "Published event");
+        return await new Promise((resolve) => {
+            try {
+                this.client
+                    .emit<PubAck>(event.getTopic(), record)
+                    .pipe(timeout(PUBLISH_TIMEOUT))
+                    .subscribe((ack) => {
+                        this.logger.log({ event, ack }, "Published event");
+                        return resolve({
+                            ...entity,
+                            processedAt: dayjs().toDate(),
+                            attempts: ++entity.attempts,
+                        });
+                    });
+            } catch (e) {
+                this.logger.error({ event, e }, "Failed to publish event - ACK not received");
+                return resolve({
+                    ...entity,
+                    attempts: ++entity.attempts,
+                });
+            }
+        });
     }
 
     private getRepository(): Repository<OutboxEventEntity> {
