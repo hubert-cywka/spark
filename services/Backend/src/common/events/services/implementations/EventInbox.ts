@@ -12,9 +12,21 @@ import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 const MAX_PAGE_SIZE = 10;
 const MAX_ATTEMPTS = 10;
 
-// TODO: Implement better retry mechanism
-// TODO: Is correct order of messages important for us?
-// TODO: How to handle 'poison' messages?
+/*
+    > TODO: Implement better retry mechanism
+    - Each event could have a timestamp - a point in time describing the readiness to be processed. After each retry,
+    the delay between the next attempt would increase. But what if messages need to be processed in particular order?
+    Delaying one message would then delay all other messages.
+
+    > TODO: Is correct order of messages important for us?
+    As always - it depends. Some messages can easily be idempotent. Some messages can fail if processed too early and on
+    next retry we will achieve eventual consistency. I'd opt for creating messages that are as idempotent as possible and
+    come back to this issue if there are any problems with data consistency.
+
+    > TODO: How to handle 'poison' messages?
+    - Each subscriber should be able to decide which topics are important and need to be processed in particular order,
+    and if in case of error, the processing should be stopped.
+ */
 @Injectable()
 export class EventInbox implements IEventInbox {
     private readonly logger;
