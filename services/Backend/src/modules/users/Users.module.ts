@@ -5,6 +5,7 @@ import { DatabaseModule } from "@/common/database/Database.module";
 import { IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import { UserController } from "@/modules/users/controllers/User.controller";
 import { UserEntity } from "@/modules/users/entities/User.entity";
 import { UserActivatedEventHandler } from "@/modules/users/events/UserActivatedEvent.handler";
 import { UserRegisteredEventHandler } from "@/modules/users/events/UserRegisteredEvent.handler";
@@ -13,12 +14,10 @@ import { InitializeUsersModule1735737579670 } from "@/modules/users/infrastructu
 import { UsersService } from "@/modules/users/services/implementations/Users.service";
 import { UsersEventBoxFactory } from "@/modules/users/services/implementations/UsersEventBox.factory";
 import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
-import { UsersResolver } from "@/modules/users/Users.resolver";
 import { UsersSubscriber } from "@/modules/users/Users.subscriber";
 
 @Module({
     providers: [
-        UsersResolver,
         { provide: UsersServiceToken, useClass: UsersService },
         UserActivatedEventHandler,
         UserRegisteredEventHandler,
@@ -45,6 +44,6 @@ import { UsersSubscriber } from "@/modules/users/Users.subscriber";
             context: UsersModule.name,
         }),
     ],
-    controllers: [UsersSubscriber],
+    controllers: [UsersSubscriber, UserController],
 })
 export class UsersModule {}
