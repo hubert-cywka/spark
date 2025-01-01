@@ -1,5 +1,8 @@
 import { DynamicModule, Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
+import { getDataSourceToken, TypeOrmModule } from "@nestjs/typeorm";
+import { ClsPluginTransactional } from "@nestjs-cls/transactional";
+import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { ClsModule } from "nestjs-cls";
 
 import { initializeDatabase } from "@/common/utils/initializeDatabase";
 import { logger } from "@/lib/logger";
@@ -54,7 +57,22 @@ export class DatabaseModule {
                     },
                     inject: options.inject || [],
                 }),
+
                 TypeOrmModule.forFeature(entities, dataSource),
+
+                ClsModule.forRoot({
+                    middleware: {
+                        mount: true,
+                    },
+                    plugins: [
+                        new ClsPluginTransactional({
+                            connectionName: dataSource,
+                            adapter: new TransactionalAdapterTypeOrm({
+                                dataSourceToken: getDataSourceToken(dataSource),
+                            }),
+                        }),
+                    ],
+                }),
             ],
         };
     }

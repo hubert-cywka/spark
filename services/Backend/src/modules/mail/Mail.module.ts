@@ -1,9 +1,5 @@
 import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { getDataSourceToken } from "@nestjs/typeorm";
-import { ClsPluginTransactional } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
-import { ClsModule } from "nestjs-cls";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import { IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule } from "@/common/events";
@@ -14,7 +10,7 @@ import { AccountActivationTokenRequestedEventHandler } from "@/modules/mail/even
 import { AccountPasswordUpdatedEventHandler } from "@/modules/mail/events/AccountPasswordUpdatedEvent.handler";
 import { AccountRequestedPasswordResetEventHandler } from "@/modules/mail/events/AccountRequestedPasswordResetEvent.handler";
 import { MAIL_MODULE_DATA_SOURCE } from "@/modules/mail/infrastructure/database/constants";
-import { InitializeMailModule1735496584811 } from "@/modules/mail/infrastructure/database/migrations/1735496584811-InitializeMailModule";
+import { InitializeMailModule1735737562761 } from "@/modules/mail/infrastructure/database/migrations/1735737562761-InitializeMailModule";
 import { MailSubscriber } from "@/modules/mail/Mail.subscriber";
 import { MailerService } from "@/modules/mail/services/implementations/Mailer.service";
 import { MailEventBoxFactory } from "@/modules/mail/services/implementations/MailEventBox.factory";
@@ -49,26 +45,13 @@ import { IMailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.
                 password: configService.getOrThrow<string>("modules.mail.database.password"),
                 host: configService.getOrThrow<string>("modules.mail.database.host"),
                 database: configService.getOrThrow<string>("modules.mail.database.name"),
-                migrations: [InitializeMailModule1735496584811],
+                migrations: [InitializeMailModule1735737562761],
             }),
             inject: [ConfigService],
         }),
         IntegrationEventsModule.forFeature({
             eventBoxFactoryClass: MailEventBoxFactory,
             context: MailModule.name,
-        }),
-        ClsModule.forRoot({
-            middleware: {
-                mount: true,
-            },
-            plugins: [
-                new ClsPluginTransactional({
-                    connectionName: MAIL_MODULE_DATA_SOURCE,
-                    adapter: new TransactionalAdapterTypeOrm({
-                        dataSourceToken: getDataSourceToken(MAIL_MODULE_DATA_SOURCE),
-                    }),
-                }),
-            ],
         }),
     ],
     controllers: [MailSubscriber],

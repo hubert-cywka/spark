@@ -8,6 +8,8 @@ import { type IEventInbox, EventInboxToken } from "@/common/events/services/inte
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 import { HydratePipe } from "@/common/pipes/Hydrate.pipe";
 
+const INBOX_PROCESSING_INTERVAL = 3000;
+
 @Controller()
 export class UsersSubscriber {
     private readonly logger = new Logger(UsersSubscriber.name);
@@ -29,7 +31,7 @@ export class UsersSubscriber {
         context.message.ack();
     }
 
-    @Interval(5000)
+    @Interval(INBOX_PROCESSING_INTERVAL)
     private async processInbox() {
         await this.inbox.process(this.handlers);
     }

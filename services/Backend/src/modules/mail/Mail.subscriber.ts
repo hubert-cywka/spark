@@ -13,6 +13,8 @@ import {
 } from "@/common/events";
 import { HydratePipe } from "@/common/pipes/Hydrate.pipe";
 
+const INBOX_PROCESSING_INTERVAL = 5000;
+
 // TODO: There is some duplication in all pubsub subscribers
 @Controller()
 export class MailSubscriber {
@@ -40,7 +42,7 @@ export class MailSubscriber {
         context.message.ack();
     }
 
-    @Interval(5000)
+    @Interval(INBOX_PROCESSING_INTERVAL)
     private async processInbox() {
         await this.inbox.process(this.handlers);
     }

@@ -4,10 +4,6 @@ import { APP_GUARD } from "@nestjs/core";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 import { ThrottlerModule } from "@nestjs/throttler";
-import { getDataSourceToken } from "@nestjs/typeorm";
-import { ClsPluginTransactional } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
-import { ClsModule } from "nestjs-cls";
 
 import { AuthenticationController } from "./authentication/controllers/Authentication.controller";
 
@@ -44,7 +40,7 @@ import { AccessTokenStrategy } from "@/modules/identity/authentication/strategie
 import { IRefreshTokenCookieStrategyToken } from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
 import { SecureRefreshTokenCookieStrategy } from "@/modules/identity/authentication/strategies/refreshToken/SecureRefreshTokenCookie.strategy";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
-import { InitializeIdentityModule1735496597920 } from "@/modules/identity/infrastructure/database/migrations/1735496597920-InitializeIdentityModule";
+import { InitializeIdentityModule1735737549567 } from "@/modules/identity/infrastructure/database/migrations/1735737549567-InitializeIdentityModule";
 import { IdentityEventBoxFactory } from "@/modules/identity/shared/services/IdentityEventBox.factory";
 
 @Module({
@@ -113,7 +109,7 @@ import { IdentityEventBoxFactory } from "@/modules/identity/shared/services/Iden
                     password: configService.getOrThrow<string>("modules.identity.database.password"),
                     host: configService.getOrThrow<string>("modules.identity.database.host"),
                     database: configService.getOrThrow<string>("modules.identity.database.name"),
-                    migrations: [InitializeIdentityModule1735496597920],
+                    migrations: [InitializeIdentityModule1735737549567],
                 }),
                 inject: [ConfigService],
             }
@@ -121,19 +117,6 @@ import { IdentityEventBoxFactory } from "@/modules/identity/shared/services/Iden
         IntegrationEventsModule.forFeature({
             eventBoxFactoryClass: IdentityEventBoxFactory,
             context: IdentityModule.name,
-        }),
-        ClsModule.forRoot({
-            middleware: {
-                mount: true,
-            },
-            plugins: [
-                new ClsPluginTransactional({
-                    connectionName: IDENTITY_MODULE_DATA_SOURCE,
-                    adapter: new TransactionalAdapterTypeOrm({
-                        dataSourceToken: getDataSourceToken(IDENTITY_MODULE_DATA_SOURCE),
-                    }),
-                }),
-            ],
         }),
         ThrottlerModule.forRootAsync({
             useFactory: (configService: ConfigService) => [
