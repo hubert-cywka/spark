@@ -30,6 +30,7 @@
         "@nestjs/passport": "^10.0.3",
         "@nestjs/platform-express": "^10.0.0",
         "@nestjs/schedule": "^4.1.2",
+        "@nestjs/swagger": "^8.1.0",
         "@nestjs/throttler": "^6.2.1",
         "@nestjs/typeorm": "^10.0.2",
         "arctic": "^2.2.1",
