@@ -1,24 +1,37 @@
 import { Controller, Inject, Logger } from "@nestjs/common";
-import { EventPattern, Payload } from "@nestjs/microservices";
+import { Ctx, EventPattern, Payload } from "@nestjs/microservices";
+import { Interval } from "@nestjs/schedule";
+import { NatsJetStreamContext } from "@nestjs-plugins/nestjs-nats-jetstream-transport";
 
-import { type AccountPasswordUpdatedEventPayload, EventTopics } from "@/common/events";
-import {
-    type IRefreshTokenService,
-    IRefreshTokenServiceToken,
-} from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
+import { IInboxEventHandler, InboxEventHandlersToken, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import { type IEventInbox, EventInboxToken } from "@/common/events/services/interfaces/IEventInbox";
+import { HydratePipe } from "@/common/pipes/Hydrate.pipe";
+
+const INBOX_PROCESSING_INTERVAL = 3000;
 
 @Controller()
 export class IdentitySubscriber {
     private readonly logger = new Logger(IdentitySubscriber.name);
 
     public constructor(
-        @Inject(IRefreshTokenServiceToken)
-        private refreshTokenService: IRefreshTokenService
+        @Inject(EventInboxToken)
+        private readonly inbox: IEventInbox,
+        @Inject(InboxEventHandlersToken)
+        private readonly handlers: IInboxEventHandler[]
     ) {}
 
-    @EventPattern(EventTopics.account.passwordUpdated)
-    public async onPasswordUpdated(@Payload() payload: AccountPasswordUpdatedEventPayload) {
-        this.logger.log({ topic: EventTopics.account.passwordUpdated, payload }, "Received an event.");
-        await this.refreshTokenService.invalidateAllByOwnerId(payload.id);
+    @EventPattern([IntegrationEventTopics.account.password.updated])
+    private async onEventReceived(
+        @Payload(new HydratePipe(IntegrationEvent)) event: IntegrationEvent,
+        @Ctx() context: NatsJetStreamContext
+    ) {
+        this.logger.log(event, `Received '${event.getTopic()}' event.`);
+        await this.inbox.enqueue(event);
+        context.message.ack();
+    }
+
+    @Interval(INBOX_PROCESSING_INTERVAL)
+    private async processInbox() {
+        await this.inbox.process(this.handlers);
     }
 }

@@ -1,8 +1,6 @@
-export type EventsModuleOptions = {
-    connection: EventsConnectionOptions;
-};
-
-export type EventsConnectionOptions = {
-    host: string;
-    port: number;
+export type IntegrationEventsModuleOptions = {
+    connection: {
+        host: string;
+        port: number;
+    };
 };

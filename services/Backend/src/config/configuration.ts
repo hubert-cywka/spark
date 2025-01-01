@@ -30,6 +30,13 @@ export const AppConfig = () => ({
                 password: process.env.MAIL_SENDER_PASSWORD,
                 host: process.env.MAIL_SENDER_HOST,
             },
+            database: {
+                port: process.env.DATABASE_PORT,
+                username: process.env.DATABASE_USERNAME,
+                password: process.env.DATABASE_PASSWORD,
+                host: process.env.DATABASE_HOST,
+                name: process.env.MAIL_DATABASE_NAME,
+            },
         },
 
         users: {
@@ -42,7 +49,7 @@ export const AppConfig = () => ({
             },
         },
 
-        auth: {
+        identity: {
             jwt: {
                 signingSecret: process.env.JWT_SIGNING_SECRET,
                 expirationTimeInSeconds: parseInt(process.env.JWT_EXPIRATION_TIME_IN_SECONDS ?? ""),

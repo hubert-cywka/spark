@@ -1,9 +1,10 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
+import { InjectTransactionHost, Transactional, TransactionHost } from "@nestjs-cls/transactional";
+import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import argon2 from "argon2";
 import { plainToInstance } from "class-transformer";
 import dayjs from "dayjs";
-import type { Repository } from "typeorm";
+import { Repository } from "typeorm";
 
 import { ManagedAccountEntity } from "@/modules/identity/account/entities/ManagedAccountEntity";
 import { AccountAlreadyActivatedError } from "@/modules/identity/account/errors/AccountAlreadyActivated.error";
@@ -29,8 +30,8 @@ export class ManagedAccountService implements IManagedAccountService {
     private readonly logger = new Logger(ManagedAccountService.name);
 
     constructor(
-        @InjectRepository(ManagedAccountEntity, IDENTITY_MODULE_DATA_SOURCE)
-        private readonly repository: Repository<ManagedAccountEntity>,
+        @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
+        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
         @Inject(IAccountPublisherServiceToken)
         private readonly publisher: IAccountPublisherService,
         @Inject(ISingleUseTokenServiceToken)
@@ -55,7 +56,7 @@ export class ManagedAccountService implements IManagedAccountService {
     }
 
     public async createAccountWithCredentials(email: string, password: string): Promise<Account> {
-        const existingAccount = await this.repository.findOne({
+        const existingAccount = await this.getRepository().findOne({
             where: { email, providerId: ManagedAccountProvider.CREDENTIALS },
         });
 
@@ -65,7 +66,7 @@ export class ManagedAccountService implements IManagedAccountService {
         }
 
         const hashedPassword = await this.hashPassword(password);
-        const accountEntity = this.repository.create({
+        const accountEntity = this.getRepository().create({
             email,
             password: hashedPassword,
             providerId: ManagedAccountProvider.CREDENTIALS,
@@ -73,19 +74,21 @@ export class ManagedAccountService implements IManagedAccountService {
             termsAndConditionsAcceptedAt: dayjs(),
         });
 
-        const account = await this.repository.save(accountEntity);
+        const account = await this.getRepository().save(accountEntity);
         return this.mapEntityToModel(account);
     }
 
+    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
     public async requestPasswordChange(email: string): Promise<void> {
         const account = await this.findOne(email);
         const passwordResetToken = await this.singleUseTokenService.issuePasswordChangeToken(account.id);
-        this.publisher.onPasswordResetRequested(account.email, passwordResetToken);
+        await this.publisher.onPasswordResetRequested(account.email, passwordResetToken);
     }
 
+    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
     public async updatePassword(passwordChangeToken: string, password: string): Promise<void> {
         const { ownerId } = await this.singleUseTokenService.redeemPasswordChangeToken(passwordChangeToken);
-        const account = await this.repository.findOne({
+        const account = await this.getRepository().findOne({
             where: { id: ownerId },
         });
 
@@ -95,18 +98,19 @@ export class ManagedAccountService implements IManagedAccountService {
         }
 
         const hashedPassword = await this.hashPassword(password);
-        await this.repository.save({
+        await this.getRepository().save({
             ...account,
             passwordResetToken: null,
             password: hashedPassword,
         });
 
-        this.publisher.onPasswordUpdated(account.email, account.id);
+        await this.publisher.onPasswordUpdated(account.email, account.id);
     }
 
+    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
     public async activate(activationToken: string): Promise<void> {
         const { ownerId } = await this.singleUseTokenService.redeemAccountActivationToken(activationToken);
-        const account = await this.repository.findOne({
+        const account = await this.getRepository().findOne({
             where: { id: ownerId },
         });
 
@@ -116,23 +120,24 @@ export class ManagedAccountService implements IManagedAccountService {
         }
 
         this.assertEligibilityForActivation(account);
-        const { email, id } = await this.repository.save({
+        await this.getRepository().save({
             id: ownerId,
             activatedAt: dayjs(),
         });
-        this.publisher.onAccountActivated(email, id);
+        await this.publisher.onAccountActivated(account.email, account.id);
     }
 
+    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
     public async requestActivation(email: string): Promise<void> {
         const account = await this.findOne(email);
         this.assertEligibilityForActivation(account);
 
         const activationToken = await this.singleUseTokenService.issueAccountActivationToken(account.id);
-        this.publisher.onAccountActivationTokenRequested(email, activationToken);
+        await this.publisher.onAccountActivationTokenRequested(email, activationToken);
     }
 
     private async findOne(providerAccountId: string): Promise<ManagedAccountEntity> {
-        const account = await this.repository.findOne({
+        const account = await this.getRepository().findOne({
             where: {
                 providerAccountId,
                 providerId: ManagedAccountProvider.CREDENTIALS,
@@ -175,5 +180,9 @@ export class ManagedAccountService implements IManagedAccountService {
             providerId: entity.providerId,
             providerAccountId: entity.providerAccountId,
         });
+    }
+
+    private getRepository(): Repository<ManagedAccountEntity> {
+        return this.txHost.tx.getRepository(ManagedAccountEntity);
     }
 }

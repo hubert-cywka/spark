@@ -1,8 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
+import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
+import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import dayjs from "dayjs";
-import type { Repository } from "typeorm";
-import { IsNull } from "typeorm";
+import { IsNull, Repository } from "typeorm";
 
 import { SingleUseTokenEntity } from "@/modules/identity/account/entities/SingleUseTokenEntity";
 import { TokenInvalidError } from "@/modules/identity/account/errors/TokenInvalid.error";
@@ -17,8 +17,8 @@ export class SingleUseTokenService implements ISingleUseTokenService {
     private readonly EXPIRATION_TIME = 15 * 60;
 
     constructor(
-        @InjectRepository(SingleUseTokenEntity, IDENTITY_MODULE_DATA_SOURCE)
-        private readonly repository: Repository<SingleUseTokenEntity>
+        @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
+        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
     ) {}
 
     public async invalidateAllAccountActivationTokens(ownerId: string): Promise<void> {
@@ -70,7 +70,7 @@ export class SingleUseTokenService implements ISingleUseTokenService {
         }
 
         const now = dayjs().toDate();
-        await this.repository.save({ ...tokenEntity, usedAt: now });
+        await this.getRepository().save({ ...tokenEntity, usedAt: now });
 
         return { ownerId: tokenEntity.owner.id };
     }
@@ -78,7 +78,7 @@ export class SingleUseTokenService implements ISingleUseTokenService {
     private async issueToken(ownerId: string, type: SingleUseTokenType): Promise<string> {
         const token = this.generate();
         const expiresAt = dayjs().add(this.EXPIRATION_TIME, "seconds");
-        const tokenEntity = await this.repository.save({
+        const tokenEntity = await this.getRepository().save({
             owner: { id: ownerId },
             type,
             value: token,
@@ -89,11 +89,11 @@ export class SingleUseTokenService implements ISingleUseTokenService {
 
     private async invalidateAllByOwnerIdAndType(ownerId: string, type: SingleUseTokenType): Promise<void> {
         const now = dayjs();
-        await this.repository.update({ owner: { id: ownerId }, invalidatedAt: IsNull(), type }, { invalidatedAt: now });
+        await this.getRepository().update({ owner: { id: ownerId }, invalidatedAt: IsNull(), type }, { invalidatedAt: now });
     }
 
     private async findOneByValueAndType(value: string, type: SingleUseTokenType): Promise<SingleUseTokenEntity | null> {
-        return this.repository.findOne({
+        return this.getRepository().findOne({
             where: { value, type },
             relations: ["owner"],
         });
@@ -106,5 +106,9 @@ export class SingleUseTokenService implements ISingleUseTokenService {
 
     private generate(): string {
         return crypto.randomUUID();
+    }
+
+    private getRepository(): Repository<SingleUseTokenEntity> {
+        return this.txHost.tx.getRepository(SingleUseTokenEntity);
     }
 }

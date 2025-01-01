@@ -1,8 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
+import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
+import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import { plainToInstance } from "class-transformer";
 import dayjs from "dayjs";
-import type { Repository } from "typeorm";
+import { Repository } from "typeorm";
 
 import { FederatedAccountEntity } from "@/modules/identity/account/entities/FederatedAccountEntity";
 import { AccountAlreadyExistsError } from "@/modules/identity/account/errors/AccountAlreadyExists.error";
@@ -17,12 +18,12 @@ export class FederatedAccountService implements IFederatedAccountService {
     private readonly logger = new Logger(FederatedAccountService.name);
 
     constructor(
-        @InjectRepository(FederatedAccountEntity, IDENTITY_MODULE_DATA_SOURCE)
-        private readonly repository: Repository<FederatedAccountEntity>
+        @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
+        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
     ) {}
 
     public async findByExternalIdentity(identity: ExternalIdentity): Promise<Account> {
-        const account = await this.repository.findOne({
+        const account = await this.getRepository().findOne({
             where: {
                 providerAccountId: identity.id,
                 providerId: identity.providerId,
@@ -44,7 +45,7 @@ export class FederatedAccountService implements IFederatedAccountService {
     }
 
     public async createAccountWithExternalIdentity(identity: ExternalIdentity): Promise<Account> {
-        const existingAccount = await this.repository.findOne({
+        const existingAccount = await this.getRepository().findOne({
             where: {
                 providerAccountId: identity.id,
                 providerId: identity.providerId,
@@ -64,7 +65,7 @@ export class FederatedAccountService implements IFederatedAccountService {
 
         const now = dayjs();
 
-        const accountEntity = this.repository.create({
+        const accountEntity = this.getRepository().create({
             email: identity.email,
             providerId: identity.providerId,
             providerAccountId: identity.id,
@@ -72,7 +73,7 @@ export class FederatedAccountService implements IFederatedAccountService {
             termsAndConditionsAcceptedAt: now,
         });
 
-        const account = await this.repository.save(accountEntity);
+        const account = await this.getRepository().save(accountEntity);
         return this.mapEntityToModel(account);
     }
 
@@ -83,5 +84,9 @@ export class FederatedAccountService implements IFederatedAccountService {
             providerId: entity.providerId,
             providerAccountId: entity.providerAccountId,
         });
+    }
+
+    private getRepository(): Repository<FederatedAccountEntity> {
+        return this.txHost.tx.getRepository(FederatedAccountEntity);
     }
 }

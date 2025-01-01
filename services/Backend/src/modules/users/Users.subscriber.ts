@@ -1,38 +1,38 @@
 import { Controller, Inject, Logger } from "@nestjs/common";
-import { EventPattern, Payload } from "@nestjs/microservices";
+import { Ctx, EventPattern, Payload } from "@nestjs/microservices";
+import { Interval } from "@nestjs/schedule";
+import { NatsJetStreamContext } from "@nestjs-plugins/nestjs-nats-jetstream-transport";
 
-import { EntityConflictError } from "@/common/errors/EntityConflict.error";
-import { whenError } from "@/common/errors/whenError";
-import { type AccountActivatedEventPayload, type AccountRegisteredEventPayload, EventTopics } from "@/common/events";
-import { type IUsersService, IUsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
+import { IInboxEventHandler, InboxEventHandlersToken, IntegrationEventTopics } from "@/common/events";
+import { type IEventInbox, EventInboxToken } from "@/common/events/services/interfaces/IEventInbox";
+import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
+import { HydratePipe } from "@/common/pipes/Hydrate.pipe";
+
+const INBOX_PROCESSING_INTERVAL = 3000;
 
 @Controller()
 export class UsersSubscriber {
     private readonly logger = new Logger(UsersSubscriber.name);
 
-    public constructor(@Inject(IUsersServiceToken) private usersService: IUsersService) {}
+    public constructor(
+        @Inject(EventInboxToken)
+        private readonly inbox: IEventInbox,
+        @Inject(InboxEventHandlersToken)
+        private readonly handlers: IInboxEventHandler[]
+    ) {}
 
-    @EventPattern(EventTopics.account.registered)
-    async onUserRegistered(@Payload() payload: AccountRegisteredEventPayload) {
-        this.logger.log({ payload }, `Received ${EventTopics.account.registered} event.`);
-        const { account } = payload;
-
-        try {
-            await this.usersService.create(account);
-        } catch (e) {
-            whenError(e).is(EntityConflictError).throwRpcException("User already exists.").elseRethrow();
-        }
+    @EventPattern([IntegrationEventTopics.account.registration.completed, IntegrationEventTopics.account.activation.completed])
+    private async onEventReceived(
+        @Payload(new HydratePipe(IntegrationEvent)) event: IntegrationEvent,
+        @Ctx() context: NatsJetStreamContext
+    ) {
+        this.logger.log(event, `Received '${event.getTopic()}' event.`);
+        await this.inbox.enqueue(event);
+        context.message.ack();
     }
 
-    @EventPattern(EventTopics.account.activated)
-    async onUserActivated(@Payload() payload: AccountActivatedEventPayload) {
-        this.logger.log({ payload }, `Received ${EventTopics.account.activated} event.`);
-        const { id } = payload;
-
-        try {
-            await this.usersService.activate(id);
-        } catch (e) {
-            whenError(e).is(EntityConflictError).throwRpcException("User already exists.").elseRethrow();
-        }
+    @Interval(INBOX_PROCESSING_INTERVAL)
+    private async processInbox() {
+        await this.inbox.process(this.handlers);
     }
 }

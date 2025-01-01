@@ -1,11 +1,28 @@
-import { IPublisherServiceToken } from "./services/IPublisher.service";
-import { PublisherService } from "./services/Publisher.service";
-import { EventTopics } from "./types/EventTopics";
-import { EventsModule } from "./Events.module";
+import { EventInbox } from "./services/implementations/EventInbox";
+import { EventOutbox } from "./services/implementations/EventOutbox";
+import { EventBoxFactoryToken, IEventBoxFactory } from "./services/interfaces/IEventBox.factory";
+import { EventInboxToken, IEventInbox } from "./services/interfaces/IEventInbox";
+import { EventOutboxToken, IEventOutbox } from "./services/interfaces/IEventOutbox";
+import { IInboxEventHandler, InboxEventHandlersToken } from "./services/interfaces/IInboxEventHandler";
+import { IntegrationEvent } from "./types/IntegrationEvent";
+import { IntegrationEventTopics } from "./types/IntegrationEventTopics";
+import { IntegrationEventsModule } from "./IntegrationEvents.module";
 
-export { EventsModule };
-export { IPublisherServiceToken, PublisherService };
-export { EventTopics };
+export { IntegrationEventsModule };
+export {
+    type IEventBoxFactory,
+    type IEventInbox,
+    type IEventOutbox,
+    type IInboxEventHandler,
+    EventBoxFactoryToken,
+    EventInbox,
+    EventInboxToken,
+    EventOutbox,
+    EventOutboxToken,
+    InboxEventHandlersToken,
+    IntegrationEvent,
+};
+export { IntegrationEventTopics };
 export * from "./types/account/AccountActivatedEvent";
 export * from "./types/account/AccountActivationTokenRequestedEvent";
 export * from "./types/account/AccountPasswordUpdatedEvent";

@@ -1,6 +1,8 @@
 import { configDotenv } from "dotenv";
 import { DataSource } from "typeorm";
 
+import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
+import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { AppConfig } from "@/config/configuration";
 import { UserEntity } from "@/modules/users/entities/User.entity";
 
@@ -18,6 +20,6 @@ export const dataSource = new DataSource({
     synchronize: false,
     dropSchema: false,
     migrationsRun: false,
-    entities: [UserEntity],
+    entities: [UserEntity, OutboxEventEntity, InboxEventEntity],
     migrations: [],
 });

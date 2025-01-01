@@ -1,11 +1,12 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import type { Repository } from "typeorm";
+import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
+import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { Repository } from "typeorm";
 
 import { UserEntity } from "@/modules/users/entities/User.entity";
 import { UserAlreadyExistsError } from "@/modules/users/errors/UserAlreadyExists.error";
 import { UserNotFoundError } from "@/modules/users/errors/UserNotFound.error";
-import { USERS_MODULE_DATA_SOURCE } from "@/modules/users/infrastructure/database/constants/connectionName";
+import { USERS_MODULE_DATA_SOURCE } from "@/modules/users/infrastructure/database/constants";
 import { type User } from "@/modules/users/models/User.model";
 import { type IUsersService } from "@/modules/users/services/interfaces/IUsers.service";
 
@@ -14,12 +15,12 @@ export class UsersService implements IUsersService {
     private readonly logger = new Logger(UsersService.name);
 
     public constructor(
-        @InjectRepository(UserEntity, USERS_MODULE_DATA_SOURCE)
-        private repository: Repository<UserEntity>
+        @InjectTransactionHost(USERS_MODULE_DATA_SOURCE)
+        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
     ) {}
 
     public async findOneById(id: string): Promise<User> {
-        const user = await this.repository.findOne({ where: { id } });
+        const user = await this.getRepository().findOne({ where: { id } });
 
         if (!user) {
             this.logger.warn({ userId: id }, "Couldn't find user.");
@@ -30,24 +31,34 @@ export class UsersService implements IUsersService {
     }
 
     public async create(user: User): Promise<User> {
-        const savedUser = await this.repository.save(user);
+        const repository = this.getRepository();
+        const existingUser = await repository.findOne({
+            where: { id: user.id },
+        });
 
-        if (!savedUser) {
+        if (existingUser) {
             this.logger.warn({ userId: user.id, email: user.email }, "User already exists.");
             throw new UserAlreadyExistsError();
         }
 
-        return savedUser;
+        return await this.getRepository().save(user);
     }
 
     public async activate(id: string): Promise<User> {
-        const user = await this.repository.save({ id, isActivated: true });
+        const repository = this.getRepository();
+        const user = await repository.findOne({ where: { id } });
 
         if (!user) {
             this.logger.warn({ userId: id }, "Couldn't find user.");
             throw new UserNotFoundError();
         }
 
+        await repository.save({ ...user, isActivated: true });
+
         return user;
+    }
+
+    private getRepository(): Repository<UserEntity> {
+        return this.txHost.tx.getRepository(UserEntity);
     }
 }

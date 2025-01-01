@@ -4,10 +4,13 @@ import { APP_GUARD } from "@nestjs/core";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 import { ThrottlerModule } from "@nestjs/throttler";
-import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { AuthenticationController } from "./authentication/controllers/Authentication.controller";
 
+import { DatabaseModule } from "@/common/database/Database.module";
+import { IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule } from "@/common/events";
+import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
+import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { ThrottlingGuard } from "@/common/guards/Throttling.guard";
 import { AccountController } from "@/modules/identity/account/controllers/Account.controller";
 import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccountEntity";
@@ -24,6 +27,7 @@ import { IManagedAccountServiceToken } from "@/modules/identity/account/services
 import { ISingleUseTokenServiceToken } from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
 import { OpenIDConnectController } from "@/modules/identity/authentication/controllers/OpenIDConnect.controller";
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
+import { AccountPasswordUpdatedEventHandler } from "@/modules/identity/authentication/events/AccountPasswordUpdatedEvent.handler";
 import { AuthenticationService } from "@/modules/identity/authentication/services/implementations/Authentication.service";
 import { AuthPublisherService } from "@/modules/identity/authentication/services/implementations/AuthPublisher.service";
 import { OIDCProviderFactory } from "@/modules/identity/authentication/services/implementations/OIDCProvider.factory";
@@ -36,28 +40,10 @@ import { AccessTokenStrategy } from "@/modules/identity/authentication/strategie
 import { IRefreshTokenCookieStrategyToken } from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
 import { SecureRefreshTokenCookieStrategy } from "@/modules/identity/authentication/strategies/refreshToken/SecureRefreshTokenCookie.strategy";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
-import { DatabaseModule } from "@/modules/identity/infrastructure/database/Database.module";
+import { InitializeIdentityModule1735737549567 } from "@/modules/identity/infrastructure/database/migrations/1735737549567-InitializeIdentityModule";
+import { IdentityEventBoxFactory } from "@/modules/identity/shared/services/IdentityEventBox.factory";
 
 @Module({
-    imports: [
-        DatabaseModule,
-        ThrottlerModule.forRootAsync({
-            useFactory: (configService: ConfigService) => [
-                {
-                    ttl: configService.getOrThrow<number>("modules.auth.throttle.ttl"),
-                    limit: configService.getOrThrow<number>("modules.auth.throttle.limit"),
-                },
-            ],
-            inject: [ConfigService],
-        }),
-        PassportModule,
-        JwtModule,
-        TypeOrmModule.forFeature(
-            [RefreshTokenEntity, SingleUseTokenEntity, BaseAccountEntity, ManagedAccountEntity, FederatedAccountEntity],
-            IDENTITY_MODULE_DATA_SOURCE
-        ),
-    ],
-    controllers: [AuthenticationController, OpenIDConnectController, AccountController],
     providers: [
         { provide: APP_GUARD, useClass: ThrottlingGuard },
         {
@@ -97,6 +83,53 @@ import { DatabaseModule } from "@/modules/identity/infrastructure/database/Datab
             useClass: SecureRefreshTokenCookieStrategy,
         },
         AccessTokenStrategy,
+        AccountPasswordUpdatedEventHandler,
+        {
+            provide: InboxEventHandlersToken,
+            useFactory: (...handlers: IInboxEventHandler[]) => handlers,
+            inject: [AccessTokenStrategy, AccountPasswordUpdatedEventHandler],
+        },
     ],
+    imports: [
+        DatabaseModule.forRootAsync(
+            IDENTITY_MODULE_DATA_SOURCE,
+            [
+                RefreshTokenEntity,
+                SingleUseTokenEntity,
+                BaseAccountEntity,
+                ManagedAccountEntity,
+                FederatedAccountEntity,
+                OutboxEventEntity,
+                InboxEventEntity,
+            ],
+            {
+                useFactory: (configService: ConfigService) => ({
+                    port: configService.getOrThrow<number>("modules.identity.database.port"),
+                    username: configService.getOrThrow<string>("modules.identity.database.username"),
+                    password: configService.getOrThrow<string>("modules.identity.database.password"),
+                    host: configService.getOrThrow<string>("modules.identity.database.host"),
+                    database: configService.getOrThrow<string>("modules.identity.database.name"),
+                    migrations: [InitializeIdentityModule1735737549567],
+                }),
+                inject: [ConfigService],
+            }
+        ),
+        IntegrationEventsModule.forFeature({
+            eventBoxFactoryClass: IdentityEventBoxFactory,
+            context: IdentityModule.name,
+        }),
+        ThrottlerModule.forRootAsync({
+            useFactory: (configService: ConfigService) => [
+                {
+                    ttl: configService.getOrThrow<number>("modules.identity.throttle.ttl"),
+                    limit: configService.getOrThrow<number>("modules.identity.throttle.limit"),
+                },
+            ],
+            inject: [ConfigService],
+        }),
+        PassportModule,
+        JwtModule,
+    ],
+    controllers: [AuthenticationController, OpenIDConnectController, AccountController],
 })
 export class IdentityModule {}

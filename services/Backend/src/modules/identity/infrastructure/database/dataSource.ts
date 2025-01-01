@@ -1,6 +1,8 @@
 import { configDotenv } from "dotenv";
 import { DataSource } from "typeorm";
 
+import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
+import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { AppConfig } from "@/config/configuration";
 import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccountEntity";
 import { FederatedAccountEntity } from "@/modules/identity/account/entities/FederatedAccountEntity";
@@ -14,14 +16,22 @@ const config = AppConfig();
 
 export const dataSource = new DataSource({
     type: "postgres",
-    port: parseInt(config.modules.auth.database.port ?? ""),
-    host: config.modules.auth.database.host,
-    username: config.modules.auth.database.username,
-    password: config.modules.auth.database.password,
-    database: config.modules.auth.database.name,
+    port: parseInt(config.modules.identity.database.port ?? ""),
+    host: config.modules.identity.database.host,
+    username: config.modules.identity.database.username,
+    password: config.modules.identity.database.password,
+    database: config.modules.identity.database.name,
     synchronize: false,
     dropSchema: false,
     migrationsRun: false,
-    entities: [RefreshTokenEntity, SingleUseTokenEntity, FederatedAccountEntity, ManagedAccountEntity, BaseAccountEntity],
+    entities: [
+        OutboxEventEntity,
+        InboxEventEntity,
+        RefreshTokenEntity,
+        SingleUseTokenEntity,
+        FederatedAccountEntity,
+        ManagedAccountEntity,
+        BaseAccountEntity,
+    ],
     migrations: [],
 });

@@ -42,6 +42,8 @@ resource "kubernetes_config_map" "app_config" {
 
         USERS_DATABASE_NAME                                 = var.USERS_DATABASE_NAME
 
+        MAIL_DATABASE_NAME                                  = var.MAIL_DATABASE_NAME
+
         FRONTEND_PORT                                       = var.FRONTEND_PORT
 
         GATEWAY_PORT                                        = var.GATEWAY_PORT

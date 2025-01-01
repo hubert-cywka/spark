@@ -17,9 +17,9 @@ export class GoogleOIDCProviderService implements IOIDCProviderService {
     private provider: Google;
 
     constructor(private configService: ConfigService) {
-        const clientId = this.configService.getOrThrow<string>("modules.auth.oidc.google.clientId");
-        const clientSecret = this.configService.getOrThrow<string>("modules.auth.oidc.google.clientSecret");
-        const redirectUrl = this.configService.getOrThrow<string>("modules.auth.oidc.google.redirectUrl");
+        const clientId = this.configService.getOrThrow<string>("modules.identity.oidc.google.clientId");
+        const clientSecret = this.configService.getOrThrow<string>("modules.identity.oidc.google.clientSecret");
+        const redirectUrl = this.configService.getOrThrow<string>("modules.identity.oidc.google.redirectUrl");
 
         this.logger = new Logger(GoogleOIDCProviderService.name);
         this.provider = new Google(clientId, clientSecret, redirectUrl);

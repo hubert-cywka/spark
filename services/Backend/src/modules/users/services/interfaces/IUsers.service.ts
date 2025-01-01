@@ -1,6 +1,6 @@
 import { type User } from "@/modules/users/models/User.model";
 
-export const IUsersServiceToken = Symbol("IUsersServiceToken");
+export const UsersServiceToken = Symbol("IUsersServiceToken");
 
 export interface IUsersService {
     create(user: User): Promise<User>;
