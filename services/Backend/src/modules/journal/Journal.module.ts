@@ -5,7 +5,7 @@ import { DatabaseModule } from "@/common/database/Database.module";
 import { IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
-import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/constants";
+import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
 import { InitializeJournalModule1735835917869 } from "@/modules/journal/infrastructure/database/migrations/1735835917869-InitializeJournalModule";
 import { JournalEventBoxFactory } from "@/modules/journal/services/implementations/JournalEventBox.factory";
 

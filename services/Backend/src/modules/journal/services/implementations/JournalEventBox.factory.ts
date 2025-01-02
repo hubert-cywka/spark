@@ -5,7 +5,7 @@ import { NatsJetStreamClientProxy } from "@nestjs-plugins/nestjs-nats-jetstream-
 
 import { EventOutbox, IEventBoxFactory } from "@/common/events";
 import { EventInbox } from "@/common/events/services/implementations/EventInbox";
-import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/constants";
+import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
 
 @Injectable()
 export class JournalEventBoxFactory implements IEventBoxFactory {
