@@ -8,17 +8,19 @@ import { IntegrationEventsModule } from "@/common/events";
 import { AppConfig } from "@/config/configuration";
 import { loggerOptions } from "@/lib/logger";
 import { IdentityModule } from "@/modules/identity/Identity.module";
+import { JournalModule } from "@/modules/journal/Journal.module";
 import { MailModule } from "@/modules/mail/Mail.module";
 import { UsersModule } from "@/modules/users/Users.module";
 
 // TODO: Do we need additional protection against CSRF? Are SameSite=Strict cookies + in-memory access tokens good enough?
 @Module({
     imports: [
+        LoggerModule.forRoot({ pinoHttp: loggerOptions }),
         ConfigModule.forRoot({
             load: [AppConfig],
             isGlobal: true,
         }),
-        LoggerModule.forRoot({ pinoHttp: loggerOptions }),
+        ScheduleModule.forRoot(),
         IntegrationEventsModule.forRootAsync({
             useFactory: (config: ConfigService) => {
                 return {
@@ -31,10 +33,10 @@ import { UsersModule } from "@/modules/users/Users.module";
             inject: [ConfigService],
             global: true,
         }),
-        ScheduleModule.forRoot(),
         IdentityModule,
         MailModule,
         UsersModule,
+        JournalModule,
     ],
     providers: [
         {
