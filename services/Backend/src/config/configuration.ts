@@ -49,6 +49,16 @@ export const AppConfig = () => ({
             },
         },
 
+        journal: {
+            database: {
+                port: process.env.DATABASE_PORT,
+                username: process.env.DATABASE_USERNAME,
+                password: process.env.DATABASE_PASSWORD,
+                host: process.env.DATABASE_HOST,
+                name: process.env.JOURNAL_DATABASE_NAME,
+            },
+        },
+
         identity: {
             jwt: {
                 signingSecret: process.env.JWT_SIGNING_SECRET,
