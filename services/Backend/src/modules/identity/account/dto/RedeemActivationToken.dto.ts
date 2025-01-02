@@ -2,5 +2,9 @@ import { IsString } from "class-validator";
 
 export class RedeemActivationTokenDto {
     @IsString()
-    activationToken!: string;
+    readonly activationToken: string;
+
+    constructor({ activationToken }: { activationToken: string }) {
+        this.activationToken = activationToken;
+    }
 }

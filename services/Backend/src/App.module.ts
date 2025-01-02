@@ -1,6 +1,5 @@
-import { Module, ValidationPipe } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { APP_PIPE } from "@nestjs/core";
 import { ScheduleModule } from "@nestjs/schedule";
 import { LoggerModule } from "nestjs-pino";
 
@@ -38,12 +37,7 @@ import { UsersModule } from "@/modules/users/Users.module";
         UsersModule,
         JournalModule,
     ],
-    providers: [
-        {
-            provide: APP_PIPE,
-            useFactory: () => new ValidationPipe({ whitelist: true, transform: true }),
-        },
-    ],
+    providers: [],
     exports: [],
 })
 export class AppModule {}

@@ -1,25 +1,40 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsString } from "class-validator";
+import { IsEmail, IsEnum, IsString } from "class-validator";
 
 import { FederatedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
 
 export class ExternalIdentityDto {
     @IsString()
-    @IsNotEmpty()
-    firstName!: string;
+    readonly firstName: string;
 
     @IsString()
-    @IsNotEmpty()
-    lastName!: string;
+    readonly lastName: string;
 
     @IsEmail()
-    @IsNotEmpty()
-    email!: string;
+    readonly email: string;
 
     @IsString()
-    @IsNotEmpty()
-    id!: string;
+    readonly id: string;
 
     @IsEnum(FederatedAccountProvider)
-    @IsNotEmpty()
-    providerId!: FederatedAccountProvider;
+    readonly providerId: FederatedAccountProvider;
+
+    constructor({
+        firstName,
+        lastName,
+        id,
+        email,
+        providerId,
+    }: {
+        firstName: string;
+        lastName: string;
+        email: string;
+        id: string;
+        providerId: FederatedAccountProvider;
+    }) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.id = id;
+        this.providerId = providerId;
+    }
 }

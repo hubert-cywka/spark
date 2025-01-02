@@ -43,6 +43,7 @@ import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/d
 import { InitializeIdentityModule1735737549567 } from "@/modules/identity/infrastructure/database/migrations/1735737549567-InitializeIdentityModule";
 import { IdentityEventBoxFactory } from "@/modules/identity/shared/services/IdentityEventBox.factory";
 
+// TODO: Create modules for authentication, account submodules
 @Module({
     providers: [
         { provide: APP_GUARD, useClass: ThrottlingGuard },
