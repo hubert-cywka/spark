@@ -2,9 +2,12 @@ import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import type { CustomStrategy } from "@nestjs/microservices";
 import type { NestExpressApplication } from "@nestjs/platform-express";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { NatsJetStreamServer } from "@nestjs-plugins/nestjs-nats-jetstream-transport";
 import cookieParser from "cookie-parser";
 import { Logger } from "nestjs-pino";
+
+import metadata from "./metadata";
 
 import { AppModule } from "@/App.module";
 import { IntegrationEventTopics } from "@/common/events";
@@ -55,6 +58,14 @@ async function bootstrap() {
             }),
         })
         .listen();
+
+    // TODO: Update schemas and responses for each endpoint
+    const swaggerConfig = new DocumentBuilder().setTitle("codename - OpenAPI").setVersion("1.0").addTag("codename").build();
+    await SwaggerModule.loadPluginMetadata(metadata);
+    const documentFactory = () => SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup("documentation", app, documentFactory, {
+        useGlobalPrefix: true,
+    });
 
     await app.startAllMicroservices();
     await app.listen(config.getOrThrow<number>("port"));

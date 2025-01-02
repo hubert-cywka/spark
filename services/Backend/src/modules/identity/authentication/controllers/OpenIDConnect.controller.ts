@@ -13,6 +13,7 @@ import {
     Query,
     Res,
     UnauthorizedException,
+    UseInterceptors,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { OAuth2RequestError } from "arctic";
@@ -22,13 +23,16 @@ import { Cookie } from "@/common/decorators/Cookie.decorator";
 import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
+import { TransformToDtoInterceptor } from "@/common/interceptors/TransformToDto.interceptor";
 import {
     OIDC_CODE_VERIFIER_COOKIE_NAME,
     OIDC_EXTERNAL_IDENTITY,
     OIDC_STATE_COOKIE_NAME,
     REFRESH_TOKEN_COOKIE_NAME,
 } from "@/modules/identity/authentication/constants";
+import { AuthenticationResultDto } from "@/modules/identity/authentication/dto/AuthenticationResult.dto";
 import { ExternalIdentityDto } from "@/modules/identity/authentication/dto/ExternalIdentity.dto";
+import { OIDCRedirectResponseDto } from "@/modules/identity/authentication/dto/OIDCRedirectResponse.dto";
 import type { RegisterViaOIDCDto } from "@/modules/identity/authentication/dto/RegisterViaOIDC.dto";
 import {
     type IAuthenticationService,
@@ -71,6 +75,7 @@ export class OpenIDConnectController {
 
     @HttpCode(HttpStatus.OK)
     @Get("login/:providerId")
+    @UseInterceptors(new TransformToDtoInterceptor(OIDCRedirectResponseDto))
     async login(
         @Res() response: Response,
         @Param("providerId", new ParseEnumPipe(FederatedAccountProvider))
@@ -133,6 +138,7 @@ export class OpenIDConnectController {
 
     @HttpCode(HttpStatus.CREATED)
     @Post("register")
+    @UseInterceptors(new TransformToDtoInterceptor(AuthenticationResultDto))
     async registerWithOIDC(
         @Res() response: Response,
         @Body() dto: RegisterViaOIDCDto,
