@@ -7,8 +7,6 @@ import { NatsJetStreamServer } from "@nestjs-plugins/nestjs-nats-jetstream-trans
 import cookieParser from "cookie-parser";
 import { Logger } from "nestjs-pino";
 
-import metadata from "./metadata";
-
 import { AppModule } from "@/App.module";
 import { IntegrationEventTopics } from "@/common/events";
 import { AppConfig } from "@/config/configuration";
@@ -61,7 +59,7 @@ async function bootstrap() {
 
     // TODO: Update schemas and responses for each endpoint
     const swaggerConfig = new DocumentBuilder().setTitle("codename - OpenAPI").setVersion("1.0").addTag("codename").build();
-    await SwaggerModule.loadPluginMetadata(metadata);
+    // await SwaggerModule.loadPluginMetadata(metadata);
     const documentFactory = () => SwaggerModule.createDocument(app, swaggerConfig);
     SwaggerModule.setup("documentation", app, documentFactory, {
         useGlobalPrefix: true,
