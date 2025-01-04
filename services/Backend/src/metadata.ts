@@ -442,6 +442,14 @@ export default async () => {
                         },
                     },
                 ],
+                [
+                    import('./modules/journal/author/dto/Author.dto'),
+                    {
+                        AuthorDto: {
+                            id: { required: true, type: () => String },
+                        },
+                    },
+                ],
             ],
             controllers: [
                 [
@@ -493,7 +501,10 @@ export default async () => {
                                 type: t['./modules/journal/daily/dto/Daily.dto']
                                     .DailyDto,
                             },
-                            createDaily: { type: Object },
+                            createDaily: {
+                                type: t['./modules/journal/daily/dto/Daily.dto']
+                                    .DailyDto,
+                            },
                             updateDaily: {
                                 type: t['./modules/journal/daily/dto/Daily.dto']
                                     .DailyDto,
