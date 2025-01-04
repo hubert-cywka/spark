@@ -6,66 +6,66 @@ import {
     Inject,
     NotFoundException,
     Param,
+    ParseUUIDPipe,
     Patch,
     Post,
     Query,
     UseGuards,
-    UseInterceptors,
 } from "@nestjs/common";
 
 import { CurrentUser } from "@/common/decorators/CurrentUser.decorator";
-import { UUIDDto } from "@/common/dto/UUID.dto";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
 import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
-import { TransformToDtoInterceptor } from "@/common/interceptors/TransformToDto.interceptor";
+import { PageOptionsDto } from "@/common/pagination/dto/PageOptions.dto";
 import { CreateDailyRequestDto } from "@/modules/journal/daily/dto/CreateDailyRequest.dto";
-import { DailyDto } from "@/modules/journal/daily/dto/Daily.dto";
 import { FindDailiesByDateRangeQueryDto } from "@/modules/journal/daily/dto/FindDailiesByDateRangeQuery.dto";
 import { UpdateDailyDateRequestDto } from "@/modules/journal/daily/dto/UpdateDailyDateRequest.dto";
+import { type IDailyMapper, DailyMapperToken } from "@/modules/journal/daily/mappers/IDaily.mapper";
 import { type IDailyService, DailyServiceToken } from "@/modules/journal/daily/services/interfaces/IDaily.service";
 import { type User } from "@/types/User";
 
 @Controller("daily")
 export class DailyController {
-    public constructor(@Inject(DailyServiceToken) public readonly dailyService: IDailyService) {}
+    public constructor(
+        @Inject(DailyServiceToken) private readonly dailyService: IDailyService,
+        @Inject(DailyMapperToken) private readonly dailyMapper: IDailyMapper
+    ) {}
 
     @Get()
     @UseGuards(new AuthenticationGuard())
-    @UseInterceptors(new TransformToDtoInterceptor(DailyDto))
-    public async getDailies(@Query() { from, to }: FindDailiesByDateRangeQueryDto, @CurrentUser() author: User) {
-        return await this.dailyService.findAllByDateRange(author, new Date(from), new Date(to));
+    public async getDailies(
+        @Query() { from, to, ...rest }: FindDailiesByDateRangeQueryDto,
+        @Query() pageOptions: PageOptionsDto,
+        @CurrentUser() author: User
+    ) {
+        const result = await this.dailyService.findAllByDateRange(author, from, to, pageOptions);
+        return this.dailyMapper.fromModelToDtoPaginated(result);
     }
 
     @Get(":id")
     @UseGuards(new AuthenticationGuard())
-    @UseInterceptors(new TransformToDtoInterceptor(DailyDto))
-    public async getDailyById(@Param() { id }: UUIDDto, @CurrentUser() author: User) {
+    public async getDailyById(@Param(new ParseUUIDPipe()) id: string, @CurrentUser() author: User) {
         try {
-            return await this.dailyService.findOneById(author, id);
+            const result = await this.dailyService.findOneById(author, id);
+            return this.dailyMapper.fromModelToDto(result);
         } catch (err) {
             whenError(err).is(EntityNotFoundError).throw(new NotFoundException()).elseRethrow();
         }
     }
 
-    // TODO: Validation
     @Post()
     @UseGuards(new AuthenticationGuard())
     public async createDaily(@Body() dto: CreateDailyRequestDto, @CurrentUser() author: User) {
-        try {
-            return await this.dailyService.create(author, new Date(dto.date));
-        } catch (err) {
-            // TODO: Error handling
-            whenError(err).elseRethrow();
-        }
+        return await this.dailyService.create(author, dto.date);
     }
 
-    // TODO: Validation
     @Patch(":id/date")
     @UseGuards(new AuthenticationGuard())
-    public async updateDaily(@Param() { id }: UUIDDto, @Body() dto: UpdateDailyDateRequestDto, @CurrentUser() author: User) {
+    public async updateDaily(@Param(new ParseUUIDPipe()) id: string, @Body() dto: UpdateDailyDateRequestDto, @CurrentUser() author: User) {
         try {
-            return await this.dailyService.update(author, id, new Date(dto.date));
+            const result = await this.dailyService.update(author, id, dto.date);
+            return this.dailyMapper.fromModelToDto(result);
         } catch (err) {
             whenError(err).is(EntityNotFoundError).throw(new NotFoundException()).elseRethrow();
         }
@@ -73,9 +73,9 @@ export class DailyController {
 
     @Delete(":id")
     @UseGuards(new AuthenticationGuard())
-    public async deleteDaily(@Param() { id }: UUIDDto, @CurrentUser() author: User) {
+    public async deleteDaily(@Param(new ParseUUIDPipe()) id: string, @CurrentUser() author: User) {
         try {
-            return await this.dailyService.deleteById(author, id);
+            await this.dailyService.deleteById(author, id);
         } catch (err) {
             whenError(err).is(EntityNotFoundError).throw(new NotFoundException()).elseRethrow();
         }

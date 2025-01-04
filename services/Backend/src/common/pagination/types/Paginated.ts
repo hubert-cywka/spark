@@ -1,4 +1,6 @@
-export interface Page<T> {
+import { PageMeta } from "@/common/pagination/types/PageMeta";
+
+export interface Paginated<T> {
     data: T[];
-    meta: unknown;
+    meta: PageMeta;
 }

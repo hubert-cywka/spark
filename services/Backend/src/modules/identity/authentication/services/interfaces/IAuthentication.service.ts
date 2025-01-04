@@ -1,5 +1,5 @@
-import { type LoginDto } from "@/modules/identity/authentication/dto/Login.dto";
-import { type RegisterWithCredentialsDto } from "@/modules/identity/authentication/dto/RegisterWithCredentials.dto";
+import { LoginDto } from "@/modules/identity/authentication/dto/Login.dto";
+import { RegisterWithCredentialsDto } from "@/modules/identity/authentication/dto/RegisterWithCredentials.dto";
 import { type AuthenticationResult } from "@/modules/identity/authentication/types/Authentication";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
 

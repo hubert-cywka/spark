@@ -9,6 +9,7 @@ import { type Author } from "@/modules/journal/author/models/Author.model";
 import { type IAuthorService } from "@/modules/journal/author/services/interfaces/IAuthor.service";
 import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
 
+// TODO: Use mappers
 @Injectable()
 export class AuthorService implements IAuthorService {
     public constructor(

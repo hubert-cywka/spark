@@ -16,8 +16,8 @@ export class DailyEntity {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
-    @Column({ type: "date" })
-    date!: Date;
+    @Column({ type: "varchar" })
+    date!: string;
 
     @CreateDateColumn({ type: "timestamptz" })
     createdAt!: Date;
@@ -30,4 +30,7 @@ export class DailyEntity {
 
     @ManyToOne((type) => AuthorEntity, (author) => author.dailies)
     author!: Relation<AuthorEntity>;
+
+    @Column({ type: "varchar" })
+    authorId!: string;
 }

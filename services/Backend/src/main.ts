@@ -1,3 +1,4 @@
+import { ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import type { CustomStrategy } from "@nestjs/microservices";
@@ -29,6 +30,7 @@ async function bootstrap() {
     const appLogger = app.get(Logger);
     app.useLogger(appLogger);
     app.setGlobalPrefix("api");
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
     app.use(cookieParser(config.getOrThrow<string>("cookies.secret")));
     app.set("trust proxy", true);
@@ -59,7 +61,6 @@ async function bootstrap() {
 
     // TODO: Update schemas and responses for each endpoint
     const swaggerConfig = new DocumentBuilder().setTitle("codename - OpenAPI").setVersion("1.0").addTag("codename").build();
-    // await SwaggerModule.loadPluginMetadata(metadata);
     const documentFactory = () => SwaggerModule.createDocument(app, swaggerConfig);
     SwaggerModule.setup("documentation", app, documentFactory, {
         useGlobalPrefix: true,

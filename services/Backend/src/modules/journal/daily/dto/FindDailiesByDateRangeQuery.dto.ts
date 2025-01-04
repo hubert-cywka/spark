@@ -1,9 +1,13 @@
 import { IsDateString } from "class-validator";
 
+import { IsDateOnly } from "@/lib/validation/decorators/IsDateOnly.decorator";
+
 export class FindDailiesByDateRangeQueryDto {
-    @IsDateString()
+    @IsDateOnly()
+    @IsDateString({ strict: true })
     from!: string;
 
-    @IsDateString()
+    @IsDateOnly()
+    @IsDateString({ strict: true })
     to!: string;
 }
