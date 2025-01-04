@@ -12,7 +12,7 @@ module.exports = {
             jsx: true,
         },
     },
-    plugins: ["@typescript-eslint", "react", "react-hooks", "sonarjs", "unused-imports", "simple-import-sort", "prettier"],
+    plugins: ["local-rules", "@typescript-eslint", "react", "react-hooks", "sonarjs", "unused-imports", "simple-import-sort", "prettier"],
     extends: [
         "eslint:recommended",
         "plugin:react/recommended",
@@ -23,6 +23,7 @@ module.exports = {
         "prettier",
     ],
     rules: {
+        "local-rules/no-dto-as-type": "error",
         "no-console": "error",
         "react-hooks/rules-of-hooks": "error",
         "simple-import-sort/imports": "error",

@@ -1,20 +1,32 @@
-import { Expose } from "class-transformer";
 import { IsEmail, IsString } from "class-validator";
 
 export class AccountDto {
-    @Expose()
     @IsEmail()
-    email!: string;
+    readonly email: string;
 
-    @Expose()
     @IsString()
-    id!: string;
+    readonly id: string;
 
-    @Expose()
     @IsString()
-    providerId!: string;
+    readonly providerId: string;
 
-    @Expose()
     @IsString()
-    providerAccountId!: string;
+    readonly providerAccountId: string;
+
+    constructor({
+        email,
+        id,
+        providerAccountId,
+        providerId,
+    }: {
+        email: string;
+        id: string;
+        providerId: string;
+        providerAccountId: string;
+    }) {
+        this.email = email;
+        this.id = id;
+        this.providerId = providerId;
+        this.providerAccountId = providerAccountId;
+    }
 }

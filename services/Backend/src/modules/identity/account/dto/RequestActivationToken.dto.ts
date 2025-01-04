@@ -2,5 +2,9 @@ import { IsEmail } from "class-validator";
 
 export class RequestActivationTokenDto {
     @IsEmail()
-    email!: string;
+    readonly email: string;
+
+    constructor({ email }: { email: string }) {
+        this.email = email;
+    }
 }

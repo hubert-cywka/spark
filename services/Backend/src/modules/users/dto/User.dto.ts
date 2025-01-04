@@ -1,20 +1,22 @@
-import { Expose } from "class-transformer";
 import { IsString } from "class-validator";
 
 export class UserDto {
-    @Expose()
     @IsString()
-    id!: string;
+    readonly id: string;
 
-    @Expose()
     @IsString()
-    email!: string;
+    readonly email: string;
 
-    @Expose()
     @IsString()
-    firstName!: string;
+    readonly firstName: string;
 
-    @Expose()
     @IsString()
-    lastName!: string;
+    readonly lastName: string;
+
+    constructor({ id, email, firstName, lastName }: { id: string; email: string; firstName: string; lastName: string }) {
+        this.id = id;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 }

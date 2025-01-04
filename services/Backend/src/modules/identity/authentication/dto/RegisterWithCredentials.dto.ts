@@ -4,21 +4,29 @@ import { PASSWORD_LENGTH, USER_NAME_REGEX } from "@/modules/identity/shared/cons
 
 export class RegisterWithCredentialsDto {
     @IsEmail()
-    email!: string;
+    readonly email: string;
 
     @IsString()
     @MinLength(PASSWORD_LENGTH)
-    password!: string;
+    readonly password: string;
 
     @IsString()
     @Matches(USER_NAME_REGEX)
-    lastName!: string;
+    readonly lastName: string;
 
     @IsString()
     @Matches(USER_NAME_REGEX)
-    firstName!: string;
+    readonly firstName: string;
 
     @IsBoolean()
     @Equals(true)
-    hasAcceptedTermsAndConditions!: boolean;
+    readonly hasAcceptedTermsAndConditions: boolean;
+
+    constructor(email: string, password: string, lastName: string, firstName: string, hasAcceptedTermsAndConditions: boolean) {
+        this.email = email;
+        this.password = password;
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.hasAcceptedTermsAndConditions = hasAcceptedTermsAndConditions;
+    }
 }

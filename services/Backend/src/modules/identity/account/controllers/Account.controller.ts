@@ -3,10 +3,10 @@ import { Body, Controller, HttpCode, HttpStatus, Inject, NotFoundException, Post
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
-import type { RedeemActivationTokenDto } from "@/modules/identity/account/dto/RedeemActivationToken.dto";
-import type { RequestActivationTokenDto } from "@/modules/identity/account/dto/RequestActivationToken.dto";
-import type { RequestPasswordResetDto } from "@/modules/identity/account/dto/RequestPasswordReset.dto";
-import type { UpdatePasswordDto } from "@/modules/identity/account/dto/UpdatePassword.dto";
+import { RedeemActivationTokenDto } from "@/modules/identity/account/dto/RedeemActivationToken.dto";
+import { RequestActivationTokenDto } from "@/modules/identity/account/dto/RequestActivationToken.dto";
+import { RequestPasswordResetDto } from "@/modules/identity/account/dto/RequestPasswordReset.dto";
+import { UpdatePasswordDto } from "@/modules/identity/account/dto/UpdatePassword.dto";
 import { AccountAlreadyActivatedError } from "@/modules/identity/account/errors/AccountAlreadyActivated.error";
 import { AccountNotFoundError } from "@/modules/identity/account/errors/AccountNotFound.error";
 import {
