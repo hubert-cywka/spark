@@ -7,6 +7,8 @@ import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { AuthorEntity } from "@/modules/journal/author/entities/Author.entity";
 import { AccountRegisteredEventHandler } from "@/modules/journal/author/events/AccountRegisteredEvent.handler";
+import { AuthorMapper } from "@/modules/journal/author/mappers/Author.mapper";
+import { AuthorMapperToken } from "@/modules/journal/author/mappers/IAuthor.mapper";
 import { AuthorService } from "@/modules/journal/author/services/implementations/Author.service";
 import { AuthorServiceToken } from "@/modules/journal/author/services/interfaces/IAuthor.service";
 import { DailyController } from "@/modules/journal/daily/controllers/Daily.controller";
@@ -23,6 +25,7 @@ import { AddJournalAuthor1735844848384 } from "@/modules/journal/infrastructure/
 import { AddAuthorIdColumnInDailyEntity1735994132208 } from "@/modules/journal/infrastructure/database/migrations/1735994132208-AddAuthorIdColumnInDailyEntity";
 import { JournalSubscriber } from "@/modules/journal/Journal.subscriber";
 
+// TODO: Create modules for author, daily submodules
 @Module({
     providers: [
         {
@@ -32,6 +35,10 @@ import { JournalSubscriber } from "@/modules/journal/Journal.subscriber";
         {
             provide: DailyServiceToken,
             useClass: DailyService,
+        },
+        {
+            provide: AuthorMapperToken,
+            useClass: AuthorMapper,
         },
         {
             provide: AuthorServiceToken,

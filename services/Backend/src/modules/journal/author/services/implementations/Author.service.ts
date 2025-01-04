@@ -1,20 +1,21 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { InjectTransactionHost, Transactional, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import { Repository } from "typeorm";
 
 import { AuthorEntity } from "@/modules/journal/author/entities/Author.entity";
 import { AuthorAlreadyExistsError } from "@/modules/journal/author/errors/AuthorAlreadyExists.error";
+import { type IAuthorMapper, AuthorMapperToken } from "@/modules/journal/author/mappers/IAuthor.mapper";
 import { type Author } from "@/modules/journal/author/models/Author.model";
 import { type IAuthorService } from "@/modules/journal/author/services/interfaces/IAuthor.service";
 import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
 
-// TODO: Use mappers
 @Injectable()
 export class AuthorService implements IAuthorService {
     public constructor(
         @InjectTransactionHost(JOURNAL_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
+        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        @Inject(AuthorMapperToken) private readonly authorMapper: IAuthorMapper
     ) {}
 
     @Transactional(JOURNAL_MODULE_DATA_SOURCE)
@@ -26,7 +27,8 @@ export class AuthorService implements IAuthorService {
             throw new AuthorAlreadyExistsError();
         }
 
-        return await repository.save({ id });
+        const result = await repository.save({ id });
+        return this.authorMapper.fromEntityToModel(result);
     }
 
     private getRepository(): Repository<AuthorEntity> {

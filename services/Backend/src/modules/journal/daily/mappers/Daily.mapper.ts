@@ -1,10 +1,10 @@
-import { BaseMapperWithPagination } from "@/common/mappers/BaseWithPagination.mapper";
+import { BaseModelDTOEntityMapper } from "@/common/mappers/BaseModelDTOEntity.mapper";
 import { DailyDto } from "@/modules/journal/daily/dto/Daily.dto";
 import { DailyEntity } from "@/modules/journal/daily/entities/Daily.entity";
 import { IDailyMapper } from "@/modules/journal/daily/mappers/IDaily.mapper";
 import { Daily } from "@/modules/journal/daily/models/Daily.model";
 
-export class DailyMapper extends BaseMapperWithPagination<Daily, DailyDto, DailyEntity> implements IDailyMapper {
+export class DailyMapper extends BaseModelDTOEntityMapper<Daily, DailyDto, DailyEntity> implements IDailyMapper {
     public fromDtoToModel(dto: DailyDto): Daily {
         return {
             id: dto.id,
@@ -26,12 +26,12 @@ export class DailyMapper extends BaseMapperWithPagination<Daily, DailyDto, Daily
     }
 
     public fromModelToDto(model: Daily): DailyDto {
-        return {
+        return new DailyDto({
             id: model.id,
             date: model.date,
             authorId: model.authorId,
             createdAt: model.createdAt.toISOString(),
             updatedAt: model.updatedAt.toISOString(),
-        };
+        });
     }
 }

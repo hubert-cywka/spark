@@ -5,5 +5,9 @@ import { IsDateOnly } from "@/lib/validation/decorators/IsDateOnly.decorator";
 export class UpdateDailyDateRequestDto {
     @IsDateOnly()
     @IsDateString({ strict: true })
-    date!: string;
+    readonly date: string;
+
+    constructor({ date }: { date: string }) {
+        this.date = date;
+    }
 }

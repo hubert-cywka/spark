@@ -4,8 +4,13 @@ import { AccountDto } from "@/modules/identity/authentication/dto/Account.dto";
 
 export class AuthenticationResultDto {
     @IsObject()
-    account!: AccountDto;
+    readonly account: AccountDto;
 
     @IsString()
-    accessToken!: string;
+    readonly accessToken: string;
+
+    constructor({ account, accessToken }: { accessToken: string; account: AccountDto }) {
+        this.account = account;
+        this.accessToken = accessToken;
+    }
 }

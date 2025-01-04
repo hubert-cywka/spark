@@ -5,9 +5,14 @@ import { IsDateOnly } from "@/lib/validation/decorators/IsDateOnly.decorator";
 export class FindDailiesByDateRangeQueryDto {
     @IsDateOnly()
     @IsDateString({ strict: true })
-    from!: string;
+    readonly from: string;
 
     @IsDateOnly()
     @IsDateString({ strict: true })
-    to!: string;
+    readonly to: string;
+
+    constructor({ from, to }: { to: string; from: string }) {
+        this.to = to;
+        this.from = from;
+    }
 }

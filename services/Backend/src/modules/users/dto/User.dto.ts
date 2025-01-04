@@ -2,14 +2,21 @@ import { IsString } from "class-validator";
 
 export class UserDto {
     @IsString()
-    id!: string;
+    readonly id: string;
 
     @IsString()
-    email!: string;
+    readonly email: string;
 
     @IsString()
-    firstName!: string;
+    readonly firstName: string;
 
     @IsString()
-    lastName!: string;
+    readonly lastName: string;
+
+    constructor({ id, email, firstName, lastName }: { id: string; email: string; firstName: string; lastName: string }) {
+        this.id = id;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 }

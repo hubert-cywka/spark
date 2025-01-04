@@ -4,9 +4,14 @@ import { PASSWORD_LENGTH } from "@/modules/identity/shared/constants";
 
 export class UpdatePasswordDto {
     @IsString()
-    passwordChangeToken!: string;
+    readonly passwordChangeToken: string;
 
     @IsString()
     @MinLength(PASSWORD_LENGTH)
-    password!: string;
+    readonly password: string;
+
+    constructor({ passwordChangeToken, password }: { passwordChangeToken: string; password: string }) {
+        this.passwordChangeToken = passwordChangeToken;
+        this.password = password;
+    }
 }

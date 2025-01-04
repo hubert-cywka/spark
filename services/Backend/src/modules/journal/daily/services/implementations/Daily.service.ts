@@ -3,7 +3,6 @@ import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactiona
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import { Repository } from "typeorm";
 
-import { PageDto } from "@/common/pagination/dto/Page.dto";
 import { PageMetaDto } from "@/common/pagination/dto/PageMeta.dto";
 import { PageOptions } from "@/common/pagination/types/PageOptions";
 import { Paginated } from "@/common/pagination/types/Paginated";
@@ -36,14 +35,14 @@ export class DailyService implements IDailyService {
             .getMany();
 
         // TODO: Do not use DTOs here
-        return new PageDto(
-            dailies.map(this.dailyMapper.fromEntityToModel),
-            new PageMetaDto({
+        return {
+            data: this.dailyMapper.fromEntityToModelBulk(dailies),
+            meta: new PageMetaDto({
                 itemCount,
                 page: pageOptions.page,
                 take: pageOptions.take,
-            })
-        );
+            }),
+        };
     }
 
     public async findOneById(author: User, id: string): Promise<Daily> {

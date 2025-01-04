@@ -2,14 +2,31 @@ import { IsEmail, IsString } from "class-validator";
 
 export class AccountDto {
     @IsEmail()
-    email!: string;
+    readonly email: string;
 
     @IsString()
-    id!: string;
+    readonly id: string;
 
     @IsString()
-    providerId!: string;
+    readonly providerId: string;
 
     @IsString()
-    providerAccountId!: string;
+    readonly providerAccountId: string;
+
+    constructor({
+        email,
+        id,
+        providerAccountId,
+        providerId,
+    }: {
+        email: string;
+        id: string;
+        providerId: string;
+        providerAccountId: string;
+    }) {
+        this.email = email;
+        this.id = id;
+        this.providerId = providerId;
+        this.providerAccountId = providerAccountId;
+    }
 }
