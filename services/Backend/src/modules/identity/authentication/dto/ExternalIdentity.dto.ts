@@ -4,37 +4,17 @@ import { FederatedAccountProvider } from "@/modules/identity/authentication/type
 
 export class ExternalIdentityDto {
     @IsString()
-    readonly firstName: string;
+    readonly firstName!: string;
 
     @IsString()
-    readonly lastName: string;
+    readonly lastName!: string;
 
     @IsEmail()
-    readonly email: string;
+    readonly email!: string;
 
     @IsString()
-    readonly id: string;
+    readonly id!: string;
 
     @IsEnum(FederatedAccountProvider)
-    readonly providerId: FederatedAccountProvider;
-
-    constructor({
-        firstName,
-        lastName,
-        id,
-        email,
-        providerId,
-    }: {
-        firstName: string;
-        lastName: string;
-        email: string;
-        id: string;
-        providerId: FederatedAccountProvider;
-    }) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.id = id;
-        this.providerId = providerId;
-    }
+    readonly providerId!: FederatedAccountProvider;
 }

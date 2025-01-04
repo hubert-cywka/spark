@@ -1,3 +1,5 @@
+import { plainToClass } from "class-transformer";
+
 import { BaseModelDTOEntityMapper } from "@/common/mappers/BaseModelDTOEntity.mapper";
 import { AuthorDto } from "@/modules/journal/author/dto/Author.dto";
 import { AuthorEntity } from "@/modules/journal/author/entities/Author.entity";
@@ -13,6 +15,6 @@ export class AuthorMapper extends BaseModelDTOEntityMapper<Author, AuthorDto, Au
     }
 
     fromModelToDto(model: Author): AuthorDto {
-        return new AuthorDto({ id: model.id });
+        return plainToClass(AuthorDto, { id: model.id });
     }
 }

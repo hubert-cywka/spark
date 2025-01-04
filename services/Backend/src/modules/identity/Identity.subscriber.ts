@@ -1,7 +1,8 @@
 import { Controller, Inject, Logger } from "@nestjs/common";
 import { Ctx, EventPattern, Payload } from "@nestjs/microservices";
-import { Interval } from "@nestjs/schedule";
+import { Cron, CronExpression, Interval } from "@nestjs/schedule";
 import { NatsJetStreamContext } from "@nestjs-plugins/nestjs-nats-jetstream-transport";
+import dayjs from "dayjs";
 
 import { IInboxEventHandler, InboxEventHandlersToken, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 import { type IEventInbox, EventInboxToken } from "@/common/events/services/interfaces/IEventInbox";
@@ -33,5 +34,11 @@ export class IdentitySubscriber {
     @Interval(INBOX_PROCESSING_INTERVAL)
     private async processInbox() {
         await this.inbox.process(this.handlers);
+    }
+
+    @Cron(CronExpression.EVERY_DAY_AT_4AM)
+    private async clearInbox() {
+        const processedBefore = dayjs().subtract(7, "days").toDate();
+        await this.inbox.clearProcessedEvents(processedBefore);
     }
 }

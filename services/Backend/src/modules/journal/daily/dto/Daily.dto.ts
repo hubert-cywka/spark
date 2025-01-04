@@ -1,38 +1,18 @@
-import { IsDateString, IsString } from "class-validator";
+import { IsDateString, IsString, IsUUID } from "class-validator";
 
 export class DailyDto {
-    @IsString()
-    id: string;
+    @IsUUID()
+    id!: string;
 
     @IsString()
-    authorId: string;
+    authorId!: string;
 
     @IsDateString()
-    date: string;
+    date!: string;
 
     @IsDateString()
-    createdAt: string;
+    createdAt!: string;
 
     @IsDateString()
-    updatedAt: string;
-
-    constructor({
-        id,
-        date,
-        authorId,
-        createdAt,
-        updatedAt,
-    }: {
-        id: string;
-        authorId: string;
-        date: string;
-        createdAt: string;
-        updatedAt: string;
-    }) {
-        this.id = id;
-        this.authorId = authorId;
-        this.date = date;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
+    updatedAt!: string;
 }

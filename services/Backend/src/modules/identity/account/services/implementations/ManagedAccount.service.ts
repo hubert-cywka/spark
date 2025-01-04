@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger } from "@nestjs/common";
 import { InjectTransactionHost, Transactional, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import argon2 from "argon2";
-import { plainToInstance } from "class-transformer";
+import { plainToClass } from "class-transformer";
 import dayjs from "dayjs";
 import { Repository } from "typeorm";
 
@@ -174,7 +174,7 @@ export class ManagedAccountService implements IManagedAccountService {
     }
 
     private mapEntityToModel(entity: ManagedAccountEntity): Account {
-        return plainToInstance(Account, {
+        return plainToClass(Account, {
             id: entity.id,
             email: entity.email,
             providerId: entity.providerId,

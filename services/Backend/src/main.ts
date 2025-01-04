@@ -30,7 +30,12 @@ async function bootstrap() {
     const appLogger = app.get(Logger);
     app.useLogger(appLogger);
     app.setGlobalPrefix("api");
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+    app.useGlobalPipes(
+        new ValidationPipe({
+            whitelist: true,
+            transform: true,
+        })
+    );
 
     app.use(cookieParser(config.getOrThrow<string>("cookies.secret")));
     app.set("trust proxy", true);
