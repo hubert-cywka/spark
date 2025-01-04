@@ -1,7 +1,9 @@
 import { Module } from "@nestjs/common";
+import { APP_GUARD } from "@nestjs/core";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 
+import { ThrottlingGuard } from "@/common/guards/Throttling.guard";
 import { AccountModule } from "@/modules/identity/account/Account.module";
 import { AuthenticationController } from "@/modules/identity/authentication/controllers/Authentication.controller";
 import { OpenIDConnectController } from "@/modules/identity/authentication/controllers/OpenIDConnect.controller";
@@ -17,10 +19,12 @@ import { IRefreshTokenServiceToken } from "@/modules/identity/authentication/ser
 import { AccessTokenStrategy } from "@/modules/identity/authentication/strategies/passport/AccessToken.strategy";
 import { IRefreshTokenCookieStrategyToken } from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
 import { SecureRefreshTokenCookieStrategy } from "@/modules/identity/authentication/strategies/refreshToken/SecureRefreshTokenCookie.strategy";
+import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.module";
 
 @Module({
-    imports: [PassportModule, JwtModule, AccountModule],
+    imports: [IdentitySharedModule, PassportModule, JwtModule, AccountModule],
     providers: [
+        { provide: APP_GUARD, useClass: ThrottlingGuard },
         {
             provide: IAuthenticationServiceToken,
             useClass: AuthenticationService,
