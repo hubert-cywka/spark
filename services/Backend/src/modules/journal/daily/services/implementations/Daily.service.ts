@@ -48,7 +48,7 @@ export class DailyService implements IDailyService {
     public async findOneById(author: User, id: string): Promise<Daily> {
         const repository = this.getRepository();
         const daily = await repository.findOne({
-            where: { id, author: { id: author.id } },
+            where: { id, authorId: author.id },
         });
 
         if (!daily) {
@@ -79,7 +79,7 @@ export class DailyService implements IDailyService {
             .createQueryBuilder("daily")
             .update(DailyEntity)
             .set({ date })
-            .where("daily.id = :dailyId AND author.id = :authorId", {
+            .where("daily.id = :dailyId AND daily.authorId = :authorId", {
                 dailyId: id,
                 authorId: author.id,
             })
@@ -96,7 +96,10 @@ export class DailyService implements IDailyService {
     }
 
     public async deleteById(author: User, id: string): Promise<void> {
-        const result = await this.getRepository().softDelete({ id });
+        const result = await this.getRepository().softDelete({
+            id,
+            authorId: author.id,
+        });
 
         if (!result.affected) {
             throw new DailyNotFoundError();

@@ -20,15 +20,17 @@ export class AuthorService implements IAuthorService {
 
     @Transactional(JOURNAL_MODULE_DATA_SOURCE)
     public async create(id: string): Promise<Author> {
-        const repository = this.getRepository();
-        const exists = await repository.exists({ where: { id } });
+        return await this.txHost.withTransaction(async () => {
+            const repository = this.getRepository();
+            const exists = await repository.exists({ where: { id } });
 
-        if (exists) {
-            throw new AuthorAlreadyExistsError();
-        }
+            if (exists) {
+                throw new AuthorAlreadyExistsError();
+            }
 
-        const result = await repository.save({ id });
-        return this.authorMapper.fromEntityToModel(result);
+            const result = await repository.save({ id });
+            return this.authorMapper.fromEntityToModel(result);
+        });
     }
 
     private getRepository(): Repository<AuthorEntity> {

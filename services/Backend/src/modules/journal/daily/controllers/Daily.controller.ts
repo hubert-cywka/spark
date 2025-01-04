@@ -17,6 +17,7 @@ import { CurrentUser } from "@/common/decorators/CurrentUser.decorator";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
 import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
+import { PageDto } from "@/common/pagination/dto/Page.dto";
 import { PageOptionsDto } from "@/common/pagination/dto/PageOptions.dto";
 import { CreateDailyRequestDto } from "@/modules/journal/daily/dto/CreateDailyRequest.dto";
 import { FindDailiesByDateRangeQueryDto } from "@/modules/journal/daily/dto/FindDailiesByDateRangeQuery.dto";
@@ -40,7 +41,8 @@ export class DailyController {
         @CurrentUser() author: User
     ) {
         const result = await this.dailyService.findAllByDateRange(author, from, to, pageOptions);
-        return this.dailyMapper.fromModelToDtoPaginated(result);
+        const page = this.dailyMapper.fromModelToDtoPaginated(result);
+        return new PageDto(page.data, page.meta); // TODO: Do not use 'new'
     }
 
     @Get(":id")
@@ -57,7 +59,8 @@ export class DailyController {
     @Post()
     @UseGuards(new AuthenticationGuard())
     public async createDaily(@Body() dto: CreateDailyRequestDto, @CurrentUser() author: User) {
-        return await this.dailyService.create(author, dto.date);
+        const result = await this.dailyService.create(author, dto.date);
+        return this.dailyMapper.fromModelToDto(result);
     }
 
     @Patch(":id/date")
