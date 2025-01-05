@@ -11,6 +11,8 @@ import { UserActivatedEventHandler } from "@/modules/users/events/UserActivatedE
 import { UserRegisteredEventHandler } from "@/modules/users/events/UserRegisteredEvent.handler";
 import { USERS_MODULE_DATA_SOURCE } from "@/modules/users/infrastructure/database/constants";
 import { InitializeUsersModule1735737579670 } from "@/modules/users/infrastructure/database/migrations/1735737579670-InitializeUsersModule";
+import { UserMapperToken } from "@/modules/users/mappers/IUser.mapper";
+import { UserMapper } from "@/modules/users/mappers/User.mapper";
 import { UsersService } from "@/modules/users/services/implementations/Users.service";
 import { UsersEventBoxFactory } from "@/modules/users/services/implementations/UsersEventBox.factory";
 import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
@@ -18,6 +20,7 @@ import { UsersSubscriber } from "@/modules/users/Users.subscriber";
 
 @Module({
     providers: [
+        { provide: UserMapperToken, useClass: UserMapper },
         { provide: UsersServiceToken, useClass: UsersService },
         UserActivatedEventHandler,
         UserRegisteredEventHandler,
