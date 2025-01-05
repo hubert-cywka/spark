@@ -4,7 +4,7 @@ import { CurrentUser } from "@/common/decorators/CurrentUser.decorator";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
 import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
-import { IUserMapper, UserMapperToken } from "@/modules/users/mappers/IUser.mapper";
+import { type IUserMapper, UserMapperToken } from "@/modules/users/mappers/IUser.mapper";
 import { type IUsersService, UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
 import { type User } from "@/types/User";
 

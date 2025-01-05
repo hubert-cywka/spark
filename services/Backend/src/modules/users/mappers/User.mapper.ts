@@ -3,7 +3,7 @@ import { plainToClass } from "class-transformer";
 import { BaseModelDTOEntityMapper } from "@/common/mappers/BaseModelDTOEntity.mapper";
 import { UserDto } from "@/modules/users/dto/User.dto";
 import { UserEntity } from "@/modules/users/entities/User.entity";
-import { User } from "@/modules/users/models/User.model";
+import { type User } from "@/modules/users/models/User.model";
 
 export class UserMapper extends BaseModelDTOEntityMapper<User, UserDto, UserEntity> {
     fromDtoToModel(dto: UserDto): User {

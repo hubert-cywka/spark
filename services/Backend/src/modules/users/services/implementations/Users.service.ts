@@ -7,7 +7,7 @@ import { UserEntity } from "@/modules/users/entities/User.entity";
 import { UserAlreadyExistsError } from "@/modules/users/errors/UserAlreadyExists.error";
 import { UserNotFoundError } from "@/modules/users/errors/UserNotFound.error";
 import { USERS_MODULE_DATA_SOURCE } from "@/modules/users/infrastructure/database/constants";
-import { IUserMapper, UserMapperToken } from "@/modules/users/mappers/IUser.mapper";
+import { type IUserMapper, UserMapperToken } from "@/modules/users/mappers/IUser.mapper";
 import { type User } from "@/modules/users/models/User.model";
 import { type IUsersService } from "@/modules/users/services/interfaces/IUsers.service";
 
