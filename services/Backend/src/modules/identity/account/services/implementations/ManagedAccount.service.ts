@@ -28,6 +28,7 @@ import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/d
 @Injectable()
 export class ManagedAccountService implements IManagedAccountService {
     private readonly logger = new Logger(ManagedAccountService.name);
+    private fakePasswordHash: string | null = null;
 
     constructor(
         @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
@@ -40,12 +41,24 @@ export class ManagedAccountService implements IManagedAccountService {
         private readonly accountMapper: IAccountMapper
     ) {}
 
-    // TODO: Protect from timing attacks to prevent leaking emails
     public async findActivatedByCredentials(email: string, password: string): Promise<Account> {
-        const account = await this.findOne(email);
+        if (!this.fakePasswordHash) {
+            this.fakePasswordHash = await this.generateFakePasswordHash();
+        }
 
-        if (!(await this.verifyPassword(account.password, password))) {
-            this.logger.warn({ id: account.id }, "Account found, incorrect password.");
+        let account: ManagedAccountEntity | null = null;
+        let passwordMatches = false;
+
+        try {
+            account = await this.findOne(email);
+            passwordMatches = await this.verifyPassword(account.password, password);
+        } catch (err) {
+            // If any error occurs, simulate password verification for timing consistency
+            await this.verifyPassword(this.fakePasswordHash, password);
+        }
+
+        if (!account || !passwordMatches) {
+            this.logger.warn({ email }, "Authentication failed due to incorrect credentials or account not found.");
             throw new InvalidCredentialsError();
         }
 
@@ -181,6 +194,11 @@ export class ManagedAccountService implements IManagedAccountService {
 
     private async verifyPassword(accountPasswordHash: string, inputPassword: string): Promise<boolean> {
         return await argon2.verify(accountPasswordHash, inputPassword);
+    }
+
+    private async generateFakePasswordHash(): Promise<string> {
+        const randomString = Math.random().toString(36).substring(2, 15);
+        return await this.hashPassword(randomString);
     }
 
     private getRepository(): Repository<ManagedAccountEntity> {
