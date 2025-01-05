@@ -2,7 +2,6 @@ import { Inject, Injectable, Logger } from "@nestjs/common";
 import { InjectTransactionHost, Transactional, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import argon2 from "argon2";
-import { plainToClass } from "class-transformer";
 import dayjs from "dayjs";
 import { Repository } from "typeorm";
 
@@ -11,6 +10,7 @@ import { AccountAlreadyActivatedError } from "@/modules/identity/account/errors/
 import { AccountAlreadyExistsError } from "@/modules/identity/account/errors/AccountAlreadyExists.error";
 import { AccountNotActivatedError } from "@/modules/identity/account/errors/AccountNotActivated.error";
 import { AccountNotFoundError } from "@/modules/identity/account/errors/AccountNotFound.error";
+import { type IAccountMapper, AccountMapperToken } from "@/modules/identity/account/mappers/IAccount.mapper";
 import { Account } from "@/modules/identity/account/models/Account.model";
 import {
     type IAccountPublisherService,
@@ -35,7 +35,9 @@ export class ManagedAccountService implements IManagedAccountService {
         @Inject(IAccountPublisherServiceToken)
         private readonly publisher: IAccountPublisherService,
         @Inject(ISingleUseTokenServiceToken)
-        private readonly singleUseTokenService: ISingleUseTokenService
+        private readonly singleUseTokenService: ISingleUseTokenService,
+        @Inject(AccountMapperToken)
+        private readonly accountMapper: IAccountMapper
     ) {}
 
     // TODO: Protect from timing attacks to prevent leaking emails
@@ -52,7 +54,7 @@ export class ManagedAccountService implements IManagedAccountService {
             throw new AccountNotActivatedError();
         }
 
-        return this.mapEntityToModel(account);
+        return this.accountMapper.fromEntityToModel(account);
     }
 
     public async createAccountWithCredentials(email: string, password: string): Promise<Account> {
@@ -74,8 +76,9 @@ export class ManagedAccountService implements IManagedAccountService {
             termsAndConditionsAcceptedAt: dayjs(),
         });
 
+        // TODO: Replace with query builder, as .save() doesn't return full record
         const account = await this.getRepository().save(accountEntity);
-        return this.mapEntityToModel(account);
+        return this.accountMapper.fromEntityToModel(account);
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
@@ -171,15 +174,6 @@ export class ManagedAccountService implements IManagedAccountService {
 
     private async verifyPassword(accountPasswordHash: string, inputPassword: string): Promise<boolean> {
         return await argon2.verify(accountPasswordHash, inputPassword);
-    }
-
-    private mapEntityToModel(entity: ManagedAccountEntity): Account {
-        return plainToClass(Account, {
-            id: entity.id,
-            email: entity.email,
-            providerId: entity.providerId,
-            providerAccountId: entity.providerAccountId,
-        });
     }
 
     private getRepository(): Repository<ManagedAccountEntity> {

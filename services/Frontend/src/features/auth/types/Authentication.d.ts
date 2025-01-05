@@ -1,6 +1,8 @@
 export type AuthenticationResponse = {
-    email: string;
-    id: string;
+    account: {
+        email: string;
+        id: string;
+    };
     accessToken: string;
 };
 

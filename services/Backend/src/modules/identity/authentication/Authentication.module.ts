@@ -8,6 +8,8 @@ import { AccountModule } from "@/modules/identity/account/Account.module";
 import { AuthenticationController } from "@/modules/identity/authentication/controllers/Authentication.controller";
 import { OpenIDConnectController } from "@/modules/identity/authentication/controllers/OpenIDConnect.controller";
 import { AccountPasswordUpdatedEventHandler } from "@/modules/identity/authentication/events/AccountPasswordUpdatedEvent.handler";
+import { AuthenticationMapper } from "@/modules/identity/authentication/mappers/Authentication.mapper";
+import { AuthenticationMapperToken } from "@/modules/identity/authentication/mappers/IAuthentication.mapper";
 import { AuthenticationService } from "@/modules/identity/authentication/services/implementations/Authentication.service";
 import { AuthPublisherService } from "@/modules/identity/authentication/services/implementations/AuthPublisher.service";
 import { OIDCProviderFactory } from "@/modules/identity/authentication/services/implementations/OIDCProvider.factory";
@@ -25,6 +27,10 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
     imports: [IdentitySharedModule, PassportModule, JwtModule, AccountModule],
     providers: [
         { provide: APP_GUARD, useClass: ThrottlingGuard },
+        {
+            provide: AuthenticationMapperToken,
+            useClass: AuthenticationMapper,
+        },
         {
             provide: IAuthenticationServiceToken,
             useClass: AuthenticationService,

@@ -23,7 +23,6 @@ export class GoogleOIDCProviderService implements IOIDCProviderService {
 
         this.logger = new Logger(GoogleOIDCProviderService.name);
         this.provider = new Google(clientId, clientSecret, redirectUrl);
-        this.provider = new Google(clientId, clientSecret, redirectUrl);
     }
 
     public startAuthorizationProcess(): OIDCAuthorizationMeans {
