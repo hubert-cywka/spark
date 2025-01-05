@@ -3,7 +3,7 @@ import { RegisterWithCredentialsDto } from "@/modules/identity/authentication/dt
 import { type AuthenticationResult } from "@/modules/identity/authentication/types/Authentication";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
 
-export const IAuthenticationServiceToken = Symbol("IAuthenticationService");
+export const AuthenticationServiceToken = Symbol("IAuthenticationService");
 
 export interface IAuthenticationService {
     loginWithExternalIdentity(identity: ExternalIdentity): Promise<AuthenticationResult>;

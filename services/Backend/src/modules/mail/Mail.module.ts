@@ -14,12 +14,12 @@ import { InitializeMailModule1735737562761 } from "@/modules/mail/infrastructure
 import { MailSubscriber } from "@/modules/mail/Mail.subscriber";
 import { MailerService } from "@/modules/mail/services/implementations/Mailer.service";
 import { MailEventBoxFactory } from "@/modules/mail/services/implementations/MailEventBox.factory";
-import { IMailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
+import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
 
 @Module({
     providers: [
         {
-            provide: IMailerServiceToken,
+            provide: MailerServiceToken,
             useClass: MailerService,
         },
         AccountActivatedEventHandler,

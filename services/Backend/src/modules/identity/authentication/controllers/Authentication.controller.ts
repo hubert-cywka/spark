@@ -24,11 +24,11 @@ import { RegisterWithCredentialsDto } from "@/modules/identity/authentication/dt
 import { type IAuthenticationMapper, AuthenticationMapperToken } from "@/modules/identity/authentication/mappers/IAuthentication.mapper";
 import {
     type IAuthenticationService,
-    IAuthenticationServiceToken,
+    AuthenticationServiceToken,
 } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
 import {
     type IRefreshTokenCookieStrategy,
-    IRefreshTokenCookieStrategyToken,
+    RefreshTokenCookieStrategyToken,
 } from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
 
 @Controller("auth")
@@ -36,11 +36,11 @@ export class AuthenticationController {
     private readonly refreshTokenCookieMaxAge: number;
 
     public constructor(
-        @Inject(IAuthenticationServiceToken)
+        @Inject(AuthenticationServiceToken)
         private readonly authService: IAuthenticationService,
         @Inject(AuthenticationMapperToken)
         private readonly authenticationMapper: IAuthenticationMapper,
-        @Inject(IRefreshTokenCookieStrategyToken)
+        @Inject(RefreshTokenCookieStrategyToken)
         private readonly refreshTokenCookieStrategy: IRefreshTokenCookieStrategy,
         private readonly configService: ConfigService
     ) {

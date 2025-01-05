@@ -14,12 +14,12 @@ import { AuthenticationService } from "@/modules/identity/authentication/service
 import { AuthPublisherService } from "@/modules/identity/authentication/services/implementations/AuthPublisher.service";
 import { OIDCProviderFactory } from "@/modules/identity/authentication/services/implementations/OIDCProvider.factory";
 import { RefreshTokenService } from "@/modules/identity/authentication/services/implementations/RefreshToken.service";
-import { IAuthenticationServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
-import { IAuthPublisherServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthPublisher.service";
-import { IOIDCProviderFactoryToken } from "@/modules/identity/authentication/services/interfaces/IOIDCProvider.factory";
-import { IRefreshTokenServiceToken } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
+import { AuthenticationServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
+import { AuthPublisherServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthPublisher.service";
+import { OIDCProviderFactoryToken } from "@/modules/identity/authentication/services/interfaces/IOIDCProvider.factory";
+import { RefreshTokenServiceToken } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
 import { AccessTokenStrategy } from "@/modules/identity/authentication/strategies/passport/AccessToken.strategy";
-import { IRefreshTokenCookieStrategyToken } from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
+import { RefreshTokenCookieStrategyToken } from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
 import { SecureRefreshTokenCookieStrategy } from "@/modules/identity/authentication/strategies/refreshToken/SecureRefreshTokenCookie.strategy";
 import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.module";
 
@@ -32,23 +32,23 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
             useClass: AuthenticationMapper,
         },
         {
-            provide: IAuthenticationServiceToken,
+            provide: AuthenticationServiceToken,
             useClass: AuthenticationService,
         },
         {
-            provide: IOIDCProviderFactoryToken,
+            provide: OIDCProviderFactoryToken,
             useClass: OIDCProviderFactory,
         },
         {
-            provide: IAuthPublisherServiceToken,
+            provide: AuthPublisherServiceToken,
             useClass: AuthPublisherService,
         },
         {
-            provide: IRefreshTokenServiceToken,
+            provide: RefreshTokenServiceToken,
             useClass: RefreshTokenService,
         },
         {
-            provide: IRefreshTokenCookieStrategyToken,
+            provide: RefreshTokenCookieStrategyToken,
             useClass: SecureRefreshTokenCookieStrategy,
         },
         AccessTokenStrategy,

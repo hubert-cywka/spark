@@ -1,6 +1,6 @@
 import type { Account } from "@/modules/identity/account/models/Account.model";
 
-export const IManagedAccountServiceToken = Symbol("IManagedAccountService");
+export const ManagedAccountServiceToken = Symbol("IManagedAccountService");
 
 export interface IManagedAccountService {
     findActivatedByCredentials(email: string, password: string): Promise<Account>;

@@ -6,11 +6,11 @@ import { Transactional } from "@nestjs-cls/transactional";
 import type { Account } from "@/modules/identity/account/models/Account.model";
 import {
     type IFederatedAccountService,
-    IFederatedAccountServiceToken,
+    FederatedAccountServiceToken,
 } from "@/modules/identity/account/services/interfaces/IFederatedAccount.service";
 import {
     type IManagedAccountService,
-    IManagedAccountServiceToken,
+    ManagedAccountServiceToken,
 } from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
 import { CURRENT_JWT_VERSION } from "@/modules/identity/authentication/constants";
 import { LoginDto } from "@/modules/identity/authentication/dto/incoming/Login.dto";
@@ -18,11 +18,11 @@ import { RegisterWithCredentialsDto } from "@/modules/identity/authentication/dt
 import { type IAuthenticationService } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
 import {
     type IAuthPublisherService,
-    IAuthPublisherServiceToken,
+    AuthPublisherServiceToken,
 } from "@/modules/identity/authentication/services/interfaces/IAuthPublisher.service";
 import {
     type IRefreshTokenService,
-    IRefreshTokenServiceToken,
+    RefreshTokenServiceToken,
 } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
 import { type AccessTokenPayload, type AuthenticationResult } from "@/modules/identity/authentication/types/Authentication";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
@@ -37,13 +37,13 @@ export class AuthenticationService implements IAuthenticationService {
     constructor(
         private configService: ConfigService,
         private jwtService: JwtService,
-        @Inject(IManagedAccountServiceToken)
+        @Inject(ManagedAccountServiceToken)
         private accountService: IManagedAccountService,
-        @Inject(IFederatedAccountServiceToken)
+        @Inject(FederatedAccountServiceToken)
         private externalAccountService: IFederatedAccountService,
-        @Inject(IRefreshTokenServiceToken)
+        @Inject(RefreshTokenServiceToken)
         private refreshTokenService: IRefreshTokenService,
-        @Inject(IAuthPublisherServiceToken)
+        @Inject(AuthPublisherServiceToken)
         private publisher: IAuthPublisherService
     ) {
         this.accessTokenSigningSecret = configService.getOrThrow<string>("modules.identity.jwt.signingSecret");

@@ -1,4 +1,4 @@
-export const IAccountPublisherServiceToken = Symbol("IAccountPublisherServiceToken");
+export const AccountPublisherServiceToken = Symbol("AccountPublisherServiceToken");
 
 export interface IAccountPublisherService {
     onAccountActivated(email: string, id: string): Promise<void>;
