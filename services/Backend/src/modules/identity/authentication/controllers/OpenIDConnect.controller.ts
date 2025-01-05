@@ -46,7 +46,6 @@ import {
 import { FederatedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
 
-// TODO: Use mappers
 @Controller("open-id-connect")
 export class OpenIDConnectController {
     private readonly refreshTokenCookieMaxAge: number;

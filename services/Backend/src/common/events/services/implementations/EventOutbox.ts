@@ -16,6 +16,7 @@ const MAX_ATTEMPTS = 10;
 const PUBLISH_TIMEOUT = 1000;
 
 // TODO: Implement better retry mechanism
+// TODO: CDC instead of polling?
 @Injectable()
 export class EventOutbox implements IEventOutbox {
     private readonly logger;
