@@ -58,7 +58,9 @@ export class ManagedAccountService implements IManagedAccountService {
     }
 
     public async createAccountWithCredentials(email: string, password: string): Promise<Account> {
-        const existingAccount = await this.getRepository().findOne({
+        const repository = this.getRepository();
+
+        const existingAccount = await repository.findOne({
             where: { email, providerId: ManagedAccountProvider.CREDENTIALS },
         });
 
@@ -68,16 +70,21 @@ export class ManagedAccountService implements IManagedAccountService {
         }
 
         const hashedPassword = await this.hashPassword(password);
-        const accountEntity = this.getRepository().create({
-            email,
-            password: hashedPassword,
-            providerId: ManagedAccountProvider.CREDENTIALS,
-            providerAccountId: email,
-            termsAndConditionsAcceptedAt: dayjs(),
-        });
+        const insertionResult = await repository
+            .createQueryBuilder("account")
+            .insert()
+            .into(ManagedAccountEntity)
+            .values({
+                email,
+                password: hashedPassword,
+                providerId: ManagedAccountProvider.CREDENTIALS,
+                providerAccountId: email,
+                termsAndConditionsAcceptedAt: dayjs(),
+            })
+            .returning("*")
+            .execute();
 
-        // TODO: Replace with query builder, as .save() doesn't return full record
-        const account = await this.getRepository().save(accountEntity);
+        const account = insertionResult.raw[0] as ManagedAccountEntity;
         return this.accountMapper.fromEntityToModel(account);
     }
 

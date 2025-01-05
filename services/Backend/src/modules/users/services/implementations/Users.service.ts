@@ -43,23 +43,29 @@ export class UsersService implements IUsersService {
             throw new UserAlreadyExistsError();
         }
 
-        // TODO: Use query builder, .save() doesn't return full record
-        const result = await this.getRepository().save(user);
-        return this.userMapper.fromEntityToModel(result);
+        const insertionResult = await repository.createQueryBuilder("user").insert().into(UserEntity).values(user).returning("*").execute();
+        const insertedUser = insertionResult.raw[0] as UserEntity;
+
+        return this.userMapper.fromEntityToModel(insertedUser);
     }
 
     public async activate(id: string): Promise<User> {
-        const repository = this.getRepository();
-        const user = await repository.findOne({ where: { id } });
+        const updateResult = await this.getRepository()
+            .createQueryBuilder("user")
+            .update(UserEntity)
+            .set({ isActivated: true })
+            .where("user.id = :id", { id })
+            .returning("*")
+            .execute();
 
-        if (!user) {
+        const activatedUser = updateResult.raw[0] as UserEntity;
+
+        if (!activatedUser) {
             this.logger.warn({ userId: id }, "Couldn't find user.");
             throw new UserNotFoundError();
         }
 
-        // TODO: Use query builder, .save() doesn't return full record
-        await repository.save({ ...user, isActivated: true });
-        return this.userMapper.fromEntityToModel(user);
+        return this.userMapper.fromEntityToModel(activatedUser);
     }
 
     private getRepository(): Repository<UserEntity> {

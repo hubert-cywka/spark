@@ -47,7 +47,8 @@ export class FederatedAccountService implements IFederatedAccountService {
     }
 
     public async createAccountWithExternalIdentity(identity: ExternalIdentity): Promise<Account> {
-        const existingAccount = await this.getRepository().findOne({
+        const repository = this.getRepository();
+        const existingAccount = await repository.findOne({
             where: {
                 providerAccountId: identity.id,
                 providerId: identity.providerId,
@@ -67,16 +68,21 @@ export class FederatedAccountService implements IFederatedAccountService {
 
         const now = dayjs();
 
-        const accountEntity = this.getRepository().create({
-            email: identity.email,
-            providerId: identity.providerId,
-            providerAccountId: identity.id,
-            activatedAt: now,
-            termsAndConditionsAcceptedAt: now,
-        });
+        const insertionResult = await repository
+            .createQueryBuilder("account")
+            .insert()
+            .into(FederatedAccountEntity)
+            .values({
+                email: identity.email,
+                providerId: identity.providerId,
+                providerAccountId: identity.id,
+                activatedAt: now,
+                termsAndConditionsAcceptedAt: now,
+            })
+            .returning("*")
+            .execute();
 
-        // TODO: Replace with query builder, as .save() doesn't return full record
-        const account = await this.getRepository().save(accountEntity);
+        const account = insertionResult.raw[0] as FederatedAccountEntity;
         return this.accountMapper.fromEntityToModel(account);
     }
 
