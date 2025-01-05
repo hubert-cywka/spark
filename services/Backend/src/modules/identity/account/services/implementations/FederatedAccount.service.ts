@@ -1,13 +1,13 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
-import { plainToClass } from "class-transformer";
 import dayjs from "dayjs";
 import { Repository } from "typeorm";
 
 import { FederatedAccountEntity } from "@/modules/identity/account/entities/FederatedAccountEntity";
 import { AccountAlreadyExistsError } from "@/modules/identity/account/errors/AccountAlreadyExists.error";
 import { AccountNotFoundError } from "@/modules/identity/account/errors/AccountNotFound.error";
+import { type IAccountMapper, AccountMapperToken } from "@/modules/identity/account/mappers/IAccount.mapper";
 import { Account } from "@/modules/identity/account/models/Account.model";
 import { type IFederatedAccountService } from "@/modules/identity/account/services/interfaces/IFederatedAccount.service";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
@@ -19,7 +19,9 @@ export class FederatedAccountService implements IFederatedAccountService {
 
     constructor(
         @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
+        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        @Inject(AccountMapperToken)
+        private readonly accountMapper: IAccountMapper
     ) {}
 
     public async findByExternalIdentity(identity: ExternalIdentity): Promise<Account> {
@@ -41,7 +43,7 @@ export class FederatedAccountService implements IFederatedAccountService {
             throw new AccountNotFoundError();
         }
 
-        return this.mapEntityToModel(account);
+        return this.accountMapper.fromEntityToModel(account);
     }
 
     public async createAccountWithExternalIdentity(identity: ExternalIdentity): Promise<Account> {
@@ -73,17 +75,9 @@ export class FederatedAccountService implements IFederatedAccountService {
             termsAndConditionsAcceptedAt: now,
         });
 
+        // TODO: Replace with query builder, as .save() doesn't return full record
         const account = await this.getRepository().save(accountEntity);
-        return this.mapEntityToModel(account);
-    }
-
-    private mapEntityToModel(entity: FederatedAccountEntity): Account {
-        return plainToClass(Account, {
-            id: entity.id,
-            email: entity.email,
-            providerId: entity.providerId,
-            providerAccountId: entity.providerAccountId,
-        });
+        return this.accountMapper.fromEntityToModel(account);
     }
 
     private getRepository(): Repository<FederatedAccountEntity> {

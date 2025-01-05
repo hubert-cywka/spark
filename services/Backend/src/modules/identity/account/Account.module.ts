@@ -3,6 +3,8 @@ import { APP_GUARD } from "@nestjs/core";
 
 import { ThrottlingGuard } from "@/common/guards/Throttling.guard";
 import { AccountController } from "@/modules/identity/account/controllers/Account.controller";
+import { AccountMapper } from "@/modules/identity/account/mappers/Account.mapper";
+import { AccountMapperToken } from "@/modules/identity/account/mappers/IAccount.mapper";
 import { AccountPublisherService } from "@/modules/identity/account/services/implementations/AccountPublisher.service";
 import { FederatedAccountService } from "@/modules/identity/account/services/implementations/FederatedAccount.service";
 import { ManagedAccountService } from "@/modules/identity/account/services/implementations/ManagedAccount.service";
@@ -20,6 +22,10 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
         {
             provide: ISingleUseTokenServiceToken,
             useClass: SingleUseTokenService,
+        },
+        {
+            provide: AccountMapperToken,
+            useClass: AccountMapper,
         },
         {
             provide: IManagedAccountServiceToken,
