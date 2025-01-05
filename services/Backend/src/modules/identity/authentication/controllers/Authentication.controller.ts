@@ -19,8 +19,9 @@ import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
 import { REFRESH_TOKEN_COOKIE_NAME } from "@/modules/identity/authentication/constants";
-import { LoginDto } from "@/modules/identity/authentication/dto/Login.dto";
-import { RegisterWithCredentialsDto } from "@/modules/identity/authentication/dto/RegisterWithCredentials.dto";
+import { LoginDto } from "@/modules/identity/authentication/dto/incoming/Login.dto";
+import { RegisterWithCredentialsDto } from "@/modules/identity/authentication/dto/incoming/RegisterWithCredentials.dto";
+import { type IAuthenticationMapper, AuthenticationMapperToken } from "@/modules/identity/authentication/mappers/IAuthentication.mapper";
 import {
     type IAuthenticationService,
     IAuthenticationServiceToken,
@@ -30,17 +31,18 @@ import {
     IRefreshTokenCookieStrategyToken,
 } from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
 
-// TODO: Use mappers
 @Controller("auth")
 export class AuthenticationController {
     private readonly refreshTokenCookieMaxAge: number;
 
     public constructor(
         @Inject(IAuthenticationServiceToken)
-        private authService: IAuthenticationService,
+        private readonly authService: IAuthenticationService,
+        @Inject(AuthenticationMapperToken)
+        private readonly authenticationMapper: IAuthenticationMapper,
         @Inject(IRefreshTokenCookieStrategyToken)
-        private refreshTokenCookieStrategy: IRefreshTokenCookieStrategy,
-        private configService: ConfigService
+        private readonly refreshTokenCookieStrategy: IRefreshTokenCookieStrategy,
+        private readonly configService: ConfigService
     ) {
         this.refreshTokenCookieMaxAge = configService.getOrThrow<number>("modules.identity.refreshToken.expirationTimeInSeconds") * 1000;
     }
@@ -59,11 +61,11 @@ export class AuthenticationController {
     @Post("login")
     async login(@Body() dto: LoginDto, @Res() response: Response) {
         try {
-            const { accessToken, refreshToken, account } = await this.authService.loginWithCredentials(dto);
+            const result = await this.authService.loginWithCredentials(dto);
 
             const cookieOptions = this.refreshTokenCookieStrategy.getCookieOptions(this.refreshTokenCookieMaxAge);
-            response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieOptions);
-            return response.send({ ...account, accessToken });
+            response.cookie(REFRESH_TOKEN_COOKIE_NAME, result.refreshToken, cookieOptions);
+            return response.send(this.authenticationMapper.toAuthenticationResultDTO(result));
         } catch (err) {
             whenError(err)
                 .is(EntityNotFoundError)
@@ -82,11 +84,11 @@ export class AuthenticationController {
         }
 
         try {
-            const { accessToken, refreshToken, account } = await this.authService.redeemRefreshToken(token);
+            const result = await this.authService.redeemRefreshToken(token);
 
             const cookieOptions = this.refreshTokenCookieStrategy.getCookieOptions(this.refreshTokenCookieMaxAge);
-            response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieOptions);
-            return response.send({ ...account, accessToken });
+            response.cookie(REFRESH_TOKEN_COOKIE_NAME, result.refreshToken, cookieOptions);
+            return response.send(this.authenticationMapper.toAuthenticationResultDTO(result));
         } catch (err) {
             whenError(err).is(EntityNotFoundError).throw(new UnauthorizedException()).elseRethrow();
         }

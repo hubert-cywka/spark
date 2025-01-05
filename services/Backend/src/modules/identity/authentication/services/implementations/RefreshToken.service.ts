@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
-import { Cron } from "@nestjs/schedule";
+import { Cron, CronExpression } from "@nestjs/schedule";
 import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import dayjs from "dayjs";
@@ -118,7 +118,7 @@ export class RefreshTokenService implements IRefreshTokenService {
         return dayjs(token.expiresAt).isAfter(now) && !token.invalidatedAt;
     }
 
-    @Cron("0 1 * * *")
+    @Cron(CronExpression.EVERY_DAY_AT_2AM)
     private async deleteAllExpired(): Promise<void> {
         const now = dayjs().toDate();
         const result = await this.getRepository().delete({

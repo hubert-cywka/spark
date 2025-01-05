@@ -28,8 +28,9 @@ import {
     OIDC_STATE_COOKIE_NAME,
     REFRESH_TOKEN_COOKIE_NAME,
 } from "@/modules/identity/authentication/constants";
-import { ExternalIdentityDto } from "@/modules/identity/authentication/dto/ExternalIdentity.dto";
-import { RegisterViaOIDCDto } from "@/modules/identity/authentication/dto/RegisterViaOIDC.dto";
+import { ExternalIdentityDto } from "@/modules/identity/authentication/dto/incoming/ExternalIdentity.dto";
+import { RegisterViaOIDCDto } from "@/modules/identity/authentication/dto/incoming/RegisterViaOIDC.dto";
+import { type IAuthenticationMapper, AuthenticationMapperToken } from "@/modules/identity/authentication/mappers/IAuthentication.mapper";
 import {
     type IAuthenticationService,
     IAuthenticationServiceToken,
@@ -54,12 +55,14 @@ export class OpenIDConnectController {
 
     public constructor(
         @Inject(IOIDCProviderFactoryToken)
-        private oidcProviderFactory: IOIDCProviderFactory,
+        private readonly oidcProviderFactory: IOIDCProviderFactory,
+        @Inject(AuthenticationMapperToken)
+        private readonly authenticationMapper: IAuthenticationMapper,
         @Inject(IRefreshTokenCookieStrategyToken)
-        private refreshTokenCookieStrategy: IRefreshTokenCookieStrategy,
+        private readonly refreshTokenCookieStrategy: IRefreshTokenCookieStrategy,
         @Inject(IAuthenticationServiceToken)
-        private authService: IAuthenticationService,
-        private configService: ConfigService
+        private readonly authService: IAuthenticationService,
+        private readonly configService: ConfigService
     ) {
         const oidcLoginPage = configService.getOrThrow<string>("client.url.oidcLoginPage");
         const oidcRegisterPage = configService.getOrThrow<string>("client.url.oidcRegisterPage");
@@ -82,7 +85,7 @@ export class OpenIDConnectController {
 
         response.cookie(OIDC_CODE_VERIFIER_COOKIE_NAME, codeVerifier, this.getOIDCCookieOptions());
         response.cookie(OIDC_STATE_COOKIE_NAME, state, this.getOIDCCookieOptions());
-        return response.send({ url: url.toString() });
+        return response.send(this.authenticationMapper.toOIDCRedirectDTO(url));
     }
 
     @HttpCode(HttpStatus.OK)
@@ -151,11 +154,11 @@ export class OpenIDConnectController {
         }
 
         try {
-            const { accessToken, refreshToken, account } = await this.authService.registerWithExternalIdentity(externalIdentity);
+            const result = await this.authService.registerWithExternalIdentity(externalIdentity);
             const cookieOptions = this.refreshTokenCookieStrategy.getCookieOptions(this.refreshTokenCookieMaxAge);
 
-            response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieOptions);
-            return response.send({ ...account, accessToken });
+            response.cookie(REFRESH_TOKEN_COOKIE_NAME, result.refreshToken, cookieOptions);
+            return response.send(this.authenticationMapper.toAuthenticationResultDTO(result));
         } catch (err) {
             whenError(err)
                 .is(OAuth2RequestError)

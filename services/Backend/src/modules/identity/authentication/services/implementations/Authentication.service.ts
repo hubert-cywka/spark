@@ -13,8 +13,8 @@ import {
     IManagedAccountServiceToken,
 } from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
 import { CURRENT_JWT_VERSION } from "@/modules/identity/authentication/constants";
-import { LoginDto } from "@/modules/identity/authentication/dto/Login.dto";
-import { RegisterWithCredentialsDto } from "@/modules/identity/authentication/dto/RegisterWithCredentials.dto";
+import { LoginDto } from "@/modules/identity/authentication/dto/incoming/Login.dto";
+import { RegisterWithCredentialsDto } from "@/modules/identity/authentication/dto/incoming/RegisterWithCredentials.dto";
 import { type IAuthenticationService } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
 import {
     type IAuthPublisherService,

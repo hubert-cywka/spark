@@ -8,6 +8,6 @@ export const useLoginWithCredentials = () => {
 
     return useMutation({
         mutationFn: AuthenticationService.loginWithCredentials,
-        onSuccess: ({ accessToken, id, email }) => storeSession({ identity: { id, email }, accessToken }),
+        onSuccess: ({ accessToken, account }) => storeSession({ identity: account, accessToken }),
     });
 };
