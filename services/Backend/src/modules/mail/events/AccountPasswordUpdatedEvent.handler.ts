@@ -4,13 +4,13 @@ import { ConfigService } from "@nestjs/config";
 import { whenError } from "@/common/errors/whenError";
 import { AccountPasswordUpdatedEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 import { EmailDeliveryError } from "@/modules/mail/errors/EmailDelivery.error";
-import { type IMailerService, IMailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
+import { type IMailerService, MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
 import { PasswordUpdatedEmail } from "@/modules/mail/templates/PasswordUpdatedEmail";
 
 @Injectable()
 export class AccountPasswordUpdatedEventHandler implements IInboxEventHandler {
     constructor(
-        @Inject(IMailerServiceToken) private mailer: IMailerService,
+        @Inject(MailerServiceToken) private mailer: IMailerService,
         private readonly configService: ConfigService
     ) {}
 

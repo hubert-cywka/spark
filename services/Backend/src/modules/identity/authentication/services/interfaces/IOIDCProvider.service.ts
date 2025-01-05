@@ -4,7 +4,7 @@ import {
     type OIDCAuthorizationResponse,
 } from "@/modules/identity/authentication/types/OpenIDConnect";
 
-export const IOIDCProviderServiceToken = Symbol("IOIDCProviderService");
+export const OIDCProviderServiceToken = Symbol("IOIDCProviderService");
 
 export interface IOIDCProviderService {
     startAuthorizationProcess: () => OIDCAuthorizationMeans;

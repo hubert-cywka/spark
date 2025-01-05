@@ -9,10 +9,10 @@ import { AccountPublisherService } from "@/modules/identity/account/services/imp
 import { FederatedAccountService } from "@/modules/identity/account/services/implementations/FederatedAccount.service";
 import { ManagedAccountService } from "@/modules/identity/account/services/implementations/ManagedAccount.service";
 import { SingleUseTokenService } from "@/modules/identity/account/services/implementations/SingleUseToken.service";
-import { IAccountPublisherServiceToken } from "@/modules/identity/account/services/interfaces/IAccountPublisher.service";
-import { IFederatedAccountServiceToken } from "@/modules/identity/account/services/interfaces/IFederatedAccount.service";
-import { IManagedAccountServiceToken } from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
-import { ISingleUseTokenServiceToken } from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
+import { AccountPublisherServiceToken } from "@/modules/identity/account/services/interfaces/IAccountPublisher.service";
+import { FederatedAccountServiceToken } from "@/modules/identity/account/services/interfaces/IFederatedAccount.service";
+import { ManagedAccountServiceToken } from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
+import { SingleUseTokenServiceToken } from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
 import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.module";
 
 @Module({
@@ -20,7 +20,7 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
     providers: [
         { provide: APP_GUARD, useClass: ThrottlingGuard },
         {
-            provide: ISingleUseTokenServiceToken,
+            provide: SingleUseTokenServiceToken,
             useClass: SingleUseTokenService,
         },
         {
@@ -28,19 +28,19 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
             useClass: AccountMapper,
         },
         {
-            provide: IManagedAccountServiceToken,
+            provide: ManagedAccountServiceToken,
             useClass: ManagedAccountService,
         },
         {
-            provide: IFederatedAccountServiceToken,
+            provide: FederatedAccountServiceToken,
             useClass: FederatedAccountService,
         },
         {
-            provide: IAccountPublisherServiceToken,
+            provide: AccountPublisherServiceToken,
             useClass: AccountPublisherService,
         },
     ],
     controllers: [AccountController],
-    exports: [IAccountPublisherServiceToken, IFederatedAccountServiceToken, IManagedAccountServiceToken, ISingleUseTokenServiceToken],
+    exports: [AccountPublisherServiceToken, FederatedAccountServiceToken, ManagedAccountServiceToken, SingleUseTokenServiceToken],
 })
 export class AccountModule {}

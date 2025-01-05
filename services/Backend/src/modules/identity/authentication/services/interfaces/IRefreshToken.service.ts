@@ -1,6 +1,6 @@
 import { type AccessTokenPayload } from "@/modules/identity/authentication/types/Authentication";
 
-export const IRefreshTokenServiceToken = Symbol("IRefreshTokenService");
+export const RefreshTokenServiceToken = Symbol("IRefreshTokenService");
 
 export interface IRefreshTokenService {
     issue(payload: object): Promise<string>;

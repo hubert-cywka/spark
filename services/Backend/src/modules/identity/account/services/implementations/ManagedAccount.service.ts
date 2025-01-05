@@ -14,12 +14,12 @@ import { type IAccountMapper, AccountMapperToken } from "@/modules/identity/acco
 import { Account } from "@/modules/identity/account/models/Account.model";
 import {
     type IAccountPublisherService,
-    IAccountPublisherServiceToken,
+    AccountPublisherServiceToken,
 } from "@/modules/identity/account/services/interfaces/IAccountPublisher.service";
 import { IManagedAccountService } from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
 import {
     type ISingleUseTokenService,
-    ISingleUseTokenServiceToken,
+    SingleUseTokenServiceToken,
 } from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
 import { InvalidCredentialsError } from "@/modules/identity/authentication/errors/InvalidCredentials.error";
 import { ManagedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
@@ -33,9 +33,9 @@ export class ManagedAccountService implements IManagedAccountService {
     constructor(
         @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
-        @Inject(IAccountPublisherServiceToken)
+        @Inject(AccountPublisherServiceToken)
         private readonly publisher: IAccountPublisherService,
-        @Inject(ISingleUseTokenServiceToken)
+        @Inject(SingleUseTokenServiceToken)
         private readonly singleUseTokenService: ISingleUseTokenService,
         @Inject(AccountMapperToken)
         private readonly accountMapper: IAccountMapper

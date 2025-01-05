@@ -33,15 +33,15 @@ import { RegisterViaOIDCDto } from "@/modules/identity/authentication/dto/incomi
 import { type IAuthenticationMapper, AuthenticationMapperToken } from "@/modules/identity/authentication/mappers/IAuthentication.mapper";
 import {
     type IAuthenticationService,
-    IAuthenticationServiceToken,
+    AuthenticationServiceToken,
 } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
 import {
     type IOIDCProviderFactory,
-    IOIDCProviderFactoryToken,
+    OIDCProviderFactoryToken,
 } from "@/modules/identity/authentication/services/interfaces/IOIDCProvider.factory";
 import {
     type IRefreshTokenCookieStrategy,
-    IRefreshTokenCookieStrategyToken,
+    RefreshTokenCookieStrategyToken,
 } from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
 import { FederatedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
@@ -53,13 +53,13 @@ export class OpenIDConnectController {
     private readonly clientOIDCRegisterPageUrl: string;
 
     public constructor(
-        @Inject(IOIDCProviderFactoryToken)
+        @Inject(OIDCProviderFactoryToken)
         private readonly oidcProviderFactory: IOIDCProviderFactory,
         @Inject(AuthenticationMapperToken)
         private readonly authenticationMapper: IAuthenticationMapper,
-        @Inject(IRefreshTokenCookieStrategyToken)
+        @Inject(RefreshTokenCookieStrategyToken)
         private readonly refreshTokenCookieStrategy: IRefreshTokenCookieStrategy,
-        @Inject(IAuthenticationServiceToken)
+        @Inject(AuthenticationServiceToken)
         private readonly authService: IAuthenticationService,
         private readonly configService: ConfigService
     ) {

@@ -3,13 +3,13 @@ import { Inject, Injectable } from "@nestjs/common";
 import { type IInboxEventHandler, AccountPasswordUpdatedEventPayload, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 import {
     type IRefreshTokenService,
-    IRefreshTokenServiceToken,
+    RefreshTokenServiceToken,
 } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
 
 @Injectable()
 export class AccountPasswordUpdatedEventHandler implements IInboxEventHandler {
     constructor(
-        @Inject(IRefreshTokenServiceToken)
+        @Inject(RefreshTokenServiceToken)
         private refreshTokenService: IRefreshTokenService
     ) {}
 

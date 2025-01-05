@@ -1,6 +1,6 @@
 import type { SingleUseTokenRedeemData } from "@/modules/identity/account/types/SingleUseToken";
 
-export const ISingleUseTokenServiceToken = Symbol("ISingleUseTokenServiceToken");
+export const SingleUseTokenServiceToken = Symbol("ISingleUseTokenServiceToken");
 
 export interface ISingleUseTokenService {
     issueAccountActivationToken(ownerId: string): Promise<string>;

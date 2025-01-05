@@ -3,6 +3,7 @@
 .button {
     height: fit-content;
     border-radius: tokens.$radius-100;
+    overflow: hidden;
 
     cursor: pointer;
     transition: transform 150ms ease;

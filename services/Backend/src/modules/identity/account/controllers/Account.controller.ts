@@ -11,13 +11,13 @@ import { AccountAlreadyActivatedError } from "@/modules/identity/account/errors/
 import { AccountNotFoundError } from "@/modules/identity/account/errors/AccountNotFound.error";
 import {
     type IManagedAccountService,
-    IManagedAccountServiceToken,
+    ManagedAccountServiceToken,
 } from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
 
 @Controller("account")
 export class AccountController {
     constructor(
-        @Inject(IManagedAccountServiceToken)
+        @Inject(ManagedAccountServiceToken)
         private accountService: IManagedAccountService
     ) {}
 
