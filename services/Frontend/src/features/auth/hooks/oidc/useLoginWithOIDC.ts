@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { OpenIDConnectService } from "@/features/auth/api/openIDConnectService";
+import { OpenIDConnectService } from "@/features/auth/api/oidc/openIDConnectService";
 
 export const useLoginWithOIDC = () => {
     return useMutation({

@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { PasswordService } from "@/features/auth/api/passwordService";
+import { PasswordService } from "@/features/auth/api/password/passwordService";
 
 export const useUpdatePassword = () => {
     return useMutation({

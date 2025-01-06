@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { AuthenticationService } from "@/features/auth/api/authenticationService";
+import { AuthenticationService } from "@/features/auth/api/authentication/authenticationService";
 import { useAuthSession } from "@/features/auth/hooks";
 
 export const useRefreshSession = () => {

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 
-import { AccountActivationService } from "@/features/auth/api/accountActivationService";
+import { AccountActivationService } from "@/features/auth/api/account/accountActivationService";
 
 const ACCOUNT_ACTIVATION_TOKEN_QUERY_PARAM_NAME = "token";
 

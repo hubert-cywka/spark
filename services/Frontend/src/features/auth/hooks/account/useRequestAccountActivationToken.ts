@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { AccountActivationService } from "@/features/auth/api/accountActivationService";
+import { AccountActivationService } from "@/features/auth/api/account/accountActivationService";
 
 export const useRequestAccountActivationToken = () => {
     return useMutation({
