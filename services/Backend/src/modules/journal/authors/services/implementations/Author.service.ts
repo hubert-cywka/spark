@@ -3,11 +3,11 @@ import { InjectTransactionHost, Transactional, TransactionHost } from "@nestjs-c
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import { Repository } from "typeorm";
 
-import { AuthorEntity } from "@/modules/journal/author/entities/Author.entity";
-import { AuthorAlreadyExistsError } from "@/modules/journal/author/errors/AuthorAlreadyExists.error";
-import { type IAuthorMapper, AuthorMapperToken } from "@/modules/journal/author/mappers/IAuthor.mapper";
-import { type Author } from "@/modules/journal/author/models/Author.model";
-import { type IAuthorService } from "@/modules/journal/author/services/interfaces/IAuthor.service";
+import { AuthorEntity } from "@/modules/journal/authors/entities/Author.entity";
+import { AuthorAlreadyExistsError } from "@/modules/journal/authors/errors/AuthorAlreadyExists.error";
+import { type IAuthorMapper, AuthorMapperToken } from "@/modules/journal/authors/mappers/IAuthor.mapper";
+import { type Author } from "@/modules/journal/authors/models/Author.model";
+import { type IAuthorService } from "@/modules/journal/authors/services/interfaces/IAuthor.service";
 import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
 
 @Injectable()

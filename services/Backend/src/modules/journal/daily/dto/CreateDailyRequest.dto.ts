@@ -1,6 +1,6 @@
 import { IsDateString } from "class-validator";
 
-import { IsDateOnly } from "@/lib/validation/decorators/IsDateOnly.decorator";
+import { IsDateOnly } from "@/lib/validation";
 
 export class CreateDailyRequestDto {
     @IsDateOnly()

@@ -4,7 +4,7 @@ export class AccountDto {
     @IsEmail()
     readonly email!: string;
 
-    @IsUUID()
+    @IsUUID("4")
     readonly id!: string;
 
     @IsString()

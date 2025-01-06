@@ -1,4 +1,4 @@
-import { Author } from "@/modules/journal/author/models/Author.model";
+import { Author } from "@/modules/journal/authors/models/Author.model";
 
 export const AuthorServiceToken = Symbol("AuthorServiceToken");
 

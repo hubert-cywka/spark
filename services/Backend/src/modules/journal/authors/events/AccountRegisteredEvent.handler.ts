@@ -3,7 +3,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { whenError } from "@/common/errors/whenError";
 import { type AccountRegisteredEventPayload, type IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
-import { type IAuthorService, AuthorServiceToken } from "@/modules/journal/author/services/interfaces/IAuthor.service";
+import { type IAuthorService, AuthorServiceToken } from "@/modules/journal/authors/services/interfaces/IAuthor.service";
 
 @Injectable()
 export class AccountRegisteredEventHandler implements IInboxEventHandler {

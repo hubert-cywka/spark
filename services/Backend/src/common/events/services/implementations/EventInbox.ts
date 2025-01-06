@@ -83,9 +83,7 @@ export class EventInbox implements IEventInbox {
             totalProcessed += processedInRecentBatch;
         }
 
-        if (totalProcessed === 0) {
-            this.logger.log("No events to process.");
-        } else {
+        if (totalProcessed !== 0) {
             this.logger.log({ count: totalProcessed }, "Processed events");
         }
     }

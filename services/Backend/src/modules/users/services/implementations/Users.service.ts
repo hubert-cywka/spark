@@ -51,10 +51,10 @@ export class UsersService implements IUsersService {
 
     public async activate(id: string): Promise<User> {
         const updateResult = await this.getRepository()
-            .createQueryBuilder("user")
+            .createQueryBuilder()
             .update(UserEntity)
             .set({ isActivated: true })
-            .where("user.id = :id", { id })
+            .where("id = :id", { id })
             .returning("*")
             .execute();
 

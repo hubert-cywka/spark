@@ -70,15 +70,17 @@ export class EventOutbox implements IEventOutbox {
             }
         }
 
-        this.logger.log(
-            {
-                processed: {
-                    total: totalProcessed,
-                    successful: totalSuccessful,
+        if (totalProcessed !== 0) {
+            this.logger.log(
+                {
+                    processed: {
+                        total: totalProcessed,
+                        successful: totalSuccessful,
+                    },
                 },
-            },
-            "Processed events"
-        );
+                "Processed events"
+            );
+        }
     }
 
     private async processBatch(pageSize: number, offset: number) {

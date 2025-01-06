@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import { Repository } from "typeorm";
@@ -12,10 +12,11 @@ import { type IDailyMapper, DailyMapperToken } from "@/modules/journal/daily/map
 import { Daily } from "@/modules/journal/daily/models/Daily.model";
 import { IDailyService } from "@/modules/journal/daily/services/interfaces/IDaily.service";
 import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
-import { type User } from "@/types/User";
 
 @Injectable()
 export class DailyService implements IDailyService {
+    private readonly logger = new Logger(DailyService.name);
+
     public constructor(
         @InjectTransactionHost(JOURNAL_MODULE_DATA_SOURCE)
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
@@ -23,7 +24,7 @@ export class DailyService implements IDailyService {
         private readonly dailyMapper: IDailyMapper
     ) {}
 
-    public async findAllByDateRange(author: User, from: string, to: string, pageOptions: PageOptions): Promise<Paginated<Daily>> {
+    public async findAllByDateRange(authorId: string, from: string, to: string, pageOptions: PageOptions): Promise<Paginated<Daily>> {
         const queryBuilder = this.getRepository().createQueryBuilder("daily");
 
         queryBuilder.orderBy("daily.date", pageOptions.order).skip(pageOptions.skip).take(pageOptions.take);
@@ -31,7 +32,7 @@ export class DailyService implements IDailyService {
 
         const dailies = await queryBuilder
             .where("daily.date BETWEEN :from AND :to", { from, to })
-            .andWhere("daily.authorId = :authorId", { authorId: author.id })
+            .andWhere("daily.authorId = :authorId", { authorId })
             .getMany();
 
         // TODO: Do not use DTOs here
@@ -45,43 +46,43 @@ export class DailyService implements IDailyService {
         };
     }
 
-    public async findOneById(author: User, id: string): Promise<Daily> {
-        const repository = this.getRepository();
-        const daily = await repository.findOne({
-            where: { id, authorId: author.id },
+    public async findOneById(authorId: string, dailyId: string): Promise<Daily> {
+        const daily = await this.getRepository().findOne({
+            where: { id: dailyId, authorId },
         });
 
         if (!daily) {
+            this.logger.warn({ authorId, dailyId }, "Daily not found.");
             throw new DailyNotFoundError();
         }
 
         return this.dailyMapper.fromEntityToModel(daily);
     }
 
-    public async create(author: User, date: string): Promise<Daily> {
+    public async create(authorId: string, date: string): Promise<Daily> {
         const result = await this.getRepository()
             .createQueryBuilder("daily")
             .insert()
             .into(DailyEntity)
             .values({
                 date,
-                author: { id: author.id },
+                author: { id: authorId },
             })
             .returning("*")
             .execute();
 
-        const insertedEntity = result.raw[0];
+        const insertedEntity = result.raw[0] as DailyEntity;
         return this.dailyMapper.fromEntityToModel(insertedEntity);
     }
 
-    public async update(author: User, id: string, date: string): Promise<Daily> {
+    public async update(authorId: string, dailyId: string, date: string): Promise<Daily> {
         const result = await this.getRepository()
             .createQueryBuilder("daily")
             .update(DailyEntity)
             .set({ date })
             .where("daily.id = :dailyId AND daily.authorId = :authorId", {
-                dailyId: id,
-                authorId: author.id,
+                dailyId,
+                authorId,
             })
             .returning("*")
             .execute();
@@ -89,19 +90,21 @@ export class DailyService implements IDailyService {
         const updatedEntity = result.raw[0];
 
         if (!updatedEntity) {
+            this.logger.warn({ authorId, dailyId }, "Daily not found, cannot update.");
             throw new DailyNotFoundError();
         }
 
         return this.dailyMapper.fromEntityToModel(updatedEntity);
     }
 
-    public async deleteById(author: User, id: string): Promise<void> {
+    public async deleteById(authorId: string, dailyId: string): Promise<void> {
         const result = await this.getRepository().softDelete({
-            id,
-            authorId: author.id,
+            id: dailyId,
+            authorId,
         });
 
         if (!result.affected) {
+            this.logger.warn({ authorId, dailyId }, "Daily not found, cannot delete.");
             throw new DailyNotFoundError();
         }
     }

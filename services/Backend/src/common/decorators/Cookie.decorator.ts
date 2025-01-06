@@ -1,12 +1,14 @@
 import { type ExecutionContext, BadRequestException, createParamDecorator } from "@nestjs/common";
-import { type ClassConstructor, plainToClass } from "class-transformer";
+import { plainToClass } from "class-transformer";
 import { validate } from "class-validator";
+
+import { ClassConstructor } from "@/types/Class";
 
 type CookieDecoratorOptions =
     | {
           name: string;
           signed?: boolean;
-          parseAs?: ClassConstructor<unknown>;
+          parseAs?: ClassConstructor;
       }
     | string;
 
