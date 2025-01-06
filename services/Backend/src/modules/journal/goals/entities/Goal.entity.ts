@@ -11,13 +11,19 @@ import {
 
 import { AuthorEntity } from "@/modules/journal/authors/entities/Author.entity";
 
-@Entity("daily")
-export class DailyEntity {
+@Entity("goal")
+export class GoalEntity {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
     @Column({ type: "varchar" })
-    date!: string;
+    name!: string;
+
+    @Column({ type: "boolean", default: false })
+    isAccomplished!: boolean;
+
+    @Column({ type: "timestamptz", nullable: true })
+    deadline!: Date | null;
 
     @CreateDateColumn({ type: "timestamptz" })
     createdAt!: Date;
@@ -28,7 +34,7 @@ export class DailyEntity {
     @DeleteDateColumn({ type: "timestamptz", nullable: true })
     deletedAt!: Date | null;
 
-    @ManyToOne((type) => AuthorEntity, (author) => author.dailies)
+    @ManyToOne((type) => AuthorEntity, (author) => author.goals)
     author!: Relation<AuthorEntity>;
 
     @Column({ type: "varchar" })

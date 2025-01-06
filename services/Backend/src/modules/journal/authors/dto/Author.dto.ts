@@ -1,6 +1,6 @@
 import { IsUUID } from "class-validator";
 
 export class AuthorDto {
-    @IsUUID()
+    @IsUUID("4")
     readonly id!: string;
 }

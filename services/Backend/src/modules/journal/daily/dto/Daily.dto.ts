@@ -1,10 +1,10 @@
-import { IsDateString, IsString, IsUUID } from "class-validator";
+import { IsDateString, IsUUID } from "class-validator";
 
 export class DailyDto {
-    @IsUUID()
+    @IsUUID("4")
     id!: string;
 
-    @IsString()
+    @IsUUID("4")
     authorId!: string;
 
     @IsDateString()
