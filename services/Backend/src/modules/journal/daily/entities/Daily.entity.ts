@@ -30,7 +30,5 @@ export class DailyEntity {
 
     @ManyToOne((type) => AuthorEntity, (author) => author.dailies)
     author!: Relation<AuthorEntity>;
-
-    @Column({ type: "varchar" })
     authorId!: string;
 }

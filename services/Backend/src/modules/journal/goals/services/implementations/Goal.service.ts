@@ -23,12 +23,15 @@ export class GoalService implements IGoalService {
     ) {}
 
     public async findAll(authorId: string, pageOptions: PageOptions): Promise<Paginated<Goal>> {
-        const queryBuilder = this.getRepository().createQueryBuilder();
+        const queryBuilder = this.getRepository().createQueryBuilder("goal");
 
-        queryBuilder.orderBy("createdAt", pageOptions.order).skip(pageOptions.skip).take(pageOptions.take);
-        const itemCount = await queryBuilder.getCount();
+        queryBuilder
+            .where("goal.authorId = :authorId", { authorId })
+            .orderBy("goal.createdAt", pageOptions.order)
+            .skip(pageOptions.skip)
+            .take(pageOptions.take);
 
-        const goals = await queryBuilder.where("authorId = :authorId", { authorId }).getMany();
+        const [goals, itemCount] = await queryBuilder.getManyAndCount();
 
         // TODO: Do not use DTOs here
         return {
@@ -43,7 +46,7 @@ export class GoalService implements IGoalService {
 
     public async findOneById(authorId: string, goalId: string): Promise<Goal> {
         const goal = await this.getRepository().findOne({
-            where: { id: goalId, authorId },
+            where: { id: goalId, author: { id: authorId } },
         });
 
         if (!goal) {
@@ -82,7 +85,7 @@ export class GoalService implements IGoalService {
     public async deleteById(authorId: string, goalId: string): Promise<void> {
         const result = await this.getRepository().softDelete({
             id: goalId,
-            authorId,
+            author: { id: authorId },
         });
 
         if (!result.affected) {
@@ -96,10 +99,8 @@ export class GoalService implements IGoalService {
             .createQueryBuilder()
             .update(GoalEntity)
             .set({ ...partialGoal })
-            .where("id = :goalId AND authorId = :authorId", {
-                goalId,
-                authorId,
-            })
+            .where("id = :goalId", { goalId })
+            .andWhere("author.id = :authorId", { authorId })
             .returning("*")
             .execute();
 

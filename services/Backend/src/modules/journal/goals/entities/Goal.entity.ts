@@ -36,7 +36,5 @@ export class GoalEntity {
 
     @ManyToOne((type) => AuthorEntity, (author) => author.goals)
     author!: Relation<AuthorEntity>;
-
-    @Column({ type: "varchar" })
     authorId!: string;
 }

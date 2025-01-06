@@ -25,15 +25,16 @@ export class DailyService implements IDailyService {
     ) {}
 
     public async findAllByDateRange(authorId: string, from: string, to: string, pageOptions: PageOptions): Promise<Paginated<Daily>> {
-        const queryBuilder = this.getRepository().createQueryBuilder("daily");
+        const queryBuilder = this.getRepository().createQueryBuilder();
 
-        queryBuilder.orderBy("daily.date", pageOptions.order).skip(pageOptions.skip).take(pageOptions.take);
-        const itemCount = await queryBuilder.getCount();
-
-        const dailies = await queryBuilder
-            .where("daily.date BETWEEN :from AND :to", { from, to })
+        queryBuilder
+            .where("date BETWEEN :from AND :to", { from, to })
             .andWhere("daily.authorId = :authorId", { authorId })
-            .getMany();
+            .orderBy("daily.date", pageOptions.order)
+            .skip(pageOptions.skip)
+            .take(pageOptions.take);
+
+        const [dailies, itemCount] = await queryBuilder.getManyAndCount();
 
         // TODO: Do not use DTOs here
         return {
@@ -48,7 +49,7 @@ export class DailyService implements IDailyService {
 
     public async findOneById(authorId: string, dailyId: string): Promise<Daily> {
         const daily = await this.getRepository().findOne({
-            where: { id: dailyId, authorId },
+            where: { id: dailyId, author: { id: authorId } },
         });
 
         if (!daily) {
@@ -77,13 +78,11 @@ export class DailyService implements IDailyService {
 
     public async update(authorId: string, dailyId: string, date: string): Promise<Daily> {
         const result = await this.getRepository()
-            .createQueryBuilder("daily")
+            .createQueryBuilder()
             .update(DailyEntity)
             .set({ date })
-            .where("daily.id = :dailyId AND daily.authorId = :authorId", {
-                dailyId,
-                authorId,
-            })
+            .where("id = :dailyId", { dailyId })
+            .andWhere("author.id = :authorId", { authorId })
             .returning("*")
             .execute();
 
@@ -100,7 +99,7 @@ export class DailyService implements IDailyService {
     public async deleteById(authorId: string, dailyId: string): Promise<void> {
         const result = await this.getRepository().softDelete({
             id: dailyId,
-            authorId,
+            author: { id: authorId },
         });
 
         if (!result.affected) {

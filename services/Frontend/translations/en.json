@@ -76,6 +76,12 @@
                         "label": "Home"
                     }
                 },
+                "journal": {
+                    "label": "My journey",
+                    "goals": {
+                        "label": "Goals"
+                    }
+                },
                 "auth": {
                     "label": "Authentication",
                     "login": {

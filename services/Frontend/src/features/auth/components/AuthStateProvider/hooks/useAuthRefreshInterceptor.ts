@@ -4,14 +4,14 @@ import { AxiosInstance, HttpStatusCode } from "axios";
 import { logger } from "@/lib/logger/logger";
 
 export const useAuthRefreshInterceptor = (client: AxiosInstance, reAuthenticate: () => Promise<string>) => {
-    const isInterceptorMountedRef = useRef<boolean | null>(null);
+    const isInterceptorMountedRef = useRef<boolean>(false);
 
     useEffect(() => {
         if (isInterceptorMountedRef.current) {
             return;
         }
 
-        const refreshTokenInterceptor = client.interceptors.response.use(
+        const interceptor = client.interceptors.response.use(
             (response) => response,
             async (error) => {
                 const originalRequest = error.config;
@@ -41,7 +41,7 @@ export const useAuthRefreshInterceptor = (client: AxiosInstance, reAuthenticate:
         isInterceptorMountedRef.current = true;
 
         return () => {
-            client.interceptors.response.eject(refreshTokenInterceptor);
+            client.interceptors.response.eject(interceptor);
             isInterceptorMountedRef.current = false;
         };
     }, [client, reAuthenticate]);

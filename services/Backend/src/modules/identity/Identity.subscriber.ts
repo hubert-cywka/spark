@@ -1,6 +1,7 @@
 import { Controller, Inject, Logger } from "@nestjs/common";
 import { Ctx, EventPattern, Payload } from "@nestjs/microservices";
 import { Interval } from "@nestjs/schedule";
+import { SkipThrottle } from "@nestjs/throttler";
 import { NatsJetStreamContext } from "@nestjs-plugins/nestjs-nats-jetstream-transport";
 
 import { IInboxEventHandler, InboxEventHandlersToken, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
@@ -10,6 +11,7 @@ import { HydratePipe } from "@/common/pipes/Hydrate.pipe";
 const INBOX_PROCESSING_INTERVAL = 3000;
 
 @Controller()
+@SkipThrottle()
 export class IdentitySubscriber {
     private readonly logger = new Logger(IdentitySubscriber.name);
 
