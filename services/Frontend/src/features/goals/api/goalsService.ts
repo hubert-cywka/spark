@@ -7,8 +7,8 @@ import { Goal } from "@/features/goals/types/Goal";
 import { apiClient } from "@/lib/apiClient/apiClient";
 
 export class GoalsService {
-    public static async getAll() {
-        const { data } = await apiClient.get<PageDto<GoalDto>>("/goal");
+    public static async getPage(page: number) {
+        const { data } = await apiClient.get<PageDto<GoalDto>>(`/goal?page=${page}`);
         return { ...data, data: data.data.map(GoalsService.mapDtoToGoal) };
     }
 
@@ -22,14 +22,14 @@ export class GoalsService {
         return GoalsService.mapDtoToGoal(data);
     }
 
-    public static async updateName(id: string, dto: UpdateGoalsNameRequestDto) {
+    public static async updateName({ id, ...dto }: UpdateGoalsNameRequestDto & { id: string }) {
         const { data } = await apiClient.patch(`/goal${id}/name`, {
             body: dto,
         });
         return GoalsService.mapDtoToGoal(data);
     }
 
-    public static async updateDeadline(id: string, dto: UpdateGoalsDeadlineRequestDto) {
+    public static async updateDeadline({ id, ...dto }: UpdateGoalsDeadlineRequestDto & { id: string }) {
         const { data } = await apiClient.patch(`/goal${id}/deadline`, {
             body: dto,
         });
