@@ -19,8 +19,8 @@ export class GoalEntity {
     @Column({ type: "varchar" })
     name!: string;
 
-    @Column({ type: "boolean", default: false })
-    isAccomplished!: boolean;
+    @Column({ type: "smallint" })
+    target!: number;
 
     @Column({ type: "timestamptz", nullable: true })
     deadline!: Date | null;

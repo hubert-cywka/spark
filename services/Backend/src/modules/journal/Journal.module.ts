@@ -20,6 +20,7 @@ import { AddAuthorIdColumnInDailyEntity1735994132208 } from "@/modules/journal/i
 import { AddGoalsTable1736156638681 } from "@/modules/journal/infrastructure/database/migrations/1736156638681-AddGoalsTable";
 import { DefaultValueForIsAccomplished1736157185323 } from "@/modules/journal/infrastructure/database/migrations/1736157185323-DefaultValueForIsAccomplished";
 import { FixFK1736180535854 } from "@/modules/journal/infrastructure/database/migrations/1736180535854-FixFK";
+import { AddGoalsTarget1736269181791 } from "@/modules/journal/infrastructure/database/migrations/1736269181791-AddGoalsTarget";
 import { JournalSubscriber } from "@/modules/journal/Journal.subscriber";
 import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.module";
 
@@ -50,6 +51,7 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
                         AddGoalsTable1736156638681,
                         DefaultValueForIsAccomplished1736157185323,
                         FixFK1736180535854,
+                        AddGoalsTarget1736269181791,
                     ],
                 }),
                 inject: [ConfigService],

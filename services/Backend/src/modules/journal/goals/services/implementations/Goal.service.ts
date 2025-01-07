@@ -74,12 +74,16 @@ export class GoalService implements IGoalService {
         return this.goalMapper.fromEntityToModel(insertedEntity);
     }
 
-    public async updateName(authorId: string, goalId: string, name: string): Promise<Goal> {
-        return await this.updateProperties(authorId, goalId, { name });
-    }
-
-    public async updateDeadline(authorId: string, goalId: string, deadline: Date): Promise<Goal> {
-        return await this.updateProperties(authorId, goalId, { deadline });
+    public async update(
+        authorId: string,
+        goalId: string,
+        { name, deadline, target }: Pick<Goal, "name" | "deadline"> & { target: number }
+    ): Promise<Goal> {
+        return await this.updateProperties(authorId, goalId, {
+            name,
+            deadline,
+            target,
+        });
     }
 
     public async deleteById(authorId: string, goalId: string): Promise<void> {
@@ -94,7 +98,7 @@ export class GoalService implements IGoalService {
         }
     }
 
-    private async updateProperties(authorId: string, goalId: string, partialGoal: Partial<Goal>): Promise<Goal> {
+    private async updateProperties(authorId: string, goalId: string, partialGoal: Partial<GoalEntity>): Promise<Goal> {
         const result = await this.getRepository()
             .createQueryBuilder()
             .update(GoalEntity)
