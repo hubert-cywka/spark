@@ -63,7 +63,7 @@
             outline: 1px solid tokens.$color-neutral-surface-100;
         }
 
-        &[data-focused] {
+        &[data-focused], &[data-focus-within] {
             outline: 2px solid tokens.$color-accent-solid-200;
         }
     }

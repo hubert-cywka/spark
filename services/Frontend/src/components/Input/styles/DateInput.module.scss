@@ -1,0 +1,16 @@
+@use "src/styles/tokens";
+
+.input {
+    display: flex;
+
+    .dateSegment {
+        outline: none;
+        caret-color: transparent;
+
+        &[data-focused] {
+            background: tokens.$color-accent-solid-200;
+            color: tokens.$color-accent-text-100;
+            border-radius: tokens.$radius-100;
+        }
+    }
+}
