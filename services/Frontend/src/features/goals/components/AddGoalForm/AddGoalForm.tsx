@@ -5,7 +5,7 @@ import styles from "./styles/AddGoalForm.module.scss";
 import { Button } from "@/components/Button";
 import { Field, NumberInput } from "@/components/Input";
 import { DateInput } from "@/components/Input/DateInput";
-import { AddGoalFormInputs, useAddGoalForm } from "@/features/goals/components/AddGoalForm/hooks/useAddGoalForm";
+import { AddGoalFormInputs, DEFAULT_TARGET_VALUE, useAddGoalForm } from "@/features/goals/components/AddGoalForm/hooks/useAddGoalForm";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 type AddGoalFormProps = {
@@ -14,6 +14,9 @@ type AddGoalFormProps = {
     initialValue?: AddGoalFormInputs;
     isLoading?: boolean;
 };
+
+const MIN_TARGET_VALUE = 1;
+const MAX_TARGET_VALUE = 100;
 
 export const AddGoalForm = ({ onSubmit, onReset, isLoading, initialValue }: AddGoalFormProps) => {
     const t = useTranslate();
@@ -28,8 +31,9 @@ export const AddGoalForm = ({ onSubmit, onReset, isLoading, initialValue }: AddG
                 name="target"
                 control={control}
                 label={t("goals.forms.add.fields.target.label")}
-                minValue={1}
-                defaultValue={10}
+                minValue={MIN_TARGET_VALUE}
+                maxValue={MAX_TARGET_VALUE}
+                defaultValue={DEFAULT_TARGET_VALUE}
             />
 
             <DateInput name="deadline" control={control} label={t("goals.forms.add.fields.deadline.label")} />

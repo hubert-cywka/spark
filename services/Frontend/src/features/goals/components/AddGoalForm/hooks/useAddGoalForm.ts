@@ -11,8 +11,10 @@ export type AddGoalFormInputs = {
     deadline?: Date;
 };
 
-const DEFAULT_TARGET = 10;
+export const DEFAULT_TARGET_VALUE = 10;
+
 const NAME_MIN_LENGTH = 3;
+const NAME_MAX_LENGTH = 60;
 
 export const useAddGoalForm = (initialValue?: AddGoalFormInputs) => {
     const t = useTranslate();
@@ -32,6 +34,12 @@ export const useAddGoalForm = (initialValue?: AddGoalFormInputs) => {
                         t("goals.forms.add.fields.name.errors.minLength", {
                             length: NAME_MIN_LENGTH,
                         })
+                    )
+                    .max(
+                        NAME_MIN_LENGTH,
+                        t("goals.forms.add.fields.name.errors.maxLength", {
+                            length: NAME_MAX_LENGTH,
+                        })
                     ),
                 target: yup.number().required(t("goals.forms.add.fields.target.errors.required")),
                 deadline: yup.date(),
@@ -41,6 +49,6 @@ export const useAddGoalForm = (initialValue?: AddGoalFormInputs) => {
 
     return useForm<AddGoalFormInputs>({
         resolver: yupResolver<AddGoalFormInputs>(requirements),
-        defaultValues: { target: DEFAULT_TARGET, ...initialValue },
+        defaultValues: { target: DEFAULT_TARGET_VALUE, ...initialValue },
     });
 };

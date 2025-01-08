@@ -109,7 +109,8 @@
                     "name": {
                         "label": "What's your goal?",
                         "errors": {
-                            "minLength": "Minimum {length} characters needed."
+                            "minLength": "Minimum {length} characters needed.",
+                            "maxLength": "Maximum {length} characters allowed."
                         }
                     },
                     "target": {
@@ -122,6 +123,11 @@
                         "label": "When do you need to finish the goal?"
                     }
                 }
+            }
+        },
+        "management": {
+            "add": {
+                "header": "Add new goal"
             }
         },
         "card": {
