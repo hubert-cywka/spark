@@ -1,7 +1,6 @@
 @use "src/styles/tokens";
 
 .container {
-    background: tokens.$color-neutral-background-200;
     border: thin solid tokens.$color-neutral-surface-200;
     border-radius: tokens.$radius-300;
 
@@ -15,5 +14,19 @@
 
     &[data-size="3"] {
         padding: tokens.$spacing-800;
+    }
+
+    &[data-variant="solid"] {
+        background: tokens.$color-neutral-background-200;
+    }
+
+    &[data-variant="semi-translucent"] {
+        background: tokens.$color-neutral-background-alpha-100;
+        backdrop-filter: blur(5px);
+    }
+
+    &[data-variant="translucent"] {
+        background: tokens.$color-neutral-background-alpha-200;
+        backdrop-filter: blur(5px);
     }
 }
