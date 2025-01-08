@@ -21,7 +21,7 @@ export const AddGoalPanel = () => {
     };
 
     return (
-        <Card className={styles.panel}>
+        <Card className={styles.panel} variant="semi-translucent">
             <p className={styles.header}>{t("goals.management.add.header")}</p>
             <AddGoalForm onSubmit={onSubmit} isLoading={isPending} />
         </Card>

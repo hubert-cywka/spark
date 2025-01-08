@@ -4,7 +4,7 @@ import { IsDate, IsNumber, IsString, Max, MaxLength, Min, MinLength } from "clas
 import { IsNullable } from "@/lib/validation";
 
 const MIN_NAME_LENGTH = 3;
-const MAX_NAME_LENGTH = 60;
+const MAX_NAME_LENGTH = 90;
 
 const MIN_TARGET = 1;
 const MAX_TARGET = 1000;

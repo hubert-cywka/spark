@@ -14,7 +14,7 @@ export type AddGoalFormInputs = {
 export const DEFAULT_TARGET_VALUE = 10;
 
 const NAME_MIN_LENGTH = 3;
-const NAME_MAX_LENGTH = 60;
+const NAME_MAX_LENGTH = 90;
 
 export const useAddGoalForm = (initialValue?: AddGoalFormInputs) => {
     const t = useTranslate();
@@ -36,7 +36,7 @@ export const useAddGoalForm = (initialValue?: AddGoalFormInputs) => {
                         })
                     )
                     .max(
-                        NAME_MIN_LENGTH,
+                        NAME_MAX_LENGTH,
                         t("goals.forms.add.fields.name.errors.maxLength", {
                             length: NAME_MAX_LENGTH,
                         })

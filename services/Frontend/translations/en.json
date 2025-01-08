@@ -114,13 +114,13 @@
                         }
                     },
                     "target": {
-                        "label": "How many entries do you need?",
+                        "label": "How many entries you need?",
                         "errors": {
                             "required": "This field is required."
                         }
                     },
                     "deadline": {
-                        "label": "When do you need to finish the goal?"
+                        "label": "Is there any deadline?"
                     }
                 }
             }
