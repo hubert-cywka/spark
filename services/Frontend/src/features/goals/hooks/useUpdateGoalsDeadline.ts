@@ -7,11 +7,11 @@ import { useOptimisticUpdate } from "@/hooks/useOptimisticUpdate";
 
 const queryKey = GoalQueryKeyFactory.createForAll();
 
-export const useUpdateGoalsDeadline = () => {
+export const useUpdateGoal = () => {
     const { update, revert } = useOptimisticUpdate();
 
     return useMutation({
-        mutationFn: GoalsService.updateDeadline,
+        mutationFn: GoalsService.updateOne,
         onMutate: async (variables) => {
             await update<InfiniteData<Goal[]>>(queryKey, ({ pages, pageParams }) => {
                 const newPages =
@@ -22,7 +22,16 @@ export const useUpdateGoalsDeadline = () => {
                             }
 
                             const deadline = variables.deadline ? new Date(variables.deadline) : null;
-                            return { ...goal, deadline };
+                            const points = {
+                                ...goal.points,
+                                target: variables.target,
+                            };
+                            return {
+                                ...goal,
+                                name: variables.name,
+                                deadline,
+                                points,
+                            };
                         })
                     ) ?? [];
 

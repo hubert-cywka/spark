@@ -1,8 +1,6 @@
 import { PageDto } from "@/api/dto/PageDto";
-import { CreateGoalRequestDto } from "@/features/goals/api/dto/CreateGoalRequestDto";
+import { CreateOrUpdateGoalRequestDto } from "@/features/goals/api/dto/CreateOrUpdateGoalRequestDto";
 import { GoalDto } from "@/features/goals/api/dto/GoalDto";
-import { UpdateGoalsDeadlineRequestDto } from "@/features/goals/api/dto/UpdateGoalsDeadlineRequestDto";
-import { UpdateGoalsNameRequestDto } from "@/features/goals/api/dto/UpdateGoalsNameRequestDto";
 import { Goal } from "@/features/goals/types/Goal";
 import { apiClient } from "@/lib/apiClient/apiClient";
 
@@ -17,20 +15,13 @@ export class GoalsService {
         return GoalsService.mapDtoToGoal(data);
     }
 
-    public static async createOne(dto: CreateGoalRequestDto) {
+    public static async createOne(dto: CreateOrUpdateGoalRequestDto) {
         const { data } = await apiClient.post("/goal", { body: dto });
         return GoalsService.mapDtoToGoal(data);
     }
 
-    public static async updateName({ id, ...dto }: UpdateGoalsNameRequestDto & { id: string }) {
-        const { data } = await apiClient.patch(`/goal${id}/name`, {
-            body: dto,
-        });
-        return GoalsService.mapDtoToGoal(data);
-    }
-
-    public static async updateDeadline({ id, ...dto }: UpdateGoalsDeadlineRequestDto & { id: string }) {
-        const { data } = await apiClient.patch(`/goal${id}/deadline`, {
+    public static async updateOne({ id, ...dto }: CreateOrUpdateGoalRequestDto & { id: string }) {
+        const { data } = await apiClient.put(`/goal${id}`, {
             body: dto,
         });
         return GoalsService.mapDtoToGoal(data);
@@ -45,6 +36,7 @@ export class GoalsService {
             id: dto.id,
             name: dto.name,
             createdAt: new Date(dto.createdAt),
+            points: dto.points,
             isAccomplished: dto.isAccomplished,
             deadline: dto.deadline ? new Date(dto.deadline) : null,
         };

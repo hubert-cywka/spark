@@ -57,7 +57,7 @@ export class GoalService implements IGoalService {
         return this.goalMapper.fromEntityToModel(goal);
     }
 
-    public async create(authorId: string, goal: Pick<Goal, "name" | "deadline">): Promise<Goal> {
+    public async create(authorId: string, goal: Pick<Goal, "name" | "deadline"> & { target: number }): Promise<Goal> {
         const result = await this.getRepository()
             .createQueryBuilder()
             .insert()
@@ -65,6 +65,7 @@ export class GoalService implements IGoalService {
             .values({
                 name: goal.name,
                 deadline: goal.deadline,
+                target: goal.target,
                 author: { id: authorId },
             })
             .returning("*")

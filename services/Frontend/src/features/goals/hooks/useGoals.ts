@@ -2,6 +2,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 
 import { GoalsService } from "@/features/goals/api/goalsService";
 import { GoalQueryKeyFactory } from "@/features/goals/utils/goalQueryKeyFactory";
+import { getNextPage, getPreviousPage } from "@/lib/queryClient/pagination";
 
 const queryKey = GoalQueryKeyFactory.createForAll();
 
@@ -10,7 +11,7 @@ export const useGoals = () => {
         queryKey,
         initialPageParam: 1,
         queryFn: async ({ pageParam }) => await GoalsService.getPage(pageParam),
-        getNextPageParam: (lastPage) => Math.min(lastPage.meta.page + 1, lastPage.meta.pageCount),
-        getPreviousPageParam: (lastPage) => Math.max(lastPage.meta.page - 1, 0),
+        getNextPageParam: getNextPage,
+        getPreviousPageParam: getPreviousPage,
     });
 };

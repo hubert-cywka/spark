@@ -1,0 +1,25 @@
+@use "src/styles/tokens";
+
+.container {
+    width: 100%;
+
+    &[data-size="1"] {
+        max-width: tokens.$breakpoint-xs;
+    }
+
+    &[data-size="2"] {
+        max-width: tokens.$breakpoint-sm;
+    }
+
+    &[data-size="3"] {
+        max-width: tokens.$breakpoint-md;
+    }
+
+    &[data-size="4"] {
+        max-width: tokens.$breakpoint-lg;
+    }
+
+    &[data-size="5"] {
+        max-width: tokens.$breakpoint-xl;
+    }
+}

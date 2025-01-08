@@ -1,14 +1,14 @@
 import "server-only";
 
+import { Container } from "@/components/Container";
 import { onlyAsAuthenticated } from "@/features/auth/hoc/withAuthorization";
 import { GoalsList } from "@/features/goals/components/GoalsList/GoalsList";
 
-// TODO: Structure and style
 function Page() {
     return (
-        <div>
+        <Container>
             <GoalsList />
-        </div>
+        </Container>
     );
 }
 

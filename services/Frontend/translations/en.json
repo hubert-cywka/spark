@@ -94,6 +94,17 @@
             }
         }
     },
+    "goals": {
+        "card": {
+            "deadline": {
+                "until": "Until",
+                "noDeadline": "Without deadline"
+            },
+            "progress": {
+                "label": "Goal's progress"
+            }
+        }
+    },
     "authentication": {
         "oidc": {
             "divider": {
