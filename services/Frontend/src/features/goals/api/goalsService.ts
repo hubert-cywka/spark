@@ -6,7 +6,7 @@ import { apiClient } from "@/lib/apiClient/apiClient";
 
 export class GoalsService {
     public static async getPage(page: number) {
-        const { data } = await apiClient.get<PageDto<GoalDto>>(`/goal?page=${page}`);
+        const { data } = await apiClient.get<PageDto<GoalDto>>(`/goal?page=${page}&order=DESC`);
         return { ...data, data: data.data.map(GoalsService.mapDtoToGoal) };
     }
 
@@ -16,14 +16,12 @@ export class GoalsService {
     }
 
     public static async createOne(dto: CreateOrUpdateGoalRequestDto) {
-        const { data } = await apiClient.post("/goal", { body: dto });
+        const { data } = await apiClient.post("/goal", dto);
         return GoalsService.mapDtoToGoal(data);
     }
 
     public static async updateOne({ id, ...dto }: CreateOrUpdateGoalRequestDto & { id: string }) {
-        const { data } = await apiClient.put(`/goal${id}`, {
-            body: dto,
-        });
+        const { data } = await apiClient.put(`/goal${id}`, dto);
         return GoalsService.mapDtoToGoal(data);
     }
 

@@ -18,7 +18,7 @@ type NumberInputProps<T extends FieldValues> = {
     defaultValue?: number;
     minValue?: number;
     maxValue?: number;
-    width?: number;
+    width?: string;
     size?: InputSize;
     required?: boolean;
 };
@@ -66,7 +66,7 @@ export const NumberInput = <T extends FieldValues>({
             </Label>
 
             <div className={ownStyles.numberInputContainer}>
-                <Input className={sharedStyles.input} width={width} data-size={size} />
+                <Input className={sharedStyles.input} style={{ width }} data-size={size} />
 
                 <div className={ownStyles.buttonsWrapper}>
                     <Button slot="decrement" size={size}>

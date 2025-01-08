@@ -4,9 +4,9 @@ import { CardProps } from "./types/Card";
 
 import styles from "./styles/Card.module.scss";
 
-export const Card = ({ children, className, size = "2" }: CardProps) => {
+export const Card = ({ children, className, onClick, size = "2" }: CardProps) => {
     return (
-        <div data-size={size} className={classNames(styles.container, className)}>
+        <div onClick={onClick} data-size={size} className={classNames(styles.container, className)}>
             {children}
         </div>
     );

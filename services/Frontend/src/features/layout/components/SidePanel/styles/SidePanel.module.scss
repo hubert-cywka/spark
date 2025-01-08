@@ -1,7 +1,9 @@
 @use "src/styles/tokens";
 
 .container {
-    position: relative;
+    position: sticky;
+    top: 0;
+
     height: 100vh;
     min-width: 150px;
 
@@ -54,17 +56,16 @@
     }
 
     @media (max-width: tokens.$breakpoint-sm) {
-        position: absolute;
+        position: fixed;
         left: 0;
         top: 0;
+        bottom: 0;
 
         .collapseButtonWrapper {
             display: block;
         }
 
         &:not(.collapsed) {
-            position: absolute;
-
             .collapseButtonWrapper {
                 transform: translateX(50%);
             }

@@ -1,3 +1,5 @@
+"use client";
+
 import { Meter } from "react-aria-components";
 
 import styles from "./styles/Progress.module.scss";

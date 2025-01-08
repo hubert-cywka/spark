@@ -95,6 +95,35 @@
         }
     },
     "goals": {
+        "forms": {
+            "add": {
+                "buttons": {
+                    "cancel": {
+                        "label": "Cancel"
+                    },
+                    "save": {
+                        "label": "Add"
+                    }
+                },
+                "fields": {
+                    "name": {
+                        "label": "What's your goal?",
+                        "errors": {
+                            "minLength": "Minimum {length} characters needed."
+                        }
+                    },
+                    "target": {
+                        "label": "How many entries do you need?",
+                        "errors": {
+                            "required": "This field is required."
+                        }
+                    },
+                    "deadline": {
+                        "label": "When do you need to finish the goal?"
+                    }
+                }
+            }
+        },
         "card": {
             "deadline": {
                 "until": "Until",
