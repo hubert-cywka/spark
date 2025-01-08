@@ -1,0 +1,11 @@
+@use "src/styles/tokens";
+
+.numberInputContainer {
+    display: flex;
+    gap: tokens.$spacing-300;
+
+    .buttonsWrapper {
+        display: flex;
+        gap: tokens.$spacing-200;
+    }
+}

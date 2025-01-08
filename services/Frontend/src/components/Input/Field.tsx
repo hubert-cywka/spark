@@ -6,7 +6,7 @@ import { Control, FieldValues, Path, useController } from "react-hook-form";
 
 import { InputSize } from "./types/Input";
 
-import styles from "./styles/Field.module.scss";
+import styles from "./styles/Input.module.scss";
 
 type FieldProps<T extends FieldValues> = {
     name: Path<T>;
