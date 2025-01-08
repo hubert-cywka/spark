@@ -76,6 +76,12 @@
                         "label": "Home"
                     }
                 },
+                "journal": {
+                    "label": "My journey",
+                    "goals": {
+                        "label": "Goals"
+                    }
+                },
                 "auth": {
                     "label": "Authentication",
                     "login": {
@@ -85,6 +91,52 @@
                         "label": "Register"
                     }
                 }
+            }
+        }
+    },
+    "goals": {
+        "forms": {
+            "add": {
+                "buttons": {
+                    "cancel": {
+                        "label": "Cancel"
+                    },
+                    "save": {
+                        "label": "Add"
+                    }
+                },
+                "fields": {
+                    "name": {
+                        "label": "What's your goal?",
+                        "errors": {
+                            "minLength": "Minimum {length} characters needed.",
+                            "maxLength": "Maximum {length} characters allowed."
+                        }
+                    },
+                    "target": {
+                        "label": "How many entries do you need?",
+                        "errors": {
+                            "required": "This field is required."
+                        }
+                    },
+                    "deadline": {
+                        "label": "When do you need to finish the goal?"
+                    }
+                }
+            }
+        },
+        "management": {
+            "add": {
+                "header": "Add new goal"
+            }
+        },
+        "card": {
+            "deadline": {
+                "until": "Until",
+                "noDeadline": "Without deadline"
+            },
+            "progress": {
+                "label": "Goal's progress"
             }
         }
     },

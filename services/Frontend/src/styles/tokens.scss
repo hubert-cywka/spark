@@ -5,22 +5,40 @@ $breakpoint-md: 992px;
 $breakpoint-lg: 1200px;
 $breakpoint-xl: 1440px;
 
+/* Font Size */
+$font-size-100: 0.625rem;
+$font-size-200: 0.75rem;
+$font-size-300: 0.875rem;
+$font-size-400: 1rem;
+$font-size-500: 1.25rem;
+$font-size-600: 1.5rem;
+$font-size-700: 1.75rem;
+$font-size-800: 2rem;
+$font-size-900: 2.5rem;
+$font-size-1000: 3rem;
+$font-size-1100: 3.5rem;
+
+/* Font Weight */
+$font-weight-100: 450;
+$font-weight-200: 500;
+$font-weight-300: 700;
+
 /* Typography - Body */
-$typography-body-100: 500 0.875rem 'Montserrat', sans-serif;
-$typography-body-200: 500 1rem 'Montserrat', sans-serif;
-$typography-body-300: 500 1.25rem 'Montserrat', sans-serif;
-$typography-body-400: 500 1.5rem 'Montserrat', sans-serif;
+$typography-body-100: $font-weight-200 $font-size-300 'Montserrat', sans-serif;
+$typography-body-200: $font-weight-200 $font-size-400 'Montserrat', sans-serif;
+$typography-body-300: $font-weight-200 $font-size-500 'Montserrat', sans-serif;
+$typography-body-400: $font-weight-200 $font-size-600 'Montserrat', sans-serif;
 
 /* Typography - Caption */
-$typography-caption-100: 450 0.625rem 'Montserrat', sans-serif;
-$typography-caption-200: 450 0.75rem 'Montserrat', sans-serif;
+$typography-caption-100: $font-weight-100 $font-size-100 'Montserrat', sans-serif;
+$typography-caption-200: $font-weight-100 $font-size-200 'Montserrat', sans-serif;
 
 /* Typography - Title */
-$typography-title-100: 700 1.75rem 'Montserrat', sans-serif;
-$typography-title-200: 700 2rem 'Montserrat', sans-serif;
-$typography-title-300: 700 2.5rem 'Montserrat', sans-serif;
-$typography-title-400: 700 3rem 'Montserrat', sans-serif;
-$typography-title-500: 700 3.5rem 'Montserrat', sans-serif;
+$typography-title-100: $font-weight-300 $font-size-700 'Montserrat', sans-serif;
+$typography-title-200: $font-weight-300 $font-size-800 'Montserrat', sans-serif;
+$typography-title-300: $font-weight-300 $font-size-900 'Montserrat', sans-serif;
+$typography-title-400: $font-weight-300 $font-size-1000 'Montserrat', sans-serif;
+$typography-title-500: $font-weight-300 $font-size-1100 'Montserrat', sans-serif;
 
 /* Colors - Accent */
 $color-accent-solid-100: #6651C0;

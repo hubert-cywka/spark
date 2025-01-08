@@ -1,0 +1,15 @@
+@use "src/styles/tokens";
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$spacing-500;
+    min-width: 250px;
+
+    .buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: tokens.$spacing-200;
+        margin-top: tokens.$spacing-400;
+    }
+}

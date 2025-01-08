@@ -7,8 +7,8 @@ import {
     NotFoundException,
     Param,
     ParseUUIDPipe,
-    Patch,
     Post,
+    Put,
     Query,
     UseGuards,
 } from "@nestjs/common";
@@ -18,9 +18,7 @@ import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
 import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
 import { PageOptionsDto } from "@/common/pagination/dto/PageOptions.dto";
-import { CreateGoalDto } from "@/modules/journal/goals/dto/CreateGoal.dto";
-import { UpdateGoalsDeadlineDto } from "@/modules/journal/goals/dto/UpdateGoalsDeadline.dto";
-import { UpdateGoalsNameDto } from "@/modules/journal/goals/dto/UpdateGoalsName.dto";
+import { CreateOrUpdateGoalDto } from "@/modules/journal/goals/dto/CreateOrUpdateGoal.dto";
 import { type IGoalMapper, GoalMapperToken } from "@/modules/journal/goals/mappers/IGoal.mapper";
 import { type IGoalService, GoalServiceToken } from "@/modules/journal/goals/services/interfaces/IGoal.service";
 import { type User } from "@/types/User";
@@ -52,35 +50,20 @@ export class GoalController {
 
     @Post()
     @UseGuards(new AuthenticationGuard())
-    public async createGoal(@Body() dto: CreateGoalDto, @CurrentUser() author: User) {
+    public async createGoal(@Body() dto: CreateOrUpdateGoalDto, @CurrentUser() author: User) {
         const result = await this.goalService.create(author.id, dto);
         return this.goalMapper.fromModelToDto(result);
     }
 
-    @Patch(":id/name")
+    @Put(":id")
     @UseGuards(new AuthenticationGuard())
     public async updateGoalsName(
         @Param("id", new ParseUUIDPipe()) goalId: string,
-        @Body() dto: UpdateGoalsNameDto,
+        @Body() dto: CreateOrUpdateGoalDto,
         @CurrentUser() author: User
     ) {
         try {
-            const result = await this.goalService.updateName(author.id, goalId, dto.name);
-            return this.goalMapper.fromModelToDto(result);
-        } catch (err) {
-            whenError(err).is(EntityNotFoundError).throw(new NotFoundException()).elseRethrow();
-        }
-    }
-
-    @Patch(":id/deadline")
-    @UseGuards(new AuthenticationGuard())
-    public async updateGoalsDeadline(
-        @Param("id", new ParseUUIDPipe()) goalId: string,
-        @Body() dto: UpdateGoalsDeadlineDto,
-        @CurrentUser() author: User
-    ) {
-        try {
-            const result = await this.goalService.updateDeadline(author.id, goalId, dto.deadline);
+            const result = await this.goalService.update(author.id, goalId, dto);
             return this.goalMapper.fromModelToDto(result);
         } catch (err) {
             whenError(err).is(EntityNotFoundError).throw(new NotFoundException()).elseRethrow();

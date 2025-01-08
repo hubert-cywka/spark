@@ -12,7 +12,7 @@
 }
 
 .label {
-    font: tokens.$typography-body-100;
+    font: tokens.$typography-caption-200;
 }
 
 .highlight {
@@ -63,7 +63,7 @@
             outline: 1px solid tokens.$color-neutral-surface-100;
         }
 
-        &[data-focused] {
+        &[data-focused], &[data-focus-within] {
             outline: 2px solid tokens.$color-accent-solid-200;
         }
     }

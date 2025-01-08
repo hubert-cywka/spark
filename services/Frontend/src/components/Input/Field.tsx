@@ -6,13 +6,13 @@ import { Control, FieldValues, Path, useController } from "react-hook-form";
 
 import { InputSize } from "./types/Input";
 
-import styles from "./styles/Field.module.scss";
+import styles from "./styles/Input.module.scss";
 
 type FieldProps<T extends FieldValues> = {
     name: Path<T>;
     control: Control<T>;
     label: ReactNode;
-    width?: number;
+    width?: string;
     size?: InputSize;
     required?: boolean;
     autoComplete?: InputHTMLAttributes<unknown>["autoComplete"];
@@ -56,7 +56,7 @@ export const Field = <T extends FieldValues>({
                 {label}
                 {required && <span className={styles.highlight}> *</span>}
             </Label>
-            <Input className={styles.input} width={width} data-size={size} type={type} autoComplete={autoComplete} />
+            <Input className={styles.input} style={{ width }} data-size={size} type={type} autoComplete={autoComplete} />
             {error && <FieldError className={styles.error}>{error.message}</FieldError>}
         </TextField>
     );

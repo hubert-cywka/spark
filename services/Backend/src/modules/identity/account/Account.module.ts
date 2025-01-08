@@ -1,7 +1,5 @@
 import { Module } from "@nestjs/common";
-import { APP_GUARD } from "@nestjs/core";
 
-import { ThrottlingGuard } from "@/common/guards/Throttling.guard";
 import { AccountController } from "@/modules/identity/account/controllers/Account.controller";
 import { AccountMapper } from "@/modules/identity/account/mappers/Account.mapper";
 import { AccountMapperToken } from "@/modules/identity/account/mappers/IAccount.mapper";
@@ -18,7 +16,6 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
 @Module({
     imports: [IdentitySharedModule],
     providers: [
-        { provide: APP_GUARD, useClass: ThrottlingGuard },
         {
             provide: SingleUseTokenServiceToken,
             useClass: SingleUseTokenService,

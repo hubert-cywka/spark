@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { IconHome, IconLogin, IconUserPlus } from "@tabler/icons-react";
+import { IconHome, IconLogin, IconTarget, IconUserPlus } from "@tabler/icons-react";
 
 import { AppRoute } from "@/app/appRoute";
 import { AccessScope } from "@/features/auth/types/Identity";
@@ -24,7 +24,7 @@ export const useNavigation = (): UseAppNavigation => {
     const t = useTranslate();
 
     const sections: NavigationSectionConfig[] = useMemo(
-        () => [
+        (): NavigationSectionConfig[] => [
             {
                 label: t("common.navigation.sections.main.label"),
                 requiredScopes: [],
@@ -33,6 +33,17 @@ export const useNavigation = (): UseAppNavigation => {
                         target: AppRoute.HOME,
                         label: t("common.navigation.sections.main.home.label"),
                         icon: IconHome,
+                    },
+                ],
+            },
+            {
+                label: t("common.navigation.sections.journal.label"),
+                requiredScopes: ["browse_as_authenticated"],
+                routes: [
+                    {
+                        target: AppRoute.GOALS,
+                        label: t("common.navigation.sections.journal.goals.label"),
+                        icon: IconTarget,
                     },
                 ],
             },

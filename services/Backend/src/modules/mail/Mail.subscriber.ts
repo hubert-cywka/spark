@@ -1,6 +1,7 @@
 import { Controller, Inject, Logger } from "@nestjs/common";
 import { Ctx, EventPattern, Payload } from "@nestjs/microservices";
 import { Interval } from "@nestjs/schedule";
+import { SkipThrottle } from "@nestjs/throttler";
 import { NatsJetStreamContext } from "@nestjs-plugins/nestjs-nats-jetstream-transport";
 
 import {
@@ -17,6 +18,7 @@ const INBOX_PROCESSING_INTERVAL = 5000;
 
 // TODO: There is some duplication in all pubsub subscribers
 @Controller()
+@SkipThrottle()
 export class MailSubscriber {
     private readonly logger = new Logger(MailSubscriber.name);
 

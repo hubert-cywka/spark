@@ -1,0 +1,105 @@
+@use "src/styles/tokens";
+
+.skeleton {
+    &.skeletonIcon {
+        width: 24px;
+        height: 24px;
+    }
+
+    &.skeletonDeadline {
+        width: 100px;
+    }
+
+    &.skeletonName {
+        max-width: 300px;
+    }
+
+    &.skeletonProgressCount {
+        width: 60px;
+    }
+
+    &.skeletonProgressBar {
+        width: 80px;
+    }
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    gap: tokens.$spacing-600;
+
+    transition: border-bottom-color 0.2s;
+
+    width: 100%;
+    container-type: inline-size;
+    overflow: hidden;
+
+    &:hover {
+        border-bottom-color: tokens.$color-accent-solid-100;
+        cursor: pointer;
+    }
+
+    .icon {
+        flex-shrink: 0;
+        color: tokens.$color-accent-text-300;
+
+        &.accomplished {
+            color: tokens.$color-success-text-200;
+        }
+    }
+
+    @container (max-width: 400px) {
+        .icon {
+            display: none;
+        }
+    }
+
+
+    .nameContainer {
+        flex-grow: 1;
+        overflow: hidden;
+
+        .name {
+            color: tokens.$color-accent-text-100;
+            font: tokens.$typography-body-200;
+
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+
+            &.accomplished {
+                color: tokens.$color-success-text-300;
+            }
+        }
+
+        .deadline {
+            font: tokens.$typography-caption-200;
+            color: tokens.$color-neutral-text-200;
+            margin-bottom: tokens.$spacing-200;
+        }
+    }
+
+    .progress {
+        margin-left: auto;
+        display: flex;
+        flex-direction: column;
+
+        .pointsWrapper {
+            align-self: flex-end;
+            padding-inline: tokens.$spacing-400;
+            white-space: nowrap;
+
+            .points {
+                &.current {
+                    color: tokens.$color-accent-text-300;
+                    font-size: tokens.$font-size-700;
+                }
+
+                &.target {
+                    color: tokens.$color-neutral-text-300;
+                    font-size: tokens.$font-size-500;
+                }
+            }
+        }
+    }
+}

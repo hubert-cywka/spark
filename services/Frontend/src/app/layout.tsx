@@ -6,6 +6,7 @@ import { getLocale, getMessages } from "next-intl/server";
 
 import "../styles/tokens.scss";
 import "../styles/normalize.scss";
+import "react-loading-skeleton/dist/skeleton.css";
 
 import { Provider } from "@/app/Provider/Provider";
 import { Shell } from "@/features/layout/components/Shell/Shell";
