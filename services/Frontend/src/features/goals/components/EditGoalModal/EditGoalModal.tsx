@@ -27,7 +27,7 @@ export const EditGoalModal = ({ goal, trigger }: EditGoalModalProps) => {
         try {
             await updateGoal({
                 id: goal.id,
-                deadline: deadline ? deadline : null,
+                deadline: deadline?.toISOString() ?? null,
                 name,
                 target,
             });
@@ -52,7 +52,7 @@ export const EditGoalModal = ({ goal, trigger }: EditGoalModalProps) => {
 
 const mapGoalToFormInitialValues = ({ deadline, name, points }: Goal) => {
     return {
-        deadline: deadline?.toISOString(),
+        deadline: deadline ?? undefined,
         name,
         target: points.target,
     };

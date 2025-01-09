@@ -1,9 +1,9 @@
 "use client";
 
 import { ReactNode } from "react";
-import { DateField, DateInput as BaseDateInput, DateSegment, FieldError, Label } from "react-aria-components";
+import { DateField, DateInput as BaseDateInput, DateSegment, DateValue, FieldError, Label } from "react-aria-components";
 import { Control, FieldValues, Path, useController } from "react-hook-form";
-import { parseAbsoluteToLocal } from "@internationalized/date";
+import { fromDate } from "@internationalized/date";
 import classNames from "clsx";
 
 import { InputSize } from "./types/Input";
@@ -29,24 +29,25 @@ export const DateInput = <T extends FieldValues>({ label, required, name, contro
         rules: { required },
     });
 
+    const onChange = (value: DateValue | null) => {
+        field.onChange(value?.toDate("UTC"));
+    };
+
     return (
         <DateField
-            className={sharedStyles.controller}
             {...props}
-            onChange={(value) => {
-                if (!value) {
-                    field.onChange("");
-                }
-            }}
+            className={sharedStyles.controller}
+            onChange={onChange}
+            value={field.value ? fromDate(field.value, "UTC") : undefined}
             onBlur={field.onBlur}
-            value={field.value ? parseAbsoluteToLocal(field.value) : undefined}
             name={field.name}
             ref={field.ref}
             isRequired={required}
             isInvalid={invalid}
+            granularity="day"
             shouldForceLeadingZeros
             validationBehavior="aria"
-            granularity="day"
+            hideTimeZone
         >
             <Label className={sharedStyles.label}>
                 {label}

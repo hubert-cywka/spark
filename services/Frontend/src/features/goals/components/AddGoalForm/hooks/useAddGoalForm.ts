@@ -8,7 +8,7 @@ import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 export type AddGoalFormInputs = {
     name: string;
     target: number;
-    deadline?: string;
+    deadline?: Date;
 };
 
 export const DEFAULT_TARGET_VALUE = 10;
@@ -42,13 +42,16 @@ export const useAddGoalForm = (initialValue?: AddGoalFormInputs) => {
                         })
                     ),
                 target: yup.number().required(t("goals.create.form.fields.target.errors.required")),
-                deadline: yup.string(),
+                deadline: yup.date(),
             }),
         [t]
     );
 
     return useForm<AddGoalFormInputs>({
         resolver: yupResolver<AddGoalFormInputs>(requirements),
-        defaultValues: { target: DEFAULT_TARGET_VALUE, ...initialValue },
+        defaultValues: {
+            target: DEFAULT_TARGET_VALUE,
+            ...initialValue,
+        },
     });
 };

@@ -17,7 +17,7 @@ export const AddGoalPanel = () => {
     const onSubmit = async ({ deadline, name, target }: AddGoalFormInputs) => {
         try {
             await createGoal({
-                deadline: deadline ? deadline : null,
+                deadline: deadline?.toISOString() ?? null,
                 name,
                 target,
             });
