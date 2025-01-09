@@ -7,6 +7,18 @@
                 "serviceUnavailable": "App is temporarily unavailable. Please try again later."
             }
         },
+        "goals": {
+            "update": {
+                "errors": {
+                    "notFound": "Couldn't update this goal. Perhaps it was already deleted?"
+                }
+            },
+            "delete": {
+                "errors": {
+                    "notFound": "Couldn't delete this goal. Perhaps it was already deleted?"
+                }
+            }
+        },
         "oidc": {
             "register": {
                 "errors": {
@@ -95,14 +107,24 @@
         }
     },
     "goals": {
-        "forms": {
-            "add": {
+        "update": {
+            "notifications": {
+                "error": {
+                    "title": "Couldn't update goal"
+                },
+                "success": {
+                    "title": "Goal has been updated"
+                }
+            }
+        },
+        "create": {
+            "form": {
                 "buttons": {
                     "cancel": {
                         "label": "Cancel"
                     },
                     "save": {
-                        "label": "Add"
+                        "label": "Save"
                     }
                 },
                 "fields": {
@@ -123,11 +145,43 @@
                         "label": "Is there any deadline?"
                     }
                 }
+            },
+            "notifications": {
+                "error": {
+                    "title": "Couldn't add goal"
+                },
+                "success": {
+                    "title": "Goal has been added"
+                }
+            }
+        },
+        "delete": {
+            "notifications": {
+                "error": {
+                    "title": "Couldn't delete goal"
+                },
+                "success": {
+                    "title": "Goal has been deleted"
+                }
             }
         },
         "management": {
             "add": {
                 "header": "Add new goal"
+            },
+            "edit": {
+                "header": "Edit goal"
+            },
+            "floatingBar": {
+                "label": "You have selected:",
+                "buttons": {
+                    "edit": {
+                        "label": "Edit selected goal"
+                    },
+                    "delete": {
+                        "label": "Delete selected goal"
+                    }
+                }
             }
         },
         "card": {

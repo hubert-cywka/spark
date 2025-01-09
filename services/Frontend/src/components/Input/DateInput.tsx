@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import { DateField, DateInput as BaseDateInput, DateSegment, FieldError, Label } from "react-aria-components";
 import { Control, FieldValues, Path, useController } from "react-hook-form";
+import { parseAbsoluteToLocal } from "@internationalized/date";
 import classNames from "clsx";
 
 import { InputSize } from "./types/Input";
@@ -34,7 +35,7 @@ export const DateInput = <T extends FieldValues>({ label, required, name, contro
             {...props}
             onChange={field.onChange}
             onBlur={field.onBlur}
-            value={field.value}
+            value={field.value ? parseAbsoluteToLocal(field.value) : undefined}
             name={field.name}
             ref={field.ref}
             isRequired={required}

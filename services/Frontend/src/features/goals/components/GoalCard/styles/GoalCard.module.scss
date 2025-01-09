@@ -28,15 +28,21 @@
     align-items: center;
     gap: tokens.$spacing-600;
 
-    transition: border-bottom-color 0.2s;
-
     width: 100%;
     container-type: inline-size;
     overflow: hidden;
 
     &:hover {
-        border-bottom-color: tokens.$color-accent-solid-100;
         cursor: pointer;
+        border-color: tokens.$color-neutral-solid-100;
+    }
+
+    &:focus {
+        outline: 1px solid tokens.$color-accent-solid-200;
+    }
+
+    &.selected:not(:focus) {
+        border-color: tokens.$color-success-solid-100;
     }
 
     .icon {

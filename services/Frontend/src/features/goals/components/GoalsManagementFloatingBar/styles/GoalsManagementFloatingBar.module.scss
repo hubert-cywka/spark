@@ -1,0 +1,50 @@
+@use "src/styles/tokens";
+
+.container {
+    background: tokens.$color-accent-surface-200;
+    border: 1px solid tokens.$color-accent-solid-100;
+    padding: tokens.$spacing-400;
+    border-radius: tokens.$radius-200;
+
+    display: flex;
+    gap: tokens.$spacing-400;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 600px;
+    max-width: 90%;
+
+    -webkit-box-shadow: tokens.$shadow-200;
+    -moz-box-shadow: tokens.$shadow-200;
+    box-shadow: tokens.$shadow-200;
+
+    position: fixed;
+    z-index: 1;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+
+    .wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: tokens.$spacing-400;
+
+        .closeButton {
+            flex-shrink: 0;
+        }
+
+        .label {
+            font: tokens.$typography-caption-200;
+        }
+
+        .goalName {
+            font-weight: tokens.$font-weight-300;
+        }
+    }
+
+    .actionButtons {
+        display: flex;
+        gap: tokens.$spacing-400;
+    }
+}

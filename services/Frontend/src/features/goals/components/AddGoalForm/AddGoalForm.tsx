@@ -24,26 +24,26 @@ export const AddGoalForm = ({ onSubmit, onReset, isLoading, initialValue }: AddG
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} onReset={onReset} className={styles.form}>
-            <Field required name="name" control={control} label={t("goals.forms.add.fields.name.label")} />
+            <Field required name="name" control={control} label={t("goals.create.form.fields.name.label")} />
 
             <NumberInput
                 required
                 name="target"
                 control={control}
-                label={t("goals.forms.add.fields.target.label")}
+                label={t("goals.create.form.fields.target.label")}
                 minValue={MIN_TARGET_VALUE}
                 maxValue={MAX_TARGET_VALUE}
                 defaultValue={DEFAULT_TARGET_VALUE}
             />
 
-            <DateInput name="deadline" control={control} label={t("goals.forms.add.fields.deadline.label")} />
+            <DateInput name="deadline" control={control} label={t("goals.create.form.fields.deadline.label")} />
 
             <div className={styles.buttons}>
                 <Button type="reset" variant="secondary">
-                    {t("goals.forms.add.buttons.cancel.label")}
+                    {t("goals.create.form.buttons.cancel.label")}
                 </Button>
                 <Button type="submit" variant="confirm" isLoading={isLoading}>
-                    {t("goals.forms.add.buttons.save.label")}
+                    {t("goals.create.form.buttons.save.label")}
                 </Button>
             </div>
         </form>

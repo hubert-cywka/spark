@@ -21,7 +21,7 @@ export class GoalsService {
     }
 
     public static async updateOne({ id, ...dto }: CreateOrUpdateGoalRequestDto & { id: string }) {
-        const { data } = await apiClient.put(`/goal${id}`, dto);
+        const { data } = await apiClient.put(`/goal/${id}`, dto);
         return GoalsService.mapDtoToGoal(data);
     }
 
