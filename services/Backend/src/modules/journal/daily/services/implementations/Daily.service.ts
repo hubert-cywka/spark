@@ -25,11 +25,12 @@ export class DailyService implements IDailyService {
     ) {}
 
     public async findAllByDateRange(authorId: string, from: string, to: string, pageOptions: PageOptions): Promise<Paginated<Daily>> {
-        const queryBuilder = this.getRepository().createQueryBuilder();
+        const queryBuilder = this.getRepository().createQueryBuilder("daily");
 
         queryBuilder
-            .where("date BETWEEN :from AND :to", { from, to })
-            .andWhere("daily.authorId = :authorId", { authorId })
+            .innerJoin("daily.author", "author")
+            .where("daily.date BETWEEN :from AND :to", { from, to })
+            .andWhere("author.id = :authorId", { authorId })
             .orderBy("daily.date", pageOptions.order)
             .skip(pageOptions.skip)
             .take(pageOptions.take);
@@ -62,7 +63,7 @@ export class DailyService implements IDailyService {
 
     public async create(authorId: string, date: string): Promise<Daily> {
         const result = await this.getRepository()
-            .createQueryBuilder("daily")
+            .createQueryBuilder()
             .insert()
             .into(DailyEntity)
             .values({
