@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { IconTarget } from "@tabler/icons-react";
 import classNames from "clsx";
 
@@ -6,18 +7,49 @@ import styles from "./styles/GoalCard.module.scss";
 import { Card } from "@/components/Card";
 import { Progress } from "@/components/Progress";
 import { Goal } from "@/features/goals/types/Goal";
+import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 type GoalCardProps = {
     goal: Goal;
+    isSelected: boolean;
+    onSelection?: () => unknown;
 };
 
-// TODO: Expand on click
-export const GoalCard = ({ goal }: GoalCardProps) => {
+export const GoalCard = ({ goal, isSelected, onSelection }: GoalCardProps) => {
+    const isFocused = useRef(false);
     const t = useTranslate();
 
+    const handleOnEnter = () => {
+        if (isFocused.current) {
+            onSelection?.();
+        }
+    };
+
+    const handleFocus = () => {
+        isFocused.current = true;
+    };
+
+    const handleBlur = () => {
+        isFocused.current = false;
+    };
+
+    useKeyboardShortcut({
+        callback: handleOnEnter,
+        keys: ["Enter", "Space"],
+    });
+
     return (
-        <Card className={styles.container} size="1">
+        <Card
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            tabIndex={0}
+            onClick={onSelection}
+            className={classNames(styles.container, {
+                [styles.selected]: isSelected,
+            })}
+            size="1"
+        >
             <IconTarget
                 className={classNames(styles.icon, {
                     [styles.accomplished]: goal.isAccomplished,

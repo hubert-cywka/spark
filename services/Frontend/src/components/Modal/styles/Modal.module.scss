@@ -1,0 +1,23 @@
+@use "src/styles/tokens";
+
+.overlay {
+    background: tokens.$color-neutral-background-alpha-300;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .modal {
+        background: tokens.$color-neutral-surface-300;
+        color: tokens.$color-neutral-text-100;
+
+        padding: tokens.$spacing-600;
+        border: 1px solid tokens.$color-neutral-solid-300;
+        border-radius: tokens.$radius-300;
+    }
+}

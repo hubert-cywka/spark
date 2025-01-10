@@ -1,0 +1,11 @@
+@use "src/styles/tokens";
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: tokens.$spacing-600;
+
+    .header {
+        font: tokens.$typography-title-100;
+    }
+}

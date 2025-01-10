@@ -33,7 +33,7 @@ resource "kubernetes_deployment" "frontend" {
                         value = var.FRONTEND_PORT
                     }
                     env {
-                        name  = "API_URL"
+                        name  = "NEXT_PUBLIC_API_URL"
                         value = var.GATEWAY_URL
                     }
                 }

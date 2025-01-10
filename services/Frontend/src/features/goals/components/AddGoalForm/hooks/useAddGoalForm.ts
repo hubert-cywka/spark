@@ -8,7 +8,7 @@ import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 export type AddGoalFormInputs = {
     name: string;
     target: number;
-    deadline?: Date;
+    deadline?: string;
 };
 
 export const DEFAULT_TARGET_VALUE = 10;
@@ -25,24 +25,24 @@ export const useAddGoalForm = (initialValue?: AddGoalFormInputs) => {
                 name: yup
                     .string()
                     .required(
-                        t("goals.forms.add.fields.name.errors.minLength", {
+                        t("goals.create.form.fields.name.errors.minLength", {
                             length: NAME_MIN_LENGTH,
                         })
                     )
                     .min(
                         NAME_MIN_LENGTH,
-                        t("goals.forms.add.fields.name.errors.minLength", {
+                        t("goals.create.form.fields.name.errors.minLength", {
                             length: NAME_MIN_LENGTH,
                         })
                     )
                     .max(
                         NAME_MAX_LENGTH,
-                        t("goals.forms.add.fields.name.errors.maxLength", {
+                        t("goals.create.form.fields.name.errors.maxLength", {
                             length: NAME_MAX_LENGTH,
                         })
                     ),
-                target: yup.number().required(t("goals.forms.add.fields.target.errors.required")),
-                deadline: yup.date(),
+                target: yup.number().required(t("goals.create.form.fields.target.errors.required")),
+                deadline: yup.string(),
             }),
         [t]
     );

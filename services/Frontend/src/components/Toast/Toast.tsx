@@ -14,7 +14,7 @@ export const Toast = ({ onClose, title, message, variant = "info" }: ToastProps)
         <div data-variant={variant} className={styles.container}>
             <div>
                 <p className={styles.title}>{title}</p>
-                <p className={styles.message}>{message}</p>
+                {message && <p className={styles.message}>{message}</p>}
             </div>
             <IconButton onPress={onClose} variant="subtle" size="1" aria-label={t("common.notifications.closeButton.label")}>
                 <IconX />
