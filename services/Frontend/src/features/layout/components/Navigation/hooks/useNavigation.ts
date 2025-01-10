@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { IconHome, IconLogin, IconTarget, IconUserPlus } from "@tabler/icons-react";
+import { IconCalendar, IconHome, IconLogin, IconTarget, IconUserPlus } from "@tabler/icons-react";
 
 import { AppRoute } from "@/app/appRoute";
 import { AccessScope } from "@/features/auth/types/Identity";
@@ -40,6 +40,11 @@ export const useNavigation = (): UseAppNavigation => {
                 label: t("common.navigation.sections.journal.label"),
                 requiredScopes: ["browse_as_authenticated"],
                 routes: [
+                    {
+                        target: AppRoute.DAILY,
+                        label: t("common.navigation.sections.journal.daily.label"),
+                        icon: IconCalendar,
+                    },
                     {
                         target: AppRoute.GOALS,
                         label: t("common.navigation.sections.journal.goals.label"),

@@ -19,7 +19,7 @@ Installation: `choco install k9s`.
 Verification: `k9s --help`.
 
 ## Step-by-step guide
-1. Run `minukube start`.
+1. Run `minikube start`.
 2. Verify if cluster is running with `kubectl cluster-info`.
 3. Go to [terraform directory](../infrastructure/terraform).
 4. Run `terraform init` -> `terraform plan` -> `terraform apply --auto-approve`.

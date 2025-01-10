@@ -1,6 +1,7 @@
 export enum AppRoute {
     HOME = "/",
 
+    DAILY = "/daily",
     GOALS = "/goals",
 
     LOGIN = "/authentication/login",

@@ -92,6 +92,9 @@
                     "label": "My journey",
                     "goals": {
                         "label": "Goals"
+                    },
+                    "daily": {
+                        "label": "Daily"
                     }
                 },
                 "auth": {
