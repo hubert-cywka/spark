@@ -1,7 +1,7 @@
 import { PageDto } from "@/api/dto/PageDto";
 
 export const getNextPage = (lastPage: PageDto<unknown>): number | null => {
-    if (lastPage.meta.page === lastPage.meta.pageCount) {
+    if (!lastPage.meta.hasNextPage) {
         return null;
     }
 
@@ -9,7 +9,7 @@ export const getNextPage = (lastPage: PageDto<unknown>): number | null => {
 };
 
 export const getPreviousPage = (lastPage: PageDto<unknown>): number | null => {
-    if (lastPage.meta.page === 1) {
+    if (!lastPage.meta.hasPreviousPage) {
         return null;
     }
 

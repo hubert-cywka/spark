@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { IconAlertTriangle, IconCircleCheck, IconInfoCircle, IconMessageCircle } from "@tabler/icons-react";
+import { CircleAlert, CircleCheck, Info, MessageCircle } from "lucide-react";
 
 import { AlertProps } from "./types/Alert";
 
@@ -9,13 +9,13 @@ export const Alert = ({ children, variant }: AlertProps) => {
     const Icon = useMemo(() => {
         switch (variant) {
             case "success":
-                return IconCircleCheck;
+                return CircleCheck;
             case "danger":
-                return IconAlertTriangle;
+                return CircleAlert;
             case "info":
-                return IconInfoCircle;
+                return Info;
             case "neutral":
-                return IconMessageCircle;
+                return MessageCircle;
         }
     }, [variant]);
 

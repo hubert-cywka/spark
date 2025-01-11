@@ -1,4 +1,4 @@
 import { ForwardRefExoticComponent, RefAttributes } from "react";
-import { Icon, IconProps } from "@tabler/icons-react";
+import { Icon } from "lucide-react";
 
-export type IconComponent = ForwardRefExoticComponent<IconProps & RefAttributes<Icon>>;
+export type IconComponent = ForwardRefExoticComponent<RefAttributes<Icon>>;
