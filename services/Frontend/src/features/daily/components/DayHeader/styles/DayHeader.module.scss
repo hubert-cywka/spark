@@ -1,0 +1,6 @@
+@use "src/styles/tokens";
+
+.input {
+    display: flex;
+    font: tokens.$typography-title-300;
+}

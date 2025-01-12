@@ -1,0 +1,7 @@
+@use "src/styles/tokens";
+
+.container {
+    display: flex;
+    justify-content: flex-end;
+    gap: tokens.$spacing-400;
+}

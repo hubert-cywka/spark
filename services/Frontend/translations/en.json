@@ -10,12 +10,24 @@
         "goals": {
             "update": {
                 "errors": {
-                    "notFound": "Couldn't update this goal. Perhaps it was already deleted?"
+                    "notFound": "Perhaps it was already deleted?"
                 }
             },
             "delete": {
                 "errors": {
-                    "notFound": "Couldn't delete this goal. Perhaps it was already deleted?"
+                    "notFound": "Perhaps it was already deleted?"
+                }
+            }
+        },
+        "daily": {
+            "update": {
+                "errors": {
+                    "notFound": "Perhaps it was already deleted?"
+                }
+            },
+            "delete": {
+                "errors": {
+                    "notFound": "Perhaps it was already deleted?"
                 }
             }
         },
@@ -105,6 +117,30 @@
                     "register": {
                         "label": "Register"
                     }
+                }
+            }
+        }
+    },
+    "daily": {
+        "delete": {
+            "modal": {
+                "header": "Delete daily",
+                "caption": "Are you sure that you want to delete {date} daily? All it's entries will be deleted as well.",
+                "buttons": {
+                    "cancel": {
+                        "label": "Cancel"
+                    },
+                    "confirm": {
+                        "label": "Delete anyway"
+                    }
+                }
+            },
+            "notifications": {
+                "error": {
+                    "title": "Couldn't delete daily"
+                },
+                "success": {
+                    "title": "Daily and it's entries have been deleted"
                 }
             }
         }

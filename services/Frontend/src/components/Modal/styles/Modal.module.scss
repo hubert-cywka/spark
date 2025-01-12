@@ -13,11 +13,18 @@
     justify-content: center;
 
     .modal {
-        background: tokens.$color-neutral-surface-300;
-        color: tokens.$color-neutral-text-100;
+        .dialog {
+            background: tokens.$color-neutral-background-100;
+            backdrop-filter: blur(5px);
+            color: tokens.$color-neutral-text-100;
 
-        padding: tokens.$spacing-600;
-        border: 1px solid tokens.$color-neutral-solid-300;
-        border-radius: tokens.$radius-300;
+            padding: tokens.$spacing-600;
+            border: 1px solid tokens.$color-neutral-surface-100;
+            border-radius: tokens.$radius-300;
+
+            &:focus-visible {
+                outline: 2px solid tokens.$color-accent-solid-300;
+            }
+        }
     }
 }

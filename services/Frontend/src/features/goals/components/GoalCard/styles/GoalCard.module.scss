@@ -98,12 +98,12 @@
             .points {
                 &.current {
                     color: tokens.$color-accent-text-300;
-                    font-size: tokens.$font-size-700;
+                    font-size: tokens.$font-size-900;
                 }
 
                 &.target {
                     color: tokens.$color-neutral-text-300;
-                    font-size: tokens.$font-size-500;
+                    font-size: tokens.$font-size-700;
                 }
             }
         }

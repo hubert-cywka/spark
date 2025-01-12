@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { QueryKey, useQueryClient } from "@tanstack/react-query";
 
-export const useOptimisticUpdate = () => {
+export const useQueryCache = () => {
     const queryClient = useQueryClient();
 
     const update = useCallback(

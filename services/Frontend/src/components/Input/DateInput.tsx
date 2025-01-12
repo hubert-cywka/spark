@@ -33,14 +33,20 @@ export const DateInput = <T extends FieldValues>({ label, required, name, contro
         <DateField
             className={sharedStyles.controller}
             {...props}
-            onChange={field.onChange}
+            onChange={(value) => {
+                if (!value) {
+                    field.onChange("");
+                }
+            }}
             onBlur={field.onBlur}
             value={field.value ? parseAbsoluteToLocal(field.value) : undefined}
             name={field.name}
             ref={field.ref}
             isRequired={required}
             isInvalid={invalid}
+            shouldForceLeadingZeros
             validationBehavior="aria"
+            granularity="day"
         >
             <Label className={sharedStyles.label}>
                 {label}
