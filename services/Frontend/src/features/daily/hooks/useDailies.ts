@@ -12,11 +12,14 @@ type UseDailiesOptions = {
 export const useDailies = ({ from, to }: UseDailiesOptions) => {
     const queryKey = DailyQueryKeyFactory.createForDateRange(from, to);
 
-    return useInfiniteQuery({
+    return {
+        ...useInfiniteQuery({
+            queryKey,
+            initialPageParam: 1,
+            queryFn: async ({ pageParam }) => await DailyService.getPage(from, to, pageParam),
+            getNextPageParam: getNextPage,
+            getPreviousPageParam: getPreviousPage,
+        }),
         queryKey,
-        initialPageParam: 1,
-        queryFn: async ({ pageParam }) => await DailyService.getPage(from, to, pageParam),
-        getNextPageParam: getNextPage,
-        getPreviousPageParam: getPreviousPage,
-    });
+    };
 };

@@ -127,6 +127,17 @@
                 "label": "Daily's date"
             }
         },
+        "create": {
+            "notifications": {
+                "error": {
+                    "title": "Couldn't create daily"
+                },
+                "success": {
+                    "title": "Daily has been created",
+                    "body": "It will be moved to correct timeframe once you leave this page."
+                }
+            }
+        },
         "updateDate": {
             "labels": {
                 "inProgress": "Updating"

@@ -17,9 +17,19 @@
     .buttons {
         display: flex;
         gap: tokens.$spacing-200;
+
+        @media (max-width: tokens.$breakpoint-sm) {
+            .changeYearButton {
+                display: none;
+            }
+        }
     }
 
     .header {
-        font: tokens.$typography-title-400;
+        font: tokens.$typography-title-300;
+
+        @media (min-width: tokens.$breakpoint-sm) {
+            font: tokens.$typography-title-400;
+        }
     }
 }

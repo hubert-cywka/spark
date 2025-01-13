@@ -1,17 +1,14 @@
+import { PropsWithChildren } from "react";
+
 import styles from "./styles/Day.module.scss";
 
-import { DayHeader } from "@/features/daily/components/Day/components/DayHeader/DayHeader";
-import { Daily } from "@/features/daily/types/Daily";
-
-type DayProps = {
-    daily: Daily;
-};
+type DayProps = PropsWithChildren;
 
 // TODO: Add entries
-export const Day = ({ daily }: DayProps) => {
+export const Day = ({ children }: DayProps) => {
     return (
         <div className={styles.container}>
-            <DayHeader daily={daily} />
+            {children}
 
             <ul>
                 <li>Something something</li>
