@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, RotateCcw } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Plus } from "lucide-react";
 
 import styles from "./styles/DailyListHeader.module.scss";
 
@@ -9,29 +9,33 @@ type DailyListHeaderProps = {
     onReset: () => void;
     onNextTimeframe: (units: number) => void;
     onPrevTimeframe: (units: number) => void;
+    onCreateNewDaily: () => void;
 };
 
-export const DailyListHeader = ({ timeframeStart, onNextTimeframe, onPrevTimeframe, onReset }: DailyListHeaderProps) => {
+export const DailyListHeader = ({ timeframeStart, onNextTimeframe, onPrevTimeframe, onReset, onCreateNewDaily }: DailyListHeaderProps) => {
     const now = new Date();
     const isCurrentYearAndMonth = now.getMonth() === timeframeStart.getMonth() && now.getFullYear() === timeframeStart.getFullYear();
 
     return (
         <div className={styles.headerWrapper}>
             <div className={styles.buttons}>
-                <IconButton isDisabled={isCurrentYearAndMonth} onPress={onReset} variant="secondary" size="3">
-                    <RotateCcw />
+                <IconButton onPress={onCreateNewDaily} variant="confirm">
+                    <Plus />
+                </IconButton>
+                <IconButton isDisabled={isCurrentYearAndMonth} onPress={onReset} variant="secondary">
+                    <Calendar />
                 </IconButton>
 
-                <IconButton variant="secondary" onPress={() => onPrevTimeframe(12)} size="3">
+                <IconButton variant="secondary" onPress={() => onPrevTimeframe(12)} className={styles.changeYearButton}>
                     <ChevronsLeft />
                 </IconButton>
-                <IconButton variant="secondary" onPress={() => onPrevTimeframe(1)} size="3">
+                <IconButton variant="secondary" onPress={() => onPrevTimeframe(1)}>
                     <ChevronLeft />
                 </IconButton>
-                <IconButton variant="secondary" onPress={() => onNextTimeframe(1)} size="3">
+                <IconButton variant="secondary" onPress={() => onNextTimeframe(1)}>
                     <ChevronRight />
                 </IconButton>
-                <IconButton variant="secondary" onPress={() => onNextTimeframe(12)} size="3">
+                <IconButton variant="secondary" onPress={() => onNextTimeframe(12)} className={styles.changeYearButton}>
                     <ChevronsRight />
                 </IconButton>
             </div>

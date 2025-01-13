@@ -8,8 +8,4 @@ export class DailyQueryKeyFactory {
     public static createForDateRange(from: string, to: string) {
         return [BASE_QUERY_KEY, { from, to }];
     }
-
-    public static createForOne(id: string) {
-        return [BASE_QUERY_KEY, { id }];
-    }
 }
