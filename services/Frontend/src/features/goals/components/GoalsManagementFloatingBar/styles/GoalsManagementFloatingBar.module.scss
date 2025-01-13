@@ -39,6 +39,7 @@
         }
 
         .goalName {
+            font: tokens.$typography-body-400;
             font-weight: tokens.$font-weight-300;
         }
     }

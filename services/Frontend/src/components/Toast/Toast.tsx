@@ -1,4 +1,4 @@
-import { IconX } from "@tabler/icons-react";
+import { X } from "lucide-react";
 
 import { ToastProps } from "./types/Toast";
 
@@ -17,7 +17,7 @@ export const Toast = ({ onClose, title, message, variant = "info" }: ToastProps)
                 {message && <p className={styles.message}>{message}</p>}
             </div>
             <IconButton onPress={onClose} variant="subtle" size="1" aria-label={t("common.notifications.closeButton.label")}>
-                <IconX />
+                <X />
             </IconButton>
         </div>
     );

@@ -1,6 +1,6 @@
 import { useRef } from "react";
-import { IconTarget } from "@tabler/icons-react";
 import classNames from "clsx";
+import { Target } from "lucide-react";
 
 import styles from "./styles/GoalCard.module.scss";
 
@@ -50,7 +50,7 @@ export const GoalCard = ({ goal, isSelected, onSelection }: GoalCardProps) => {
             })}
             size="1"
         >
-            <IconTarget
+            <Target
                 className={classNames(styles.icon, {
                     [styles.accomplished]: goal.isAccomplished,
                 })}

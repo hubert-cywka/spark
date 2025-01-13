@@ -1,6 +1,6 @@
 "use client";
 
-import { IconPencil, IconTrash, IconX } from "@tabler/icons-react";
+import { Pencil, Trash, X } from "lucide-react";
 
 import styles from "./styles/GoalsManagementFloatingBar.module.scss";
 
@@ -43,7 +43,7 @@ export const GoalsManagementFloatingBar = ({ onClose, selectedGoal }: GoalsManag
         <div className={styles.container}>
             <div className={styles.wrapper}>
                 <IconButton variant="subtle" onPress={onClose} size="1" className={styles.closeButton}>
-                    <IconX />
+                    <X />
                 </IconButton>
                 <div>
                     <p className={styles.label}>{t("goals.management.floatingBar.label")}</p>
@@ -61,7 +61,7 @@ export const GoalsManagementFloatingBar = ({ onClose, selectedGoal }: GoalsManag
                             {...triggerProps}
                             aria-label={t("goals.management.floatingBar.buttons.edit.label")}
                         >
-                            <IconPencil />
+                            <Pencil />
                         </IconButton>
                     )}
                 />
@@ -72,7 +72,7 @@ export const GoalsManagementFloatingBar = ({ onClose, selectedGoal }: GoalsManag
                     size="1"
                     aria-label={t("goals.management.floatingBar.buttons.delete.label")}
                 >
-                    <IconTrash />
+                    <Trash />
                 </IconButton>
             </div>
         </div>

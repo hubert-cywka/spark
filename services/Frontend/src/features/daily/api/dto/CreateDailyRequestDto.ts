@@ -1,3 +1,3 @@
 export type CreateDailyRequestDto = {
-    name: string;
+    date: string;
 };

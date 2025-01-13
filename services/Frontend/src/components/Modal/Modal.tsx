@@ -17,7 +17,7 @@ export const Modal = ({ children, trigger, onOpenChange, isOpen }: ModalProps) =
             {trigger}
             <ModalOverlay className={styles.overlay}>
                 <BaseModal className={styles.modal}>
-                    <Dialog>{children}</Dialog>
+                    <Dialog className={styles.dialog}>{children}</Dialog>
                 </BaseModal>
             </ModalOverlay>
         </DialogTrigger>

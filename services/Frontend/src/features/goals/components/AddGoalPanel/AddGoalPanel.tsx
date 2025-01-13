@@ -17,7 +17,7 @@ export const AddGoalPanel = () => {
     const onSubmit = async ({ deadline, name, target }: AddGoalFormInputs) => {
         try {
             await createGoal({
-                deadline: deadline ? deadline : null,
+                deadline: deadline?.toISOString() ?? null,
                 name,
                 target,
             });
@@ -29,7 +29,7 @@ export const AddGoalPanel = () => {
 
     return (
         <Card className={styles.panel} variant="semi-translucent">
-            <p className={styles.header}>{t("goals.management.add.header")}</p>
+            <h3 className={styles.header}>{t("goals.management.add.header")}</h3>
             <AddGoalForm onSubmit={onSubmit} isLoading={isPending} />
         </Card>
     );

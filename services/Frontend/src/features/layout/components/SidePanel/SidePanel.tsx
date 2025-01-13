@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { IconChevronLeft } from "@tabler/icons-react";
 import clsx from "clsx";
+import { ChevronLeft } from "lucide-react";
 
 import styles from "./styles/SidePanel.module.scss";
 
@@ -37,7 +37,7 @@ export const SidePanel = () => {
                         onPress={toggleCollapsedState}
                         aria-label={t(`common.navigation.collapseButton.label.${isCollapsed ? "show" : "hide"}`)}
                     >
-                        <IconChevronLeft />
+                        <ChevronLeft />
                     </IconButton>
                 </div>
 

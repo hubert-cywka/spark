@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { IconCalendar, IconHome, IconLogin, IconTarget, IconUserPlus } from "@tabler/icons-react";
+import { Calendar, Home, LogIn, Target, UserPlus } from "lucide-react";
 
 import { AppRoute } from "@/app/appRoute";
 import { AccessScope } from "@/features/auth/types/Identity";
@@ -32,7 +32,7 @@ export const useNavigation = (): UseAppNavigation => {
                     {
                         target: AppRoute.HOME,
                         label: t("common.navigation.sections.main.home.label"),
-                        icon: IconHome,
+                        icon: Home,
                     },
                 ],
             },
@@ -43,12 +43,12 @@ export const useNavigation = (): UseAppNavigation => {
                     {
                         target: AppRoute.DAILY,
                         label: t("common.navigation.sections.journal.daily.label"),
-                        icon: IconCalendar,
+                        icon: Calendar,
                     },
                     {
                         target: AppRoute.GOALS,
                         label: t("common.navigation.sections.journal.goals.label"),
-                        icon: IconTarget,
+                        icon: Target,
                     },
                 ],
             },
@@ -59,12 +59,12 @@ export const useNavigation = (): UseAppNavigation => {
                     {
                         target: AppRoute.LOGIN,
                         label: t("common.navigation.sections.auth.login.label"),
-                        icon: IconLogin,
+                        icon: LogIn,
                     },
                     {
                         target: AppRoute.REGISTER,
                         label: t("common.navigation.sections.auth.register.label"),
-                        icon: IconUserPlus,
+                        icon: UserPlus,
                     },
                 ],
             },

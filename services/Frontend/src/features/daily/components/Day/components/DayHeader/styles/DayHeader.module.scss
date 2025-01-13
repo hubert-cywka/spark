@@ -1,0 +1,50 @@
+@use "src/styles/tokens";
+
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: tokens.$spacing-300;
+
+    .input {
+        display: flex;
+        font: tokens.$typography-title-300;
+
+        .segment {
+            outline: none;
+            caret-color: transparent;
+
+            &[data-focused] {
+                background: tokens.$color-accent-solid-200;
+                color: tokens.$color-accent-text-100;
+                border-radius: tokens.$radius-100;
+            }
+        }
+    }
+
+    .buttons {
+        display: flex;
+        gap: tokens.$spacing-200;
+    }
+
+    .updateLabel {
+        background: tokens.$color-info-solid-100;
+        padding: tokens.$spacing-200 tokens.$spacing-400;
+        border-radius: tokens.$radius-400;
+
+        font: tokens.$typography-caption-200;
+    }
+
+    &.skeleton {
+        .skeletonHeader {
+            display: inline-block;
+            width: 180px;
+        }
+
+        .skeletonButton {
+            aspect-ratio : 1 / 1;
+            height: 1.75rem;
+        }
+    }
+}
+

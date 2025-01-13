@@ -1,5 +1,5 @@
-import { IconNorthStar } from "@tabler/icons-react";
 import clsx from "clsx";
+import { Flame } from "lucide-react";
 
 import styles from "./styles/Logo.module.scss";
 
@@ -12,7 +12,7 @@ export const Logo = ({ className }: LogoProps) => {
 
     return (
         <div className={clsx(styles.logo, className)}>
-            <IconNorthStar />
+            <Flame />
             <span>{t("common.app.name")}</span>
         </div>
     );

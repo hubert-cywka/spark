@@ -1,0 +1,6 @@
+@use "src/styles/tokens";
+
+.container {
+    max-width: 500px;
+    margin-bottom: tokens.$spacing-500;
+}

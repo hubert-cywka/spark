@@ -10,12 +10,24 @@
         "goals": {
             "update": {
                 "errors": {
-                    "notFound": "Couldn't update this goal. Perhaps it was already deleted?"
+                    "notFound": "Perhaps it was already deleted?"
                 }
             },
             "delete": {
                 "errors": {
-                    "notFound": "Couldn't delete this goal. Perhaps it was already deleted?"
+                    "notFound": "Perhaps it was already deleted?"
+                }
+            }
+        },
+        "daily": {
+            "updateDate": {
+                "errors": {
+                    "notFound": "Perhaps it was already deleted?"
+                }
+            },
+            "delete": {
+                "errors": {
+                    "notFound": "Perhaps it was already deleted?"
                 }
             }
         },
@@ -105,6 +117,49 @@
                     "register": {
                         "label": "Register"
                     }
+                }
+            }
+        }
+    },
+    "daily": {
+        "day": {
+            "date": {
+                "label": "Daily's date"
+            }
+        },
+        "updateDate": {
+            "labels": {
+                "inProgress": "Updating"
+            },
+            "notifications": {
+                "error": {
+                    "title": "Couldn't update daily's date"
+                },
+                "success": {
+                    "title": "Daily's date has been updated",
+                    "body": "It will be moved to correct timeframe once you leave this page."
+                }
+            }
+        },
+        "delete": {
+            "modal": {
+                "header": "Delete daily",
+                "caption": "Are you sure that you want to delete {date} daily? All it's entries will be deleted as well.",
+                "buttons": {
+                    "cancel": {
+                        "label": "Cancel"
+                    },
+                    "confirm": {
+                        "label": "Delete anyway"
+                    }
+                }
+            },
+            "notifications": {
+                "error": {
+                    "title": "Couldn't delete daily"
+                },
+                "success": {
+                    "title": "Daily and it's entries have been deleted"
                 }
             }
         }

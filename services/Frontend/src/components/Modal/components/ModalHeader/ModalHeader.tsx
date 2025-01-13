@@ -1,5 +1,5 @@
 import { PropsWithChildren } from "react";
-import { IconX } from "@tabler/icons-react";
+import { X } from "lucide-react";
 
 import styles from "./styles/ModalHeader.module.scss";
 
@@ -13,7 +13,7 @@ export const ModalHeader = ({ children, onClose }: ModalHeaderProps) => {
             <h1 className={styles.header}>{children}</h1>
 
             <IconButton variant="subtle" size="1" onPress={onClose}>
-                <IconX />
+                <X />
             </IconButton>
         </div>
     );

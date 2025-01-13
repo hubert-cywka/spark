@@ -4,12 +4,12 @@ import { PageDto } from "@/api/dto/PageDto";
 import { GoalsService } from "@/features/goals/api/goalsService";
 import { Goal } from "@/features/goals/types/Goal";
 import { GoalQueryKeyFactory } from "@/features/goals/utils/goalQueryKeyFactory";
-import { useOptimisticUpdate } from "@/hooks/useOptimisticUpdate";
+import { useQueryCache } from "@/hooks/useQueryCache";
 
 const queryKey = GoalQueryKeyFactory.createForAll();
 
 export const useUpdateGoal = () => {
-    const { update, revert } = useOptimisticUpdate();
+    const { update, revert } = useQueryCache();
 
     return useMutation({
         mutationFn: GoalsService.updateOne,

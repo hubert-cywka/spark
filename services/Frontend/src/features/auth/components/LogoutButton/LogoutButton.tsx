@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { IconPower } from "@tabler/icons-react";
+import { LogOut } from "lucide-react";
 
 import { Button } from "@/components/Button";
 import { useLogout, useLogoutEvents } from "@/features/auth/hooks";
@@ -20,7 +20,7 @@ export const LogoutButton = () => {
     }, [logout, onLogoutError, onLogoutSuccess]);
 
     return (
-        <Button onPress={handleLogout} isLoading={isPending} variant="secondary" size="1" rightDecorator={<IconPower />}>
+        <Button onPress={handleLogout} isLoading={isPending} variant="secondary" size="1" rightDecorator={<LogOut />}>
             {t("common.navigation.logoutButton.label")}
         </Button>
     );
