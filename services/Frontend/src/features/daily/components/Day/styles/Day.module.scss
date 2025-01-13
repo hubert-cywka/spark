@@ -1,16 +1,7 @@
 @use "src/styles/tokens";
 
 .container {
-    .header {
-        display: flex;
-        align-items: center;
-        gap: tokens.$spacing-300;
+    &.skeleton {
 
-        font: tokens.$typography-title-100;
-
-        .buttons {
-            display: flex;
-            gap: tokens.$spacing-200;
-        }
     }
 }

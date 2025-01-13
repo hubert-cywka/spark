@@ -4,28 +4,4 @@
     display: flex;
     flex-direction: column;
     gap: tokens.$spacing-600;
-
-    .headerWrapper {
-        display: flex;
-        align-items: center;
-        gap: tokens.$spacing-600;
-
-        position: sticky;
-        top: tokens.$spacing-600;
-        backdrop-filter: blur(10px);
-
-        font: tokens.$typography-title-500;
-        padding: tokens.$spacing-200 tokens.$spacing-400;
-        margin-left: calc(#{tokens.$spacing-400} * -1);
-        margin-bottom: tokens.$spacing-400;
-
-        .buttons {
-            display: flex;
-            gap: tokens.$spacing-200;
-        }
-
-        .header {
-            font: tokens.$typography-title-400;
-        }
-    }
 }

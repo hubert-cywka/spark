@@ -22,7 +22,7 @@ export class DailyService {
     }
 
     public static async updateDate({ id, ...dto }: UpdateDailyDateRequestDto & { id: string }) {
-        const { data } = await apiClient.put(`/daily/${id}`, dto);
+        const { data } = await apiClient.patch(`/daily/${id}/date`, dto);
         return DailyService.mapDtoToGoal(data);
     }
 

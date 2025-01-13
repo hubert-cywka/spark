@@ -20,7 +20,7 @@
             }
         },
         "daily": {
-            "update": {
+            "updateDate": {
                 "errors": {
                     "notFound": "Perhaps it was already deleted?"
                 }
@@ -122,6 +122,25 @@
         }
     },
     "daily": {
+        "day": {
+            "date": {
+                "label": "Daily's date"
+            }
+        },
+        "updateDate": {
+            "labels": {
+                "inProgress": "Updating"
+            },
+            "notifications": {
+                "error": {
+                    "title": "Couldn't update daily's date"
+                },
+                "success": {
+                    "title": "Daily's date has been updated",
+                    "body": "It will be moved to correct timeframe once you leave this page."
+                }
+            }
+        },
         "delete": {
             "modal": {
                 "header": "Delete daily",
