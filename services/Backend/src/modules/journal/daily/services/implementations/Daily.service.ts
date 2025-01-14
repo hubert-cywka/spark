@@ -28,9 +28,8 @@ export class DailyService implements IDailyService {
         const queryBuilder = this.getRepository().createQueryBuilder("daily");
 
         queryBuilder
-            .innerJoin("daily.author", "author")
             .where("daily.date BETWEEN :from AND :to", { from, to })
-            .andWhere("author.id = :authorId", { authorId })
+            .andWhere("daily.authorId = :authorId", { authorId })
             .orderBy("daily.date", pageOptions.order)
             .skip(pageOptions.skip)
             .take(pageOptions.take);

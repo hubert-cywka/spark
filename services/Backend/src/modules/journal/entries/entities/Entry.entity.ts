@@ -11,21 +11,16 @@ import {
 } from "typeorm";
 
 import { AuthorEntity } from "@/modules/journal/authors/entities/Author.entity";
-import { EntryEntity } from "@/modules/journal/entries/entities/Entry.entity";
+import { DailyEntity } from "@/modules/journal/daily/entities/Daily.entity";
+import { GoalEntity } from "@/modules/journal/goals/entities/Goal.entity";
 
-@Entity("goal")
-export class GoalEntity {
+@Entity("entry")
+export class EntryEntity {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
     @Column({ type: "varchar" })
-    name!: string;
-
-    @Column({ type: "smallint" })
-    target!: number;
-
-    @Column({ type: "timestamptz", nullable: true })
-    deadline!: Date | null;
+    content!: string;
 
     @CreateDateColumn({ type: "timestamptz" })
     createdAt!: Date;
@@ -36,10 +31,18 @@ export class GoalEntity {
     @DeleteDateColumn({ type: "timestamptz", nullable: true })
     deletedAt!: Date | null;
 
-    @ManyToOne((type) => AuthorEntity, (author) => author.goals)
+    @ManyToOne((type) => AuthorEntity, (author) => author.dailies)
     author!: Relation<AuthorEntity>;
+
+    @Column({ type: "uuid" })
     authorId!: string;
 
-    @ManyToMany((type) => EntryEntity, (entry) => entry.goals)
-    entries!: Relation<EntryEntity>[];
+    @ManyToOne((type) => DailyEntity, (daily) => daily.entries)
+    daily!: Relation<DailyEntity>;
+
+    @Column({ type: "uuid" })
+    dailyId!: string;
+
+    @ManyToMany((type) => GoalEntity, (goal) => goal.entries)
+    goals!: Relation<GoalEntity>[];
 }

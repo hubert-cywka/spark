@@ -5,11 +5,13 @@ import {
     DeleteDateColumn,
     Entity,
     ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
 
 import { AuthorEntity } from "@/modules/journal/authors/entities/Author.entity";
+import { EntryEntity } from "@/modules/journal/entries/entities/Entry.entity";
 
 @Entity("daily")
 export class DailyEntity {
@@ -30,5 +32,12 @@ export class DailyEntity {
 
     @ManyToOne((type) => AuthorEntity, (author) => author.dailies)
     author!: Relation<AuthorEntity>;
+
+    @Column({ type: "uuid" })
     authorId!: string;
+
+    @OneToMany((type) => EntryEntity, (entry) => entry.daily, {
+        cascade: ["remove", "soft-remove"],
+    })
+    entries!: Relation<EntryEntity>[];
 }
