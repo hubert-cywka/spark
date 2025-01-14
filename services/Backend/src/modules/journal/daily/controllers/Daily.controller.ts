@@ -78,6 +78,7 @@ export class DailyController {
         }
     }
 
+    // TODO: Add restore operation
     @Delete(":id")
     @UseGuards(new AuthenticationGuard())
     public async deleteDaily(@Param("id", new ParseUUIDPipe()) dailyId: string, @CurrentUser() author: User) {

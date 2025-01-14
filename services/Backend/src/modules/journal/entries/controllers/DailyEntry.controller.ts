@@ -44,6 +44,7 @@ export class DailyEntryController {
         }
     }
 
+    // TODO: Add restore operation
     @Delete(":entryId")
     @UseGuards(new AuthenticationGuard())
     public async removeEntry(@Param("entryId") entryId: string, @Param("dailyId") dailyId: string, @CurrentUser() user: User) {

@@ -8,6 +8,7 @@ import { type IEntryMapper, EntryMapperToken } from "@/modules/journal/entries/m
 import { type IEntryService, EntryServiceToken } from "@/modules/journal/entries/services/interfaces/IEntry.service";
 import { type User } from "@/types/User";
 
+// TODO: Allow to get entries (and counts) by goals
 @Controller("entry")
 export class EntryController {
     public constructor(
