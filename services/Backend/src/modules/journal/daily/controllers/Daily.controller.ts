@@ -19,9 +19,9 @@ import { whenError } from "@/common/errors/whenError";
 import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
 import { PageDto } from "@/common/pagination/dto/Page.dto";
 import { PageOptionsDto } from "@/common/pagination/dto/PageOptions.dto";
-import { CreateDailyRequestDto } from "@/modules/journal/daily/dto/CreateDailyRequest.dto";
+import { CreateDailyDto } from "@/modules/journal/daily/dto/CreateDaily.dto";
 import { FindDailiesByDateRangeQueryDto } from "@/modules/journal/daily/dto/FindDailiesByDateRangeQuery.dto";
-import { UpdateDailyDateRequestDto } from "@/modules/journal/daily/dto/UpdateDailyDateRequest.dto";
+import { UpdateDailyDateDto } from "@/modules/journal/daily/dto/UpdateDailyDate.dto";
 import { type IDailyMapper, DailyMapperToken } from "@/modules/journal/daily/mappers/IDaily.mapper";
 import { type IDailyService, DailyServiceToken } from "@/modules/journal/daily/services/interfaces/IDaily.service";
 import { type User } from "@/types/User";
@@ -58,7 +58,7 @@ export class DailyController {
 
     @Post()
     @UseGuards(new AuthenticationGuard())
-    public async createDaily(@Body() dto: CreateDailyRequestDto, @CurrentUser() author: User) {
+    public async createDaily(@Body() dto: CreateDailyDto, @CurrentUser() author: User) {
         const result = await this.dailyService.create(author.id, dto.date);
         return this.dailyMapper.fromModelToDto(result);
     }
@@ -67,7 +67,7 @@ export class DailyController {
     @UseGuards(new AuthenticationGuard())
     public async updateDaily(
         @Param("id", new ParseUUIDPipe()) dailyId: string,
-        @Body() dto: UpdateDailyDateRequestDto,
+        @Body() dto: UpdateDailyDateDto,
         @CurrentUser() author: User
     ) {
         try {

@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 
 import { IntegrationEventsModule } from "@/common/events";
-import { JournalEventBoxFactory } from "@/modules/journal/daily/services/implementations/JournalEventBox.factory";
+import { JournalEventBoxFactory } from "@/modules/journal/services/implementations/JournalEventBox.factory";
 
 @Module({
     providers: [],
