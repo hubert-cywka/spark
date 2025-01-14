@@ -70,6 +70,7 @@ export class GoalController {
         }
     }
 
+    // TODO: Add restore operation
     @Delete(":id")
     @UseGuards(new AuthenticationGuard())
     public async deleteGoal(@Param("id", new ParseUUIDPipe()) goalId: string, @CurrentUser() author: User) {
