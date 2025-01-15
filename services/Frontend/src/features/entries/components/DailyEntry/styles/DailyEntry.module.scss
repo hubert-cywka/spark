@@ -1,0 +1,48 @@
+@use "src/styles/tokens";
+
+.container {
+    display: flex;
+    gap: tokens.$spacing-400;
+    align-items: center;
+
+    font: tokens.$typography-body-200;
+    min-height: 1.5rem;
+
+    .input {
+        outline: none;
+        background: none;
+        border: none;
+
+        width: 100%;
+        resize: none;
+        overflow: hidden;
+
+        color: tokens.$color-neutral-text-300;
+
+        &:focus {
+            color: tokens.$color-neutral-text-100;
+        }
+
+        @keyframes pulsate {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        &:placeholder-shown {
+            animation: pulsate 3s infinite;
+        }
+    }
+}
+
+
+
+

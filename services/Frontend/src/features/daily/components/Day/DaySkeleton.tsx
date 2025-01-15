@@ -19,7 +19,7 @@ export const DaySkeleton = ({ count = 1 }: DaySkeletonProps) => {
                 <div className={classNames(styles.container, styles.skeleton)} key={index}>
                     <DayHeaderSkeleton />
 
-                    <ul>
+                    <ul className={styles.entries}>
                         {Array.from({ length: randomItemCount }).map((_, index) => (
                             <li key={index}>
                                 <Skeleton width={getRandomWidth()} />
