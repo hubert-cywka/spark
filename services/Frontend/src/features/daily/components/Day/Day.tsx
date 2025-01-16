@@ -7,7 +7,6 @@ import { Daily } from "@/features/daily/types/Daily";
 
 type DayProps = PropsWithChildren<{ daily: Daily }>;
 
-// TODO: Handle empty state
 export const Day = ({ children, daily }: DayProps) => {
     const entriesCount = Children.count(children);
 

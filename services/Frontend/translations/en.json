@@ -7,6 +7,23 @@
                 "serviceUnavailable": "App is temporarily unavailable. Please try again later."
             }
         },
+        "entries": {
+            "updateContent": {
+                "errors": {
+                    "notFound": "Perhaps it was already deleted?"
+                }
+            },
+            "delete": {
+                "errors": {
+                    "notFound": "Perhaps it was already deleted?"
+                }
+            },
+            "create": {
+                "errors": {
+                    "notFound": "Couldn't find daily it could be assigned to."
+                }
+            }
+        },
         "goals": {
             "update": {
                 "errors": {
@@ -117,6 +134,30 @@
                     "register": {
                         "label": "Register"
                     }
+                }
+            }
+        }
+    },
+    "entries": {
+        "placeholder": "What are your plans for today? What have you already done?",
+        "create": {
+            "notifications": {
+                "error": {
+                    "title": "Couldn't create entry"
+                }
+            }
+        },
+        "updateContent": {
+            "notifications": {
+                "error": {
+                    "title": "Couldn't update entry"
+                }
+            }
+        },
+        "delete": {
+            "notifications": {
+                "error": {
+                    "title": "Couldn't delete entry"
                 }
             }
         }

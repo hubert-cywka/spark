@@ -6,16 +6,17 @@ import { Entry } from "@/features/entries/types/Entry";
 type UseGetDailyEntriesByDateRangeOptions = {
     from: string;
     to: string;
+    autoFetch?: boolean;
 };
 
-export const useGetDailyEntriesByDateRange = ({ from, to }: UseGetDailyEntriesByDateRangeOptions) => {
+export const useGetDailyEntriesByDateRange = ({ from, to, autoFetch }: UseGetDailyEntriesByDateRangeOptions) => {
     const { data: entriesData, hasNextPage, fetchNextPage, ...rest } = useGetEntriesByDateRange({ from, to });
 
     useEffect(() => {
-        if (hasNextPage) {
+        if (autoFetch && hasNextPage) {
             void fetchNextPage();
         }
-    }, [fetchNextPage, hasNextPage]);
+    }, [fetchNextPage, hasNextPage, autoFetch]);
 
     const data = useMemo(() => {
         const entries = entriesData?.pages?.flatMap((page) => page.data) ?? [];

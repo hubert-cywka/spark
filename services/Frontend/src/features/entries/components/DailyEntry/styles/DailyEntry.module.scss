@@ -7,6 +7,21 @@
 
     font: tokens.$typography-body-200;
     min-height: 1.5rem;
+    position: relative;
+
+    &:focus-within {
+        &::before {
+            position: absolute;
+            transform: translateY(-50%);
+            top: 50%;
+            left: -1rem;
+            width: 0.66rem;
+            height: 0.66rem;
+            content: "";
+            border-radius: tokens.$radius-500;
+            background: tokens.$color-accent-solid-100;
+        }
+    }
 
     .input {
         outline: none;
@@ -17,7 +32,8 @@
         resize: none;
         overflow: hidden;
 
-        color: tokens.$color-neutral-text-300;
+        color: tokens.$color-neutral-text-200;
+        position: relative;
 
         &:focus {
             color: tokens.$color-neutral-text-100;
