@@ -3,6 +3,7 @@ export type Entry = {
     authorId: string;
     dailyId: string;
     content: string;
+    isCompleted: boolean;
     createdAt: Date;
     updatedAt: Date;
 };

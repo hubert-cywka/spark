@@ -1,4 +1,4 @@
-import { IsDateString, IsString, IsUUID } from "class-validator";
+import { IsBoolean, IsDateString, IsString, IsUUID } from "class-validator";
 
 export class EntryDto {
     @IsUUID("4")
@@ -12,6 +12,9 @@ export class EntryDto {
 
     @IsString()
     content!: string;
+
+    @IsBoolean()
+    isCompleted!: boolean;
 
     @IsDateString()
     createdAt!: string;

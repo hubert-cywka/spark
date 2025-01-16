@@ -6,6 +6,7 @@ import { whenError } from "@/common/errors/whenError";
 import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
 import { CreateEntryDto } from "@/modules/journal/entries/dto/CreateEntry.dto";
 import { UpdateEntryContentDto } from "@/modules/journal/entries/dto/UpdateEntryContent.dto";
+import { UpdateEntryStatusDto } from "@/modules/journal/entries/dto/UpdateEntryStatus.dto";
 import { type IEntryMapper, EntryMapperToken } from "@/modules/journal/entries/mappers/IEntry.mapper";
 import { type IEntryService, EntryServiceToken } from "@/modules/journal/entries/services/interfaces/IEntry.service";
 import { type User } from "@/types/User";
@@ -38,6 +39,22 @@ export class DailyEntryController {
     ) {
         try {
             const result = await this.entryService.updateContent(user.id, dailyId, entryId, dto.content);
+            return this.entryMapper.fromModelToDto(result);
+        } catch (err) {
+            whenError(err).is(EntityNotFoundError).throw(new NotFoundException());
+        }
+    }
+
+    @Patch(":entryId/completed")
+    @UseGuards(new AuthenticationGuard())
+    public async updateEntryStatus(
+        @Param("entryId") entryId: string,
+        @Param("dailyId") dailyId: string,
+        @CurrentUser() user: User,
+        @Body() dto: UpdateEntryStatusDto
+    ) {
+        try {
+            const result = await this.entryService.updateStatus(user.id, dailyId, entryId, dto.isCompleted);
             return this.entryMapper.fromModelToDto(result);
         } catch (err) {
             whenError(err).is(EntityNotFoundError).throw(new NotFoundException());

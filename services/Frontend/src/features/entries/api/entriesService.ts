@@ -2,6 +2,7 @@ import { PageDto } from "@/api/dto/PageDto";
 import { CreateEntryRequestDto } from "@/features/entries/api/dto/CreateEntryRequestDto";
 import { EntryDto } from "@/features/entries/api/dto/EntryDto";
 import { UpdateEntryContentRequestDto } from "@/features/entries/api/dto/UpdateEntryContentRequestDto";
+import { UpdateEntryStatusRequestDto } from "@/features/entries/api/dto/UpdateEntryStatusRequestDto";
 import { Entry } from "@/features/entries/types/Entry";
 import { apiClient } from "@/lib/apiClient/apiClient";
 
@@ -21,6 +22,11 @@ export class EntriesService {
         return EntriesService.mapDtoToGoal(data);
     }
 
+    public static async updateStatus({ entryId, dailyId, ...dto }: UpdateEntryStatusRequestDto & { entryId: string; dailyId: string }) {
+        const { data } = await apiClient.patch(`/daily/${dailyId}/entry/${entryId}/completed`, dto);
+        return EntriesService.mapDtoToGoal(data);
+    }
+
     public static async deleteOne({ entryId, dailyId }: { entryId: string; dailyId: string }) {
         await apiClient.delete(`/daily/${dailyId}/entry/${entryId}`);
     }
@@ -31,6 +37,7 @@ export class EntriesService {
             dailyId: dto.dailyId,
             authorId: dto.authorId,
             content: dto.content,
+            isCompleted: dto.isCompleted,
             createdAt: new Date(dto.createdAt),
         };
     }

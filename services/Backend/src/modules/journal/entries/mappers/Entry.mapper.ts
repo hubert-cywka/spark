@@ -11,6 +11,7 @@ export class EntryMapper extends BaseModelDTOEntityMapper<Entry, EntryDto, Entry
         return {
             id: dto.id,
             content: dto.content,
+            isCompleted: dto.isCompleted,
             dailyId: dto.dailyId,
             authorId: dto.authorId,
             createdAt: new Date(dto.createdAt),
@@ -22,6 +23,7 @@ export class EntryMapper extends BaseModelDTOEntityMapper<Entry, EntryDto, Entry
         return {
             id: entity.id,
             content: entity.content,
+            isCompleted: entity.isCompleted,
             dailyId: entity.dailyId,
             authorId: entity.authorId,
             createdAt: entity.createdAt,
@@ -33,6 +35,7 @@ export class EntryMapper extends BaseModelDTOEntityMapper<Entry, EntryDto, Entry
         return plainToClass(EntryDto, {
             id: model.id,
             content: model.content,
+            isCompleted: model.isCompleted,
             dailyId: model.dailyId,
             authorId: model.authorId,
             createdAt: model.createdAt.toISOString(),
