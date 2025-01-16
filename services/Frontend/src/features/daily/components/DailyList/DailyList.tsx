@@ -1,55 +1,71 @@
 "use client";
 
-import dayjs from "dayjs";
-
 import styles from "./styles/DailyList.module.scss";
 
 import { ItemLoader } from "@/components/ItemLoader/ItemLoader";
 import { DailyListHeader } from "@/features/daily/components/DailyList/components/DailyListHeader/DailyListHeader";
+import { useDailiesEvents } from "@/features/daily/components/DailyList/hooks/useDailiesEvents";
 import { useDailyDateRange } from "@/features/daily/components/DailyList/hooks/useDailyDateRange";
+import { useDailyEntriesEvents } from "@/features/daily/components/DailyList/hooks/useDailyEntriesEvents";
+import { useDailyEntriesPlaceholders } from "@/features/daily/components/DailyList/hooks/useDailyEntriesPlaceholders";
+import { useNavigationBetweenEntries } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
+import { getEntryElementId, getEntryPlaceholderElementId } from "@/features/daily/components/DailyList/utils/dailyEntriesSelectors";
 import { DaySkeleton } from "@/features/daily/components/Day";
-import { DayHeader } from "@/features/daily/components/Day/components/DayHeader/DayHeader";
 import { Day } from "@/features/daily/components/Day/Day";
-import { useCreateDaily } from "@/features/daily/hooks/useCreateDaily";
-import { useCreateDailyEvents } from "@/features/daily/hooks/useCreateDailyEvents";
-import { useDailies } from "@/features/daily/hooks/useDailies";
+import { useGetDailiesByDateRange } from "@/features/daily/hooks/useGetDailiesByDateRange";
 import { getFormattedDailyDate } from "@/features/daily/utils/dateUtils";
+import { DailyEntry } from "@/features/entries/components/DailyEntry";
+import { DailyEntryPlaceholder } from "@/features/entries/components/DailyEntry/DailyEntry";
+import { useGetDailyEntriesByDateRange } from "@/features/entries/hooks/useGetDailyEntriesByDateRange";
 
 // TODO: Create dailies in more user-friendly way
+// TODO: Improve UX of navigation between entries
 export const DailyList = () => {
     const { setPrev, setNext, reset, endDate, startDate } = useDailyDateRange({
         granularity: "month",
     });
-    const { data, hasNextPage, fetchNextPage, isFetching, queryKey } = useDailies({
+
+    const {
+        data: dailyData,
+        hasNextPage,
+        fetchNextPage,
+        isFetching,
+        queryKey,
+    } = useGetDailiesByDateRange({
         from: getFormattedDailyDate(startDate),
         to: getFormattedDailyDate(endDate),
     });
-    const dailies = data?.pages?.flatMap((page) => page.data) ?? [];
 
-    const { onCreateDailyError, onCreateDailySuccess } = useCreateDailyEvents();
-    const { mutateAsync: createDaily } = useCreateDaily({ queryKey });
+    const dailies = dailyData?.pages?.flatMap((page) => page.data) ?? [];
 
-    const createNewDaily = async () => {
-        let newDailyDate = dayjs();
+    const { data: dailyEntriesMap, queryKey: entriesQueryKey } = useGetDailyEntriesByDateRange({
+        from: getFormattedDailyDate(startDate),
+        to: getFormattedDailyDate(endDate),
+        autoFetch: true,
+    });
 
-        if (!newDailyDate.isBefore(endDate) || !newDailyDate.isAfter(startDate)) {
-            newDailyDate = dayjs(startDate);
-        }
+    const { onCreateNewDaily } = useDailiesEvents({
+        queryKey,
+        endDate,
+        startDate,
+    });
+    const { placeholders, addPlaceholder, removePlaceholder } = useDailyEntriesPlaceholders();
 
-        try {
-            await createDaily({
-                date: getFormattedDailyDate(newDailyDate.toDate()),
-            });
-            onCreateDailySuccess();
-        } catch (err) {
-            onCreateDailyError(err);
-        }
-    };
+    const { navigateByIndex, navigateByEntryId } = useNavigationBetweenEntries({
+        entriesByDaily: dailyEntriesMap,
+        onBottomLeft: removePlaceholder,
+        onBottomReached: addPlaceholder,
+    });
+
+    const { onCreateEntry, onUpdateEntryContent, onDeleteEntry } = useDailyEntriesEvents({
+        queryKey: entriesQueryKey,
+        onEntryFocus: navigateByEntryId,
+    });
 
     return (
         <main className={styles.container}>
             <DailyListHeader
-                onCreateNewDaily={createNewDaily}
+                onCreateNewDaily={onCreateNewDaily}
                 onNextTimeframe={setNext}
                 onPrevTimeframe={setPrev}
                 onReset={reset}
@@ -57,8 +73,31 @@ export const DailyList = () => {
             />
 
             {dailies.map((daily) => (
-                <Day key={daily.id}>
-                    <DayHeader daily={daily} />
+                <Day key={daily.id} daily={daily}>
+                    {dailyEntriesMap[daily.id]?.map((entry, index) => (
+                        <DailyEntry
+                            id={getEntryElementId(entry.id)}
+                            entry={entry}
+                            key={entry.id}
+                            onDelete={() => onDeleteEntry(entry.dailyId, entry.id)}
+                            onSaveContent={(content) => onUpdateEntryContent(entry, content)}
+                            onNavigateDown={() => navigateByIndex(daily.id, index + 1)}
+                            onNavigateUp={() => navigateByIndex(daily.id, index - 1)}
+                        />
+                    ))}
+
+                    {(!dailyEntriesMap[daily.id]?.length || placeholders.includes(daily.id)) && (
+                        <DailyEntryPlaceholder
+                            id={getEntryPlaceholderElementId(daily.id)}
+                            onDelete={() => removePlaceholder(daily.id)}
+                            onSaveContent={async (content) => {
+                                await onCreateEntry(daily.id, content);
+                                removePlaceholder(daily.id);
+                            }}
+                            onNavigateUp={() => navigateByIndex(daily.id, dailyEntriesMap[daily.id]?.length - 1)}
+                            onNavigateDown={() => navigateByIndex(daily.id, Infinity)}
+                        />
+                    )}
                 </Day>
             ))}
 
