@@ -1,5 +1,7 @@
 "use client";
 
+import dayjs from "dayjs";
+
 import styles from "./styles/DailyList.module.scss";
 
 import { ItemLoader } from "@/components/ItemLoader/ItemLoader";
@@ -109,7 +111,7 @@ export const DailyList = () => {
             ))}
 
             <ItemLoader shouldLoadNext={hasNextPage} onLoadNext={fetchNextPage}>
-                {isFetching && <DaySkeleton count={3} />}
+                {isFetching && dayjs().isAfter(startDate) && <DaySkeleton count={3} />}
             </ItemLoader>
         </main>
     );

@@ -6,6 +6,7 @@ import { ChevronLeft } from "lucide-react";
 
 import styles from "./styles/SidePanel.module.scss";
 
+import { Icon } from "@/components/Icon";
 import { IconButton } from "@/components/IconButton/";
 import { Logo } from "@/components/Logo/Logo";
 import { AccessGuard } from "@/features/auth/components/AccessGuard";
@@ -37,7 +38,7 @@ export const SidePanel = () => {
                         onPress={toggleCollapsedState}
                         aria-label={t(`common.navigation.collapseButton.label.${isCollapsed ? "show" : "hide"}`)}
                     >
-                        <ChevronLeft />
+                        <Icon slot={ChevronLeft} />
                     </IconButton>
                 </div>
 
