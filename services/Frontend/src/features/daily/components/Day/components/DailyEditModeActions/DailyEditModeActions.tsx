@@ -1,5 +1,6 @@
 import { Check, X } from "lucide-react";
 
+import { Icon } from "@/components/Icon";
 import { IconButton } from "@/components/IconButton";
 
 type DailyEditModeActionsProps = {
@@ -12,10 +13,10 @@ export const DailyEditModeActions = ({ onCancel, isSaveDisabled, onSave }: Daily
     return (
         <>
             <IconButton variant="secondary" size="1" onPress={onCancel}>
-                <X />
+                <Icon slot={X} />
             </IconButton>
             <IconButton size="1" variant="confirm" onPress={onSave} isDisabled={isSaveDisabled}>
-                <Check />
+                <Icon slot={Check} />
             </IconButton>
         </>
     );

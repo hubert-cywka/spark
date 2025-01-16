@@ -2,6 +2,7 @@ import { Calendar, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Plus 
 
 import styles from "./styles/DailyListHeader.module.scss";
 
+import { Icon } from "@/components/Icon";
 import { IconButton } from "@/components/IconButton";
 
 type DailyListHeaderProps = {
@@ -20,23 +21,23 @@ export const DailyListHeader = ({ timeframeStart, onNextTimeframe, onPrevTimefra
         <div className={styles.headerWrapper}>
             <div className={styles.buttons}>
                 <IconButton onPress={onCreateNewDaily} variant="confirm">
-                    <Plus />
+                    <Icon slot={Plus} />
                 </IconButton>
                 <IconButton isDisabled={isCurrentYearAndMonth} onPress={onReset} variant="secondary">
-                    <Calendar />
+                    <Icon slot={Calendar} />
                 </IconButton>
 
                 <IconButton variant="secondary" onPress={() => onPrevTimeframe(12)} className={styles.changeYearButton}>
-                    <ChevronsLeft />
+                    <Icon slot={ChevronsLeft} />
                 </IconButton>
                 <IconButton variant="secondary" onPress={() => onPrevTimeframe(1)}>
-                    <ChevronLeft />
+                    <Icon slot={ChevronLeft} />
                 </IconButton>
                 <IconButton variant="secondary" onPress={() => onNextTimeframe(1)}>
-                    <ChevronRight />
+                    <Icon slot={ChevronRight} />
                 </IconButton>
                 <IconButton variant="secondary" onPress={() => onNextTimeframe(12)} className={styles.changeYearButton}>
-                    <ChevronsRight />
+                    <Icon slot={ChevronsRight} />
                 </IconButton>
             </div>
 

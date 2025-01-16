@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { LogOut } from "lucide-react";
 
 import { Button } from "@/components/Button";
+import { Icon } from "@/components/Icon";
 import { useLogout, useLogoutEvents } from "@/features/auth/hooks";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
@@ -20,7 +21,7 @@ export const LogoutButton = () => {
     }, [logout, onLogoutError, onLogoutSuccess]);
 
     return (
-        <Button onPress={handleLogout} isLoading={isPending} variant="secondary" size="1" rightDecorator={<LogOut />}>
+        <Button onPress={handleLogout} isLoading={isPending} variant="secondary" size="1" rightDecorator={<Icon slot={LogOut} size="1" />}>
             {t("common.navigation.logoutButton.label")}
         </Button>
     );
