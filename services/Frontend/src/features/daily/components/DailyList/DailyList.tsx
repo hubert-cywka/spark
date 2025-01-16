@@ -14,8 +14,7 @@ import { DaySkeleton } from "@/features/daily/components/Day";
 import { Day } from "@/features/daily/components/Day/Day";
 import { useGetDailiesByDateRange } from "@/features/daily/hooks/useGetDailiesByDateRange";
 import { getFormattedDailyDate } from "@/features/daily/utils/dateUtils";
-import { DailyEntry } from "@/features/entries/components/DailyEntry";
-import { DailyEntryPlaceholder } from "@/features/entries/components/DailyEntry/DailyEntry";
+import { DailyEntry, DailyEntryPlaceholder } from "@/features/entries/components/DailyEntry";
 import { useGetDailyEntriesByDateRange } from "@/features/entries/hooks/useGetDailyEntriesByDateRange";
 
 // TODO: Create dailies in more user-friendly way
@@ -57,10 +56,18 @@ export const DailyList = () => {
         onBottomReached: addPlaceholder,
     });
 
-    const { onCreateEntry, onUpdateEntryContent, onDeleteEntry } = useDailyEntriesEvents({
+    const { onCreateEntry, onUpdateEntryContent, onDeleteEntry, onUpdateEntryStatus } = useDailyEntriesEvents({
         queryKey: entriesQueryKey,
-        onEntryFocus: navigateByEntryId,
     });
+
+    const onSavePlaceholder = async (dailyId: string, content: string) => {
+        const entry = await onCreateEntry(dailyId, content);
+
+        if (entry) {
+            navigateByEntryId("input", entry.id);
+            removePlaceholder(dailyId);
+        }
+    };
 
     return (
         <main className={styles.container}>
@@ -79,10 +86,13 @@ export const DailyList = () => {
                             id={getEntryElementId(entry.id)}
                             entry={entry}
                             key={entry.id}
-                            onDelete={() => onDeleteEntry(entry.dailyId, entry.id)}
-                            onSaveContent={(content) => onUpdateEntryContent(entry, content)}
-                            onNavigateDown={() => navigateByIndex(daily.id, index + 1)}
-                            onNavigateUp={() => navigateByIndex(daily.id, index - 1)}
+                            onDelete={onDeleteEntry}
+                            onChangeStatus={onUpdateEntryStatus}
+                            onSaveContent={onUpdateEntryContent}
+                            onFocusCheckbox={() => navigateByIndex("checkbox", daily.id, index)}
+                            onFocusInput={() => navigateByIndex("input", daily.id, index)}
+                            onNavigateDown={(target) => navigateByIndex(target, daily.id, index + 1)}
+                            onNavigateUp={(target) => navigateByIndex(target, daily.id, index - 1)}
                         />
                     ))}
 
@@ -90,12 +100,9 @@ export const DailyList = () => {
                         <DailyEntryPlaceholder
                             id={getEntryPlaceholderElementId(daily.id)}
                             onDelete={() => removePlaceholder(daily.id)}
-                            onSaveContent={async (content) => {
-                                await onCreateEntry(daily.id, content);
-                                removePlaceholder(daily.id);
-                            }}
-                            onNavigateUp={() => navigateByIndex(daily.id, dailyEntriesMap[daily.id]?.length - 1)}
-                            onNavigateDown={() => navigateByIndex(daily.id, Infinity)}
+                            onSaveContent={(content) => onSavePlaceholder(daily.id, content)}
+                            onNavigateUp={() => navigateByIndex("input", daily.id, dailyEntriesMap[daily.id]?.length - 1)}
+                            onNavigateDown={() => navigateByIndex("input", daily.id, Infinity)}
                         />
                     )}
                 </Day>

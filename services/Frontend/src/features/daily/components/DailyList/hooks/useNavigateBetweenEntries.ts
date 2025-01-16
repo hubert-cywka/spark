@@ -1,9 +1,8 @@
-import {
-    getEntryFocusableElement,
-    getEntryPlaceholderFocusableElement,
-} from "@/features/daily/components/DailyList/utils/dailyEntriesSelectors";
+import { getEntryElementId, getEntryPlaceholderElementId } from "@/features/daily/components/DailyList/utils/dailyEntriesSelectors";
 import { Entry } from "@/features/entries/types/Entry";
 import { onNextTick } from "@/utils/onNextTick";
+
+export type DailyEntryColumn = "input" | "checkbox";
 
 type UseNavigationBetweenEntries = {
     entriesByDaily: Record<string, Entry[]>;
@@ -12,28 +11,36 @@ type UseNavigationBetweenEntries = {
 };
 
 export const useNavigationBetweenEntries = ({ entriesByDaily, onBottomLeft, onBottomReached }: UseNavigationBetweenEntries) => {
-    const navigateByEntryId = (entryId: string) => {
-        getEntryFocusableElement(entryId)?.focus();
+    const navigateByEntryId = (column: DailyEntryColumn, entryId: string) => {
+        getEntryFocusableElement(column, entryId)?.focus();
     };
 
-    const navigateByIndex = (dailyId: string, targetIndex: number) => {
+    const navigateByIndex = (column: DailyEntryColumn, dailyId: string, targetIndex: number) => {
         const entries = entriesByDaily[dailyId];
 
         if (!entries || targetIndex < 0) {
-            onNextTick(() => getEntryPlaceholderFocusableElement(dailyId)?.focus());
+            onNextTick(() => getEntryPlaceholderFocusableElement("input", dailyId)?.focus());
             return;
         }
 
         if (targetIndex >= entries.length) {
             onBottomReached(dailyId);
-            onNextTick(() => getEntryPlaceholderFocusableElement(dailyId)?.focus());
+            onNextTick(() => getEntryPlaceholderFocusableElement("input", dailyId)?.focus());
             return;
         }
 
         onBottomLeft(dailyId);
         const targetEntry = entries[targetIndex];
-        getEntryFocusableElement(targetEntry.id)?.focus();
+        getEntryFocusableElement(column, targetEntry.id)?.focus();
     };
 
     return { navigateByEntryId, navigateByIndex };
+};
+
+const getEntryFocusableElement = (column: DailyEntryColumn, entryId: string) => {
+    return document.querySelector(`#${getEntryElementId(entryId)} > [data-entry-column-${column}]`) as HTMLElement | null;
+};
+
+const getEntryPlaceholderFocusableElement = (column: DailyEntryColumn, dailyId: string) => {
+    return document.querySelector(`#${getEntryPlaceholderElementId(dailyId)} > [data-entry-column-${column}]`) as HTMLElement | null;
 };

@@ -24,6 +24,7 @@ import { DefaultValueForIsAccomplished1736157185323 } from "@/modules/journal/in
 import { FixFK1736180535854 } from "@/modules/journal/infrastructure/database/migrations/1736180535854-FixFK";
 import { AddGoalsTarget1736269181791 } from "@/modules/journal/infrastructure/database/migrations/1736269181791-AddGoalsTarget";
 import { AddEntryEntity1736876093309 } from "@/modules/journal/infrastructure/database/migrations/1736876093309-AddEntryEntity";
+import { AddIsCompletedFlagToEntries1737048686159 } from "@/modules/journal/infrastructure/database/migrations/1737048686159-AddIsCompletedFlagToEntries";
 import { JournalSubscriber } from "@/modules/journal/Journal.subscriber";
 import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.module";
 
@@ -56,6 +57,7 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
                         FixFK1736180535854,
                         AddGoalsTarget1736269181791,
                         AddEntryEntity1736876093309,
+                        AddIsCompletedFlagToEntries1737048686159,
                     ],
                 }),
                 inject: [ConfigService],

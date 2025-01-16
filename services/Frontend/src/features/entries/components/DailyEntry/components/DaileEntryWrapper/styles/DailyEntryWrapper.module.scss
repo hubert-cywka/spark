@@ -1,0 +1,8 @@
+@use "src/styles/tokens";
+
+.container {
+    display: flex;
+    gap: tokens.$spacing-200;
+    align-items: center;
+    font: tokens.$typography-body-200;
+}

@@ -3,8 +3,8 @@ export const AppConfig = () => ({
 
     // TODO: Make it configurable
     throttle: {
-        ttl: 5 * 100,
-        limit: 10,
+        ttl: 10 * 100,
+        limit: 50,
     },
 
     client: {

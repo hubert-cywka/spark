@@ -7,6 +7,7 @@ export const EntryServiceToken = Symbol("EntryService");
 export interface IEntryService {
     findAllByDateRange(authorId: string, from: string, to: string, pageOptions: PageOptions): Promise<Paginated<Entry>>;
     create(authorId: string, dailyId: string, content: string): Promise<Entry>;
-    updateContent(authorId: string, dailyId: string, entryId: string, content: string): Promise<Entry>;
     deleteById(authorId: string, dailyId: string, entryId: string): Promise<void>;
+    updateContent(authorId: string, dailyId: string, entryId: string, content: string): Promise<Entry>;
+    updateStatus(authorId: string, dailyId: string, entryId: string, isCompleted: boolean): Promise<Entry>;
 }

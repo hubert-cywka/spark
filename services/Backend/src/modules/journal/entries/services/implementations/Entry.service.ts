@@ -65,11 +65,34 @@ export class EntryService implements IEntryService {
         return this.entryMapper.fromEntityToModel(insertedEntity);
     }
 
+    public async deleteById(authorId: string, dailyId: string, entryId: string): Promise<void> {
+        const result = await this.getRepository().softDelete({
+            id: entryId,
+            author: { id: authorId },
+            daily: { id: dailyId },
+        });
+
+        if (!result.affected) {
+            this.logger.warn({ authorId, dailyId, entryId }, "Entry not found, cannot delete.");
+            throw new EntryNotFoundError();
+        }
+    }
+
     public async updateContent(authorId: string, dailyId: string, entryId: string, content: string): Promise<Entry> {
+        return await this.updateEntry(authorId, dailyId, entryId, { content });
+    }
+
+    public async updateStatus(authorId: string, dailyId: string, entryId: string, isCompleted: boolean): Promise<Entry> {
+        return await this.updateEntry(authorId, dailyId, entryId, {
+            isCompleted,
+        });
+    }
+
+    private async updateEntry(authorId: string, dailyId: string, entryId: string, partialEntry: Partial<EntryEntity>): Promise<Entry> {
         const result = await this.getRepository()
             .createQueryBuilder()
             .update(EntryEntity)
-            .set({ content })
+            .set(partialEntry)
             .where("id = :entryId", { entryId })
             .andWhere("author.id = :authorId", { authorId })
             .andWhere("daily.id = :dailyId", { dailyId })
@@ -84,19 +107,6 @@ export class EntryService implements IEntryService {
         }
 
         return this.entryMapper.fromEntityToModel(updatedEntity);
-    }
-
-    public async deleteById(authorId: string, dailyId: string, entryId: string): Promise<void> {
-        const result = await this.getRepository().softDelete({
-            id: entryId,
-            author: { id: authorId },
-            daily: { id: dailyId },
-        });
-
-        if (!result.affected) {
-            this.logger.warn({ authorId, dailyId, entryId }, "Entry not found, cannot delete.");
-            throw new EntryNotFoundError();
-        }
     }
 
     private getRepository(): Repository<EntryEntity> {

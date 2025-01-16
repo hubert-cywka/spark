@@ -6,15 +6,15 @@ import { useDeleteEntry } from "@/features/entries/hooks/useDeleteEntry";
 import { useDeleteEntryEvents } from "@/features/entries/hooks/useDeleteEntryEvents";
 import { useUpdateEntryContent } from "@/features/entries/hooks/useUpdateEntryContent";
 import { useUpdateEntryContentEvents } from "@/features/entries/hooks/useUpdateEntryContentEvents";
+import { useUpdateEntryStatus } from "@/features/entries/hooks/useUpdateEntryStatus";
+import { useUpdateEntryStatusEvents } from "@/features/entries/hooks/useUpdateEntryStatusEvents";
 import { Entry } from "@/features/entries/types/Entry";
-import { onNextTick } from "@/utils/onNextTick";
 
 type UseDailyEntriesEvents = {
     queryKey: QueryKey;
-    onEntryFocus: (entryId: string) => void;
 };
 
-export const useDailyEntriesEvents = ({ queryKey, onEntryFocus }: UseDailyEntriesEvents) => {
+export const useDailyEntriesEvents = ({ queryKey }: UseDailyEntriesEvents) => {
     const { mutateAsync: createEntry } = useCreateEntry({ queryKey });
     const { onCreateEntryError } = useCreateEntryEvents();
 
@@ -26,9 +26,14 @@ export const useDailyEntriesEvents = ({ queryKey, onEntryFocus }: UseDailyEntrie
     const { mutateAsync: deleteEntry } = useDeleteEntry({ queryKey });
     const { onDeleteEntryError } = useDeleteEntryEvents();
 
+    const { mutateAsync: updateEntryStatus } = useUpdateEntryStatus({
+        queryKey,
+    });
+    const { onUpdateEntryStatusError } = useUpdateEntryStatusEvents();
+
     const onDeleteEntry = async (dailyId: string, entryId: string) => {
         try {
-            await deleteEntry({ entryId, dailyId });
+            return await deleteEntry({ entryId, dailyId });
         } catch (err) {
             onDeleteEntryError(err);
         }
@@ -36,7 +41,7 @@ export const useDailyEntriesEvents = ({ queryKey, onEntryFocus }: UseDailyEntrie
 
     const onUpdateEntryContent = async (entry: Entry, newContent: string) => {
         try {
-            await updateEntryContent({
+            return await updateEntryContent({
                 entryId: entry.id,
                 dailyId: entry.dailyId,
                 content: newContent,
@@ -46,14 +51,30 @@ export const useDailyEntriesEvents = ({ queryKey, onEntryFocus }: UseDailyEntrie
         }
     };
 
+    const onUpdateEntryStatus = async (entry: Entry, newStatus: boolean) => {
+        try {
+            return await updateEntryStatus({
+                entryId: entry.id,
+                dailyId: entry.dailyId,
+                isCompleted: newStatus,
+            });
+        } catch (err) {
+            onUpdateEntryStatusError(err);
+        }
+    };
+
     const onCreateEntry = async (dailyId: string, content: string) => {
         try {
-            const result = await createEntry({ dailyId, content });
-            onNextTick(() => onEntryFocus(result.id));
+            return await createEntry({ dailyId, content });
         } catch (err) {
             onCreateEntryError(err);
         }
     };
 
-    return { onCreateEntry, onUpdateEntryContent, onDeleteEntry };
+    return {
+        onCreateEntry,
+        onUpdateEntryContent,
+        onDeleteEntry,
+        onUpdateEntryStatus,
+    };
 };

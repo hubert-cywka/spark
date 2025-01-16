@@ -13,6 +13,11 @@
                     "notFound": "Perhaps it was already deleted?"
                 }
             },
+            "updateStatus": {
+                "errors": {
+                    "notFound": "Perhaps it was already deleted?"
+                }
+            },
             "delete": {
                 "errors": {
                     "notFound": "Perhaps it was already deleted?"
@@ -151,6 +156,13 @@
             "notifications": {
                 "error": {
                     "title": "Couldn't update entry"
+                }
+            }
+        },
+        "updateStatus": {
+            "notifications": {
+                "error": {
+                    "title": "Couldn't update entry status"
                 }
             }
         },

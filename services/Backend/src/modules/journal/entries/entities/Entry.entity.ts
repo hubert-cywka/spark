@@ -22,6 +22,9 @@ export class EntryEntity {
     @Column({ type: "varchar" })
     content!: string;
 
+    @Column({ type: "boolean", default: false })
+    isCompleted!: boolean;
+
     @CreateDateColumn({ type: "timestamptz" })
     createdAt!: Date;
 
