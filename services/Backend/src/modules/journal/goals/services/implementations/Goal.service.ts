@@ -27,6 +27,8 @@ export class GoalService implements IGoalService {
 
         queryBuilder
             .where("goal.authorId = :authorId", { authorId })
+            .leftJoinAndMapMany("goal.entries", "goal.entries", "entry", "entry.isCompleted = true")
+            .select(["goal", "entry.id"])
             .orderBy("goal.createdAt", pageOptions.order)
             .skip(pageOptions.skip)
             .take(pageOptions.take);
@@ -45,9 +47,13 @@ export class GoalService implements IGoalService {
     }
 
     public async findOneById(authorId: string, goalId: string): Promise<Goal> {
-        const goal = await this.getRepository().findOne({
-            where: { id: goalId, author: { id: authorId } },
-        });
+        const goal = await this.getRepository()
+            .createQueryBuilder("goal")
+            .where("goal.id = :goalId", { goalId })
+            .andWhere("goal.authorId = :authorId", { authorId })
+            .leftJoinAndMapMany("goal.entries", "goal.entries", "entry", "entry.isCompleted = true")
+            .select(["goal", "entry.id"])
+            .getOne();
 
         if (!goal) {
             this.logger.warn({ authorId, goalId }, "Goal not found.");
@@ -72,7 +78,10 @@ export class GoalService implements IGoalService {
             .execute();
 
         const insertedEntity = result.raw[0] as GoalEntity;
-        return this.goalMapper.fromEntityToModel(insertedEntity);
+        return this.goalMapper.fromEntityToModel({
+            ...insertedEntity,
+            entries: [],
+        });
     }
 
     public async update(
@@ -100,23 +109,22 @@ export class GoalService implements IGoalService {
     }
 
     private async updateProperties(authorId: string, goalId: string, partialGoal: Partial<GoalEntity>): Promise<Goal> {
-        const result = await this.getRepository()
-            .createQueryBuilder()
-            .update(GoalEntity)
-            .set({ ...partialGoal })
-            .where("id = :goalId", { goalId })
-            .andWhere("author.id = :authorId", { authorId })
-            .returning("*")
-            .execute();
+        return await this.txHost.withTransaction(async () => {
+            const result = await this.getRepository()
+                .createQueryBuilder()
+                .update(GoalEntity)
+                .set({ ...partialGoal })
+                .where("id = :goalId", { goalId })
+                .andWhere("author.id = :authorId", { authorId })
+                .execute();
 
-        const updatedEntity = result.raw[0] as GoalEntity;
+            if (!result.affected) {
+                this.logger.warn({ authorId, goalId }, "Goal not found, cannot update.");
+                throw new GoalNotFoundError();
+            }
 
-        if (!updatedEntity) {
-            this.logger.warn({ authorId, goalId }, "Goal not found, cannot update.");
-            throw new GoalNotFoundError();
-        }
-
-        return this.goalMapper.fromEntityToModel(updatedEntity);
+            return this.findOneById(authorId, goalId);
+        });
     }
 
     private getRepository(): Repository<GoalEntity> {

@@ -28,9 +28,9 @@ export class GoalMapper extends BaseModelDTOEntityMapper<Goal, GoalDto, GoalEnti
             name: entity.name,
             points: {
                 target: entity.target,
-                current: 0, // TODO: Infer value from nubmer of linked entries
+                current: entity.entries.length,
             },
-            isAccomplished: false, // TODO: Infer value from nubmer of linked entries
+            isAccomplished: entity.entries.length >= entity.target,
             deadline: entity.deadline ? new Date(entity.deadline) : null,
             createdAt: new Date(entity.createdAt),
             updatedAt: new Date(entity.updatedAt),
