@@ -4,6 +4,7 @@ import { CurrentUser } from "@/common/decorators/CurrentUser.decorator";
 import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
 import { PageOptionsDto } from "@/common/pagination/dto/PageOptions.dto";
 import { FindEntriesByDateRangeQueryDto } from "@/modules/journal/entries/dto/FindEntriesByDateRangeQuery.dto";
+import { FindEntriesByGoalsQueryDto } from "@/modules/journal/entries/dto/FindEntriesByGoalsQuery.dto";
 import { type IEntryMapper, EntryMapperToken } from "@/modules/journal/entries/mappers/IEntry.mapper";
 import { type IEntryService, EntryServiceToken } from "@/modules/journal/entries/services/interfaces/IEntry.service";
 import { type User } from "@/types/User";
@@ -18,12 +19,17 @@ export class EntryController {
 
     @Get()
     @UseGuards(new AuthenticationGuard())
-    public async getEntriesByDateRange(
+    public async getEntries(
         @Query() { from, to }: FindEntriesByDateRangeQueryDto,
+        @Query() { goals }: FindEntriesByGoalsQueryDto,
         @Query() pageOptions: PageOptionsDto,
         @CurrentUser() user: User
     ) {
-        const result = await this.entryService.findAllByDateRange(user.id, from, to, pageOptions);
+        const result = await this.entryService.findAll(user.id, pageOptions, {
+            from,
+            to,
+            goals,
+        });
         return this.entryMapper.fromModelToDtoPaginated(result);
     }
 }

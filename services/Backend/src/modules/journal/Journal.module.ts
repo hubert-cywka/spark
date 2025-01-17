@@ -25,6 +25,7 @@ import { FixFK1736180535854 } from "@/modules/journal/infrastructure/database/mi
 import { AddGoalsTarget1736269181791 } from "@/modules/journal/infrastructure/database/migrations/1736269181791-AddGoalsTarget";
 import { AddEntryEntity1736876093309 } from "@/modules/journal/infrastructure/database/migrations/1736876093309-AddEntryEntity";
 import { AddIsCompletedFlagToEntries1737048686159 } from "@/modules/journal/infrastructure/database/migrations/1737048686159-AddIsCompletedFlagToEntries";
+import { RenameJoinTableForGoalAndEntries1737103643312 } from "@/modules/journal/infrastructure/database/migrations/1737103643312-RenameJoinTableForGoalAndEntries";
 import { JournalSubscriber } from "@/modules/journal/Journal.subscriber";
 import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.module";
 
@@ -58,6 +59,7 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
                         AddGoalsTarget1736269181791,
                         AddEntryEntity1736876093309,
                         AddIsCompletedFlagToEntries1737048686159,
+                        RenameJoinTableForGoalAndEntries1737103643312,
                     ],
                 }),
                 inject: [ConfigService],

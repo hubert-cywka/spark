@@ -4,12 +4,13 @@ import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-t
 import { Repository } from "typeorm";
 
 import { PageMetaDto } from "@/common/pagination/dto/PageMeta.dto";
-import { PageOptions } from "@/common/pagination/types/PageOptions";
-import { Paginated } from "@/common/pagination/types/Paginated";
+import { type PageOptions } from "@/common/pagination/types/PageOptions";
+import { type Paginated } from "@/common/pagination/types/Paginated";
 import { EntryEntity } from "@/modules/journal/entries/entities/Entry.entity";
 import { EntryNotFoundError } from "@/modules/journal/entries/errors/EntryNotFound.error";
 import { type IEntryMapper, EntryMapperToken } from "@/modules/journal/entries/mappers/IEntry.mapper";
-import { Entry } from "@/modules/journal/entries/models/Entry.model";
+import { type Entry } from "@/modules/journal/entries/models/Entry.model";
+import { type EntryFilters } from "@/modules/journal/entries/models/EntryFilters.model";
 import { type IEntryService } from "@/modules/journal/entries/services/interfaces/IEntry.service";
 import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
 
@@ -22,13 +23,24 @@ export class EntryService implements IEntryService {
         @Inject(EntryMapperToken) private readonly entryMapper: IEntryMapper
     ) {}
 
-    public async findAllByDateRange(authorId: string, from: string, to: string, pageOptions: PageOptions): Promise<Paginated<Entry>> {
+    public async findAll(authorId: string, pageOptions: PageOptions, { from, to, goals }: EntryFilters = {}): Promise<Paginated<Entry>> {
         const queryBuilder = this.getRepository().createQueryBuilder("entry");
 
+        queryBuilder.innerJoinAndSelect("entry.daily", "daily").where("entry.authorId = :authorId", { authorId });
+
+        if (from) {
+            queryBuilder.andWhere("daily.date >= :from", { from });
+        }
+
+        if (to) {
+            queryBuilder.andWhere("daily.date <= :to", { to });
+        }
+
+        if (goals) {
+            queryBuilder.innerJoin("entry.goals", "goal").andWhere("goal.id IN (:...goals)", { goals });
+        }
+
         queryBuilder
-            .innerJoinAndSelect("entry.daily", "daily")
-            .where("entry.authorId = :authorId", { authorId })
-            .andWhere("daily.date BETWEEN :from AND :to", { from, to })
             .orderBy("daily.date", pageOptions.order)
             .addOrderBy("entry.createdAt", "ASC")
             .take(pageOptions.take)

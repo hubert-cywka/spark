@@ -4,6 +4,7 @@ import {
     CreateDateColumn,
     DeleteDateColumn,
     Entity,
+    JoinTable,
     ManyToMany,
     ManyToOne,
     PrimaryGeneratedColumn,
@@ -41,5 +42,6 @@ export class GoalEntity {
     authorId!: string;
 
     @ManyToMany((type) => EntryEntity, (entry) => entry.goals)
+    @JoinTable({ name: "goal_entries" })
     entries!: Relation<EntryEntity>[];
 }
