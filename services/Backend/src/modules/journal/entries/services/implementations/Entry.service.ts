@@ -23,11 +23,7 @@ export class EntryService implements IEntryService {
         @Inject(EntryMapperToken) private readonly entryMapper: IEntryMapper
     ) {}
 
-    public async findAllByFilters(
-        authorId: string,
-        { from, to, goals }: EntryFilters,
-        pageOptions: PageOptions
-    ): Promise<Paginated<Entry>> {
+    public async findAll(authorId: string, pageOptions: PageOptions, { from, to, goals }: EntryFilters = {}): Promise<Paginated<Entry>> {
         const queryBuilder = this.getRepository().createQueryBuilder("entry");
 
         queryBuilder.innerJoinAndSelect("entry.daily", "daily").where("entry.authorId = :authorId", { authorId });

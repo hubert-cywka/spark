@@ -25,7 +25,11 @@ export class EntryController {
         @Query() pageOptions: PageOptionsDto,
         @CurrentUser() user: User
     ) {
-        const result = await this.entryService.findAllByFilters(user.id, { from, to, goals }, pageOptions);
+        const result = await this.entryService.findAll(user.id, pageOptions, {
+            from,
+            to,
+            goals,
+        });
         return this.entryMapper.fromModelToDtoPaginated(result);
     }
 }

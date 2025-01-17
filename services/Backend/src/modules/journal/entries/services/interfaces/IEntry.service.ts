@@ -6,7 +6,7 @@ import { type EntryFilters } from "@/modules/journal/entries/models/EntryFilters
 export const EntryServiceToken = Symbol("EntryService");
 
 export interface IEntryService {
-    findAllByFilters(authorId: string, filters: EntryFilters, pageOptions: PageOptions): Promise<Paginated<Entry>>;
+    findAll(authorId: string, pageOptions: PageOptions, filters?: EntryFilters): Promise<Paginated<Entry>>;
     create(authorId: string, dailyId: string, content: string): Promise<Entry>;
     deleteById(authorId: string, dailyId: string, entryId: string): Promise<void>;
     updateContent(authorId: string, dailyId: string, entryId: string, content: string): Promise<Entry>;
