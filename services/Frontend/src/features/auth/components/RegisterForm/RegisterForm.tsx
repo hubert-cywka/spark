@@ -17,14 +17,18 @@ import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 export const RegisterForm = () => {
     const t = useTranslate();
 
-    const { handleSubmit, control } = useRegisterForm();
-    const { mutateAsync: register, isPending, isSuccess } = useRegisterWithCredentials();
+    const {
+        handleSubmit,
+        register,
+        formState: { errors },
+    } = useRegisterForm();
+    const { mutateAsync: requestRegistration, isPending, isSuccess } = useRegisterWithCredentials();
     const { onRegisterError, onRegisterSuccess } = useRegisterWithCredentialsEvents();
 
     const onSubmit = useCallback(
         async (inputs: RegisterFormInputs) => {
             try {
-                await register({
+                await requestRegistration({
                     ...inputs,
                     email: inputs.email.trim(),
                     lastName: inputs.lastName.trim(),
@@ -35,46 +39,58 @@ export const RegisterForm = () => {
                 onRegisterError(err);
             }
         },
-        [onRegisterError, onRegisterSuccess, register]
+        [onRegisterError, onRegisterSuccess, requestRegistration]
     );
 
     return (
         <form className={sharedStyles.form} onSubmit={handleSubmit(onSubmit)}>
             <div className={sharedStyles.fieldsWrapper}>
                 <div className={styles.nameFieldsWrapper}>
-                    <Field label={t("authentication.common.fields.firstName.label")} name="firstName" control={control} size="3" required />
-                    <Field label={t("authentication.common.fields.lastName.label")} name="lastName" control={control} size="3" required />
+                    <Field
+                        label={t("authentication.common.fields.firstName.label")}
+                        size="3"
+                        required
+                        {...register("firstName")}
+                        error={errors.firstName?.message}
+                    />
+                    <Field
+                        label={t("authentication.common.fields.lastName.label")}
+                        size="3"
+                        required
+                        {...register("lastName")}
+                        error={errors.lastName?.message}
+                    />
                 </div>
 
-                <Field<RegisterFormInputs>
+                <Field
                     label={t("authentication.common.fields.email.label")}
                     autoComplete="email"
-                    name="email"
-                    control={control}
                     size="3"
                     required
+                    {...register("email")}
+                    error={errors.email?.message}
                 />
                 <Field
                     label={t("authentication.common.fields.password.label")}
-                    name="password"
                     type="password"
                     autoComplete="hidden"
-                    control={control}
                     size="3"
                     required
+                    {...register("password")}
+                    error={errors.password?.message}
                 />
                 <Field
                     label={t("authentication.common.fields.confirmPassword.label")}
-                    name="confirmPassword"
                     type="password"
-                    control={control}
                     autoComplete="hidden"
                     size="3"
                     required
+                    {...register("confirmPassword")}
+                    error={errors.confirmPassword?.message}
                 />
 
                 <div className={styles.agreementsWrapper}>
-                    <Checkbox name="hasAcceptedTermsAndConditions" control={control} required>
+                    <Checkbox {...register("hasAcceptedTermsAndConditions")} required error={errors.hasAcceptedTermsAndConditions?.message}>
                         {t("authentication.common.fields.termsAndConditions.label")}
                     </Checkbox>
                 </div>

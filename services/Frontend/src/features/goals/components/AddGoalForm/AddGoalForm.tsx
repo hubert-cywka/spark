@@ -20,23 +20,27 @@ const MAX_TARGET_VALUE = 100;
 
 export const AddGoalForm = ({ onSubmit, onReset, isLoading, initialValue }: AddGoalFormProps) => {
     const t = useTranslate();
-    const { control, handleSubmit } = useAddGoalForm(initialValue);
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useAddGoalForm(initialValue);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} onReset={onReset} className={styles.form}>
-            <Field required name="name" control={control} label={t("goals.create.form.fields.name.label")} />
+            <Field required {...register("name")} label={t("goals.create.form.fields.name.label")} error={errors.name?.message} />
 
             <NumberInput
                 required
-                name="target"
-                control={control}
+                {...register("target")}
                 label={t("goals.create.form.fields.target.label")}
                 minValue={MIN_TARGET_VALUE}
                 maxValue={MAX_TARGET_VALUE}
                 defaultValue={DEFAULT_TARGET_VALUE}
+                error={errors.target?.message}
             />
 
-            <DateInput name="deadline" control={control} label={t("goals.create.form.fields.deadline.label")} />
+            <DateInput {...register("deadline")} label={t("goals.create.form.fields.deadline.label")} error={errors.deadline?.message} />
 
             <div className={styles.buttons}>
                 <Button type="reset" variant="secondary">

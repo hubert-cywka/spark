@@ -18,14 +18,18 @@ import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 export const CreateAccountWithOIDCForm = () => {
     const t = useTranslate();
 
-    const { handleSubmit, control } = useCreateAccountWithOIDCForm();
-    const { mutateAsync: register, isPending, isSuccess } = useCreateAccountWithOIDC();
+    const {
+        handleSubmit,
+        register,
+        formState: { errors },
+    } = useCreateAccountWithOIDCForm();
+    const { mutateAsync: requestRegistration, isPending, isSuccess } = useCreateAccountWithOIDC();
     const { onRegisterError, onRegisterSuccess } = useCreateAccountWithOIDCEvents();
 
     const onSubmit = useCallback(
         async (inputs: CreateAccountWithOIDCFormInputs) => {
             try {
-                await register(inputs);
+                await requestRegistration(inputs);
                 onRegisterSuccess();
             } catch (err) {
                 onRegisterError(err);
@@ -37,7 +41,7 @@ export const CreateAccountWithOIDCForm = () => {
     return (
         <form className={sharedStyles.form} onSubmit={handleSubmit(onSubmit)}>
             <div className={sharedStyles.fieldsWrapper}>
-                <Checkbox name="hasAcceptedTermsAndConditions" control={control} required>
+                <Checkbox {...register("hasAcceptedTermsAndConditions")} error={errors.hasAcceptedTermsAndConditions?.message}>
                     {t("authentication.common.fields.termsAndConditions.label")}
                 </Checkbox>
             </div>

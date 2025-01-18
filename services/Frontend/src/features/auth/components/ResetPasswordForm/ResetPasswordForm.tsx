@@ -14,7 +14,7 @@ import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 export const ResetPasswordForm = () => {
     const t = useTranslate();
 
-    const { control, handleSubmit } = useResetPasswordForm();
+    const { register, handleSubmit } = useResetPasswordForm();
     const { mutateAsync, isSuccess, isPending } = useRequestPasswordResetToken();
     const { onPasswordResetRequestError, onPasswordResetRequestSuccess } = useRequestPasswordResetTokenEvents();
 
@@ -35,8 +35,7 @@ export const ResetPasswordForm = () => {
             <div className={sharedStyles.fieldsWrapper}>
                 <Field
                     label={t("authentication.common.fields.email.label")}
-                    name="email"
-                    control={control}
+                    {...register("email")}
                     autoComplete="email"
                     size="3"
                     required

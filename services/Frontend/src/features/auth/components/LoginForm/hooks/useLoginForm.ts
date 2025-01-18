@@ -1,8 +1,8 @@
 import { useMemo } from "react";
-import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
+import { useAdaptedForm } from "@/hooks/useAdaptedForm";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 export type LoginFormInputs = {
@@ -22,7 +22,7 @@ export const useLoginForm = () => {
         [t]
     );
 
-    return useForm<LoginFormInputs>({
+    return useAdaptedForm<LoginFormInputs>({
         resolver: yupResolver<LoginFormInputs>(requirements),
     });
 };

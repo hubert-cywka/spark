@@ -8,13 +8,25 @@ export class GoalQueryKeyFactory {
     }
 
     public static createForFiltered({ entries = [], excludeEntries = [], name = "", pageSize }: GoalsQueryFilters = {}) {
-        return [
-            BASE_QUERY_KEY,
-            `name:${name}`,
-            `pageSize:${pageSize}`,
-            ...entries.map((id) => `entryId:${id}`),
-            ...excludeEntries.map((id) => `excludedEntryId:${id}`),
-        ];
+        const queryKey = [BASE_QUERY_KEY];
+
+        if (entries) {
+            queryKey.push(...entries.map((id) => `entryId:${id}`));
+        }
+
+        if (excludeEntries) {
+            queryKey.push(...excludeEntries.map((id) => `excludedEntryId:${id}`));
+        }
+
+        if (name) {
+            queryKey.push(`name:${name}`);
+        }
+
+        if (pageSize) {
+            queryKey.push(`pageSize:${pageSize}`);
+        }
+
+        return queryKey;
     }
 
     public static createForOne(id: string) {

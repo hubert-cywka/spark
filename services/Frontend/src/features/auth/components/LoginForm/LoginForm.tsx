@@ -15,7 +15,11 @@ type LoginFormProps = PropsWithChildren;
 
 export const LoginForm = ({ children }: LoginFormProps) => {
     const t = useTranslate();
-    const { handleSubmit, control } = useLoginForm();
+    const {
+        handleSubmit,
+        register,
+        formState: { errors },
+    } = useLoginForm();
     const { mutateAsync: login, isPending, isSuccess } = useLoginWithCredentials();
     const { onLoginSuccess, onLoginError } = useLoginEvents();
 
@@ -36,20 +40,20 @@ export const LoginForm = ({ children }: LoginFormProps) => {
             <div className={sharedStyles.fieldsWrapper}>
                 <Field
                     label={t("authentication.common.fields.email.label")}
-                    name="email"
                     autoComplete="email"
-                    control={control}
                     size="3"
                     required
+                    {...register("email")}
+                    error={errors.email?.message}
                 />
                 <Field
                     label={t("authentication.common.fields.password.label")}
-                    name="password"
                     type="password"
                     autoComplete="hidden"
-                    control={control}
                     size="3"
                     required
+                    {...register("password")}
+                    error={errors.password?.message}
                 />
                 {children}
             </div>
