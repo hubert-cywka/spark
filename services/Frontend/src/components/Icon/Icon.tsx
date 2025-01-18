@@ -1,11 +1,7 @@
-import { ForwardRefExoticComponent } from "react";
-import * as react from "react";
-import { LucideProps } from "lucide-react";
-
-import { IconSize } from "@/components/Icon/types/Icon";
+import { IconSize, IconSlot } from "@/components/Icon/types/Icon";
 
 type IconProps = {
-    slot: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & react.RefAttributes<SVGSVGElement>>;
+    slot: IconSlot;
     size?: IconSize;
 };
 

@@ -1,5 +1,5 @@
-import { DailyEntryWrapper } from "@/features/entries/components/DailyEntry/components/DaileEntryWrapper/DailyEntryWrapper";
 import { DailyEntryInput } from "@/features/entries/components/DailyEntry/components/DailyEntryInput/DailyEntryInput";
+import { DailyEntryWrapper } from "@/features/entries/components/DailyEntry/components/DailyEntryWrapper/DailyEntryWrapper";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 type DailyEntryPlaceholderProps = {
@@ -16,6 +16,7 @@ export const DailyEntryPlaceholder = ({ onSaveContent, onDelete, onNavigateUp, o
     return (
         <DailyEntryWrapper id={id}>
             <DailyEntryInput
+                column="input"
                 initialContent=""
                 onNavigateUp={onNavigateUp}
                 onNavigateDown={onNavigateDown}

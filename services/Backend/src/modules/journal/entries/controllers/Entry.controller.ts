@@ -3,8 +3,7 @@ import { Controller, Get, Inject, Query, UseGuards } from "@nestjs/common";
 import { CurrentUser } from "@/common/decorators/CurrentUser.decorator";
 import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
 import { PageOptionsDto } from "@/common/pagination/dto/PageOptions.dto";
-import { FindEntriesByDateRangeQueryDto } from "@/modules/journal/entries/dto/FindEntriesByDateRangeQuery.dto";
-import { FindEntriesByGoalsQueryDto } from "@/modules/journal/entries/dto/FindEntriesByGoalsQuery.dto";
+import { FindEntriesFiltersDto } from "@/modules/journal/entries/dto/FindEntriesFilters.dto";
 import { type IEntryMapper, EntryMapperToken } from "@/modules/journal/entries/mappers/IEntry.mapper";
 import { type IEntryService, EntryServiceToken } from "@/modules/journal/entries/services/interfaces/IEntry.service";
 import { type User } from "@/types/User";
@@ -19,17 +18,8 @@ export class EntryController {
 
     @Get()
     @UseGuards(new AuthenticationGuard())
-    public async getEntries(
-        @Query() { from, to }: FindEntriesByDateRangeQueryDto,
-        @Query() { goals }: FindEntriesByGoalsQueryDto,
-        @Query() pageOptions: PageOptionsDto,
-        @CurrentUser() user: User
-    ) {
-        const result = await this.entryService.findAll(user.id, pageOptions, {
-            from,
-            to,
-            goals,
-        });
+    public async getEntries(@Query() filters: FindEntriesFiltersDto, @Query() pageOptions: PageOptionsDto, @CurrentUser() user: User) {
+        const result = await this.entryService.findAll(user.id, pageOptions, filters);
         return this.entryMapper.fromModelToDtoPaginated(result);
     }
 }

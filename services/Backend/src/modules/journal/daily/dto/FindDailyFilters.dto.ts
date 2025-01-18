@@ -2,7 +2,7 @@ import { IsDateString } from "class-validator";
 
 import { IsDateOnly } from "@/lib/validation";
 
-export class FindDailiesByDateRangeQueryDto {
+export class FindDailyFiltersDto {
     @IsDateOnly()
     @IsDateString({ strict: true })
     readonly from!: string;

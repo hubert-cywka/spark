@@ -54,7 +54,7 @@
 
     &[data-variant="subtle"] {
         color: tokens.$color-neutral-text-100;
-        background: rgba(tokens.$color-accent-solid-300, 0.1);
+        background: transparent;
         border: none;
     }
 

@@ -8,6 +8,22 @@
             }
         },
         "entries": {
+            "goals": {
+                "createLink": {
+                    "notifications": {
+                        "error": {
+                            "title": "Either goal or entry doesn't exist"
+                        }
+                    }
+                },
+                "removeLink": {
+                    "notifications": {
+                        "error": {
+                            "title": "Either goal or entry doesn't exist"
+                        }
+                    }
+                }
+            },
             "updateContent": {
                 "errors": {
                     "notFound": "Perhaps it was already deleted?"
@@ -163,6 +179,32 @@
             "notifications": {
                 "error": {
                     "title": "Couldn't update entry status"
+                }
+            }
+        },
+        "goals": {
+            "list": {
+                "linked": {
+                    "header": "Linked goals",
+                    "noResultsCaption": "No goals are linked with this entry."
+                },
+                "unlinked": {
+                    "header": "Other goals",
+                    "noResultsCaption": "No results."
+                }
+            },
+            "createLink": {
+                "notifications": {
+                    "error": {
+                        "title": "Couldn't link goal with entry"
+                    }
+                }
+            },
+            "removeLink": {
+                "notifications": {
+                    "error": {
+                        "title": "Couldn't unlink goal from entry"
+                    }
                 }
             }
         },

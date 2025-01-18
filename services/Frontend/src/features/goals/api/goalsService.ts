@@ -1,12 +1,34 @@
 import { PageDto } from "@/api/dto/PageDto";
 import { CreateOrUpdateGoalRequestDto } from "@/features/goals/api/dto/CreateOrUpdateGoalRequestDto";
 import { GoalDto } from "@/features/goals/api/dto/GoalDto";
+import { GoalsQueryFilters } from "@/features/goals/api/types/GoalsQueryFilters";
 import { Goal } from "@/features/goals/types/Goal";
 import { apiClient } from "@/lib/apiClient/apiClient";
 
 export class GoalsService {
-    public static async getPage(page: number) {
-        const { data } = await apiClient.get<PageDto<GoalDto>>(`/goal?page=${page}&order=DESC`);
+    public static async getPage(page: number, { entries, excludeEntries, name, pageSize }: GoalsQueryFilters = {}) {
+        const searchParams = new URLSearchParams({
+            order: "DESC",
+            page: String(page),
+        });
+
+        if (entries) {
+            searchParams.append("entries", entries.join(","));
+        }
+
+        if (excludeEntries) {
+            searchParams.append("excludeEntries", excludeEntries.join(","));
+        }
+
+        if (name) {
+            searchParams.append("name", name);
+        }
+
+        if (pageSize) {
+            searchParams.append("take", String(pageSize));
+        }
+
+        const { data } = await apiClient.get<PageDto<GoalDto>>(`/goal?${searchParams}`);
         return { ...data, data: data.data.map(GoalsService.mapDtoToGoal) };
     }
 
@@ -34,8 +56,7 @@ export class GoalsService {
             id: dto.id,
             name: dto.name,
             createdAt: new Date(dto.createdAt),
-            points: dto.points,
-            isAccomplished: dto.isAccomplished,
+            target: dto.target,
             deadline: dto.deadline ? new Date(dto.deadline) : null,
         };
     }

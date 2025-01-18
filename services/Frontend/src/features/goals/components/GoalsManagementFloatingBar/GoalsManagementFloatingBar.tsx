@@ -4,7 +4,6 @@ import { Pencil, Trash, X } from "lucide-react";
 
 import styles from "./styles/GoalsManagementFloatingBar.module.scss";
 
-import { Icon } from "@/components/Icon";
 import { IconButton } from "@/components/IconButton";
 import { EditGoalModal } from "@/features/goals/components/EditGoalModal/EditGoalModal";
 import { useDeleteGoal } from "@/features/goals/hooks/delete/useDeleteGoal";
@@ -43,9 +42,7 @@ export const GoalsManagementFloatingBar = ({ onClose, selectedGoal }: GoalsManag
     return (
         <div className={styles.container}>
             <div className={styles.wrapper}>
-                <IconButton variant="subtle" onPress={onClose} size="1" className={styles.closeButton}>
-                    <Icon slot={X} />
-                </IconButton>
+                <IconButton variant="subtle" onPress={onClose} size="1" className={styles.closeButton} iconSlot={X} />
                 <div>
                     <p className={styles.label}>{t("goals.management.floatingBar.label")}</p>
                     <p className={styles.goalName}>{selectedGoal.name}</p>
@@ -61,9 +58,8 @@ export const GoalsManagementFloatingBar = ({ onClose, selectedGoal }: GoalsManag
                             size="1"
                             {...triggerProps}
                             aria-label={t("goals.management.floatingBar.buttons.edit.label")}
-                        >
-                            <Icon slot={Pencil} />
-                        </IconButton>
+                            iconSlot={Pencil}
+                        />
                     )}
                 />
 
@@ -72,9 +68,8 @@ export const GoalsManagementFloatingBar = ({ onClose, selectedGoal }: GoalsManag
                     onPress={handleDeleteGoal}
                     size="1"
                     aria-label={t("goals.management.floatingBar.buttons.delete.label")}
-                >
-                    <Icon slot={Trash} />
-                </IconButton>
+                    iconSlot={Trash}
+                />
             </div>
         </div>
     );

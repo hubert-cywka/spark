@@ -3,15 +3,27 @@ import { Checkbox as BaseCheckbox } from "react-aria-components";
 
 import styles from "./styles/DailyEntryCheckbox.module.scss";
 
+import { DailyEntryColumn } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
+
 type DailyEntryCheckboxProps = {
     onChange: (value: boolean) => void;
     value: boolean;
     onNavigateRight: () => void;
+    onNavigateLeft: () => void;
     onNavigateDown: () => void;
     onNavigateUp: () => void;
+    column: DailyEntryColumn;
 };
 
-export const DailyEntryCheckbox = ({ onChange, onNavigateDown, onNavigateRight, onNavigateUp, value }: DailyEntryCheckboxProps) => {
+export const DailyEntryCheckbox = ({
+    onChange,
+    onNavigateDown,
+    onNavigateRight,
+    onNavigateUp,
+    onNavigateLeft,
+    value,
+    column,
+}: DailyEntryCheckboxProps) => {
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "ArrowUp") {
             e.preventDefault();
@@ -25,6 +37,12 @@ export const DailyEntryCheckbox = ({ onChange, onNavigateDown, onNavigateRight, 
             return;
         }
 
+        if (e.key === "ArrowLeft") {
+            e.preventDefault();
+            onNavigateLeft();
+            return;
+        }
+
         if (e.key === "ArrowDown") {
             e.preventDefault();
             onNavigateDown();
@@ -33,7 +51,7 @@ export const DailyEntryCheckbox = ({ onChange, onNavigateDown, onNavigateRight, 
 
     return (
         <BaseCheckbox
-            data-entry-column-checkbox
+            data-entry-column={column}
             onKeyDown={handleKeyDown}
             className={styles.checkbox}
             onChange={onChange}
