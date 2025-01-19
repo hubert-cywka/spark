@@ -186,11 +186,12 @@
             "list": {
                 "linked": {
                     "header": "Linked goals",
-                    "noResultsCaption": "No goals are linked with this entry."
+                    "noResultsCaption": "No results."
                 },
                 "unlinked": {
-                    "header": "Other goals",
-                    "noResultsCaption": "No results."
+                    "header": "Link goals",
+                    "noResultsCaption": "No results.",
+                    "search": "Search"
                 }
             },
             "createLink": {

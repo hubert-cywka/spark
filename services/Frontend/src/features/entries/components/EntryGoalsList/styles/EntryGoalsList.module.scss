@@ -4,20 +4,27 @@
     display: flex;
     flex-direction: column;
     gap: tokens.$spacing-400;
-    min-width: 200px;
 
-    .header {
-        font: tokens.$typography-caption-200;
-        font-weight: tokens.$font-weight-300;
-        margin-bottom: tokens.$spacing-200;
-    }
+    color: tokens.$color-neutral-text-200;
+
+   .headerWrapper {
+       display: flex;
+       align-items: center;
+       gap: tokens.$spacing-300;
+       margin-bottom: tokens.$spacing-300;
+
+       .header {
+           font: tokens.$typography-body-200;
+           font-weight: tokens.$font-weight-300;
+       }
+   }
 
     .caption {
-        font: tokens.$typography-caption-200;
+        font: tokens.$typography-body-100;
     }
 
     .list {
-        margin: 0;
+        margin: 0 0 tokens.$spacing-400;
         padding: 0;
     }
 }

@@ -11,9 +11,9 @@ export const Popover = ({ children, trigger, ...rest }: PopoverProps) => {
         <DialogTrigger>
             {trigger}
             <BasePopover {...rest}>
-                <OverlayArrow>
-                    <svg width={12} height={12} viewBox="0 0 12 12">
-                        <path d="M0 0 L6 6 L12 0" />
+                <OverlayArrow className={styles.arrow}>
+                    <svg width={20} height={10} viewBox="0 0 20 10">
+                        <path d="M 0 10 L 10 0 L 20 10" />
                     </svg>
                 </OverlayArrow>
                 <Dialog className={styles.dialog}>{children}</Dialog>

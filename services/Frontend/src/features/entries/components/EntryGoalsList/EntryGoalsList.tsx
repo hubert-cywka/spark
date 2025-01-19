@@ -1,35 +1,43 @@
 import styles from "./styles/EntryGoalsList.module.scss";
 
-import { Spinner } from "@/components/Spinner";
-import { GoalLinkItem } from "@/features/entries/components/EntryGoalsList/components/GoalLinkItem/GoalLinkItem";
-import { useEntryGoalsListEvents } from "@/features/entries/components/EntryGoalsList/hooks/useEntryGoalsListEvents";
+import { ItemLoader } from "@/components/ItemLoader/ItemLoader";
+import { GoalLinkItem } from "@/features/entries/components/GoalLinkItem/GoalLinkItem";
+import { LinkGoalsPopover } from "@/features/entries/components/LinkGoalsPopover/LinkGoalsPopover";
+import { useUnlinkEntryFromGoal } from "@/features/entries/hooks";
+import { useUnlinkEntryFromGoalEvents } from "@/features/entries/hooks/useEntryLink/useUnlinkEntryFromGoalEvents";
 import { useGoals } from "@/features/goals/hooks/useGoals/useGoals";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
-type DailyEntryGoalsListProps = {
+type EntryGoalsListProps = {
     entryId: string;
 };
 
-// TODO: Search
-export const EntryGoalsList = ({ entryId }: DailyEntryGoalsListProps) => {
+// TODO: Clean up
+export const EntryGoalsList = ({ entryId }: EntryGoalsListProps) => {
     const t = useTranslate();
 
-    const { data: linkedGoalsData, isLoading: areLinkedGoalsLoading } = useGoals({ entries: [entryId] });
+    const { data: linkedGoalsData, hasNextPage, fetchNextPage } = useGoals({ entries: [entryId] });
     const linkedGoals = linkedGoalsData?.pages.flatMap((page) => page.data) ?? [];
 
-    const { data: unlinkedGoalsData, isLoading: areUnlinkedGoalsLoading } = useGoals({ excludeEntries: [entryId], name: "", pageSize: 5 });
-    const unlinkedGoals = unlinkedGoalsData?.pages.flatMap((page) => page.data) ?? [];
+    const { onUnlinkEntryError } = useUnlinkEntryFromGoalEvents();
+    const { mutateAsync: unlink } = useUnlinkEntryFromGoal();
 
-    const { onLink, onUnlink } = useEntryGoalsListEvents({ entryId });
+    const onUnlink = async (goalId: string) => {
+        try {
+            await unlink({ entryId, goalId });
+        } catch (err) {
+            onUnlinkEntryError(err);
+        }
+    };
 
-    if (areLinkedGoalsLoading || areUnlinkedGoalsLoading) {
-        return <Spinner />;
-    }
-
+    // TODO: Skeleton
     return (
         <div className={styles.container}>
             <div>
-                <p className={styles.header}>{t("entries.goals.list.linked.header")}</p>
+                <div className={styles.headerWrapper}>
+                    <p className={styles.header}>{t("entries.goals.list.linked.header")}</p>
+                    <LinkGoalsPopover entryId={entryId} />
+                </div>
                 {!linkedGoals.length && <p className={styles.caption}>{t("entries.goals.list.linked.noResultsCaption")}</p>}
 
                 <ul className={styles.list}>
@@ -37,17 +45,8 @@ export const EntryGoalsList = ({ entryId }: DailyEntryGoalsListProps) => {
                         <GoalLinkItem onClick={() => onUnlink(goal.id)} name={goal.name} linked key={goal.id} />
                     ))}
                 </ul>
-            </div>
 
-            <div>
-                <p className={styles.header}>{t("entries.goals.list.unlinked.header")}</p>
-                {!unlinkedGoals.length && <p className={styles.caption}>{t("entries.goals.list.unlinked.noResultsCaption")}</p>}
-
-                <ul className={styles.list}>
-                    {unlinkedGoals.map((goal) => (
-                        <GoalLinkItem onClick={() => onLink(goal.id)} name={goal.name} key={goal.id} />
-                    ))}
-                </ul>
+                <ItemLoader shouldLoadNext={hasNextPage} onLoadNext={fetchNextPage} />
             </div>
         </div>
     );

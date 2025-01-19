@@ -1,7 +1,7 @@
 import { KeyboardEvent } from "react";
-import { Ellipsis } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
-import styles from "./styles/DailyEntryGoalsTrigger.module.scss";
+import styles from "./styles/DailyEntryExpandTrigger.module.scss";
 
 import { IconButton } from "@/components/IconButton";
 import { DailyEntryColumn } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
@@ -11,9 +11,18 @@ type DailyEntryGoalsTriggerProps = {
     onNavigateRight: () => void;
     onNavigateDown: () => void;
     onNavigateUp: () => void;
+    isCollapsed: boolean;
+    onClick: () => void;
 };
 
-export const DailyEntryGoalsTrigger = ({ column, onNavigateDown, onNavigateUp, onNavigateRight }: DailyEntryGoalsTriggerProps) => {
+export const DailyEntryExpandTrigger = ({
+    column,
+    onNavigateDown,
+    onNavigateUp,
+    onNavigateRight,
+    isCollapsed,
+    onClick,
+}: DailyEntryGoalsTriggerProps) => {
     const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
         if (e.key === "ArrowUp") {
             e.preventDefault();
@@ -37,10 +46,11 @@ export const DailyEntryGoalsTrigger = ({ column, onNavigateDown, onNavigateUp, o
         <IconButton
             data-entry-column={column}
             onKeyDown={handleKeyDown}
-            iconSlot={Ellipsis}
-            variant="subtle"
             size="1"
+            variant="subtle"
+            iconSlot={isCollapsed ? ChevronDown : ChevronUp}
             className={styles.trigger}
+            onPress={onClick}
         />
     );
 };

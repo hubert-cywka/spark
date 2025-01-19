@@ -1,7 +1,10 @@
-import { Popover } from "@/components/Popover";
+import { useState } from "react";
+
+import styles from "./styles/DailyEntry.module.scss";
+
 import { DailyEntryColumn } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
 import { DailyEntryCheckbox } from "@/features/entries/components/DailyEntry/components/DailyEntryCheckbox/DailyEntryCheckbox";
-import { DailyEntryGoalsTrigger } from "@/features/entries/components/DailyEntry/components/DailyEntryGoalsTrigger/DailyEntryGoalsTrigger";
+import { DailyEntryExpandTrigger } from "@/features/entries/components/DailyEntry/components/DailyEntryExpandTrigger/DailyEntryExpandTrigger";
 import { DailyEntryInput } from "@/features/entries/components/DailyEntry/components/DailyEntryInput/DailyEntryInput";
 import { DailyEntryWrapper } from "@/features/entries/components/DailyEntry/components/DailyEntryWrapper/DailyEntryWrapper";
 import { EntryGoalsList } from "@/features/entries/components/EntryGoalsList/EntryGoalsList";
@@ -30,42 +33,47 @@ export const DailyEntry = ({
     onFocusColumn,
 }: DailyEntryProps) => {
     const t = useTranslate();
+    const [isCollapsed, setIsCollapsed] = useState(true);
 
     return (
         <DailyEntryWrapper id={id}>
-            <Popover
-                trigger={
-                    <DailyEntryGoalsTrigger
-                        column="goals"
-                        onNavigateRight={() => onFocusColumn("checkbox")}
-                        onNavigateUp={() => onNavigateUp("goals")}
-                        onNavigateDown={() => onNavigateDown("goals")}
-                    />
-                }
-            >
-                <EntryGoalsList entryId={entry.id} />
-            </Popover>
+            <div className={styles.row}>
+                <DailyEntryExpandTrigger
+                    column="expand"
+                    isCollapsed={isCollapsed}
+                    onClick={() => setIsCollapsed((p) => !p)}
+                    onNavigateRight={() => onFocusColumn("checkbox")}
+                    onNavigateUp={() => onNavigateUp("expand")}
+                    onNavigateDown={() => onNavigateDown("expand")}
+                />
 
-            <DailyEntryCheckbox
-                column="checkbox"
-                onNavigateLeft={() => onFocusColumn("goals")}
-                onNavigateRight={() => onFocusColumn("input")}
-                onNavigateUp={() => onNavigateUp("checkbox")}
-                onNavigateDown={() => onNavigateDown("checkbox")}
-                onChange={(status) => onChangeStatus(entry, status)}
-                value={entry.isCompleted}
-            />
+                <DailyEntryCheckbox
+                    column="checkbox"
+                    onNavigateLeft={() => onFocusColumn("expand")}
+                    onNavigateRight={() => onFocusColumn("input")}
+                    onNavigateUp={() => onNavigateUp("checkbox")}
+                    onNavigateDown={() => onNavigateDown("checkbox")}
+                    onChange={(status) => onChangeStatus(entry, status)}
+                    value={entry.isCompleted}
+                />
 
-            <DailyEntryInput
-                column="input"
-                initialContent={entry.content}
-                onNavigateUp={() => onNavigateUp("input")}
-                onNavigateDown={() => onNavigateDown("input")}
-                onNavigateLeft={() => onFocusColumn("checkbox")}
-                onSaveContent={(content) => onSaveContent(entry, content)}
-                onDelete={() => onDelete(entry.dailyId, entry.id)}
-                placeholder={t("entries.placeholder")}
-            />
+                <DailyEntryInput
+                    column="input"
+                    initialContent={entry.content}
+                    onNavigateUp={() => onNavigateUp("input")}
+                    onNavigateDown={() => onNavigateDown("input")}
+                    onNavigateLeft={() => onFocusColumn("checkbox")}
+                    onSaveContent={(content) => onSaveContent(entry, content)}
+                    onDelete={() => onDelete(entry.dailyId, entry.id)}
+                    placeholder={t("entries.placeholder")}
+                />
+            </div>
+
+            {!isCollapsed && (
+                <div className={styles.metadata}>
+                    <EntryGoalsList entryId={entry.id} />
+                </div>
+            )}
         </DailyEntryWrapper>
     );
 };
