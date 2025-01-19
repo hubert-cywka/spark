@@ -4,11 +4,9 @@ import { fromDate } from "@internationalized/date";
 
 import styles from "./styles/DayHeader.module.scss";
 
-import { DailyEditModeActions } from "@/features/daily/components/Day/components/DailyEditModeActions/DailyEditModeActions";
-import { DailyPassiveModeActions } from "@/features/daily/components/Day/components/DailyPassiveModeActions/DailyPassiveModeActions";
-import { useDayHeaderEditMode } from "@/features/daily/components/Day/components/DayHeader/hooks/useDayHeaderEditMode";
-import { useUpdateDailyDate } from "@/features/daily/hooks/useUpdateDailyDate";
-import { useUpdateDailyDateEvents } from "@/features/daily/hooks/useUpdateDailyDateEvents";
+import { DailyEditModeActions } from "@/features/daily/components/DayHeader/components/DailyEditModeActions/DailyEditModeActions";
+import { DailyPassiveModeActions } from "@/features/daily/components/DayHeader/components/DailyPassiveModeActions/DailyPassiveModeActions";
+import { useDayHeaderEditMode } from "@/features/daily/components/DayHeader/hooks/useDayHeaderEditMode";
 import { Daily } from "@/features/daily/types/Daily";
 import { getFormattedDailyDate } from "@/features/daily/utils/dateUtils";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
@@ -19,14 +17,13 @@ const SEGMENT_SELECTOR = '[role="spinbutton"]';
 
 type DayHeaderProps = {
     daily: Daily;
+    onUpdateDate: (id: string, date: string) => void;
 };
 
-export const DayHeader = ({ daily }: DayHeaderProps) => {
+export const DayHeader = ({ daily, onUpdateDate }: DayHeaderProps) => {
     const t = useTranslate();
     const [value, setValue] = useState<DateValue | null>(() => mapToDateValue(daily.date));
 
-    const { mutateAsync: updateDate, isPending: isUpdating } = useUpdateDailyDate();
-    const { onUpdateDailyDateError, onUpdateDailyDateSuccess } = useUpdateDailyDateEvents();
     const hasValueChanged = !!value && mapToISODate(value) !== daily.date;
 
     const restoreInitialValue = () => {
@@ -48,13 +45,8 @@ export const DayHeader = ({ daily }: DayHeaderProps) => {
             return;
         }
 
-        try {
-            await updateDate({ id: daily.id, date: mapToISODate(value) });
-            onUpdateDailyDateSuccess();
-            endEditMode();
-        } catch (err) {
-            onUpdateDailyDateError(err);
-        }
+        onUpdateDate(daily.id, mapToISODate(value));
+        endEditMode();
     };
 
     const updateNameOnEnter = async (e: KeyboardEvent<HTMLDivElement>) => {
@@ -91,6 +83,7 @@ export const DayHeader = ({ daily }: DayHeaderProps) => {
             >
                 <DateInput className={styles.input}>{(segment) => <DateSegment className={styles.segment} segment={segment} />}</DateInput>
             </DateField>
+
             <div className={styles.buttons}>
                 {isInEditMode ? (
                     <DailyEditModeActions onCancel={cancelEditMode} onSave={confirmNameUpdate} isSaveDisabled={!hasValueChanged} />
@@ -98,7 +91,6 @@ export const DayHeader = ({ daily }: DayHeaderProps) => {
                     <DailyPassiveModeActions daily={daily} onStartEditMode={startEditMode} />
                 )}
             </div>
-            {isUpdating && <div className={styles.updateLabel}>{t("daily.updateDate.labels.inProgress")}</div>}
         </div>
     );
 };

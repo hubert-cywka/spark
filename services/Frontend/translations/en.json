@@ -235,9 +235,6 @@
             }
         },
         "updateDate": {
-            "labels": {
-                "inProgress": "Updating"
-            },
             "notifications": {
                 "error": {
                     "title": "Couldn't update daily's date"

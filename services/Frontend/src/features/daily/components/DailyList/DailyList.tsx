@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import dayjs from "dayjs";
 
 import styles from "./styles/DailyList.module.scss";
@@ -12,8 +13,8 @@ import { useDailyEntriesEvents } from "@/features/daily/components/DailyList/hoo
 import { useDailyEntriesPlaceholders } from "@/features/daily/components/DailyList/hooks/useDailyEntriesPlaceholders";
 import { DailyEntryColumn, useNavigationBetweenEntries } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
 import { getEntryElementId, getEntryPlaceholderElementId } from "@/features/daily/components/DailyList/utils/dailyEntriesSelectors";
-import { DaySkeleton } from "@/features/daily/components/Day";
-import { Day } from "@/features/daily/components/Day/Day";
+import { DayHeader } from "@/features/daily/components/DayHeader/DayHeader";
+import { DaySkeleton } from "@/features/daily/components/DaySkeleton";
 import { useGetDailiesByDateRange } from "@/features/daily/hooks/useGetDailiesByDateRange";
 import { getFormattedDailyDate } from "@/features/daily/utils/dateUtils";
 import { DailyEntry, DailyEntryPlaceholder } from "@/features/entries/components/DailyEntry";
@@ -37,7 +38,7 @@ export const DailyList = () => {
         to: getFormattedDailyDate(endDate),
     });
 
-    const dailies = dailyData?.pages?.flatMap((page) => page.data) ?? [];
+    const dailies = useMemo(() => dailyData?.pages?.flatMap((page) => page.data) ?? [], [dailyData?.pages]);
 
     const { data: dailyEntriesMap, queryKey: entriesQueryKey } = useGetDailyEntriesByDateRange({
         from: getFormattedDailyDate(startDate),
@@ -45,12 +46,12 @@ export const DailyList = () => {
         autoFetch: true,
     });
 
-    const { onCreateNewDaily } = useDailiesEvents({
+    const { placeholders, addPlaceholder, removePlaceholder } = useDailyEntriesPlaceholders();
+    const { onCreateNewDaily, onUpdateDailyDate } = useDailiesEvents({
         queryKey,
         endDate,
         startDate,
     });
-    const { placeholders, addPlaceholder, removePlaceholder } = useDailyEntriesPlaceholders();
 
     const { navigateByIndex, navigateByEntryId } = useNavigationBetweenEntries({
         entriesByDaily: dailyEntriesMap,
@@ -82,31 +83,35 @@ export const DailyList = () => {
             />
 
             {dailies.map((daily) => (
-                <Day key={daily.id} daily={daily}>
-                    {dailyEntriesMap[daily.id]?.map((entry, index) => (
-                        <DailyEntry
-                            id={getEntryElementId(entry.id)}
-                            entry={entry}
-                            key={entry.id}
-                            onDelete={onDeleteEntry}
-                            onChangeStatus={onUpdateEntryStatus}
-                            onSaveContent={onUpdateEntryContent}
-                            onFocusColumn={(column: DailyEntryColumn) => navigateByIndex(column, daily.id, index)}
-                            onNavigateDown={(target) => navigateByIndex(target, daily.id, index + 1)}
-                            onNavigateUp={(target) => navigateByIndex(target, daily.id, index - 1)}
-                        />
-                    ))}
+                <div className={styles.day} key={daily.id}>
+                    <DayHeader daily={daily} onUpdateDate={onUpdateDailyDate} />
 
-                    {(!dailyEntriesMap[daily.id]?.length || placeholders.includes(daily.id)) && (
-                        <DailyEntryPlaceholder
-                            id={getEntryPlaceholderElementId(daily.id)}
-                            onDelete={() => removePlaceholder(daily.id)}
-                            onSaveContent={(content) => onSavePlaceholder(daily.id, content)}
-                            onNavigateUp={() => navigateByIndex("input", daily.id, dailyEntriesMap[daily.id]?.length - 1)}
-                            onNavigateDown={() => navigateByIndex("input", daily.id, Infinity)}
-                        />
-                    )}
-                </Day>
+                    <ul className={styles.entries}>
+                        {dailyEntriesMap[daily.id]?.map((entry, index) => (
+                            <DailyEntry
+                                id={getEntryElementId(entry.id)}
+                                entry={entry}
+                                key={entry.id}
+                                onDelete={onDeleteEntry}
+                                onChangeStatus={onUpdateEntryStatus}
+                                onSaveContent={onUpdateEntryContent}
+                                onFocusColumn={(column: DailyEntryColumn) => navigateByIndex(column, daily.id, index)}
+                                onNavigateDown={(target) => navigateByIndex(target, daily.id, index + 1)}
+                                onNavigateUp={(target) => navigateByIndex(target, daily.id, index - 1)}
+                            />
+                        ))}
+
+                        {(!dailyEntriesMap[daily.id]?.length || placeholders.includes(daily.id)) && (
+                            <DailyEntryPlaceholder
+                                id={getEntryPlaceholderElementId(daily.id)}
+                                onDelete={() => removePlaceholder(daily.id)}
+                                onSaveContent={(content) => onSavePlaceholder(daily.id, content)}
+                                onNavigateUp={() => navigateByIndex("input", daily.id, dailyEntriesMap[daily.id]?.length - 1)}
+                                onNavigateDown={() => navigateByIndex("input", daily.id, Infinity)}
+                            />
+                        )}
+                    </ul>
+                </div>
             ))}
 
             <ItemLoader shouldLoadNext={hasNextPage} onLoadNext={fetchNextPage}>
