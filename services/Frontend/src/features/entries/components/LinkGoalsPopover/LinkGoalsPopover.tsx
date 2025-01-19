@@ -45,7 +45,7 @@ export const LinkGoalsPopover = ({ entryId }: LinkGoalsPopoverProps) => {
     };
 
     return (
-        <Popover offset={15} trigger={<IconButton size="1" variant="secondary" iconSlot={Plus} />}>
+        <Popover offset={15} trigger={<IconButton size="1" variant="confirm" iconSlot={Plus} />}>
             <div className={styles.container}>
                 <Field label={t("entries.goals.list.unlinked.search")} size="1" value={search} onChange={setSearch} autoFocus />
                 {areUnlinkedGoalsLoading && <Spinner className={styles.spinner} />}

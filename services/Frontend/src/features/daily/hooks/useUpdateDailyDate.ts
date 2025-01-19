@@ -5,8 +5,6 @@ import { DailyService } from "@/features/daily/api/dailyService";
 import { Daily } from "@/features/daily/types/Daily";
 import { useQueryCache } from "@/hooks/useQueryCache";
 
-// TODO: Update or invalidate cache
-
 type UseUpdateDailyDateOptions = {
     queryKey?: QueryKey;
 };

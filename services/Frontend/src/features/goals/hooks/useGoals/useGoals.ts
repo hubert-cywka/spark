@@ -5,7 +5,6 @@ import { GoalsQueryFilters } from "@/features/goals/api/types/GoalsQueryFilters"
 import { GoalQueryKeyFactory } from "@/features/goals/utils/goalQueryKeyFactory";
 import { getNextPage, getPreviousPage } from "@/lib/queryClient/pagination";
 
-// FIXME: Invalidate cache after linked entry is marked as completed/todo
 export const useGoals = (filters: GoalsQueryFilters = {}) => {
     const queryKey = GoalQueryKeyFactory.createForFiltered(filters);
 
