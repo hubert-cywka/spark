@@ -27,15 +27,21 @@ export class GoalService implements IGoalService {
     public async findAll(
         authorId: string,
         pageOptions: PageOptions,
-        { entries, excludeEntries, name }: GoalFilters = {}
+        { entries, excludeEntries, name, withProgress }: GoalFilters = {}
     ): Promise<Paginated<Goal>> {
         const queryBuilder = this.getRepository()
             .createQueryBuilder("goal")
             .where("goal.authorId = :authorId", { authorId })
             .andWhere("goal.deletedAt IS NULL");
 
+        if (withProgress) {
+            queryBuilder
+                .leftJoinAndSelect("goal.entries", "completedEntry", "completedEntry.isCompleted = true")
+                .addSelect(["completedEntry.id"]);
+        }
+
         if (entries?.length) {
-            queryBuilder.leftJoin("goal.entries", "entry").andWhere("entry.id IN (:...entries)", { entries });
+            queryBuilder.innerJoin("goal.entries", "entry").andWhere("entry.id IN (:...entries)", { entries });
         }
 
         if (excludeEntries?.length) {

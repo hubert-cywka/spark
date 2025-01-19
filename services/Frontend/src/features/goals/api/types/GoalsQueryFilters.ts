@@ -3,4 +3,5 @@ export type GoalsQueryFilters = {
     excludeEntries?: string[];
     name?: string;
     pageSize?: number;
+    withProgress?: boolean;
 };

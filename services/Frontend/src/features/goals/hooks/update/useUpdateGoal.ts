@@ -29,6 +29,7 @@ export const useUpdateGoal = () => {
                                     ...goal,
                                     name: variables.name,
                                     target: variables.target,
+                                    isAccomplished: goal.targetProgress >= goal.target,
                                     deadline,
                                 };
                             }),
