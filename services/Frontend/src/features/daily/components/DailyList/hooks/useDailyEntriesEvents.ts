@@ -1,13 +1,15 @@
 import { QueryKey } from "@tanstack/react-query";
 
-import { useCreateEntry } from "@/features/entries/hooks/useCreateEntry";
-import { useCreateEntryEvents } from "@/features/entries/hooks/useCreateEntryEvents";
-import { useDeleteEntry } from "@/features/entries/hooks/useDeleteEntry";
-import { useDeleteEntryEvents } from "@/features/entries/hooks/useDeleteEntryEvents";
-import { useUpdateEntryContent } from "@/features/entries/hooks/useUpdateEntryContent";
-import { useUpdateEntryContentEvents } from "@/features/entries/hooks/useUpdateEntryContentEvents";
-import { useUpdateEntryStatus } from "@/features/entries/hooks/useUpdateEntryStatus";
-import { useUpdateEntryStatusEvents } from "@/features/entries/hooks/useUpdateEntryStatusEvents";
+import { useUpdateEntryStatusEvents } from "@/features/entries/hooks";
+import {
+    useCreateEntry,
+    useCreateEntryEvents,
+    useDeleteEntry,
+    useDeleteEntryEvents,
+    useUpdateEntryContent,
+    useUpdateEntryContentEvents,
+    useUpdateEntryStatus,
+} from "@/features/entries/hooks/";
 import { Entry } from "@/features/entries/types/Entry";
 
 type UseDailyEntriesEvents = {

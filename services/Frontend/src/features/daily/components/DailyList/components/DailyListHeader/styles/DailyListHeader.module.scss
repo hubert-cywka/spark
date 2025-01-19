@@ -6,11 +6,12 @@
     gap: tokens.$spacing-600;
 
     position: sticky;
-    top: tokens.$spacing-600;
+    z-index: 10;
+    top: 0;
     backdrop-filter: blur(10px);
 
     font: tokens.$typography-title-500;
-    padding: tokens.$spacing-200 tokens.$spacing-400;
+    padding: tokens.$spacing-600 tokens.$spacing-400 tokens.$spacing-200;
     margin-left: calc(#{tokens.$spacing-400} * -1);
     margin-bottom: tokens.$spacing-400;
 

@@ -1,8 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { FieldError, Input, Label, NumberField } from "react-aria-components";
-import { Control, FieldValues, Path, useController } from "react-hook-form";
+import { FieldError, Input, Label, NumberField, NumberFieldProps } from "react-aria-components";
 
 import { InputSize } from "./types/Input";
 
@@ -11,54 +10,37 @@ import ownStyles from "./styles/NumberInput.module.scss";
 
 import { Button } from "@/components/Button";
 
-type NumberInputProps<T extends FieldValues> = {
-    name: Path<T>;
-    control: Control<T>;
+type NumberInputProps = NumberFieldProps & {
     label: ReactNode;
-    defaultValue?: number;
-    minValue?: number;
-    maxValue?: number;
+    error?: string;
+    required?: boolean;
     width?: string;
     size?: InputSize;
-    required?: boolean;
 };
 
-export const NumberInput = <T extends FieldValues>({
+export const NumberInput = ({
     width,
     label,
     required,
     name,
-    control,
     defaultValue,
     maxValue,
     minValue,
     size = "2",
+    error,
     ...props
-}: NumberInputProps<T>) => {
-    const {
-        field,
-        fieldState: { invalid, error },
-    } = useController({
-        name,
-        control,
-        rules: { required },
-    });
-
+}: NumberInputProps) => {
     return (
         <NumberField
             className={sharedStyles.controller}
             {...props}
-            onChange={field.onChange}
-            onBlur={field.onBlur}
-            value={field.value}
-            name={field.name}
-            ref={field.ref}
             minValue={minValue}
             maxValue={maxValue}
             defaultValue={defaultValue}
             isRequired={required}
-            isInvalid={invalid}
+            isInvalid={!!error}
             validationBehavior="aria"
+            {...props}
         >
             <Label className={sharedStyles.label}>
                 {label}
@@ -78,7 +60,7 @@ export const NumberInput = <T extends FieldValues>({
                 </div>
             </div>
 
-            {error && <FieldError className={sharedStyles.error}>{error.message}</FieldError>}
+            {error && <FieldError className={sharedStyles.error}>{error}</FieldError>}
         </NumberField>
     );
 };

@@ -20,7 +20,7 @@ import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
 import { PageDto } from "@/common/pagination/dto/Page.dto";
 import { PageOptionsDto } from "@/common/pagination/dto/PageOptions.dto";
 import { CreateDailyDto } from "@/modules/journal/daily/dto/CreateDaily.dto";
-import { FindDailiesByDateRangeQueryDto } from "@/modules/journal/daily/dto/FindDailiesByDateRangeQuery.dto";
+import { FindDailyFiltersDto } from "@/modules/journal/daily/dto/FindDailyFilters.dto";
 import { UpdateDailyDateDto } from "@/modules/journal/daily/dto/UpdateDailyDate.dto";
 import { type IDailyMapper, DailyMapperToken } from "@/modules/journal/daily/mappers/IDaily.mapper";
 import { type IDailyService, DailyServiceToken } from "@/modules/journal/daily/services/interfaces/IDaily.service";
@@ -35,11 +35,7 @@ export class DailyController {
 
     @Get()
     @UseGuards(new AuthenticationGuard())
-    public async getDailies(
-        @Query() { from, to }: FindDailiesByDateRangeQueryDto,
-        @Query() pageOptions: PageOptionsDto,
-        @CurrentUser() author: User
-    ) {
+    public async getDailies(@Query() { from, to }: FindDailyFiltersDto, @Query() pageOptions: PageOptionsDto, @CurrentUser() author: User) {
         const result = await this.dailyService.findAllByDateRange(author.id, from, to, pageOptions);
         const page = this.dailyMapper.fromModelToDtoPaginated(result);
         return new PageDto(page.data, page.meta); // TODO: Do not use 'new'

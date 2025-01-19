@@ -1,7 +1,8 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
-import { useGetEntriesByDateRange } from "@/features/entries/hooks/useGetEntriesByDateRange";
+import { useGetEntriesByDateRange } from "@/features/entries/hooks";
 import { Entry } from "@/features/entries/types/Entry";
+import { useAutoFetch } from "@/hooks/useAutoFetch";
 
 type UseGetDailyEntriesByDateRangeOptions = {
     from: string;
@@ -11,12 +12,10 @@ type UseGetDailyEntriesByDateRangeOptions = {
 
 export const useGetDailyEntriesByDateRange = ({ from, to, autoFetch }: UseGetDailyEntriesByDateRangeOptions) => {
     const { data: entriesData, hasNextPage, fetchNextPage, ...rest } = useGetEntriesByDateRange({ from, to });
-
-    useEffect(() => {
-        if (autoFetch && hasNextPage) {
-            void fetchNextPage();
-        }
-    }, [fetchNextPage, hasNextPage, autoFetch]);
+    useAutoFetch({
+        shouldFetch: !!autoFetch && hasNextPage,
+        fetch: fetchNextPage,
+    });
 
     const data = useMemo(() => {
         const entries = entriesData?.pages?.flatMap((page) => page.data) ?? [];

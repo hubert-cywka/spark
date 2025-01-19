@@ -1,0 +1,16 @@
+@use "src/styles/tokens";
+
+.goal {
+    display: flex;
+    align-items: center;
+    gap: tokens.$spacing-200;
+    font: tokens.$typography-body-100;
+
+    .linkButton {
+        color: tokens.$color-success-solid-200;
+    }
+
+    .unlinkButton {
+        color: tokens.$color-danger-solid-200;
+    }
+}

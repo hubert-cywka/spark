@@ -1,7 +1,8 @@
 import { useMemo } from "react";
-import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+
+import { useAdaptedForm } from "@/hooks/useAdaptedForm";
 
 export type CreateAccountWithOIDCFormInputs = {
     hasAcceptedTermsAndConditions: boolean;
@@ -16,7 +17,7 @@ export const useCreateAccountWithOIDCForm = () => {
         []
     );
 
-    return useForm<CreateAccountWithOIDCFormInputs>({
+    return useAdaptedForm<CreateAccountWithOIDCFormInputs>({
         resolver: yupResolver<CreateAccountWithOIDCFormInputs>(requirements),
     });
 };

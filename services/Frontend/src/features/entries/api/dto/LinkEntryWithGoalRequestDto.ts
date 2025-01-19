@@ -1,0 +1,3 @@
+type LinkEntryWithGoalRequestDto = {
+    entryId: string;
+};

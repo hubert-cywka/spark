@@ -17,9 +17,18 @@ type DateInputProps<T extends FieldValues> = {
     label: ReactNode;
     size?: InputSize;
     required?: boolean;
+    defaultValue?: Date;
 };
 
-export const DateInput = <T extends FieldValues>({ label, required, name, control, size = "2", ...props }: DateInputProps<T>) => {
+export const DateInput = <T extends FieldValues>({
+    defaultValue,
+    label,
+    required,
+    name,
+    control,
+    size = "2",
+    ...props
+}: DateInputProps<T>) => {
     const {
         field,
         fieldState: { invalid, error },
@@ -38,7 +47,8 @@ export const DateInput = <T extends FieldValues>({ label, required, name, contro
             {...props}
             className={sharedStyles.controller}
             onChange={onChange}
-            value={field.value ? fromDate(field.value, "UTC") : undefined}
+            value={convertValue(field.value)}
+            defaultValue={convertValue(defaultValue)}
             onBlur={field.onBlur}
             name={field.name}
             ref={field.ref}
@@ -61,4 +71,8 @@ export const DateInput = <T extends FieldValues>({ label, required, name, contro
             {error && <FieldError className={sharedStyles.error}>{error.message}</FieldError>}
         </DateField>
     );
+};
+
+const convertValue = (value: Date | undefined) => {
+    return value ? fromDate(value, "UTC") : undefined;
 };

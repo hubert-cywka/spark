@@ -1,63 +1,29 @@
 "use client";
 
-import { InputHTMLAttributes, ReactNode } from "react";
-import { FieldError, Input, Label, TextField } from "react-aria-components";
-import { Control, FieldValues, Path, useController } from "react-hook-form";
+import { ReactNode } from "react";
+import { FieldError, Input, Label, TextField, TextFieldProps } from "react-aria-components";
 
 import { InputSize } from "./types/Input";
 
 import styles from "./styles/Input.module.scss";
 
-type FieldProps<T extends FieldValues> = {
-    name: Path<T>;
-    control: Control<T>;
+type FieldProps = TextFieldProps & {
     label: ReactNode;
+    error?: string;
+    required?: boolean;
     width?: string;
     size?: InputSize;
-    required?: boolean;
-    autoComplete?: InputHTMLAttributes<unknown>["autoComplete"];
-    type?: InputHTMLAttributes<unknown>["type"];
 };
 
-export const Field = <T extends FieldValues>({
-    width,
-    label,
-    required,
-    name,
-    control,
-    autoComplete,
-    type,
-    size = "2",
-    ...props
-}: FieldProps<T>) => {
-    const {
-        field,
-        fieldState: { invalid, error },
-    } = useController({
-        name,
-        control,
-        rules: { required },
-    });
-
+export const Field = ({ width, label, required, name, autoComplete, type, size = "2", error, ...props }: FieldProps) => {
     return (
-        <TextField
-            className={styles.controller}
-            {...props}
-            onChange={field.onChange}
-            onBlur={field.onBlur}
-            value={field.value}
-            name={field.name}
-            ref={field.ref}
-            isRequired={required}
-            isInvalid={invalid}
-            validationBehavior="aria"
-        >
+        <TextField className={styles.controller} {...props} isRequired={required} isInvalid={!!error} validationBehavior="aria">
             <Label className={styles.label}>
                 {label}
                 {required && <span className={styles.highlight}> *</span>}
             </Label>
             <Input className={styles.input} style={{ width }} data-size={size} type={type} autoComplete={autoComplete} />
-            {error && <FieldError className={styles.error}>{error.message}</FieldError>}
+            {error && <FieldError className={styles.error}>{error}</FieldError>}
         </TextField>
     );
 };

@@ -50,10 +50,10 @@ export const EditGoalModal = ({ goal, trigger }: EditGoalModalProps) => {
     );
 };
 
-const mapGoalToFormInitialValues = ({ deadline, name, points }: Goal) => {
+const mapGoalToFormInitialValues = ({ deadline, name, target }: Goal) => {
     return {
         deadline: deadline ?? undefined,
         name,
-        target: points.target,
+        target,
     };
 };

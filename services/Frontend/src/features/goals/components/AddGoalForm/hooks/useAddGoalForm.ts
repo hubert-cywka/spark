@@ -1,8 +1,8 @@
 import { useMemo } from "react";
-import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
+import { useAdaptedForm } from "@/hooks/useAdaptedForm";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 export type AddGoalFormInputs = {
@@ -16,7 +16,7 @@ export const DEFAULT_TARGET_VALUE = 10;
 const NAME_MIN_LENGTH = 3;
 const NAME_MAX_LENGTH = 90;
 
-export const useAddGoalForm = (initialValue?: AddGoalFormInputs) => {
+export const useAddGoalForm = () => {
     const t = useTranslate();
 
     const requirements = useMemo(
@@ -47,11 +47,10 @@ export const useAddGoalForm = (initialValue?: AddGoalFormInputs) => {
         [t]
     );
 
-    return useForm<AddGoalFormInputs>({
+    return useAdaptedForm<AddGoalFormInputs>({
         resolver: yupResolver<AddGoalFormInputs>(requirements),
         defaultValues: {
             target: DEFAULT_TARGET_VALUE,
-            ...initialValue,
         },
     });
 };

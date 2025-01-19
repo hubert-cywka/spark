@@ -2,7 +2,6 @@ import { Calendar, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Plus 
 
 import styles from "./styles/DailyListHeader.module.scss";
 
-import { Icon } from "@/components/Icon";
 import { IconButton } from "@/components/IconButton";
 
 type DailyListHeaderProps = {
@@ -20,25 +19,23 @@ export const DailyListHeader = ({ timeframeStart, onNextTimeframe, onPrevTimefra
     return (
         <div className={styles.headerWrapper}>
             <div className={styles.buttons}>
-                <IconButton onPress={onCreateNewDaily} variant="confirm">
-                    <Icon slot={Plus} />
-                </IconButton>
-                <IconButton isDisabled={isCurrentYearAndMonth} onPress={onReset} variant="secondary">
-                    <Icon slot={Calendar} />
-                </IconButton>
+                <IconButton onPress={onCreateNewDaily} variant="confirm" iconSlot={Plus} />
+                <IconButton isDisabled={isCurrentYearAndMonth} onPress={onReset} variant="secondary" iconSlot={Calendar} />
 
-                <IconButton variant="secondary" onPress={() => onPrevTimeframe(12)} className={styles.changeYearButton}>
-                    <Icon slot={ChevronsLeft} />
-                </IconButton>
-                <IconButton variant="secondary" onPress={() => onPrevTimeframe(1)}>
-                    <Icon slot={ChevronLeft} />
-                </IconButton>
-                <IconButton variant="secondary" onPress={() => onNextTimeframe(1)}>
-                    <Icon slot={ChevronRight} />
-                </IconButton>
-                <IconButton variant="secondary" onPress={() => onNextTimeframe(12)} className={styles.changeYearButton}>
-                    <Icon slot={ChevronsRight} />
-                </IconButton>
+                <IconButton
+                    variant="secondary"
+                    onPress={() => onPrevTimeframe(12)}
+                    className={styles.changeYearButton}
+                    iconSlot={ChevronsLeft}
+                />
+                <IconButton variant="secondary" onPress={() => onPrevTimeframe(1)} iconSlot={ChevronLeft} />
+                <IconButton variant="secondary" onPress={() => onNextTimeframe(1)} iconSlot={ChevronRight} />
+                <IconButton
+                    variant="secondary"
+                    onPress={() => onNextTimeframe(12)}
+                    className={styles.changeYearButton}
+                    iconSlot={ChevronsRight}
+                />
             </div>
 
             <h1 className={styles.header}>

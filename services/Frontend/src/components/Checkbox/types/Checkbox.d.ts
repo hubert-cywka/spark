@@ -1,9 +1,8 @@
 import { ReactNode } from "react";
-import { Control, FieldValues, Path } from "react-hook-form";
+import { CheckboxProps as BaseCheckboxProps } from "react-aria-components";
 
-export type CheckboxProps<T extends FieldValues> = {
-    name: Path<T>;
-    control: Control<T>;
+export type CheckboxProps = BaseCheckboxProps & {
     required?: boolean;
     children?: ReactNode;
+    error?: string;
 };

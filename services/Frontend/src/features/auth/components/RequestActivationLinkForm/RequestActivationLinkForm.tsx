@@ -13,7 +13,11 @@ import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 export const RequestActivationLinkForm = () => {
     const t = useTranslate();
-    const { control, handleSubmit } = useRequestAccountActivationLinkForm();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useRequestAccountActivationLinkForm();
     const { mutateAsync, isPending, isSuccess } = useRequestAccountActivationToken();
     const { onRequestActivationError, onRequestActivationSuccess } = useRequestAccountActivationTokenEvents();
 
@@ -34,11 +38,11 @@ export const RequestActivationLinkForm = () => {
             <div className={sharedStyles.fieldsWrapper}>
                 <Field
                     label={t("authentication.common.fields.email.label")}
-                    name="email"
-                    control={control}
                     autoComplete="email"
                     size="3"
                     required
+                    {...register("email")}
+                    error={errors.email?.message}
                 />
             </div>
 

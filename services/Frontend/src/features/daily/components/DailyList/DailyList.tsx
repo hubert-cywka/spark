@@ -10,14 +10,14 @@ import { useDailiesEvents } from "@/features/daily/components/DailyList/hooks/us
 import { useDailyDateRange } from "@/features/daily/components/DailyList/hooks/useDailyDateRange";
 import { useDailyEntriesEvents } from "@/features/daily/components/DailyList/hooks/useDailyEntriesEvents";
 import { useDailyEntriesPlaceholders } from "@/features/daily/components/DailyList/hooks/useDailyEntriesPlaceholders";
-import { useNavigationBetweenEntries } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
+import { DailyEntryColumn, useNavigationBetweenEntries } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
 import { getEntryElementId, getEntryPlaceholderElementId } from "@/features/daily/components/DailyList/utils/dailyEntriesSelectors";
 import { DaySkeleton } from "@/features/daily/components/Day";
 import { Day } from "@/features/daily/components/Day/Day";
 import { useGetDailiesByDateRange } from "@/features/daily/hooks/useGetDailiesByDateRange";
 import { getFormattedDailyDate } from "@/features/daily/utils/dateUtils";
 import { DailyEntry, DailyEntryPlaceholder } from "@/features/entries/components/DailyEntry";
-import { useGetDailyEntriesByDateRange } from "@/features/entries/hooks/useGetDailyEntriesByDateRange";
+import { useGetDailyEntriesByDateRange } from "@/features/entries/hooks";
 
 // TODO: Create dailies in more user-friendly way
 // TODO: Improve UX of navigation between entries
@@ -91,8 +91,7 @@ export const DailyList = () => {
                             onDelete={onDeleteEntry}
                             onChangeStatus={onUpdateEntryStatus}
                             onSaveContent={onUpdateEntryContent}
-                            onFocusCheckbox={() => navigateByIndex("checkbox", daily.id, index)}
-                            onFocusInput={() => navigateByIndex("input", daily.id, index)}
+                            onFocusColumn={(column: DailyEntryColumn) => navigateByIndex(column, daily.id, index)}
                             onNavigateDown={(target) => navigateByIndex(target, daily.id, index + 1)}
                             onNavigateUp={(target) => navigateByIndex(target, daily.id, index - 1)}
                         />

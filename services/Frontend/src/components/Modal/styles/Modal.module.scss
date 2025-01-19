@@ -15,8 +15,7 @@
     .modal {
         .dialog {
             color: tokens.$color-neutral-text-100;
-            background: tokens.$color-neutral-background-100;
-            backdrop-filter: blur(5px);
+            background: tokens.$color-neutral-surface-300;
 
             padding: tokens.$spacing-600;
             border: 1px solid tokens.$color-neutral-surface-100;

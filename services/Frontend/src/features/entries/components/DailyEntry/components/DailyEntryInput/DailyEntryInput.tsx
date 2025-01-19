@@ -3,6 +3,8 @@ import TextareaAutosize from "react-textarea-autosize";
 
 import styles from "./styles/DailyEntryInput.module.scss";
 
+import { DailyEntryColumn } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
+
 const CONTENT_UPDATE_DEBOUNCE = 2000;
 
 type DailyEntryInputProps = {
@@ -13,6 +15,7 @@ type DailyEntryInputProps = {
     onSaveContent: (content: string) => void;
     onDelete: () => void;
     placeholder: string;
+    column: DailyEntryColumn;
 };
 
 // TODO: Clear this mess
@@ -24,6 +27,7 @@ export const DailyEntryInput = ({
     onSaveContent,
     onDelete,
     placeholder,
+    column,
 }: DailyEntryInputProps) => {
     const [content, setContent] = useState(initialContent);
     const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -100,7 +104,7 @@ export const DailyEntryInput = ({
 
     return (
         <TextareaAutosize
-            data-entry-column-input
+            data-entry-column={column}
             onChange={(e) => handleContentChange(e.target.value)}
             onKeyDown={handleKeyDown}
             onBlur={handleBlur}

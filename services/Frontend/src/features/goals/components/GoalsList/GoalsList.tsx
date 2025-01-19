@@ -8,7 +8,7 @@ import { ItemLoader } from "@/components/ItemLoader/ItemLoader";
 import { GoalCard } from "@/features/goals/components/GoalCard/GoalCard";
 import { GoalCardSkeleton } from "@/features/goals/components/GoalCard/GoalCardSkeleton";
 import { GoalsManagementFloatingBar } from "@/features/goals/components/GoalsManagementFloatingBar/GoalsManagementFloatingBar";
-import { useGoals } from "@/features/goals/hooks/get/useGoals";
+import { useGoals } from "@/features/goals/hooks/useGoals/useGoals";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 
 // TODO: Handle empty state, handle error state

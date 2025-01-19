@@ -1,8 +1,6 @@
-import { Type } from "class-transformer";
-import { IsBoolean, IsDateString, IsString, IsUUID, ValidateNested } from "class-validator";
+import { IsDateString, IsNumber, IsString, IsUUID } from "class-validator";
 
 import { IsNullable } from "@/lib/validation";
-import { PointsDto } from "@/modules/journal/goals/dto/Points.dto";
 
 export class GoalDto {
     @IsUUID("4")
@@ -14,12 +12,8 @@ export class GoalDto {
     @IsString()
     name!: string;
 
-    @IsBoolean()
-    isAccomplished!: boolean;
-
-    @ValidateNested()
-    @Type(() => PointsDto)
-    points!: PointsDto;
+    @IsNumber()
+    target!: number;
 
     @IsDateString()
     @IsNullable()

@@ -25,15 +25,11 @@ export const useUpdateGoal = () => {
                                 }
 
                                 const deadline = variables.deadline ? new Date(variables.deadline) : null;
-                                const points = {
-                                    ...goal.points,
-                                    target: variables.target,
-                                };
                                 return {
                                     ...goal,
                                     name: variables.name,
+                                    target: variables.target,
                                     deadline,
-                                    points,
                                 };
                             }),
                         };

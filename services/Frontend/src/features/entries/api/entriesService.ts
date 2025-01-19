@@ -6,32 +6,34 @@ import { UpdateEntryStatusRequestDto } from "@/features/entries/api/dto/UpdateEn
 import { Entry } from "@/features/entries/types/Entry";
 import { apiClient } from "@/lib/apiClient/apiClient";
 
+const PAGE_SIZE = 100;
+
 export class EntriesService {
     public static async getPageByDateRange(from: string, to: string, page: number) {
-        const { data } = await apiClient.get<PageDto<EntryDto>>(`/entry?from=${from}&to=${to}&page=${page}&take=${100}&order=DESC`);
-        return { ...data, data: data.data.map(EntriesService.mapDtoToGoal) };
+        const { data } = await apiClient.get<PageDto<EntryDto>>(`/entry?from=${from}&to=${to}&page=${page}&take=${PAGE_SIZE}&order=DESC`);
+        return { ...data, data: data.data.map(EntriesService.mapDtoToEntry) };
     }
 
     public static async createOne({ dailyId, ...dto }: CreateEntryRequestDto & { dailyId: string }) {
         const { data } = await apiClient.post(`/daily/${dailyId}/entry`, dto);
-        return EntriesService.mapDtoToGoal(data);
+        return EntriesService.mapDtoToEntry(data);
     }
 
     public static async updateContent({ entryId, dailyId, ...dto }: UpdateEntryContentRequestDto & { entryId: string; dailyId: string }) {
         const { data } = await apiClient.patch(`/daily/${dailyId}/entry/${entryId}/content`, dto);
-        return EntriesService.mapDtoToGoal(data);
+        return EntriesService.mapDtoToEntry(data);
     }
 
     public static async updateStatus({ entryId, dailyId, ...dto }: UpdateEntryStatusRequestDto & { entryId: string; dailyId: string }) {
         const { data } = await apiClient.patch(`/daily/${dailyId}/entry/${entryId}/completed`, dto);
-        return EntriesService.mapDtoToGoal(data);
+        return EntriesService.mapDtoToEntry(data);
     }
 
     public static async deleteOne({ entryId, dailyId }: { entryId: string; dailyId: string }) {
         await apiClient.delete(`/daily/${dailyId}/entry/${entryId}`);
     }
 
-    private static mapDtoToGoal(dto: EntryDto): Entry {
+    private static mapDtoToEntry(dto: EntryDto): Entry {
         return {
             id: dto.id,
             dailyId: dto.dailyId,

@@ -1,0 +1,25 @@
+@use "src/styles/tokens";
+
+.dialog {
+    padding: tokens.$spacing-400;
+    border-radius: tokens.$radius-200;
+
+    color: tokens.$color-neutral-text-100;
+    background: tokens.$color-neutral-surface-300;
+    border: 1px solid tokens.$color-neutral-surface-100;
+
+    &:focus-visible {
+        outline: 2px solid tokens.$color-accent-solid-300;
+    }
+}
+
+.arrow {
+    fill: tokens.$color-neutral-surface-300;
+    margin-bottom: -1px;
+
+    &[data-placement="top"] {
+        svg {
+            transform: rotateX(180deg);
+        }
+    }
+}

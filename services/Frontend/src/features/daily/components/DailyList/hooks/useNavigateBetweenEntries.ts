@@ -2,7 +2,7 @@ import { getEntryElementId, getEntryPlaceholderElementId } from "@/features/dail
 import { Entry } from "@/features/entries/types/Entry";
 import { onNextTick } from "@/utils/onNextTick";
 
-export type DailyEntryColumn = "input" | "checkbox";
+export type DailyEntryColumn = "input" | "checkbox" | "expand";
 
 type UseNavigationBetweenEntries = {
     entriesByDaily: Record<string, Entry[]>;
@@ -38,9 +38,9 @@ export const useNavigationBetweenEntries = ({ entriesByDaily, onBottomLeft, onBo
 };
 
 const getEntryFocusableElement = (column: DailyEntryColumn, entryId: string) => {
-    return document.querySelector(`#${getEntryElementId(entryId)} > [data-entry-column-${column}]`) as HTMLElement | null;
+    return document.querySelector(`#${getEntryElementId(entryId)} [data-entry-column="${column}"]`) as HTMLElement | null;
 };
 
 const getEntryPlaceholderFocusableElement = (column: DailyEntryColumn, dailyId: string) => {
-    return document.querySelector(`#${getEntryPlaceholderElementId(dailyId)} > [data-entry-column-${column}]`) as HTMLElement | null;
+    return document.querySelector(`#${getEntryPlaceholderElementId(dailyId)} [data-entry-column="${column}"]`) as HTMLElement | null;
 };

@@ -17,7 +17,11 @@ type UpdatePasswordFormProps = {
 
 export const UpdatePasswordForm = ({ passwordChangeToken }: UpdatePasswordFormProps) => {
     const t = useTranslate();
-    const { handleSubmit, control } = useUpdatePasswordForm();
+    const {
+        handleSubmit,
+        register,
+        formState: { errors },
+    } = useUpdatePasswordForm();
     const { mutateAsync, isPending, isSuccess } = useUpdatePassword();
     const { onPasswordUpdateError, onPasswordUpdateSuccess } = useUpdatePasswordEvents();
 
@@ -38,19 +42,19 @@ export const UpdatePasswordForm = ({ passwordChangeToken }: UpdatePasswordFormPr
             <div className={sharedStyles.fieldsWrapper}>
                 <Field
                     label={t("authentication.common.fields.password.label")}
-                    name="password"
+                    {...register("password")}
                     type="password"
-                    control={control}
                     size="3"
                     required
+                    error={errors.password?.message}
                 />
                 <Field
                     label={t("authentication.common.fields.confirmPassword.label")}
-                    name="confirmPassword"
+                    {...register("confirmPassword")}
                     type="password"
-                    control={control}
                     size="3"
                     required
+                    error={errors.confirmPassword?.message}
                 />
             </div>
 
