@@ -6,11 +6,15 @@ import { Goal } from "@/features/goals/types/Goal";
 import { apiClient } from "@/lib/apiClient/apiClient";
 
 export class GoalsService {
-    public static async getPage(page: number, { entries, excludeEntries, name, pageSize }: GoalsQueryFilters = {}) {
+    public static async getPage(page: number, { entries, excludeEntries, name, pageSize, withProgress }: GoalsQueryFilters = {}) {
         const searchParams = new URLSearchParams({
             order: "DESC",
             page: String(page),
         });
+
+        if (withProgress) {
+            searchParams.append("withProgress", "true");
+        }
 
         if (entries) {
             searchParams.append("entries", entries.join(","));
@@ -57,6 +61,8 @@ export class GoalsService {
             name: dto.name,
             createdAt: new Date(dto.createdAt),
             target: dto.target,
+            targetProgress: dto.targetProgress ?? 0,
+            isAccomplished: dto.isTargetMet ?? false,
             deadline: dto.deadline ? new Date(dto.deadline) : null,
         };
     }

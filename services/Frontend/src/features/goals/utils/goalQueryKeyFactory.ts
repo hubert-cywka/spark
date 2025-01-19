@@ -7,8 +7,18 @@ export class GoalQueryKeyFactory {
         return [BASE_QUERY_KEY];
     }
 
-    public static createForFiltered({ entries = [], excludeEntries = [], name = "", pageSize }: GoalsQueryFilters = {}) {
+    public static createForFiltered({
+        entries = [],
+        excludeEntries = [],
+        name = "",
+        pageSize,
+        withProgress = false,
+    }: GoalsQueryFilters = {}) {
         const queryKey = [BASE_QUERY_KEY];
+
+        if (withProgress) {
+            queryKey.push("withProgress");
+        }
 
         if (entries) {
             queryKey.push(...entries.map((id) => `entryId:${id}`));

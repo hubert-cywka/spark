@@ -1,5 +1,5 @@
 import { Transform, Type } from "class-transformer";
-import { IsArray, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsArray, IsBoolean, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class FindGoalsFiltersDto {
     @IsOptional()
@@ -19,4 +19,9 @@ export class FindGoalsFiltersDto {
     @IsOptional()
     @IsString()
     readonly name?: string;
+
+    @IsOptional()
+    @IsBoolean()
+    @Type(() => Boolean)
+    readonly withProgress?: boolean;
 }

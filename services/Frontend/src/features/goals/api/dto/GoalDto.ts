@@ -3,6 +3,8 @@ export type GoalDto = {
     authorId: string;
     name: string;
     target: number;
+    targetProgress?: number;
+    isTargetMet?: boolean;
     deadline: string | null;
     createdAt: string;
     updatedAt: string;

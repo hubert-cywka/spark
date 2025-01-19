@@ -13,7 +13,9 @@ import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 
 // TODO: Handle empty state, handle error state
 export const GoalsList = () => {
-    const { data, fetchNextPage, isFetching, hasNextPage } = useGoals();
+    const { data, fetchNextPage, isFetching, hasNextPage } = useGoals({
+        withProgress: true,
+    });
     const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
 
     const goals = data?.pages?.flatMap(({ data }) => data);

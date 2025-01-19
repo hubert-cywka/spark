@@ -50,7 +50,11 @@ export const GoalCard = ({ goal, isSelected, onSelection }: GoalCardProps) => {
             })}
             size="1"
         >
-            <Target className={classNames(styles.icon)} />
+            <Target
+                className={classNames(styles.icon, {
+                    [styles.accomplished]: goal.isAccomplished,
+                })}
+            />
 
             <div className={styles.nameContainer}>
                 <p className={styles.deadline}>
@@ -58,15 +62,21 @@ export const GoalCard = ({ goal, isSelected, onSelection }: GoalCardProps) => {
                         ? `${t("goals.card.deadline.until")} ${goal.deadline.toLocaleDateString()}`
                         : t("goals.card.deadline.noDeadline")}
                 </p>
-                <p className={classNames(styles.name)}>{goal.name}</p>
+                <p
+                    className={classNames(styles.name, {
+                        [styles.accomplished]: goal.isAccomplished,
+                    })}
+                >
+                    {goal.name}
+                </p>
             </div>
 
             <div className={styles.progress}>
                 <p className={styles.pointsWrapper}>
-                    <span className={classNames(styles.points, styles.current)}>0</span>
+                    <span className={classNames(styles.points, styles.current)}>{goal.targetProgress}</span>
                     <span className={classNames(styles.points, styles.target)}> / {goal.target}</span>
                 </p>
-                <Progress label={t("goals.card.progress.label")} value={(0 / goal.target) * 100} />
+                <Progress label={t("goals.card.progress.label")} value={(goal.targetProgress / goal.target) * 100} />
             </div>
         </Card>
     );

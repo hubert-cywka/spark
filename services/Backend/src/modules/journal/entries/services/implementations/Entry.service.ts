@@ -59,7 +59,7 @@ export class EntryService implements IEntryService {
         };
     }
 
-    // TODO: Don't save Entry if Daily is soft-removed
+    // FIXME: Don't save/update/delete Entry if Daily is soft-removed
     public async create(authorId: string, dailyId: string, content: string): Promise<Entry> {
         const result = await this.getRepository()
             .createQueryBuilder()
