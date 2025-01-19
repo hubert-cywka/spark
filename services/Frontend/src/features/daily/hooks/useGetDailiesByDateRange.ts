@@ -19,6 +19,7 @@ export const useGetDailiesByDateRange = ({ from, to }: UseGetDailiesByDateRangeO
             queryFn: async ({ pageParam }) => await DailyService.getPage(from, to, pageParam),
             getNextPageParam: getNextPage,
             getPreviousPageParam: getPreviousPage,
+            staleTime: 0, // TODO: Can this be optimized?
         }),
         queryKey,
     };

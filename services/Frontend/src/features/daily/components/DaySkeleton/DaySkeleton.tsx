@@ -1,9 +1,9 @@
 import Skeleton from "react-loading-skeleton";
 import classNames from "clsx";
 
-import styles from "./styles/Day.module.scss";
+import styles from "./styles/DaySkeleton.module.scss";
 
-import { DayHeaderSkeleton } from "@/features/daily/components/Day/components/DayHeader/DayHeaderSkeleton";
+import { DayHeaderSkeleton } from "@/features/daily/components/DayHeader/DayHeaderSkeleton";
 
 type DaySkeletonProps = {
     count?: number;

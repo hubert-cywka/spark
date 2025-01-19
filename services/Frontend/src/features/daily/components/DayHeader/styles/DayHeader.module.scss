@@ -27,14 +27,6 @@
         gap: tokens.$spacing-200;
     }
 
-    .updateLabel {
-        background: tokens.$color-info-solid-100;
-        padding: tokens.$spacing-200 tokens.$spacing-400;
-        border-radius: tokens.$radius-400;
-
-        font: tokens.$typography-caption-200;
-    }
-
     &.skeleton {
         .skeletonHeader {
             display: inline-block;

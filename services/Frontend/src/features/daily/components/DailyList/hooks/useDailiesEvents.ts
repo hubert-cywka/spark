@@ -3,6 +3,8 @@ import dayjs from "dayjs";
 
 import { useCreateDaily } from "@/features/daily/hooks/useCreateDaily";
 import { useCreateDailyEvents } from "@/features/daily/hooks/useCreateDailyEvents";
+import { useUpdateDailyDate } from "@/features/daily/hooks/useUpdateDailyDate";
+import { useUpdateDailyDateEvents } from "@/features/daily/hooks/useUpdateDailyDateEvents";
 import { getFormattedDailyDate } from "@/features/daily/utils/dateUtils";
 
 type UseDailiesEvents = {
@@ -14,6 +16,18 @@ type UseDailiesEvents = {
 export const useDailiesEvents = ({ queryKey, endDate, startDate }: UseDailiesEvents) => {
     const { onCreateDailyError, onCreateDailySuccess } = useCreateDailyEvents();
     const { mutateAsync: createDaily } = useCreateDaily({ queryKey });
+
+    const { mutateAsync: updateDate } = useUpdateDailyDate({ queryKey });
+    const { onUpdateDailyDateError, onUpdateDailyDateSuccess } = useUpdateDailyDateEvents();
+
+    const onUpdateDailyDate = async (id: string, date: string) => {
+        try {
+            await updateDate({ id, date });
+            onUpdateDailyDateSuccess();
+        } catch (err) {
+            onUpdateDailyDateError(err);
+        }
+    };
 
     const onCreateNewDaily = async () => {
         let newDailyDate = dayjs();
@@ -32,5 +46,5 @@ export const useDailiesEvents = ({ queryKey, endDate, startDate }: UseDailiesEve
         }
     };
 
-    return { onCreateNewDaily };
+    return { onCreateNewDaily, onUpdateDailyDate };
 };
