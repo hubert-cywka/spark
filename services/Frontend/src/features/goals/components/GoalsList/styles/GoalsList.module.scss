@@ -1,8 +1,26 @@
 @use "src/styles/tokens";
 
+.header {
+    font: tokens.$typography-title-200;
+    margin-bottom: tokens.$spacing-200;
+    margin-top: tokens.$spacing-600;
+}
+
 .list {
-    width: 100%;
     display: flex;
     flex-direction: column;
-    gap: tokens.$spacing-300;
+    gap: tokens.$spacing-400;
+
+    padding: 0;
+    margin: 0;
+
+    .listItem {
+        display: flex;
+        gap: tokens.$spacing-400;
+
+        .navigationCard {
+            display: flex;
+            align-items: center;
+        }
+    }
 }

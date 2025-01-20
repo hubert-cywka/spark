@@ -13,7 +13,7 @@ import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 type GoalCardProps = {
     goal: Goal;
     isSelected: boolean;
-    onSelection?: () => unknown;
+    onSelection?: (goalId: string) => unknown;
 };
 
 export const GoalCard = ({ goal, isSelected, onSelection }: GoalCardProps) => {
@@ -22,7 +22,7 @@ export const GoalCard = ({ goal, isSelected, onSelection }: GoalCardProps) => {
 
     const handleOnEnter = () => {
         if (isFocused.current) {
-            onSelection?.();
+            onSelection?.(goal.id);
         }
     };
 
@@ -44,7 +44,7 @@ export const GoalCard = ({ goal, isSelected, onSelection }: GoalCardProps) => {
             onFocus={handleFocus}
             onBlur={handleBlur}
             tabIndex={0}
-            onClick={onSelection}
+            onClick={() => onSelection?.(goal.id)}
             className={classNames(styles.container, {
                 [styles.selected]: isSelected,
             })}

@@ -5,7 +5,6 @@ import styles from "./styles/Popover.module.scss";
 
 type PopoverProps = Omit<BasePopoverProps, "trigger"> & PropsWithChildren<{ trigger: ReactNode }>;
 
-// TODO: Style + fix arrow
 export const Popover = ({ children, trigger, ...rest }: PopoverProps) => {
     return (
         <DialogTrigger>

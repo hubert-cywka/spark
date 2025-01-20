@@ -4,12 +4,12 @@ import "server-only";
 import { Container } from "@/components/Container";
 import { onlyAsAuthenticated } from "@/features/auth/hoc/withAuthorization";
 import { AddGoalPanel } from "@/features/goals/components/AddGoalPanel/AddGoalPanel";
-import { GoalsList } from "@/features/goals/components/GoalsList/GoalsList";
+import { GoalsDashboard } from "@/features/goals/components/GoalsDashboard";
 
 function Page() {
     return (
         <Container className={styles.container}>
-            <GoalsList />
+            <GoalsDashboard />
 
             <div className={styles.sidePanel}>
                 <AddGoalPanel />

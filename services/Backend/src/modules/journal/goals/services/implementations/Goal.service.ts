@@ -23,7 +23,7 @@ export class GoalService implements IGoalService {
         @Inject(GoalMapperToken) private readonly goalMapper: IGoalMapper
     ) {}
 
-    // TODO: Load number of finished entries conditionally
+    // TODO: Sort goals by completed if 'withProgress' is set to true
     public async findAll(
         authorId: string,
         pageOptions: PageOptions,
@@ -61,7 +61,7 @@ export class GoalService implements IGoalService {
             });
         }
 
-        queryBuilder.orderBy("goal.createdAt", pageOptions.order).skip(pageOptions.skip).take(pageOptions.take);
+        queryBuilder.addOrderBy("goal.createdAt", pageOptions.order).skip(pageOptions.skip).take(pageOptions.take);
 
         const [goals, itemCount] = await queryBuilder.getManyAndCount();
 

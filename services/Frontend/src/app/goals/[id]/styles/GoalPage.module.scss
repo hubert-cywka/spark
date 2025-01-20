@@ -1,0 +1,8 @@
+@use "src/styles/tokens";
+
+.container {
+    width: 100%;
+    display: flex;
+    gap: tokens.$spacing-600;
+    flex-direction: column;
+}

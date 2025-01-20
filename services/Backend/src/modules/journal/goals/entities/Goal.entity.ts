@@ -39,6 +39,8 @@ export class GoalEntity {
 
     @ManyToOne((type) => AuthorEntity, (author) => author.goals)
     author!: Relation<AuthorEntity>;
+
+    @Column({ type: "uuid" })
     authorId!: string;
 
     @ManyToMany((type) => EntryEntity, (entry) => entry.goals)
