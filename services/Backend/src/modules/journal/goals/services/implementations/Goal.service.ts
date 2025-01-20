@@ -23,6 +23,7 @@ export class GoalService implements IGoalService {
         @Inject(GoalMapperToken) private readonly goalMapper: IGoalMapper
     ) {}
 
+    // TODO: Sort goals by completed if 'withProgress' is set to true
     public async findAll(
         authorId: string,
         pageOptions: PageOptions,

@@ -3,6 +3,7 @@ export enum AppRoute {
 
     DAILY = "/daily",
     GOALS = "/goals",
+    GOAL = "/goals/:id",
 
     LOGIN = "/authentication/login",
     REGISTER = "/authentication/register",

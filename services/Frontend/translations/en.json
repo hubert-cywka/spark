@@ -269,6 +269,20 @@
         }
     },
     "goals": {
+        "list": {
+            "section": {
+                "accomplished": {
+                    "header": "Accomplished goals ({count})"
+                },
+                "pending": {
+                    "header": "Pending goals ({count})"
+                },
+                "noResults": "No results."
+            },
+            "search": {
+                "placeholder": "Start typing to filter goals..."
+            }
+        },
         "update": {
             "notifications": {
                 "error": {
