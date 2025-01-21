@@ -1,24 +1,19 @@
-import { InfiniteData, QueryKey, useMutation } from "@tanstack/react-query";
+import { InfiniteData, useMutation } from "@tanstack/react-query";
 
 import { PageDto } from "@/api/dto/PageDto";
 import { EntriesService } from "@/features/entries/api/entriesService";
 import { Entry } from "@/features/entries/types/Entry";
+import { EntriesQueryKeyFactory } from "@/features/entries/utils/entriesQueryKeyFactory";
 import { useQueryCache } from "@/hooks/useQueryCache";
 
-type UseCreateEntryOptions = {
-    queryKey?: QueryKey;
-};
+const queryKey = EntriesQueryKeyFactory.createForAll();
 
-export const useCreateEntry = ({ queryKey }: UseCreateEntryOptions) => {
+export const useCreateEntry = () => {
     const { update } = useQueryCache();
 
     return useMutation({
         mutationFn: EntriesService.createOne,
         onSuccess: async (createdEntry) => {
-            if (!queryKey) {
-                return;
-            }
-
             return await update<InfiniteData<PageDto<Entry>>>(queryKey, ({ pages, pageParams }) => {
                 const lastPage = pages[pages.length - 1];
                 const newFirstPage = {

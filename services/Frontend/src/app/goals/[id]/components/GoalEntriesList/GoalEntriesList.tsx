@@ -1,5 +1,3 @@
-import { QueryKey } from "@tanstack/react-query";
-
 import styles from "./styles/GoalEntriesList.module.scss";
 
 import { useDailyEntriesEvents } from "@/features/daily/components/DailyList/hooks/useDailyEntriesEvents";
@@ -11,21 +9,16 @@ import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 type GoalEntriesListProps = {
     entries: Entry[];
-    // TODO: I don't like those props
     goalId: string;
-    queryKey: QueryKey;
 };
 
 // TODO: Handle loading state
-export const GoalEntriesList = ({ entries, goalId, queryKey }: GoalEntriesListProps) => {
+export const GoalEntriesList = ({ entries, goalId }: GoalEntriesListProps) => {
     const t = useTranslate();
 
+    const { onUpdateEntryContent, onDeleteEntry, onUpdateEntryStatus } = useDailyEntriesEvents();
     const { navigateByIndex } = useNavigationBetweenEntries({
         entriesGroups: { [goalId]: entries },
-    });
-
-    const { onUpdateEntryContent, onDeleteEntry, onUpdateEntryStatus } = useDailyEntriesEvents({
-        queryKey,
     });
 
     return (

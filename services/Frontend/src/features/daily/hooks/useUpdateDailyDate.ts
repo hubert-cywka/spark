@@ -1,24 +1,19 @@
-import { InfiniteData, QueryKey, useMutation } from "@tanstack/react-query";
+import { InfiniteData, useMutation } from "@tanstack/react-query";
 
 import { PageDto } from "@/api/dto/PageDto";
 import { DailyService } from "@/features/daily/api/dailyService";
 import { Daily } from "@/features/daily/types/Daily";
+import { DailyQueryKeyFactory } from "@/features/daily/utils/dailyQueryKeyFactory";
 import { useQueryCache } from "@/hooks/useQueryCache";
 
-type UseUpdateDailyDateOptions = {
-    queryKey?: QueryKey;
-};
+const queryKey = DailyQueryKeyFactory.createForAll();
 
-export const useUpdateDailyDate = ({ queryKey }: UseUpdateDailyDateOptions) => {
+export const useUpdateDailyDate = () => {
     const { update, revert } = useQueryCache();
 
     return useMutation({
         mutationFn: DailyService.updateDate,
         onMutate: async (variables) => {
-            if (!queryKey) {
-                return;
-            }
-
             return await update<InfiniteData<PageDto<Daily>>>(queryKey, (previousData) => {
                 if (!previousData) {
                     return;
@@ -45,11 +40,7 @@ export const useUpdateDailyDate = ({ queryKey }: UseUpdateDailyDateOptions) => {
             });
         },
         onError: async (_error, _variables, context) => {
-            if (!queryKey) {
-                return;
-            }
-
-            await revert(queryKey, context);
+            revert(context);
         },
     });
 };

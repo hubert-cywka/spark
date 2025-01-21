@@ -15,20 +15,24 @@ type EntriesProps = {
 
 // TODO: Handle errors and empty state
 export const GoalPageDashboard = ({ goalId }: EntriesProps) => {
-    const { data, queryKey } = useEntries({ goals: [goalId] });
+    const { data } = useEntries({ goals: [goalId] });
     const entries = data?.pages.flatMap((page) => page.data) ?? [];
 
     const { data: goal } = useGoal({ goalId });
 
     if (!goal) {
-        return <Spinner />;
+        return (
+            <div className={styles.spinnerWrapper}>
+                <Spinner />
+            </div>
+        );
     }
 
     return (
         <div className={styles.container}>
             <GoalPageHeader goalName={goal.name} />
             <GoalCard goal={goal} />
-            <GoalEntriesList entries={entries} goalId={goalId} queryKey={queryKey} />
+            <GoalEntriesList entries={entries} goalId={goalId} />
         </div>
     );
 };

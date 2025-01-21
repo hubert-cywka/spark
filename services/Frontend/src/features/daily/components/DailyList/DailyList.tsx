@@ -40,7 +40,7 @@ export const DailyList = () => {
 
     const dailies = useMemo(() => dailyData?.pages?.flatMap((page) => page.data) ?? [], [dailyData?.pages]);
 
-    const { data: entriesGroups, queryKey: entriesQueryKey } = useGetDailyEntriesByDateRange({
+    const { data: entriesGroups } = useGetDailyEntriesByDateRange({
         from: getFormattedDailyDate(startDate),
         to: getFormattedDailyDate(endDate),
         autoFetch: true,
@@ -52,16 +52,13 @@ export const DailyList = () => {
         startDate,
     });
 
+    const { onCreateEntry, onUpdateEntryContent, onDeleteEntry, onUpdateEntryStatus } = useDailyEntriesEvents();
     const { placeholders, addPlaceholder, removePlaceholder } = useDailyEntriesPlaceholders();
 
     const { navigateByIndex, navigateByEntryId } = useNavigationBetweenEntries({
         entriesGroups,
         onBottomLeft: removePlaceholder,
         onBottomReached: addPlaceholder,
-    });
-
-    const { onCreateEntry, onUpdateEntryContent, onDeleteEntry, onUpdateEntryStatus } = useDailyEntriesEvents({
-        queryKey: entriesQueryKey,
     });
 
     const onSavePlaceholder = async (dailyId: string, content: string) => {
