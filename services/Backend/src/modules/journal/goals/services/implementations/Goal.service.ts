@@ -29,10 +29,7 @@ export class GoalService implements IGoalService {
         pageOptions: PageOptions,
         { entries, excludeEntries, name, withProgress }: GoalFilters = {}
     ): Promise<Paginated<Goal>> {
-        const queryBuilder = this.getRepository()
-            .createQueryBuilder("goal")
-            .where("goal.authorId = :authorId", { authorId })
-            .andWhere("goal.deletedAt IS NULL");
+        const queryBuilder = this.getRepository().createQueryBuilder("goal").where("goal.authorId = :authorId", { authorId });
 
         if (withProgress) {
             queryBuilder
@@ -76,9 +73,14 @@ export class GoalService implements IGoalService {
     }
 
     public async findOneById(authorId: string, goalId: string): Promise<Goal> {
-        const goal = await this.getRepository().findOne({
-            where: { id: goalId, author: { id: authorId } },
-        });
+        const queryBuilder = this.getRepository()
+            .createQueryBuilder("goal")
+            .where("goal.id = :goalId", { goalId })
+            .andWhere("goal.authorId = :authorId", { authorId })
+            .leftJoinAndSelect("goal.entries", "completedEntry", "completedEntry.isCompleted = true")
+            .addSelect(["completedEntry.id"]);
+
+        const goal = await queryBuilder.getOne();
 
         if (!goal) {
             this.logger.warn({ authorId, goalId }, "Goal not found.");

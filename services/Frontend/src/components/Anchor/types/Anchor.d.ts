@@ -1,4 +1,7 @@
-import { PropsWithChildren } from "react";
+import { CSSProperties, PropsWithChildren } from "react";
 import { LinkProps } from "next/link";
 
-export type AnchorProps = PropsWithChildren<LinkProps> & { className?: string };
+export type AnchorProps = PropsWithChildren<LinkProps> & {
+    className?: string;
+    style?: CSSProperties;
+};

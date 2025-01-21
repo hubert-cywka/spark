@@ -268,6 +268,17 @@
             }
         }
     },
+    "goal": {
+        "navigation": {
+            "goals": {
+                "label": "Goals"
+            }
+        },
+        "entries": {
+            "header": "Entries",
+            "noResults": "No entries found."
+        }
+    },
     "goals": {
         "list": {
             "section": {

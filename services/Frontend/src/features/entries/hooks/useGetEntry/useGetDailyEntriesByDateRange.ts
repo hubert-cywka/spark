@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { useGetEntriesByDateRange } from "@/features/entries/hooks";
+import { useEntries } from "@/features/entries/hooks";
 import { Entry } from "@/features/entries/types/Entry";
 import { useAutoFetch } from "@/hooks/useAutoFetch";
 
@@ -11,7 +11,7 @@ type UseGetDailyEntriesByDateRangeOptions = {
 };
 
 export const useGetDailyEntriesByDateRange = ({ from, to, autoFetch }: UseGetDailyEntriesByDateRangeOptions) => {
-    const { data: entriesData, hasNextPage, fetchNextPage, ...rest } = useGetEntriesByDateRange({ from, to });
+    const { data: entriesData, hasNextPage, fetchNextPage, ...rest } = useEntries({ from, to });
     useAutoFetch({
         shouldFetch: !!autoFetch && hasNextPage,
         fetch: fetchNextPage,

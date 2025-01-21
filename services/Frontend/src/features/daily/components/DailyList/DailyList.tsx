@@ -40,21 +40,22 @@ export const DailyList = () => {
 
     const dailies = useMemo(() => dailyData?.pages?.flatMap((page) => page.data) ?? [], [dailyData?.pages]);
 
-    const { data: dailyEntriesMap, queryKey: entriesQueryKey } = useGetDailyEntriesByDateRange({
+    const { data: entriesGroups, queryKey: entriesQueryKey } = useGetDailyEntriesByDateRange({
         from: getFormattedDailyDate(startDate),
         to: getFormattedDailyDate(endDate),
         autoFetch: true,
     });
 
-    const { placeholders, addPlaceholder, removePlaceholder } = useDailyEntriesPlaceholders();
     const { onCreateNewDaily, onUpdateDailyDate } = useDailiesEvents({
         queryKey,
         endDate,
         startDate,
     });
 
+    const { placeholders, addPlaceholder, removePlaceholder } = useDailyEntriesPlaceholders();
+
     const { navigateByIndex, navigateByEntryId } = useNavigationBetweenEntries({
-        entriesByDaily: dailyEntriesMap,
+        entriesGroups,
         onBottomLeft: removePlaceholder,
         onBottomReached: addPlaceholder,
     });
@@ -85,9 +86,8 @@ export const DailyList = () => {
             {dailies.map((daily) => (
                 <div className={styles.day} key={daily.id}>
                     <DayHeader daily={daily} onUpdateDate={onUpdateDailyDate} />
-
                     <ul className={styles.entries}>
-                        {dailyEntriesMap[daily.id]?.map((entry, index) => (
+                        {entriesGroups[daily.id]?.map((entry, index) => (
                             <DailyEntry
                                 id={getEntryElementId(entry.id)}
                                 entry={entry}
@@ -101,12 +101,12 @@ export const DailyList = () => {
                             />
                         ))}
 
-                        {(!dailyEntriesMap[daily.id]?.length || placeholders.includes(daily.id)) && (
+                        {(!entriesGroups[daily.id]?.length || placeholders.includes(daily.id)) && (
                             <DailyEntryPlaceholder
                                 id={getEntryPlaceholderElementId(daily.id)}
                                 onDelete={() => removePlaceholder(daily.id)}
                                 onSaveContent={(content) => onSavePlaceholder(daily.id, content)}
-                                onNavigateUp={() => navigateByIndex("input", daily.id, dailyEntriesMap[daily.id]?.length - 1)}
+                                onNavigateUp={() => navigateByIndex("input", daily.id, entriesGroups[daily.id]?.length - 1)}
                                 onNavigateDown={() => navigateByIndex("input", daily.id, Infinity)}
                             />
                         )}

@@ -7,36 +7,8 @@ export class GoalQueryKeyFactory {
         return [BASE_QUERY_KEY];
     }
 
-    public static createForFiltered({
-        entries = [],
-        excludeEntries = [],
-        name = "",
-        pageSize,
-        withProgress = false,
-    }: GoalsQueryFilters = {}) {
-        const queryKey = [BASE_QUERY_KEY];
-
-        if (withProgress) {
-            queryKey.push("withProgress");
-        }
-
-        if (entries) {
-            queryKey.push(...entries.map((id) => `entryId:${id}`));
-        }
-
-        if (excludeEntries) {
-            queryKey.push(...excludeEntries.map((id) => `excludedEntryId:${id}`));
-        }
-
-        if (name) {
-            queryKey.push(`name:${name}`);
-        }
-
-        if (pageSize) {
-            queryKey.push(`pageSize:${pageSize}`);
-        }
-
-        return queryKey;
+    public static createForFiltered(filters: GoalsQueryFilters = {}) {
+        return [BASE_QUERY_KEY, filters];
     }
 
     public static createForOne(id: string) {

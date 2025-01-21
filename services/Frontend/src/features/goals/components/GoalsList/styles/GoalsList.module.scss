@@ -19,8 +19,9 @@
         gap: tokens.$spacing-400;
 
         .navigationCard {
-            display: flex;
+            height: 100%;
             align-items: center;
+            display: flex;
         }
     }
 }

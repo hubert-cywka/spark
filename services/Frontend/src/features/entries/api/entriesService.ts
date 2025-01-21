@@ -3,14 +3,33 @@ import { CreateEntryRequestDto } from "@/features/entries/api/dto/CreateEntryReq
 import { EntryDto } from "@/features/entries/api/dto/EntryDto";
 import { UpdateEntryContentRequestDto } from "@/features/entries/api/dto/UpdateEntryContentRequestDto";
 import { UpdateEntryStatusRequestDto } from "@/features/entries/api/dto/UpdateEntryStatusRequestDto";
+import { EntriesQueryFilters } from "@/features/entries/api/types/EntriesQueryFilters";
 import { Entry } from "@/features/entries/types/Entry";
 import { apiClient } from "@/lib/apiClient/apiClient";
 
 const PAGE_SIZE = 100;
 
 export class EntriesService {
-    public static async getPageByDateRange(from: string, to: string, page: number) {
-        const { data } = await apiClient.get<PageDto<EntryDto>>(`/entry?from=${from}&to=${to}&page=${page}&take=${PAGE_SIZE}&order=DESC`);
+    public static async getPage(page: number, { from, to, goals }: EntriesQueryFilters = {}) {
+        const searchParams = new URLSearchParams({
+            order: "DESC",
+            page: String(page),
+            take: String(PAGE_SIZE),
+        });
+
+        if (from) {
+            searchParams.append("from", from);
+        }
+
+        if (to) {
+            searchParams.append("to", to);
+        }
+
+        if (goals) {
+            searchParams.append("goals", goals.join(","));
+        }
+
+        const { data } = await apiClient.get<PageDto<EntryDto>>(`/entry?${searchParams}`);
         return { ...data, data: data.data.map(EntriesService.mapDtoToEntry) };
     }
 

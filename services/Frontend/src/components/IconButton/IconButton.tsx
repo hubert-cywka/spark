@@ -1,3 +1,5 @@
+"use client";
+
 import clsx from "clsx";
 
 import styles from "./styles/IconButton.module.scss";

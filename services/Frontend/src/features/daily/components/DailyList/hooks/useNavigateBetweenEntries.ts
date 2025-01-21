@@ -5,31 +5,31 @@ import { onNextTick } from "@/utils/onNextTick";
 export type DailyEntryColumn = "input" | "checkbox" | "expand";
 
 type UseNavigationBetweenEntries = {
-    entriesByDaily: Record<string, Entry[]>;
-    onBottomReached: (dailyId: string) => void;
-    onBottomLeft: (dailyId: string) => void;
+    entriesGroups: Record<string, Entry[]>;
+    onBottomReached?: (group: string) => void;
+    onBottomLeft?: (group: string) => void;
 };
 
-export const useNavigationBetweenEntries = ({ entriesByDaily, onBottomLeft, onBottomReached }: UseNavigationBetweenEntries) => {
+export const useNavigationBetweenEntries = ({ entriesGroups, onBottomLeft, onBottomReached }: UseNavigationBetweenEntries) => {
     const navigateByEntryId = (column: DailyEntryColumn, entryId: string) => {
-        getEntryFocusableElement(column, entryId)?.focus();
+        onNextTick(() => getEntryFocusableElement(column, entryId)?.focus());
     };
 
-    const navigateByIndex = (column: DailyEntryColumn, dailyId: string, targetIndex: number) => {
-        const entries = entriesByDaily[dailyId];
+    const navigateByIndex = (column: DailyEntryColumn, group: string, targetIndex: number) => {
+        const entries = entriesGroups[group];
 
-        if (!entries || targetIndex < 0) {
-            onNextTick(() => getEntryPlaceholderFocusableElement("input", dailyId)?.focus());
+        if (!entries?.length || targetIndex < 0) {
+            onNextTick(() => getEntryPlaceholderFocusableElement("input", group)?.focus());
             return;
         }
 
         if (targetIndex >= entries.length) {
-            onBottomReached(dailyId);
-            onNextTick(() => getEntryPlaceholderFocusableElement("input", dailyId)?.focus());
+            onBottomReached?.(group);
+            onNextTick(() => getEntryPlaceholderFocusableElement("input", group)?.focus());
             return;
         }
 
-        onBottomLeft(dailyId);
+        onBottomLeft?.(group);
         const targetEntry = entries[targetIndex];
         getEntryFocusableElement(column, targetEntry.id)?.focus();
     };
@@ -41,6 +41,6 @@ const getEntryFocusableElement = (column: DailyEntryColumn, entryId: string) => 
     return document.querySelector(`#${getEntryElementId(entryId)} [data-entry-column="${column}"]`) as HTMLElement | null;
 };
 
-const getEntryPlaceholderFocusableElement = (column: DailyEntryColumn, dailyId: string) => {
-    return document.querySelector(`#${getEntryPlaceholderElementId(dailyId)} [data-entry-column="${column}"]`) as HTMLElement | null;
+const getEntryPlaceholderFocusableElement = (column: DailyEntryColumn, group: string) => {
+    return document.querySelector(`#${getEntryPlaceholderElementId(group)} [data-entry-column="${column}"]`) as HTMLElement | null;
 };

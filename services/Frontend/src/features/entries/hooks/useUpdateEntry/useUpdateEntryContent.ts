@@ -9,6 +9,7 @@ type UseUpdateEntryOptions = {
     queryKey?: QueryKey;
 };
 
+// TODO: Fix cache invalidation where applicable
 export const useUpdateEntryContent = ({ queryKey }: UseUpdateEntryOptions) => {
     const { revert, update } = useQueryCache();
 
