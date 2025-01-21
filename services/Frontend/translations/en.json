@@ -147,6 +147,12 @@
                         "label": "Daily"
                     }
                 },
+                "settings": {
+                    "label": "Settings",
+                    "alerts": {
+                        "label": "Alerts"
+                    }
+                },
                 "auth": {
                     "label": "Authentication",
                     "login": {
@@ -265,6 +271,14 @@
                 "success": {
                     "title": "Daily and it's entries have been deleted"
                 }
+            }
+        }
+    },
+    "settings": {
+        "navigation": {
+            "label": "Settings",
+            "alerts": {
+                "label": "Alerts"
             }
         }
     },

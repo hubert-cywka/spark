@@ -3,22 +3,29 @@
 .container {
     width: 100%;
     display: flex;
+    flex-direction: column;
     gap: tokens.$spacing-600;
-    flex-direction: column-reverse;
 
-    .sidePanel {
+    .dashboardWrapper {
+        width: 100%;
         display: flex;
-        flex-direction: column;
-        gap: tokens.$spacing-300;
-        height: fit-content;
-    }
-
-    @media (min-width: tokens.$breakpoint-sm) {
-        flex-direction: row;
+        gap: tokens.$spacing-600;
+        flex-direction: column-reverse;
 
         .sidePanel {
-            position: sticky;
-            top: tokens.$spacing-400;
+            display: flex;
+            flex-direction: column;
+            gap: tokens.$spacing-300;
+            height: fit-content;
+        }
+
+        @media (min-width: tokens.$breakpoint-sm) {
+            flex-direction: row;
+
+            .sidePanel {
+                position: sticky;
+                top: tokens.$spacing-400;
+            }
         }
     }
 }
