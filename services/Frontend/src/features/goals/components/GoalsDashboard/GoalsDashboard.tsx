@@ -62,7 +62,7 @@ export const GoalsDashboard = () => {
 
             <GoalsList
                 header={t("goals.list.section.pending.header", {
-                    count: accomplishedGoals.length,
+                    count: pendingGoals.length,
                 })}
                 goals={pendingGoals}
                 onSelectGoal={setSelectedGoalId}
