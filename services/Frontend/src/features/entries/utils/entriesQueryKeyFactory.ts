@@ -1,3 +1,5 @@
+import { EntriesQueryFilters } from "@/features/entries/api/types/EntriesQueryFilters";
+
 const BASE_QUERY_KEY = "entry";
 
 export class EntriesQueryKeyFactory {
@@ -5,7 +7,7 @@ export class EntriesQueryKeyFactory {
         return [BASE_QUERY_KEY];
     }
 
-    public static createForDateRange(from: string, to: string) {
-        return [BASE_QUERY_KEY, { from, to }];
+    public static createForFiltered(filters: EntriesQueryFilters) {
+        return [BASE_QUERY_KEY, filters];
     }
 }

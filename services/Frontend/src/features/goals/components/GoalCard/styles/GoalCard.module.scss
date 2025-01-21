@@ -33,7 +33,6 @@
     overflow: hidden;
 
     &:hover {
-        cursor: pointer;
         border-color: tokens.$color-neutral-solid-100;
     }
 
@@ -43,6 +42,10 @@
 
     &.selected:not(:focus) {
         border-color: tokens.$color-success-solid-100;
+    }
+
+    &.selectable {
+        cursor: pointer;
     }
 
     .icon {
