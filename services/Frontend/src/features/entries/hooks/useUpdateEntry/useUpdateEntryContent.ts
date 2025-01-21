@@ -1,25 +1,20 @@
-import { InfiniteData, QueryKey, useMutation } from "@tanstack/react-query";
+import { InfiniteData, useMutation } from "@tanstack/react-query";
 
 import { PageDto } from "@/api/dto/PageDto";
 import { EntriesService } from "@/features/entries/api/entriesService";
 import { Entry } from "@/features/entries/types/Entry";
+import { EntriesQueryKeyFactory } from "@/features/entries/utils/entriesQueryKeyFactory";
 import { useQueryCache } from "@/hooks/useQueryCache";
 
-type UseUpdateEntryOptions = {
-    queryKey?: QueryKey;
-};
+const queryKey = EntriesQueryKeyFactory.createForAll();
 
 // TODO: Fix cache invalidation where applicable
-export const useUpdateEntryContent = ({ queryKey }: UseUpdateEntryOptions) => {
+export const useUpdateEntryContent = () => {
     const { revert, update } = useQueryCache();
 
     return useMutation({
         mutationFn: EntriesService.updateContent,
         onMutate: async ({ entryId, content }) => {
-            if (!queryKey) {
-                return;
-            }
-
             return await update<InfiniteData<PageDto<Entry>>>(queryKey, ({ pages, pageParams }) => {
                 const newPages =
                     pages.map((page) => {
@@ -32,11 +27,7 @@ export const useUpdateEntryContent = ({ queryKey }: UseUpdateEntryOptions) => {
             });
         },
         onError: (_error, _variables, context) => {
-            if (!queryKey) {
-                return;
-            }
-
-            revert(queryKey, context);
+            revert(context);
         },
     });
 };

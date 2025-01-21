@@ -5,32 +5,36 @@ export const useQueryCache = () => {
     const queryClient = useQueryClient();
 
     const update = useCallback(
-        async <T>(queryKey: QueryKey, updateFn: (previousValue: T) => T | undefined) => {
-            await queryClient.cancelQueries({ queryKey });
-            const previousItems = queryClient.getQueryData(queryKey);
+        async <T>(partialQueryKey: QueryKey, updateFn: (previousValue: T) => T | undefined) => {
+            const matchingQueries = queryClient.getQueryCache().findAll({ queryKey: partialQueryKey });
 
-            if (updateFn) {
-                queryClient.setQueryData(queryKey, updateFn);
-            }
+            const updatedItems = matchingQueries.map((query) => {
+                const queryKey = query.queryKey;
+                queryClient.cancelQueries({ queryKey });
 
-            return { previousItems };
+                const previousItems = queryClient.getQueryData<T>(queryKey);
+
+                if (previousItems && updateFn) {
+                    queryClient.setQueryData<T>(queryKey, updateFn(previousItems));
+                }
+
+                return { queryKey, data: previousItems };
+            });
+
+            return { previousItems: updatedItems };
         },
         [queryClient]
     );
 
     const revert = useCallback(
-        (queryKey: QueryKey, context?: unknown) => {
-            if (!context) {
+        (context?: { previousItems: { queryKey: QueryKey; data: unknown }[] }) => {
+            if (!context || !context.previousItems) {
                 return;
             }
 
-            const items = (context as { previousItems?: unknown }).previousItems;
-
-            if (!items) {
-                return;
-            }
-
-            queryClient.setQueryData(queryKey, items);
+            context.previousItems.forEach(({ queryKey, data }) => {
+                queryClient.setQueryData(queryKey, data);
+            });
         },
         [queryClient]
     );

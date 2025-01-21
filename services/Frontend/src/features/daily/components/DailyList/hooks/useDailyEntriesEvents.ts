@@ -1,5 +1,3 @@
-import { QueryKey } from "@tanstack/react-query";
-
 import { useUpdateEntryStatusEvents } from "@/features/entries/hooks";
 import {
     useCreateEntry,
@@ -12,25 +10,17 @@ import {
 } from "@/features/entries/hooks/";
 import { Entry } from "@/features/entries/types/Entry";
 
-type UseDailyEntriesEvents = {
-    queryKey: QueryKey;
-};
-
-export const useDailyEntriesEvents = ({ queryKey }: UseDailyEntriesEvents) => {
-    const { mutateAsync: createEntry } = useCreateEntry({ queryKey });
+export const useDailyEntriesEvents = () => {
+    const { mutateAsync: createEntry } = useCreateEntry();
     const { onCreateEntryError } = useCreateEntryEvents();
 
-    const { mutateAsync: updateEntryContent } = useUpdateEntryContent({
-        queryKey,
-    });
+    const { mutateAsync: updateEntryContent } = useUpdateEntryContent();
     const { onUpdateEntryContentError } = useUpdateEntryContentEvents();
 
-    const { mutateAsync: deleteEntry } = useDeleteEntry({ queryKey });
+    const { mutateAsync: deleteEntry } = useDeleteEntry();
     const { onDeleteEntryError } = useDeleteEntryEvents();
 
-    const { mutateAsync: updateEntryStatus } = useUpdateEntryStatus({
-        queryKey,
-    });
+    const { mutateAsync: updateEntryStatus } = useUpdateEntryStatus();
     const { onUpdateEntryStatusError } = useUpdateEntryStatusEvents();
 
     const onDeleteEntry = async (dailyId: string, entryId: string) => {

@@ -14,10 +14,10 @@ type UseDailiesEvents = {
 };
 
 export const useDailiesEvents = ({ queryKey, endDate, startDate }: UseDailiesEvents) => {
-    const { onCreateDailyError, onCreateDailySuccess } = useCreateDailyEvents();
     const { mutateAsync: createDaily } = useCreateDaily({ queryKey });
+    const { onCreateDailyError, onCreateDailySuccess } = useCreateDailyEvents();
 
-    const { mutateAsync: updateDate } = useUpdateDailyDate({ queryKey });
+    const { mutateAsync: updateDate } = useUpdateDailyDate();
     const { onUpdateDailyDateError, onUpdateDailyDateSuccess } = useUpdateDailyDateEvents();
 
     const onUpdateDailyDate = async (id: string, date: string) => {
