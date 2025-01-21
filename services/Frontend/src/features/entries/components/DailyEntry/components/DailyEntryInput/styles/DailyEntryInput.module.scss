@@ -1,36 +1,42 @@
 @use "src/styles/tokens";
 
-.input {
+.link {
+    color: tokens.$color-accent-text-200;
+}
+
+.content {
+    color: tokens.$color-neutral-text-200;
     outline: none;
     background: none;
     border: none;
-
     width: 100%;
-    resize: none;
+
     overflow: hidden;
     position: relative;
-
-    color: tokens.$color-neutral-text-200;
 
     &:focus {
         color: tokens.$color-neutral-text-100;
     }
 
-    @keyframes pulsate {
-        0% {
-            opacity: 1;
+    &.editable {
+        resize: none;
+
+        @keyframes pulsate {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
         }
 
-        50% {
-            opacity: 0.5;
+        &:placeholder-shown {
+            animation: pulsate 3s infinite;
         }
-
-        100% {
-            opacity: 1;
-        }
-    }
-
-    &:placeholder-shown {
-        animation: pulsate 3s infinite;
     }
 }

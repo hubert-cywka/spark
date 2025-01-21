@@ -1,8 +1,10 @@
-import { KeyboardEvent, useEffect, useRef, useState } from "react";
+import { FocusEventHandler, KeyboardEvent, MouseEvent, useEffect, useRef, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
+import classNames from "clsx";
 
 import styles from "./styles/DailyEntryInput.module.scss";
 
+import { Anchor } from "@/components/Anchor";
 import { DailyEntryColumn } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
 
 const CONTENT_UPDATE_DEBOUNCE = 2000;
@@ -18,7 +20,6 @@ type DailyEntryInputProps = {
     column: DailyEntryColumn;
 };
 
-// TODO: Clear this mess
 export const DailyEntryInput = ({
     initialContent,
     onNavigateUp,
@@ -30,6 +31,7 @@ export const DailyEntryInput = ({
     column,
 }: DailyEntryInputProps) => {
     const [content, setContent] = useState(initialContent);
+    const [isEditing, setIsEditing] = useState(false);
     const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
     const handleSaveContent = (newContent: string) => {
@@ -54,14 +56,15 @@ export const DailyEntryInput = ({
     };
 
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === "Enter" && !e.shiftKey) {
+        if (isEditing && e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             handleSaveContent(content);
+            setIsEditing(false);
             onNavigateDown();
             return;
         }
 
-        if (e.key === "Backspace" && content === "") {
+        if (isEditing && e.key === "Backspace" && content === "") {
             e.preventDefault();
             onDelete();
             onNavigateUp();
@@ -74,7 +77,7 @@ export const DailyEntryInput = ({
             return;
         }
 
-        if (e.key === "ArrowLeft" && e.currentTarget.selectionStart === 0) {
+        if (isEditing && e.key === "ArrowLeft" && e.currentTarget.selectionStart === 0) {
             e.preventDefault();
             onNavigateLeft?.();
             return;
@@ -87,11 +90,17 @@ export const DailyEntryInput = ({
     };
 
     const handleBlur = () => {
+        setIsEditing(false);
+
         if (!content) {
             onDelete();
         } else {
             handleSaveContent(content);
         }
+    };
+
+    const handleFocus = () => {
+        setIsEditing(true);
     };
 
     useEffect(() => {
@@ -102,15 +111,63 @@ export const DailyEntryInput = ({
         };
     }, []);
 
+    if (isEditing) {
+        return (
+            <TextareaAutosize
+                data-entry-column={column}
+                onChange={(e) => handleContentChange(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onBlur={handleBlur}
+                onFocus={setSelectionOnLastCharacter}
+                className={classNames(styles.content, styles.editable)}
+                placeholder={placeholder}
+                value={content}
+                autoFocus
+            />
+        );
+    }
+
     return (
-        <TextareaAutosize
+        <span
+            tabIndex={0}
             data-entry-column={column}
-            onChange={(e) => handleContentChange(e.target.value)}
+            className={styles.content}
+            onMouseDown={preventFocusOnLinkClick}
             onKeyDown={handleKeyDown}
-            onBlur={handleBlur}
-            className={styles.input}
-            placeholder={placeholder}
-            value={content}
-        />
+            onFocus={handleFocus}
+        >
+            {onRenderContent(content)}
+        </span>
     );
+};
+
+const setSelectionOnLastCharacter: FocusEventHandler<HTMLTextAreaElement> = (e) => {
+    const target = e.target;
+    target.setSelectionRange(target.value.length, target.value.length);
+};
+
+const preventFocusOnLinkClick = (e: MouseEvent<HTMLSpanElement>) => {
+    const target = e.target as HTMLElement;
+
+    if (target.tagName === "A") {
+        e.preventDefault();
+    }
+};
+
+const onRenderContent = (text: string) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = text.split(urlRegex);
+
+    return parts.map((part, index) => {
+        if (urlRegex.test(part)) {
+            const displayText = part.replace(/https?:\/\//, "");
+
+            return (
+                <Anchor href={part} target="_blank" rel="noopener noreferrer" className={styles.link} key={index}>
+                    {displayText}
+                </Anchor>
+            );
+        }
+        return <span key={index}>{part}</span>;
+    });
 };
