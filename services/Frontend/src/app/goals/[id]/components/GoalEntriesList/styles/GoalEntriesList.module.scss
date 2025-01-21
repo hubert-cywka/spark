@@ -4,6 +4,10 @@
     display: flex;
     flex-direction: column;
 
+    .header {
+        font: tokens.$typography-title-100;
+    }
+
     .entries {
         margin-top: tokens.$spacing-300;
         list-style: none;

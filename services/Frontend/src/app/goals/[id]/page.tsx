@@ -1,7 +1,7 @@
 import styles from "./styles/GoalPage.module.scss";
 import "server-only";
 
-import { Entries } from "@/app/goals/[id]/Entries";
+import { GoalPageDashboard } from "@/app/goals/[id]/components/GoalPageDashboard";
 import { Container } from "@/components/Container";
 import { onlyAsAuthenticated } from "@/features/auth/hoc/withAuthorization";
 
@@ -10,7 +10,7 @@ async function Page({ params }: { params: Promise<{ id: string }> }) {
 
     return (
         <Container className={styles.container}>
-            <Entries goalId={goalId} />
+            <GoalPageDashboard goalId={goalId} />
         </Container>
     );
 }

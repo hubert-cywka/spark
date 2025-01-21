@@ -12,7 +12,7 @@ type UseNavigationBetweenEntries = {
 
 export const useNavigationBetweenEntries = ({ entriesGroups, onBottomLeft, onBottomReached }: UseNavigationBetweenEntries) => {
     const navigateByEntryId = (column: DailyEntryColumn, entryId: string) => {
-        getEntryFocusableElement(column, entryId)?.focus();
+        onNextTick(() => getEntryFocusableElement(column, entryId)?.focus());
     };
 
     const navigateByIndex = (column: DailyEntryColumn, group: string, targetIndex: number) => {
