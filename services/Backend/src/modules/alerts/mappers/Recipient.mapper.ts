@@ -1,0 +1,30 @@
+import { plainToClass } from "class-transformer";
+
+import { BaseModelDTOEntityMapper } from "@/common/mappers/BaseModelDTOEntity.mapper";
+import { RecipientDto } from "@/modules/alerts/dto/Recipient.dto";
+import { RecipientEntity } from "@/modules/alerts/entities/RecipientEntity";
+import { type IRecipientMapper } from "@/modules/alerts/mappers/IRecipient.mapper";
+import { type Recipient } from "@/modules/alerts/models/Recipient.model";
+
+export class RecipientMapper extends BaseModelDTOEntityMapper<Recipient, RecipientDto, RecipientEntity> implements IRecipientMapper {
+    fromDtoToModel(dto: RecipientDto): Recipient {
+        return {
+            id: dto.id,
+            email: dto.email,
+        };
+    }
+
+    fromEntityToModel(entity: RecipientEntity): Recipient {
+        return {
+            id: entity.id,
+            email: entity.email,
+        };
+    }
+
+    fromModelToDto(model: Recipient): RecipientDto {
+        return plainToClass(RecipientDto, {
+            id: model.id,
+            email: model.email,
+        });
+    }
+}

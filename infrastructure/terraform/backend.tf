@@ -122,6 +122,11 @@ resource "kubernetes_deployment" "backend" {
                     }
 
                     env {
+                        name  = "ALERTS_DATABASE_NAME"
+                        value = var.ALERTS_DATABASE_NAME
+                    }
+
+                    env {
                         name  = "MAIL_DATABASE_NAME"
                         value = var.MAIL_DATABASE_NAME
                     }

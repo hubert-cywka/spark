@@ -27,6 +27,16 @@ export const AppConfig = () => ({
     },
 
     modules: {
+        alerts: {
+            database: {
+                port: process.env.DATABASE_PORT,
+                username: process.env.DATABASE_USERNAME,
+                password: process.env.DATABASE_PASSWORD,
+                host: process.env.DATABASE_HOST,
+                name: process.env.ALERTS_DATABASE_NAME,
+            },
+        },
+
         mail: {
             isDebugMode: process.env.MAIL_DEBUG_MODE === "true",
             sender: {

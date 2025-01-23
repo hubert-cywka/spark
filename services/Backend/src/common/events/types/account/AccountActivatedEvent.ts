@@ -1,6 +1,4 @@
-import { IntegrationEvent } from "../IntegrationEvent";
-
-import { IntegrationEventTopics } from "@/common/events";
+import { IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 
 export type AccountActivatedEventPayload = {
     id: string;

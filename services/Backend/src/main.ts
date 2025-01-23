@@ -59,6 +59,10 @@ async function bootstrap() {
                         name: "account",
                         subjects: [IntegrationEventTopics.account.all],
                     },
+                    {
+                        name: "alert",
+                        subjects: [IntegrationEventTopics.alert.all],
+                    },
                 ],
             }),
         })

@@ -4,23 +4,16 @@ import { Interval } from "@nestjs/schedule";
 import { SkipThrottle } from "@nestjs/throttler";
 import { NatsJetStreamContext } from "@nestjs-plugins/nestjs-nats-jetstream-transport";
 
-import {
-    type IEventInbox,
-    EventInboxToken,
-    IInboxEventHandler,
-    InboxEventHandlersToken,
-    IntegrationEvent,
-    IntegrationEventTopics,
-} from "@/common/events";
+import { IInboxEventHandler, InboxEventHandlersToken, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import { type IEventInbox, EventInboxToken } from "@/common/events/services/interfaces/IEventInbox";
 import { HydratePipe } from "@/common/pipes/Hydrate.pipe";
 
-const INBOX_PROCESSING_INTERVAL = 5000;
+const INBOX_PROCESSING_INTERVAL = 10_000;
 
-// TODO: There is some duplication in all pubsub subscribers
 @Controller()
 @SkipThrottle()
-export class MailSubscriber {
-    private readonly logger = new Logger(MailSubscriber.name);
+export class AlertsSubscriber {
+    private readonly logger = new Logger(AlertsSubscriber.name);
 
     public constructor(
         @Inject(EventInboxToken)
@@ -29,13 +22,7 @@ export class MailSubscriber {
         private readonly handlers: IInboxEventHandler[]
     ) {}
 
-    @EventPattern([
-        IntegrationEventTopics.account.activation.requested,
-        IntegrationEventTopics.account.password.resetRequested,
-        IntegrationEventTopics.account.password.updated,
-        IntegrationEventTopics.account.activation.completed,
-        IntegrationEventTopics.alert.daily.reminder.triggered,
-    ])
+    @EventPattern([IntegrationEventTopics.account.registration.completed])
     private async onEventReceived(
         @Payload(new HydratePipe(IntegrationEvent)) event: IntegrationEvent,
         @Ctx() context: NatsJetStreamContext

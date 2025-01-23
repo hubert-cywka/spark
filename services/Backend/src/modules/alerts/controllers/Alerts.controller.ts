@@ -1,0 +1,87 @@
+import { Body, Controller, Get, Inject, NotFoundException, Param, ParseUUIDPipe, Patch, Post, UseGuards } from "@nestjs/common";
+
+import { CurrentUser } from "@/common/decorators/CurrentUser.decorator";
+import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
+import { whenError } from "@/common/errors/whenError";
+import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
+import { CreateAlertDto } from "@/modules/alerts/dto/CreateAlert.dto";
+import { UpdateAlertDaysOfWeekDto } from "@/modules/alerts/dto/UpdateAlertDaysOfWeek.dto";
+import { UpdateAlertStatusDto } from "@/modules/alerts/dto/UpdateAlertStatus.dto";
+import { UpdateAlertTimeDto } from "@/modules/alerts/dto/UpdateAlertTime.dto";
+import { type IAlertMapper, AlertMapperToken } from "@/modules/alerts/mappers/IAlert.mapper";
+import { type IAlertService, AlertServiceToken } from "@/modules/alerts/services/interfaces/IAlert.service";
+import { type User } from "@/types/User";
+
+@Controller("alert")
+export class AlertsController {
+    constructor(
+        @Inject(AlertServiceToken) private readonly alertService: IAlertService,
+        @Inject(AlertMapperToken) private readonly alertMapper: IAlertMapper
+    ) {}
+
+    @Get()
+    @UseGuards(new AuthenticationGuard())
+    public async getAlerts(@CurrentUser() user: User) {
+        const result = await this.alertService.getAll(user.id);
+        return this.alertMapper.fromModelToDtoBulk(result);
+    }
+
+    @Post()
+    @UseGuards(new AuthenticationGuard())
+    public async createAlert(@Body() createAlertDto: CreateAlertDto, @CurrentUser() user: User) {
+        const { time, daysOfWeek } = createAlertDto;
+        const result = await this.alertService.create(user.id, time, daysOfWeek);
+        return this.alertMapper.fromModelToDto(result);
+    }
+
+    @Patch(":alertId/status")
+    @UseGuards(new AuthenticationGuard())
+    public async changeAlertStatus(
+        @Param("alertId", new ParseUUIDPipe()) alertId: string,
+        @Body() updateAlertStatusDto: UpdateAlertStatusDto,
+        @CurrentUser() user: User
+    ) {
+        const { enabled } = updateAlertStatusDto;
+
+        try {
+            const result = await this.alertService.changeStatus(user.id, alertId, enabled);
+            return this.alertMapper.fromModelToDto(result);
+        } catch (err) {
+            whenError(err).is(EntityNotFoundError).throw(new NotFoundException()).elseRethrow();
+        }
+    }
+
+    @Patch(":alertId/time")
+    @UseGuards(new AuthenticationGuard())
+    public async changeAlertTime(
+        @Param("alertId", new ParseUUIDPipe()) alertId: string,
+        @Body() updateAlertTimeDto: UpdateAlertTimeDto,
+        @CurrentUser() user: User
+    ) {
+        const { time } = updateAlertTimeDto;
+
+        try {
+            const result = await this.alertService.changeTime(user.id, alertId, time);
+            return this.alertMapper.fromModelToDto(result);
+        } catch (err) {
+            whenError(err).is(EntityNotFoundError).throw(new NotFoundException()).elseRethrow();
+        }
+    }
+
+    @Patch(":alertId/daysOfWeek")
+    @UseGuards(new AuthenticationGuard())
+    public async changeAlertDaysOfWeek(
+        @Param("alertId", new ParseUUIDPipe()) alertId: string,
+        @Body() updateAlertDaysOfWeekDto: UpdateAlertDaysOfWeekDto,
+        @CurrentUser() user: User
+    ) {
+        const { daysOfWeek } = updateAlertDaysOfWeekDto;
+
+        try {
+            const result = await this.alertService.changeDaysOfWeek(user.id, alertId, daysOfWeek);
+            return this.alertMapper.fromModelToDto(result);
+        } catch (err) {
+            whenError(err).is(EntityNotFoundError).throw(new NotFoundException()).elseRethrow();
+        }
+    }
+}

@@ -44,6 +44,8 @@ resource "kubernetes_config_map" "app_config" {
 
         JOURNAL_DATABASE_NAME                               = var.JOURNAL_DATABASE_NAME
 
+        ALERTS_DATABASE_NAME                                = var.ALERTS_DATABASE_NAME
+
         MAIL_DATABASE_NAME                                  = var.MAIL_DATABASE_NAME
 
         FRONTEND_PORT                                       = var.FRONTEND_PORT
