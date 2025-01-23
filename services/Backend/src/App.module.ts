@@ -9,6 +9,7 @@ import { IntegrationEventsModule } from "@/common/events";
 import { ThrottlingGuard } from "@/common/guards/Throttling.guard";
 import { AppConfig } from "@/config/configuration";
 import { loggerOptions } from "@/lib/logger";
+import { AlertsModule } from "@/modules/alerts/Alerts.module";
 import { IdentityModule } from "@/modules/identity/Identity.module";
 import { JournalModule } from "@/modules/journal/Journal.module";
 import { MailModule } from "@/modules/mail/Mail.module";
@@ -55,6 +56,7 @@ import { UsersModule } from "@/modules/users/Users.module";
         MailModule,
         UsersModule,
         JournalModule,
+        AlertsModule,
     ],
     providers: [{ provide: APP_GUARD, useClass: ThrottlingGuard }],
     exports: [],

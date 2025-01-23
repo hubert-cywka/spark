@@ -86,6 +86,10 @@ variable "JOURNAL_DATABASE_NAME" {
     type        = string
 }
 
+variable "ALERTS_DATABASE_NAME" {
+    type        = string
+}
+
 variable "MAIL_DATABASE_NAME" {
     type        = string
 }
