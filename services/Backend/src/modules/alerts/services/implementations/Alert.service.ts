@@ -3,6 +3,7 @@ import { Cron } from "@nestjs/schedule";
 import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc.js";
 
 import { AlertEntity } from "@/modules/alerts/entities/Alert.entity";
 import { Weekday } from "@/modules/alerts/enums/Weekday.enum";
@@ -12,6 +13,8 @@ import { type IAlertMapper, AlertMapperToken } from "@/modules/alerts/mappers/IA
 import { type Alert } from "@/modules/alerts/models/Alert.model";
 import { type IAlertService } from "@/modules/alerts/services/interfaces/IAlert.service";
 import { type IAlertPublisherService, AlertPublisherServiceToken } from "@/modules/alerts/services/interfaces/IAlertPublisher.service";
+
+dayjs.extend(utc);
 
 @Injectable()
 export class AlertService implements IAlertService {
@@ -26,6 +29,7 @@ export class AlertService implements IAlertService {
     public async getAll(recipientId: string): Promise<Alert[]> {
         const result = await this.getRepository().find({
             where: { recipient: { id: recipientId } },
+            order: { createdAt: "DESC" },
         });
         return this.alertMapper.fromEntityToModelBulk(result);
     }
@@ -41,7 +45,6 @@ export class AlertService implements IAlertService {
                 daysOfWeek,
                 time,
                 enabled: true,
-                lastTriggeredAt: dayjs().subtract(1, "day").endOf("day").toDate(),
             })
             .returning("*")
             .execute();
@@ -49,20 +52,35 @@ export class AlertService implements IAlertService {
         return this.alertMapper.fromEntityToModel(result.raw[0]);
     }
 
+    public async delete(recipientId: string, alertId: string): Promise<void> {
+        const result = await this.getRepository().softDelete({
+            id: alertId,
+            recipient: { id: recipientId },
+        });
+
+        if (!result.affected) {
+            throw new AlertNotFoundError();
+        }
+    }
+
     public async changeStatus(recipientId: string, alertId: string, enabled: boolean): Promise<Alert> {
         return this.updatePartially(recipientId, alertId, { enabled });
     }
 
-    public async changeTime(recipientId: string, alertId: string, time: string): Promise<Alert> {
-        return this.updatePartially(recipientId, alertId, { time });
-    }
-
-    public async changeDaysOfWeek(recipientId: string, alertId: string, daysOfWeek: Weekday[]): Promise<Alert> {
-        return this.updatePartially(recipientId, alertId, { daysOfWeek });
+    public async changeTime(recipientId: string, alertId: string, time: string, daysOfWeek: Weekday[]): Promise<Alert> {
+        return this.updatePartially(recipientId, alertId, { time, daysOfWeek });
     }
 
     private async updatePartially(recipientId: string, alertId: string, partialAlert: Partial<AlertEntity>): Promise<Alert> {
-        const result = await this.getRepository().update({ recipient: { id: recipientId }, id: alertId }, partialAlert);
+        const queryBuilder = this.getRepository().createQueryBuilder("alert");
+
+        const result = await queryBuilder
+            .update(AlertEntity)
+            .set(partialAlert)
+            .where("alert.id = :alertId", { alertId })
+            .andWhere("recipient.id = :recipientId", { recipientId })
+            .returning("*")
+            .execute();
 
         if (!result.affected) {
             throw new AlertNotFoundError();
@@ -78,14 +96,15 @@ export class AlertService implements IAlertService {
     // TODO: Move to separate class
     @Cron("*/30 * * * * *")
     private async processAlerts() {
-        const now = new Date();
-        const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const isoTime = now.toISOString().split("T")[1].split("Z")[0];
+        const now = dayjs().utc();
+        const startOfDay = dayjs().startOf("day").toISOString();
+        const isoTime = `${String(now.get("hours")).padStart(2, "0")}:${String(now.get("minutes")).padStart(2, "0")}:${String(now.get("seconds")).padStart(2, "0")}`;
+        const day = now.get("day");
 
         const alertsToProcess = await this.getRepository()
             .createQueryBuilder("alert")
             .leftJoinAndSelect("alert.recipient", "recipient")
-            .where(":day = ANY(alert.daysOfWeek)", { day: now.getDay() })
+            .where(":day = ANY(alert.daysOfWeek)", { day })
             .andWhere("alert.time <= :isoTime", { isoTime })
             .andWhere("alert.lastTriggeredAt IS NULL OR alert.lastTriggeredAt < :startOfDay", { startOfDay })
             .getMany();

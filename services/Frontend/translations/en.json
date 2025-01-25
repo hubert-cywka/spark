@@ -113,6 +113,15 @@
         }
     },
     "common": {
+        "day": {
+            "monday": "Monday",
+            "tuesday": "Tuesday",
+            "wednesday": "Wednesday",
+            "thursday": "Thursday",
+            "friday": "Friday",
+            "saturday": "Saturday",
+            "sunday": "Sunday"
+        },
         "app": {
             "name": "Spark"
         },
@@ -279,6 +288,14 @@
             "label": "Settings",
             "alerts": {
                 "label": "Alerts"
+            }
+        }
+    },
+    "alerts": {
+        "section": {
+            "reminders": {
+                "header": "Reminders",
+                "description": "Regular reminders, triggered always on the same time on the days you select. Finishing your work at 4PM? Set a reminder and we will send you an email, so you can note down your progress."
             }
         }
     },

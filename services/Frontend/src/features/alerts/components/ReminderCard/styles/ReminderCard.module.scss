@@ -1,0 +1,18 @@
+@use "src/styles/tokens";
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: tokens.$spacing-600;
+
+    @media (max-width: tokens.$breakpoint-sm) {
+        flex-direction: column;
+    }
+
+    .wrapper {
+        display: flex;
+        align-items: center;
+        gap: tokens.$spacing-600;
+    }
+}

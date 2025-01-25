@@ -1,0 +1,12 @@
+@use "src/styles/tokens";
+
+.container {
+    display: flex;
+    gap: tokens.$spacing-200;
+
+    .dayButton {
+        border-radius: tokens.$radius-500;
+        height: 2rem;
+        width: 2rem;
+    }
+}
