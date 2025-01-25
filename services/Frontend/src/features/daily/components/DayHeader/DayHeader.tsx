@@ -40,7 +40,7 @@ export const DayHeader = ({ daily, onUpdateDate }: DayHeaderProps) => {
         onEnd: blur,
     });
 
-    const confirmNameUpdate = async () => {
+    const confirmValueUpdate = async () => {
         if (!value || !isInEditMode) {
             return;
         }
@@ -49,10 +49,10 @@ export const DayHeader = ({ daily, onUpdateDate }: DayHeaderProps) => {
         endEditMode();
     };
 
-    const updateNameOnEnter = async (e: KeyboardEvent<HTMLDivElement>) => {
+    const updateValueOnEnter = async (e: KeyboardEvent<HTMLDivElement>) => {
         if (e.key === "Enter" && isInEditMode) {
             e.preventDefault();
-            await confirmNameUpdate();
+            await confirmValueUpdate();
         }
     };
 
@@ -75,7 +75,7 @@ export const DayHeader = ({ daily, onUpdateDate }: DayHeaderProps) => {
                 aria-label={t("daily.day.date.label")}
                 value={value}
                 onChange={setValue}
-                onKeyDown={updateNameOnEnter}
+                onKeyDown={updateValueOnEnter}
                 granularity="day"
                 shouldForceLeadingZeros
                 validationBehavior="aria"
@@ -86,7 +86,7 @@ export const DayHeader = ({ daily, onUpdateDate }: DayHeaderProps) => {
 
             <div className={styles.buttons}>
                 {isInEditMode ? (
-                    <DailyEditModeActions onCancel={cancelEditMode} onSave={confirmNameUpdate} isSaveDisabled={!hasValueChanged} />
+                    <DailyEditModeActions onCancel={cancelEditMode} onSave={confirmValueUpdate} isSaveDisabled={!hasValueChanged} />
                 ) : (
                     <DailyPassiveModeActions daily={daily} onStartEditMode={startEditMode} />
                 )}

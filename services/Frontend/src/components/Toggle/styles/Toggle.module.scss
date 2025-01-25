@@ -1,0 +1,75 @@
+@use "src/styles/tokens";
+
+.switch {
+    display: flex;
+    gap: tokens.$spacing-200;
+    align-items: center;
+
+    color: tokens.$color-neutral-text-100;
+    font-weight: tokens.$font-weight-200;
+
+    &:focus, &:focus-within {
+        .toggleContainer {
+            outline-offset: tokens.$spacing-100;
+            outline: 2px solid tokens.$color-accent-solid-100;
+        }
+    }
+
+    &[data-size="1"] {
+        .toggleContainer {
+            height: 18px;
+            width: 27px;
+        }
+    }
+
+    &[data-size="2"] {
+        .toggleContainer {
+            height: 24px;
+            width: 42px;
+        }
+    }
+
+    &[data-size="3"] {
+        .toggleContainer {
+            height: 30px;
+            width: 56px;
+        }
+    }
+
+    .toggleContainer {
+        box-sizing: border-box;
+        padding: tokens.$spacing-200;
+
+        display: flex;
+        flex-shrink: 0;
+        cursor: pointer;
+
+        border-radius: tokens.$radius-400;
+        border: 1px solid tokens.$color-neutral-surface-300;
+
+        transition: background-color 0.2s ease-in-out;
+        background-clip: padding-box;
+        background-color: tokens.$color-accent-surface-300;
+
+        &:active {
+            background-color: tokens.$color-accent-solid-100;
+        }
+
+        &.selected {
+            background-color: tokens.$color-accent-solid-200;
+        }
+
+        .toggle {
+            height: 100%;
+            aspect-ratio: 1;
+
+            border-radius: tokens.$radius-500;
+            background-color: tokens.$color-accent-text-100;
+            transition: transform 0.2s ease-in-out;
+
+            &.selected {
+                transform: translateX(125%);
+            }
+        }
+    }
+}

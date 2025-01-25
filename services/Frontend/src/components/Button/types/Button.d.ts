@@ -11,4 +11,5 @@ export interface ButtonProps extends BaseButtonProps {
     isLoading?: boolean;
     leftDecorator?: ReactNode;
     rightDecorator?: ReactNode;
+    isPending?: never;
 }
