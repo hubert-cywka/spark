@@ -26,6 +26,11 @@ jobs:
                     - { name: 'frontend', directory: 'services/Frontend', image-repository: "hejs22/codename-frontend" }
                     - { name: 'backend', directory: 'services/Backend', image-repository: "hejs22/codename-backend" }
                     - { name: 'gateway', directory: 'services/Gateway', image-repository: "hejs22/codename-gateway" }
+                    - { name: 'mail-service', directory: 'services/MailService', image-repository: "hejs22/codename-mail-service" }
+                    - { name: 'journal-service', directory: 'services/JournalService', image-repository: "hejs22/codename-journal-service" }
+                    - { name: 'identity-service', directory: 'services/IdentityService', image-repository: "hejs22/codename-identity-service" }
+                    - { name: 'alert-service', directory: 'services/AlertService', image-repository: "hejs22/codename-alert-service" }
+                    - { name: 'user-service', directory: 'services/UserService', image-repository: "hejs22/codename-user-service" }
 
         uses: ./.github/workflows/service.build.yml
         with:
