@@ -13,6 +13,7 @@ import { type IAlertMapper, AlertMapperToken } from "@/modules/alerts/mappers/IA
 import { type Alert } from "@/modules/alerts/models/Alert.model";
 import { type IAlertService } from "@/modules/alerts/services/interfaces/IAlert.service";
 import { type IAlertPublisherService, AlertPublisherServiceToken } from "@/modules/alerts/services/interfaces/IAlertPublisher.service";
+import now = jest.now;
 
 dayjs.extend(utc);
 
@@ -45,6 +46,7 @@ export class AlertService implements IAlertService {
                 daysOfWeek,
                 time,
                 enabled: true,
+                lastTriggeredAt: new Date(),
             })
             .returning("*")
             .execute();
