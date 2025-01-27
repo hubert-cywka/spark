@@ -22,7 +22,7 @@ resource "kubernetes_deployment" "frontend" {
             spec {
                 container {
                     name  = "frontend"
-                    image = "hejs22/codename-frontend:latest"
+                    image = "hejs22/codename-frontend:pr-76"
 
                     port {
                         container_port = var.FRONTEND_PORT

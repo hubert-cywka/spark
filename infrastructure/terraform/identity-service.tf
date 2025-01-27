@@ -23,7 +23,7 @@ resource "kubernetes_deployment" "identity-service" {
             spec {
                 container {
                     name  = "identity-service"
-                    image = "hejs22/codename-identity-service:latest"
+                    image = "hejs22/codename-identity-service:pr-76"
 
                     port {
                         container_port = var.BACKEND_PORT
@@ -159,6 +159,16 @@ resource "kubernetes_deployment" "identity-service" {
                     env {
                         name  = "COOKIES_SECRET"
                         value = var.COOKIES_SECRET
+                    }
+
+                    env {
+                        name  = "GOOGLE_CLIENT_ID"
+                        value = var.GOOGLE_CLIENT_ID
+                    }
+
+                    env {
+                        name  = "GOOGLE_CLIENT_SECRET"
+                        value = var.GOOGLE_CLIENT_SECRET
                     }
                 }
             }

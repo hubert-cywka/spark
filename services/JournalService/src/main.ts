@@ -45,13 +45,13 @@ async function bootstrap() {
             strategy: new NatsJetStreamServer({
                 connectionOptions: {
                     servers: `${config.getOrThrow<string>("pubsub.host")}:${config.getOrThrow<number>("pubsub.port")}`,
-                    name: "codename-listener",
+                    name: "journal-listener",
                 },
                 consumerOptions: {
                     // TODO: Make sure it works as intended - only one replica of this service receives given message
-                    deliverGroup: "codename-group",
-                    durable: "codename-durable",
-                    deliverTo: "codename-messages",
+                    deliverGroup: "journal-group",
+                    durable: "journal-durable",
+                    deliverTo: "journal-messages",
                     manualAck: true,
                 },
                 streamConfig: [

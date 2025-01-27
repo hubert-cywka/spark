@@ -22,7 +22,7 @@ resource "kubernetes_deployment" "gateway" {
             spec {
                 container {
                     name  = "gateway"
-                    image = "hejs22/codename-gateway:latest"
+                    image = "hejs22/codename-gateway:pr-76"
 
                     port {
                         container_port = var.GATEWAY_PORT
