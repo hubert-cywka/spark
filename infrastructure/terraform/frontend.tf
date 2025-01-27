@@ -23,6 +23,7 @@ resource "kubernetes_deployment" "frontend" {
                 container {
                     name  = "frontend"
                     image = "hejs22/codename-frontend:pr-76"
+                    image_pull_policy = "Always"
 
                     port {
                         container_port = var.FRONTEND_PORT

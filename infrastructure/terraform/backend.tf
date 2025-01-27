@@ -24,6 +24,7 @@ resource "kubernetes_deployment" "backend" {
                 container {
                     name  = "backend"
                     image = "hejs22/codename-backend:latest"
+                    image_pull_policy = "Always"
 
                     port {
                         container_port = var.BACKEND_PORT
@@ -159,6 +160,19 @@ resource "kubernetes_deployment" "backend" {
                     env {
                         name  = "COOKIES_SECRET"
                         value = var.COOKIES_SECRET
+                    }
+
+                    env {
+                        name  = "GOOGLE_CLIENT_ID"
+                        value = var.GOOGLE_CLIENT_ID
+                    }
+                    env {
+                        name  = "GOOGLE_CLIENT_SECRET"
+                        value = var.GOOGLE_CLIENT_SECRET
+                    }
+                    env {
+                        name  = "GOOGLE_OIDC_REDIRECT_URL"
+                        value = var.GOOGLE_OIDC_REDIRECT_URL
                     }
                 }
             }

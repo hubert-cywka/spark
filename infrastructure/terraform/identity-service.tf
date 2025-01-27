@@ -24,6 +24,7 @@ resource "kubernetes_deployment" "identity-service" {
                 container {
                     name  = "identity-service"
                     image = "hejs22/codename-identity-service:pr-76"
+                    image_pull_policy = "Always"
 
                     port {
                         container_port = var.BACKEND_PORT
@@ -169,6 +170,11 @@ resource "kubernetes_deployment" "identity-service" {
                     env {
                         name  = "GOOGLE_CLIENT_SECRET"
                         value = var.GOOGLE_CLIENT_SECRET
+                    }
+
+                    env {
+                        name  = "GOOGLE_OIDC_REDIRECT_URL"
+                        value = var.GOOGLE_OIDC_REDIRECT_URL
                     }
                 }
             }

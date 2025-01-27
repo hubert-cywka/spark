@@ -23,6 +23,7 @@ resource "kubernetes_deployment" "gateway" {
                 container {
                     name  = "gateway"
                     image = "hejs22/codename-gateway:pr-76"
+                    image_pull_policy = "Always"
 
                     port {
                         container_port = var.GATEWAY_PORT
