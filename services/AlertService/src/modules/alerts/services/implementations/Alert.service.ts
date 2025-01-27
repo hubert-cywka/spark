@@ -13,7 +13,6 @@ import { type IAlertMapper, AlertMapperToken } from "@/modules/alerts/mappers/IA
 import { type Alert } from "@/modules/alerts/models/Alert.model";
 import { type IAlertService } from "@/modules/alerts/services/interfaces/IAlert.service";
 import { type IAlertPublisherService, AlertPublisherServiceToken } from "@/modules/alerts/services/interfaces/IAlertPublisher.service";
-import now = jest.now;
 
 dayjs.extend(utc);
 
@@ -37,6 +36,10 @@ export class AlertService implements IAlertService {
 
     // TODO: Limit number of alerts per user
     public async create(recipientId: string, time: string, daysOfWeek: Weekday[]): Promise<Alert> {
+        const now = dayjs().utc();
+        const isoTime = `${String(now.get("hours")).padStart(2, "0")}:${String(now.get("minutes")).padStart(2, "0")}:${String(now.get("seconds")).padStart(2, "0")}`;
+        const lastTriggeredAt = time <= isoTime ? new Date() : null;
+
         const result = await this.getRepository()
             .createQueryBuilder()
             .insert()
@@ -46,7 +49,7 @@ export class AlertService implements IAlertService {
                 daysOfWeek,
                 time,
                 enabled: true,
-                lastTriggeredAt: new Date(),
+                lastTriggeredAt,
             })
             .returning("*")
             .execute();
@@ -70,7 +73,15 @@ export class AlertService implements IAlertService {
     }
 
     public async changeTime(recipientId: string, alertId: string, time: string, daysOfWeek: Weekday[]): Promise<Alert> {
-        return this.updatePartially(recipientId, alertId, { time, daysOfWeek });
+        const now = dayjs().utc();
+        const isoTime = `${String(now.get("hours")).padStart(2, "0")}:${String(now.get("minutes")).padStart(2, "0")}:${String(now.get("seconds")).padStart(2, "0")}`;
+        const lastTriggeredAt = time <= isoTime ? new Date() : null;
+
+        return this.updatePartially(recipientId, alertId, {
+            time,
+            daysOfWeek,
+            lastTriggeredAt,
+        });
     }
 
     private async updatePartially(recipientId: string, alertId: string, partialAlert: Partial<AlertEntity>): Promise<Alert> {
@@ -108,7 +119,9 @@ export class AlertService implements IAlertService {
             .leftJoinAndSelect("alert.recipient", "recipient")
             .where(":day = ANY(alert.daysOfWeek)", { day })
             .andWhere("alert.time <= :isoTime", { isoTime })
-            .andWhere("alert.lastTriggeredAt IS NULL OR alert.lastTriggeredAt < :startOfDay", { startOfDay })
+            .andWhere("alert.lastTriggeredAt IS NULL OR alert.lastTriggeredAt < :startOfDay", {
+                startOfDay,
+            })
             .getMany();
 
         for (const alert of alertsToProcess) {
