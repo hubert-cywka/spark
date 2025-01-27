@@ -23,6 +23,7 @@ export const DailyEntryPlaceholder = ({ onSaveContent, onDelete, onNavigateUp, o
                 onSaveContent={onSaveContent}
                 onDelete={onDelete}
                 placeholder={t("entries.placeholder")}
+                enforceEditMode
             />
         </DailyEntryWrapper>
     );

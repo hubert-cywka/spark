@@ -29,13 +29,50 @@ resource "kubernetes_deployment" "gateway" {
                     }
 
                     env {
-                        name  = "BACKEND_ADDRESS"
-                        value = "${kubernetes_service.backend.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
+                        name  = "IDENTITY_SERVICE_ADDRESS"
+                        value = "${kubernetes_service.identity-service.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
                     }
                     env {
-                        name  = "BACKEND_PORT"
+                        name  = "IDENTITY_SERVICE_PORT"
                         value = var.BACKEND_PORT
                     }
+
+                    env {
+                        name  = "ALERT_SERVICE_ADDRESS"
+                        value = "${kubernetes_service.alert-service.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
+                    }
+                    env {
+                        name  = "ALERT_SERVICE_PORT"
+                        value = var.BACKEND_PORT
+                    }
+
+                    env {
+                        name  = "JOURNAL_SERVICE_ADDRESS"
+                        value = "${kubernetes_service.journal-service.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
+                    }
+                    env {
+                        name  = "JOURNAL_SERVICE_PORT"
+                        value = var.BACKEND_PORT
+                    }
+
+                    env {
+                        name  = "MAIL_SERVICE_ADDRESS"
+                        value = "${kubernetes_service.mail-service.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
+                    }
+                    env {
+                        name  = "MAIL_SERVICE_PORT"
+                        value = var.BACKEND_PORT
+                    }
+
+                    env {
+                        name  = "USER_SERVICE_ADDRESS"
+                        value = "${kubernetes_service.user-service.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
+                    }
+                    env {
+                        name  = "USER_SERVICE_PORT"
+                        value = var.BACKEND_PORT
+                    }
+
                     env {
                         name  = "FRONTEND_ADDRESS"
                         value = "${kubernetes_service.frontend.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"

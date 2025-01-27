@@ -67,9 +67,46 @@ static_resources:
                                               status: 204
 
                                         - match:
-                                              prefix: /api
+                                              prefix: /api/auth
                                           route:
-                                              cluster: backend
+                                              cluster: identity-service
+
+                                        -   match:
+                                                prefix: /api/goal
+                                            route:
+                                                cluster: journal-service
+
+                                        -   match:
+                                                prefix: /api/entry
+                                            route:
+                                                cluster: journal-service
+
+                                        -   match:
+                                                prefix: /api/alert
+                                            route:
+                                                cluster: alert-service
+
+                                        -   match:
+                                                prefix: /api/account
+                                            route:
+                                                cluster: identity-service
+
+                                        -   match:
+                                                prefix: /api/open-id-connect
+                                            route:
+                                                cluster: identity-service
+
+
+                                        -   match:
+                                                prefix: /api/daily
+                                            route:
+                                                cluster: journal-service
+
+
+                                        -   match:
+                                                prefix: /api/user
+                                            route:
+                                                cluster: user-service
 
                                         - match:
                                               prefix: /
@@ -96,17 +133,77 @@ static_resources:
                                       address: '${FRONTEND_ADDRESS}'
                                       port_value: '${FRONTEND_PORT}'
 
-        - name: backend
+        - name: alert-service
           connect_timeout: 5s
           type: STRICT_DNS
           dns_lookup_family: V4_ONLY
           lb_policy: ROUND_ROBIN
           load_assignment:
-              cluster_name: backend
+              cluster_name: alert-service
               endpoints:
                   - lb_endpoints:
                         - endpoint:
                               address:
                                   socket_address:
-                                      address: '${BACKEND_ADDRESS}'
-                                      port_value: '${BACKEND_PORT}'
+                                      address: '${ALERT_SERVICE_ADDRESS}'
+                                      port_value: '${ALERT_SERVICE_PORT}'
+
+        -   name: journal-service
+            connect_timeout: 5s
+            type: STRICT_DNS
+            dns_lookup_family: V4_ONLY
+            lb_policy: ROUND_ROBIN
+            load_assignment:
+                cluster_name: journal-service
+                endpoints:
+                    -   lb_endpoints:
+                            -   endpoint:
+                                    address:
+                                        socket_address:
+                                            address: '${JOURNAL_SERVICE_ADDRESS}'
+                                            port_value: '${JOURNAL_SERVICE_PORT}'
+
+        -   name: user-service
+            connect_timeout: 5s
+            type: STRICT_DNS
+            dns_lookup_family: V4_ONLY
+            lb_policy: ROUND_ROBIN
+            load_assignment:
+                cluster_name: user-service
+                endpoints:
+                    -   lb_endpoints:
+                            -   endpoint:
+                                    address:
+                                        socket_address:
+                                            address: '${USER_SERVICE_ADDRESS}'
+                                            port_value: '${USER_SERVICE_PORT}'
+
+        -   name: identity-service
+            connect_timeout: 5s
+            type: STRICT_DNS
+            dns_lookup_family: V4_ONLY
+            lb_policy: ROUND_ROBIN
+            load_assignment:
+                cluster_name: identity-service
+                endpoints:
+                    -   lb_endpoints:
+                            -   endpoint:
+                                    address:
+                                        socket_address:
+                                            address: '${IDENTITY_SERVICE_ADDRESS}'
+                                            port_value: '${IDENTITY_SERVICE_PORT}'
+
+        -   name: mail-service
+            connect_timeout: 5s
+            type: STRICT_DNS
+            dns_lookup_family: V4_ONLY
+            lb_policy: ROUND_ROBIN
+            load_assignment:
+                cluster_name: mail-service
+                endpoints:
+                    -   lb_endpoints:
+                            -   endpoint:
+                                    address:
+                                        socket_address:
+                                            address: '${MAIL_SERVICE_ADDRESS}'
+                                            port_value: '${MAIL_SERVICE_PORT}'

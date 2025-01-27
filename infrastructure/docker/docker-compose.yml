@@ -20,9 +20,59 @@ services:
         networks:
             - services_network
 
-    backend:
+#    backend:
+#        build:
+#            context: ../../services/Backend
+#            dockerfile: Dockerfile
+#        networks:
+#            - services_network
+#        depends_on:
+#            - pubsub
+#            - db
+
+    alert-service:
         build:
-            context: ../../services/Backend
+            context: ../../services/AlertService
+            dockerfile: Dockerfile
+        networks:
+            - services_network
+        depends_on:
+            - pubsub
+            - db
+
+    mail-service:
+        build:
+            context: ../../services/MailService
+            dockerfile: Dockerfile
+        networks:
+            - services_network
+        depends_on:
+            - pubsub
+            - db
+
+    identity-service:
+        build:
+            context: ../../services/IdentityService
+            dockerfile: Dockerfile
+        networks:
+            - services_network
+        depends_on:
+            - pubsub
+            - db
+
+    user-service:
+        build:
+            context: ../../services/UserService
+            dockerfile: Dockerfile
+        networks:
+            - services_network
+        depends_on:
+            - pubsub
+            - db
+
+    journal-service:
+        build:
+            context: ../../services/JournalService
             dockerfile: Dockerfile
         networks:
             - services_network

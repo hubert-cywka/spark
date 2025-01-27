@@ -70,6 +70,10 @@ export const DailyList = () => {
         }
     };
 
+    console.log(entriesGroups);
+    console.log(entriesGroups);
+    console.log(entriesGroups);
+
     return (
         <main className={styles.container}>
             <DailyListHeader

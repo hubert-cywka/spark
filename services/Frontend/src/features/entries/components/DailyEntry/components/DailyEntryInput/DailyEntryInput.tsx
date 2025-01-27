@@ -18,6 +18,7 @@ type DailyEntryInputProps = {
     onDelete: () => void;
     placeholder: string;
     column: DailyEntryColumn;
+    enforceEditMode?: boolean;
 };
 
 export const DailyEntryInput = ({
@@ -29,9 +30,10 @@ export const DailyEntryInput = ({
     onDelete,
     placeholder,
     column,
+    enforceEditMode = false,
 }: DailyEntryInputProps) => {
     const [content, setContent] = useState(initialContent);
-    const [isEditing, setIsEditing] = useState(false);
+    const [isEditing, setIsEditing] = useState(enforceEditMode);
     const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
     const handleSaveContent = (newContent: string) => {
@@ -59,7 +61,7 @@ export const DailyEntryInput = ({
         if (isEditing && e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             handleSaveContent(content);
-            setIsEditing(false);
+            setIsEditing(enforceEditMode);
             onNavigateDown();
             return;
         }
@@ -90,7 +92,7 @@ export const DailyEntryInput = ({
     };
 
     const handleBlur = () => {
-        setIsEditing(false);
+        setIsEditing(enforceEditMode);
 
         if (!content) {
             onDelete();

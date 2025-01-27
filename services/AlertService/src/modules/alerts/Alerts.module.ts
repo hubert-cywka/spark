@@ -1,0 +1,75 @@
+import { Module } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+
+import { DatabaseModule } from "@/common/database/Database.module";
+import { IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule } from "@/common/events";
+import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
+import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import { AlertsSubscriber } from "@/modules/alerts/Alerts.subscriber";
+import { AlertsController } from "@/modules/alerts/controllers/Alerts.controller";
+import { AlertEntity } from "@/modules/alerts/entities/Alert.entity";
+import { RecipientEntity } from "@/modules/alerts/entities/RecipientEntity";
+import { RecipientRegisteredEventHandler } from "@/modules/alerts/events/RecipientRegisteredEvent.handler";
+import { ALERTS_MODULE_DATA_SOURCE } from "@/modules/alerts/infrastructure/database/constants";
+import { InitializeInboxAndOutbox1737489799641 } from "@/modules/alerts/infrastructure/database/migrations/1737489799641-InitializeInboxAndOutbox";
+import { InitializeAlertsDatabase1737493814968 } from "@/modules/alerts/infrastructure/database/migrations/1737493814968-InitializeAlertsDatabase";
+import { ConditionsTableInheritance1737493967162 } from "@/modules/alerts/infrastructure/database/migrations/1737493967162-ConditionsTableInheritance";
+import { FixAlertEntity1737494837758 } from "@/modules/alerts/infrastructure/database/migrations/1737494837758-FixAlertEntity";
+import { CleanUpAlertsModule1737573565566 } from "@/modules/alerts/infrastructure/database/migrations/1737573565566-CleanUpAlertsModule";
+import { FixDaysOfWeekColumnType1737574459955 } from "@/modules/alerts/infrastructure/database/migrations/1737574459955-FixDaysOfWeekColumnType";
+import { AlertMapper } from "@/modules/alerts/mappers/Alert.mapper";
+import { AlertMapperToken } from "@/modules/alerts/mappers/IAlert.mapper";
+import { RecipientMapperToken } from "@/modules/alerts/mappers/IRecipient.mapper";
+import { RecipientMapper } from "@/modules/alerts/mappers/Recipient.mapper";
+import { AlertService } from "@/modules/alerts/services/implementations/Alert.service";
+import { AlertPublisherService } from "@/modules/alerts/services/implementations/AlertPublisher.service";
+import { AlertsEventBoxFactory } from "@/modules/alerts/services/implementations/AlertsEventBox.factory";
+import { RecipientService } from "@/modules/alerts/services/implementations/Recipient.service";
+import { AlertServiceToken } from "@/modules/alerts/services/interfaces/IAlert.service";
+import { AlertPublisherServiceToken } from "@/modules/alerts/services/interfaces/IAlertPublisher.service";
+import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRecipient.service";
+
+@Module({
+    providers: [
+        { provide: RecipientMapperToken, useClass: RecipientMapper },
+        { provide: RecipientServiceToken, useClass: RecipientService },
+        { provide: AlertServiceToken, useClass: AlertService },
+        { provide: AlertMapperToken, useClass: AlertMapper },
+        {
+            provide: AlertPublisherServiceToken,
+            useClass: AlertPublisherService,
+        },
+        RecipientRegisteredEventHandler,
+        {
+            provide: InboxEventHandlersToken,
+            useFactory: (...handlers: IInboxEventHandler[]) => handlers,
+            inject: [RecipientRegisteredEventHandler],
+        },
+    ],
+    imports: [
+        DatabaseModule.forRootAsync(ALERTS_MODULE_DATA_SOURCE, [OutboxEventEntity, InboxEventEntity, AlertEntity, RecipientEntity], {
+            useFactory: (configService: ConfigService) => ({
+                port: configService.getOrThrow<number>("modules.alerts.database.port"),
+                username: configService.getOrThrow<string>("modules.alerts.database.username"),
+                password: configService.getOrThrow<string>("modules.alerts.database.password"),
+                host: configService.getOrThrow<string>("modules.alerts.database.host"),
+                database: configService.getOrThrow<string>("modules.alerts.database.name"),
+                migrations: [
+                    InitializeInboxAndOutbox1737489799641,
+                    InitializeAlertsDatabase1737493814968,
+                    ConditionsTableInheritance1737493967162,
+                    FixAlertEntity1737494837758,
+                    CleanUpAlertsModule1737573565566,
+                    FixDaysOfWeekColumnType1737574459955,
+                ],
+            }),
+            inject: [ConfigService],
+        }),
+        IntegrationEventsModule.forFeature({
+            eventBoxFactoryClass: AlertsEventBoxFactory,
+            context: AlertsModule.name,
+        }),
+    ],
+    controllers: [AlertsSubscriber, AlertsController],
+})
+export class AlertsModule {}
