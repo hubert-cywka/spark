@@ -160,6 +160,19 @@ resource "kubernetes_deployment" "backend" {
                         name  = "COOKIES_SECRET"
                         value = var.COOKIES_SECRET
                     }
+
+                    env {
+                        name  = "GOOGLE_CLIENT_ID"
+                        value = var.GOOGLE_CLIENT_ID
+                    }
+                    env {
+                        name  = "GOOGLE_CLIENT_SECRET"
+                        value = var.GOOGLE_CLIENT_SECRET
+                    }
+                    env {
+                        name  = "GOOGLE_OIDC_REDIRECT_URL"
+                        value = var.GOOGLE_OIDC_REDIRECT_URL
+                    }
                 }
             }
         }
