@@ -20,7 +20,6 @@ import { getFormattedDailyDate } from "@/features/daily/utils/dateUtils";
 import { DailyEntry, DailyEntryPlaceholder } from "@/features/entries/components/DailyEntry";
 import { useGetDailyEntriesByDateRange } from "@/features/entries/hooks";
 
-// TODO: Create dailies in more user-friendly way
 // TODO: Improve UX of navigation between entries
 export const DailyList = () => {
     const { setPrev, setNext, reset, endDate, startDate } = useDailyDateRange({

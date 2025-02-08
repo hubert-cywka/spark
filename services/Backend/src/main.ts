@@ -48,7 +48,6 @@ async function bootstrap() {
                     name: "codename-listener",
                 },
                 consumerOptions: {
-                    // TODO: Make sure it works as intended - only one replica of this service receives given message
                     deliverGroup: "codename-group",
                     durable: "codename-durable",
                     deliverTo: "codename-messages",
