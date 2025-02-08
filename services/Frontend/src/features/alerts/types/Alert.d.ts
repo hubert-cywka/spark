@@ -5,6 +5,6 @@ export type Alert = {
     time: string;
     daysOfWeek: Day[];
     createdAt: Date;
-    lastTriggeredAt: Date;
+    nextTriggerAt: Date;
     enabled: boolean;
 };

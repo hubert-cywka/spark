@@ -14,7 +14,7 @@ export class AlertMapper extends BaseModelDTOEntityMapper<Alert, AlertDto, Alert
             daysOfWeek: dto.daysOfWeek,
             enabled: dto.enabled,
             createdAt: new Date(dto.createdAt),
-            lastTriggeredAt: dto.lastTriggeredAt ? new Date(dto.lastTriggeredAt) : null,
+            nextTriggerAt: dto.nextTriggerAt ? new Date(dto.nextTriggerAt) : null,
             recipientId: dto.recipientId,
         };
     }
@@ -26,7 +26,7 @@ export class AlertMapper extends BaseModelDTOEntityMapper<Alert, AlertDto, Alert
             daysOfWeek: entity.daysOfWeek,
             enabled: entity.enabled,
             createdAt: entity.createdAt,
-            lastTriggeredAt: entity.lastTriggeredAt,
+            nextTriggerAt: entity.nextTriggerAt,
             recipientId: entity.recipientId,
         };
     }
@@ -38,7 +38,7 @@ export class AlertMapper extends BaseModelDTOEntityMapper<Alert, AlertDto, Alert
             daysOfWeek: model.daysOfWeek,
             enabled: model.enabled,
             createdAt: model.createdAt.toISOString(),
-            lastTriggeredAt: model.lastTriggeredAt?.toISOString() ?? null,
+            nextTriggerAt: model.nextTriggerAt?.toISOString() ?? null,
             recipientId: model.recipientId,
         });
     }

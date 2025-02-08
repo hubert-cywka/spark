@@ -35,7 +35,7 @@ export class AlertsService {
         return {
             id: dto.id,
             createdAt: new Date(dto.createdAt),
-            lastTriggeredAt: new Date(dto.lastTriggeredAt),
+            nextTriggerAt: new Date(dto.nextTriggerAt),
             enabled: dto.enabled,
             ...convertUTCDataToLocal({
                 daysOfWeek: dto.daysOfWeek,

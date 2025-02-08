@@ -17,6 +17,7 @@ import { ConditionsTableInheritance1737493967162 } from "@/modules/alerts/infras
 import { FixAlertEntity1737494837758 } from "@/modules/alerts/infrastructure/database/migrations/1737494837758-FixAlertEntity";
 import { CleanUpAlertsModule1737573565566 } from "@/modules/alerts/infrastructure/database/migrations/1737573565566-CleanUpAlertsModule";
 import { FixDaysOfWeekColumnType1737574459955 } from "@/modules/alerts/infrastructure/database/migrations/1737574459955-FixDaysOfWeekColumnType";
+import { SwitchFromLastTriggeredAtToNextTriggerAt1738948797659 } from "@/modules/alerts/infrastructure/database/migrations/1738948797659-SwitchFromLastTriggeredAtToNextTriggerAt";
 import { AlertMapper } from "@/modules/alerts/mappers/Alert.mapper";
 import { AlertMapperToken } from "@/modules/alerts/mappers/IAlert.mapper";
 import { RecipientMapperToken } from "@/modules/alerts/mappers/IRecipient.mapper";
@@ -61,6 +62,7 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
                     FixAlertEntity1737494837758,
                     CleanUpAlertsModule1737573565566,
                     FixDaysOfWeekColumnType1737574459955,
+                    SwitchFromLastTriggeredAtToNextTriggerAt1738948797659,
                 ],
             }),
             inject: [ConfigService],

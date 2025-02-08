@@ -13,7 +13,6 @@ import { SingleUseTokenEntity } from "@/modules/identity/account/entities/Single
 import { AuthenticationModule } from "@/modules/identity/authentication/Authentication.module";
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
 import { AccountPasswordUpdatedEventHandler } from "@/modules/identity/authentication/events/AccountPasswordUpdatedEvent.handler";
-import { AccessTokenStrategy } from "@/modules/identity/authentication/strategies/passport/AccessToken.strategy";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 import { InitializeIdentityModule1735737549567 } from "@/modules/identity/infrastructure/database/migrations/1735737549567-InitializeIdentityModule";
 import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.module";
@@ -23,7 +22,7 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
-            inject: [AccessTokenStrategy, AccountPasswordUpdatedEventHandler],
+            inject: [AccountPasswordUpdatedEventHandler],
         },
     ],
     imports: [
