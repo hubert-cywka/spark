@@ -31,7 +31,7 @@ export const DailyEntryInput = ({
     column,
 }: DailyEntryInputProps) => {
     const [content, setContent] = useState(initialContent);
-    const [isEditing, setIsEditing] = useState(false);
+    const [isEditing, setIsEditing] = useState(!initialContent);
     const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
     const handleSaveContent = (newContent: string) => {
@@ -55,11 +55,15 @@ export const DailyEntryInput = ({
         handleDebouncedSave(newContent);
     };
 
+    const closeEditMode = () => {
+        setIsEditing(false);
+    };
+
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
         if (isEditing && e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             handleSaveContent(content);
-            setIsEditing(false);
+            closeEditMode();
             onNavigateDown();
             return;
         }
@@ -90,12 +94,11 @@ export const DailyEntryInput = ({
     };
 
     const handleBlur = () => {
-        setIsEditing(false);
-
         if (!content) {
             onDelete();
         } else {
             handleSaveContent(content);
+            closeEditMode();
         }
     };
 
