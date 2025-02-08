@@ -6,13 +6,13 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc.js";
 
 import { AlertEntity } from "@/modules/alerts/entities/Alert.entity";
-import { Weekday } from "@/modules/alerts/enums/Weekday.enum";
 import { AlertNotFoundError } from "@/modules/alerts/errors/AlertNotFound.error";
 import { ALERTS_MODULE_DATA_SOURCE } from "@/modules/alerts/infrastructure/database/constants";
 import { type IAlertMapper, AlertMapperToken } from "@/modules/alerts/mappers/IAlert.mapper";
 import { type Alert } from "@/modules/alerts/models/Alert.model";
 import { type IAlertService } from "@/modules/alerts/services/interfaces/IAlert.service";
 import { type IAlertPublisherService, AlertPublisherServiceToken } from "@/modules/alerts/services/interfaces/IAlertPublisher.service";
+import { UTCDay } from "@/modules/alerts/types/UTCDay";
 
 dayjs.extend(utc);
 
@@ -35,13 +35,14 @@ export class AlertService implements IAlertService {
     }
 
     // TODO: Limit number of alerts per user
-    public async create(recipientId: string, time: string, daysOfWeek: Weekday[]): Promise<Alert> {
+    public async create(recipientId: string, time: string, daysOfWeek: UTCDay[]): Promise<Alert> {
         const result = await this.getRepository()
             .createQueryBuilder()
             .insert()
             .into(AlertEntity)
             .values({
                 recipient: { id: recipientId },
+                nextTriggerAt: this.findNextTriggerTime(time, daysOfWeek),
                 daysOfWeek,
                 time,
                 enabled: true,
@@ -64,11 +65,18 @@ export class AlertService implements IAlertService {
     }
 
     public async changeStatus(recipientId: string, alertId: string, enabled: boolean): Promise<Alert> {
-        return this.updatePartially(recipientId, alertId, { enabled });
+        return this.updatePartially(recipientId, alertId, {
+            enabled,
+            nextTriggerAt: null,
+        });
     }
 
-    public async changeTime(recipientId: string, alertId: string, time: string, daysOfWeek: Weekday[]): Promise<Alert> {
-        return this.updatePartially(recipientId, alertId, { time, daysOfWeek });
+    public async changeTime(recipientId: string, alertId: string, time: string, daysOfWeek: UTCDay[]): Promise<Alert> {
+        return this.updatePartially(recipientId, alertId, {
+            time,
+            daysOfWeek,
+            nextTriggerAt: this.findNextTriggerTime(time, daysOfWeek),
+        });
     }
 
     private async updatePartially(recipientId: string, alertId: string, partialAlert: Partial<AlertEntity>): Promise<Alert> {
@@ -93,20 +101,42 @@ export class AlertService implements IAlertService {
         return this.txHost.tx.getRepository(AlertEntity);
     }
 
+    private findNextTriggerTime(time: string, daysOfWeek: UTCDay[]): Date | null {
+        if (!daysOfWeek.length) {
+            return null;
+        }
+
+        const now = dayjs().utc();
+        let nextAlertTime = dayjs().utc();
+
+        const [hour, minute, second] = time.split(":");
+        nextAlertTime = nextAlertTime.set("hour", parseInt(hour)).set("minute", parseInt(minute)).set("second", parseInt(second));
+
+        const currentDayOfWeek = now.day();
+        const daysLeftInCurrentWeek = daysOfWeek.filter((day) => day >= currentDayOfWeek);
+
+        if (!!daysLeftInCurrentWeek.length && nextAlertTime.isAfter(now)) {
+            const daysOffset = Math.min(...daysLeftInCurrentWeek.map(Number)) - currentDayOfWeek;
+            nextAlertTime = nextAlertTime.add(daysOffset, "days");
+        } else {
+            const daysOffset = 7 - (currentDayOfWeek - Math.min(...daysOfWeek.map(Number)));
+            nextAlertTime = nextAlertTime.add(daysOffset, "days");
+        }
+
+        return nextAlertTime.toDate();
+    }
+
     // TODO: Move to separate class
     @Cron("*/30 * * * * *")
     private async processAlerts() {
         const now = dayjs().utc();
-        const startOfDay = dayjs().startOf("day").toISOString();
-        const isoTime = `${String(now.get("hours")).padStart(2, "0")}:${String(now.get("minutes")).padStart(2, "0")}:${String(now.get("seconds")).padStart(2, "0")}`;
-        const day = now.get("day");
 
         const alertsToProcess = await this.getRepository()
             .createQueryBuilder("alert")
             .leftJoinAndSelect("alert.recipient", "recipient")
-            .where(":day = ANY(alert.daysOfWeek)", { day })
-            .andWhere("alert.time <= :isoTime", { isoTime })
-            .andWhere("alert.lastTriggeredAt IS NULL OR alert.lastTriggeredAt < :startOfDay", { startOfDay })
+            .where(":now >= alert.nextTriggerAt", { now })
+            .andWhere("alert.nextTriggerAt IS NOT NULL")
+            .andWhere("alert.enabled IS true")
             .getMany();
 
         for (const alert of alertsToProcess) {
@@ -114,7 +144,7 @@ export class AlertService implements IAlertService {
                 await this.alertPublisher.onReminderAlertTriggered(alert.recipient.email);
                 await this.getRepository().save({
                     ...alert,
-                    lastTriggeredAt: new Date(),
+                    nextTriggerAt: this.findNextTriggerTime(alert.time, alert.daysOfWeek),
                 });
             });
         }

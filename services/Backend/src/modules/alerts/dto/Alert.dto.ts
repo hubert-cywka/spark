@@ -1,6 +1,6 @@
 import { IsArray, IsBoolean, IsDateString, IsString } from "class-validator";
 
-import { Weekday } from "@/modules/alerts/enums/Weekday.enum";
+import { UTCDay } from "@/modules/alerts/types/UTCDay";
 
 export class AlertDto {
     @IsString()
@@ -16,10 +16,10 @@ export class AlertDto {
     readonly time!: string;
 
     @IsArray()
-    readonly daysOfWeek!: Weekday[];
+    readonly daysOfWeek!: UTCDay[];
 
     @IsDateString()
-    readonly lastTriggeredAt!: string | null;
+    readonly nextTriggerAt!: string | null;
 
     @IsDateString()
     readonly createdAt!: string;

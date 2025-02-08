@@ -10,7 +10,7 @@ import {
 } from "typeorm";
 
 import { RecipientEntity } from "@/modules/alerts/entities/RecipientEntity";
-import { Weekday } from "@/modules/alerts/enums/Weekday.enum";
+import { UTCDay } from "@/modules/alerts/types/UTCDay";
 
 @Entity("alert")
 export class AlertEntity {
@@ -23,8 +23,8 @@ export class AlertEntity {
     @Column({ type: "time" })
     time!: string;
 
-    @Column("text", { array: true })
-    daysOfWeek!: Weekday[];
+    @Column("int", { array: true })
+    daysOfWeek!: UTCDay[];
 
     @ManyToOne(() => RecipientEntity, (recipient) => recipient.alerts)
     recipient!: Relation<RecipientEntity>;
@@ -33,7 +33,7 @@ export class AlertEntity {
     recipientId!: string;
 
     @Column({ type: "timestamptz", nullable: true })
-    lastTriggeredAt!: Date | null;
+    nextTriggerAt!: Date | null;
 
     @CreateDateColumn({ type: "timestamptz" })
     createdAt!: Date;
