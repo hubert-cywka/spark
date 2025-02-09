@@ -16,7 +16,6 @@ import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 const SEARCH_DEBOUNCE_IN_MS = 350;
 
-// TODO: Handle empty state, handle error state
 export const GoalsDashboard = () => {
     const t = useTranslate();
 
