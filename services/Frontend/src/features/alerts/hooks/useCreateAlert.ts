@@ -6,7 +6,6 @@ import { useQueryCache } from "@/hooks/useQueryCache";
 
 const queryKey = AlertsQueryKeyFactory.createForAll();
 
-// TODO: Add events (notifications)
 export const useCreateAlert = () => {
     const { invalidate } = useQueryCache();
 

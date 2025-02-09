@@ -7,6 +7,23 @@
                 "serviceUnavailable": "App is temporarily unavailable. Please try again later."
             }
         },
+        "alerts": {
+            "create": {
+                "errors": {
+                    "conflict": "You have already reached the limit of alerts."
+                }
+            },
+            "delete": {
+                "errors": {
+                    "notFound": "This alert does not exist anymore."
+                }
+            },
+            "update": {
+                "errors": {
+                    "notFound": "This alert does not exist anymore."
+                }
+            }
+        },
         "entries": {
             "goals": {
                 "createLink": {
@@ -292,6 +309,36 @@
         }
     },
     "alerts": {
+        "create": {
+            "notifications": {
+                "success": {
+                    "title": "Alert created"
+                },
+                "error": {
+                    "title": "Couldn't create alert"
+                }
+            }
+        },
+        "update": {
+            "notifications": {
+                "success": {
+                    "title": "Alert updated"
+                },
+                "error": {
+                    "title": "Couldn't update alert"
+                }
+            }
+        },
+        "delete": {
+            "notifications": {
+                "success": {
+                    "title": "Alert deleted"
+                },
+                "error": {
+                    "title": "Couldn't delete alert"
+                }
+            }
+        },
         "section": {
             "reminders": {
                 "header": "Reminders",
