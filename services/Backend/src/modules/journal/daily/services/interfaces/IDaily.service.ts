@@ -10,4 +10,5 @@ export interface IDailyService {
     create(authorId: string, date: string): Promise<Daily>;
     update(authorId: string, dailyId: string, date: string): Promise<Daily>;
     deleteById(authorId: string, dailyId: string): Promise<void>;
+    restoreById(authorId: string, dailyId: string): Promise<void>;
 }

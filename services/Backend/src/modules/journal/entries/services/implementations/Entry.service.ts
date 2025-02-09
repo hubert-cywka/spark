@@ -88,6 +88,19 @@ export class EntryService implements IEntryService {
         }
     }
 
+    public async restoreById(authorId: string, dailyId: string, entryId: string): Promise<void> {
+        const result = await this.getRepository().restore({
+            id: entryId,
+            author: { id: authorId },
+            daily: { id: dailyId },
+        });
+
+        if (!result.affected) {
+            this.logger.warn({ authorId, dailyId, entryId }, "Entry not found, cannot restore.");
+            throw new EntryNotFoundError();
+        }
+    }
+
     public async updateContent(authorId: string, dailyId: string, entryId: string, content: string): Promise<Entry> {
         return await this.updateEntry(authorId, dailyId, entryId, { content });
     }

@@ -106,6 +106,18 @@ export class DailyService implements IDailyService {
         }
     }
 
+    public async restoreById(authorId: string, dailyId: string): Promise<void> {
+        const result = await this.getRepository().restore({
+            id: dailyId,
+            author: { id: authorId },
+        });
+
+        if (!result.affected) {
+            this.logger.warn({ authorId, dailyId }, "Daily not found, cannot restore.");
+            throw new DailyNotFoundError();
+        }
+    }
+
     private getRepository(): Repository<DailyEntity> {
         return this.txHost.tx.getRepository(DailyEntity);
     }

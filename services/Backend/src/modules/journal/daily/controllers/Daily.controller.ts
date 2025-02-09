@@ -72,12 +72,21 @@ export class DailyController {
         }
     }
 
-    // TODO: Add restore operation
     @Delete(":id")
     @UseGuards(new AuthenticationGuard())
     public async deleteDaily(@Param("id", new ParseUUIDPipe()) dailyId: string, @CurrentUser() author: User) {
         try {
             await this.dailyService.deleteById(author.id, dailyId);
+        } catch (err) {
+            whenError(err).is(EntityNotFoundError).throw(new NotFoundException()).elseRethrow();
+        }
+    }
+
+    @Post(":id/restore")
+    @UseGuards(new AuthenticationGuard())
+    public async restoreDaily(@Param("id", new ParseUUIDPipe()) dailyId: string, @CurrentUser() author: User) {
+        try {
+            await this.dailyService.restoreById(author.id, dailyId);
         } catch (err) {
             whenError(err).is(EntityNotFoundError).throw(new NotFoundException()).elseRethrow();
         }

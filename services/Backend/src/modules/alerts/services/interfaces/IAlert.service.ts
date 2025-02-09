@@ -7,6 +7,7 @@ export interface IAlertService {
     getAll(recipientId: string): Promise<Alert[]>;
     create(recipientId: string, time: string, daysOfWeek: UTCDay[]): Promise<Alert>;
     delete(recipientId: string, alertId: string): Promise<void>;
+    restore(recipientId: string, alertId: string): Promise<void>;
 
     changeStatus(recipientId: string, alertId: string, enabled: boolean): Promise<Alert>;
     changeTime(recipientId: string, alertId: string, alertTime: string, daysOfWeek: UTCDay[]): Promise<Alert>;

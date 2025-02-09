@@ -9,6 +9,7 @@ export interface IEntryService {
     findAll(authorId: string, pageOptions: PageOptions, filters?: EntryFilters): Promise<Paginated<Entry>>;
     create(authorId: string, dailyId: string, content: string): Promise<Entry>;
     deleteById(authorId: string, dailyId: string, entryId: string): Promise<void>;
+    restoreById(authorId: string, dailyId: string, entryId: string): Promise<void>;
     updateContent(authorId: string, dailyId: string, entryId: string, content: string): Promise<Entry>;
     updateStatus(authorId: string, dailyId: string, entryId: string, isCompleted: boolean): Promise<Entry>;
 }
