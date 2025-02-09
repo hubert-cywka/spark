@@ -69,8 +69,8 @@ export const GoalsDashboard = () => {
                 selectedGoalId={selectedGoalId}
             />
 
-            <ItemLoader shouldLoadNext={hasNextPage} onLoadNext={fetchNextPage}>
-                {isFetching && <GoalCardSkeleton count={1} />}
+            <ItemLoader shouldLoadNext={hasNextPage} onLoadNext={fetchNextPage} isLoaderVisible={isFetching}>
+                <GoalCardSkeleton count={1} />
             </ItemLoader>
 
             {selectedGoal && <GoalsManagementFloatingBar selectedGoal={selectedGoal} onClose={clearSelection} />}

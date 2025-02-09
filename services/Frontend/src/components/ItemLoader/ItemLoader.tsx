@@ -2,10 +2,10 @@
 
 import { ItemLoaderProps } from "@/components/ItemLoader/types/ItemLoader";
 
-export const ItemLoader = ({ shouldLoadNext, onLoadNext, children, root = null, margin = "100px" }: ItemLoaderProps) => {
+export const ItemLoader = ({ isLoaderVisible, shouldLoadNext, onLoadNext, children, root = null, margin = "100px" }: ItemLoaderProps) => {
     return (
         <>
-            {children}
+            {isLoaderVisible && children}
             <div
                 ref={(node) => {
                     if (!node) {
