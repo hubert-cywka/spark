@@ -1,8 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc.js";
 
 import { AlertEntity } from "@/modules/alerts/entities/Alert.entity";
 import { AlertNotFoundError } from "@/modules/alerts/errors/AlertNotFound.error";
@@ -12,8 +10,6 @@ import { type Alert } from "@/modules/alerts/models/Alert.model";
 import { type IAlertService } from "@/modules/alerts/services/interfaces/IAlert.service";
 import { type IAlertSchedulerService, AlertSchedulerServiceToken } from "@/modules/alerts/services/interfaces/IAlertScheduler.service";
 import { type UTCDay } from "@/modules/alerts/types/UTCDay";
-
-dayjs.extend(utc);
 
 @Injectable()
 export class AlertService implements IAlertService {

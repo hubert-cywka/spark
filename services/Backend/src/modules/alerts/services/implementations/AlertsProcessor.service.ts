@@ -3,12 +3,15 @@ import { Cron } from "@nestjs/schedule";
 import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
 import { AlertEntity } from "@/modules/alerts/entities/Alert.entity";
 import { ALERTS_MODULE_DATA_SOURCE } from "@/modules/alerts/infrastructure/database/constants";
 import { type IAlertPublisherService, AlertPublisherServiceToken } from "@/modules/alerts/services/interfaces/IAlertPublisher.service";
 import { type IAlertSchedulerService, AlertSchedulerServiceToken } from "@/modules/alerts/services/interfaces/IAlertScheduler.service";
 import { type IAlertsProcessorService } from "@/modules/alerts/services/interfaces/IAlertsProcessor.service";
+
+dayjs.extend(utc);
 
 @Injectable()
 export class AlertsProcessorService implements IAlertsProcessorService {
