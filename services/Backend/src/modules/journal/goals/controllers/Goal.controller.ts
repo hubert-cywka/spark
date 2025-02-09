@@ -35,7 +35,7 @@ export class GoalController {
     @UseGuards(new AuthenticationGuard())
     public async getGoals(@Query() filters: FindGoalsFiltersDto, @Query() pageOptions: PageOptionsDto, @CurrentUser() author: User) {
         const result = await this.goalService.findAll(author.id, pageOptions, filters);
-        return this.goalMapper.fromModelToDtoPaginated(result);
+        return this.goalMapper.fromModelToDtoPage(result);
     }
 
     @Get(":id")

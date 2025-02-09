@@ -1,4 +1,6 @@
 import { IModelDTOEntityMapper } from "@/common/mappers/IModelDTOEntity.mapper";
+import { PageDto } from "@/common/pagination/dto/Page.dto";
+import { PageMetaDto } from "@/common/pagination/dto/PageMeta.dto";
 import { Paginated } from "@/common/pagination/types/Paginated";
 
 export abstract class BaseModelDTOEntityMapper<TModel, TDto, TEntity> implements IModelDTOEntityMapper<TModel, TDto, TEntity> {
@@ -26,8 +28,10 @@ export abstract class BaseModelDTOEntityMapper<TModel, TDto, TEntity> implements
         return this.mapPaginated(page, this.fromEntityToModel);
     }
 
-    public fromModelToDtoPaginated(page: Paginated<TModel>): Paginated<TDto> {
-        return this.mapPaginated(page, this.fromModelToDto);
+    public fromModelToDtoPage(page: Paginated<TModel>): PageDto<TDto> {
+        const paginatedDto = this.mapPaginated(page, this.fromModelToDto);
+        const metaDto = new PageMetaDto(paginatedDto.meta);
+        return new PageDto(paginatedDto.data, metaDto);
     }
 
     private mapPaginated<TInput, TOutput>(page: Paginated<TInput>, mapFn: (item: TInput) => TOutput): Paginated<TOutput> {

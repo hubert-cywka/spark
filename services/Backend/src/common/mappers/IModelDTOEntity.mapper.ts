@@ -1,3 +1,4 @@
+import { PageDto } from "@/common/pagination/dto/Page.dto";
 import { Paginated } from "@/common/pagination/types/Paginated";
 
 export interface IModelDTOEntityMapper<TModel, TDto, TEntity> {
@@ -10,6 +11,6 @@ export interface IModelDTOEntityMapper<TModel, TDto, TEntity> {
     fromModelToDtoBulk(models: TModel[]): TDto[];
 
     fromDtoToModelPaginated(dto: Paginated<TDto>): Paginated<TModel>;
-    fromModelToDtoPaginated(model: Paginated<TModel>): Paginated<TDto>;
     fromEntityToModelPaginated(entity: Paginated<TEntity>): Paginated<TModel>;
+    fromModelToDtoPage(model: Paginated<TModel>): PageDto<TDto>;
 }
