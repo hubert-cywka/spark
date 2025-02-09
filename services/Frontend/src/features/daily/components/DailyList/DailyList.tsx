@@ -110,8 +110,8 @@ export const DailyList = () => {
                 </div>
             ))}
 
-            <ItemLoader shouldLoadNext={hasNextPage} onLoadNext={fetchNextPage}>
-                {isFetching && dayjs().isAfter(startDate) && <DaySkeleton count={3} />}
+            <ItemLoader shouldLoadNext={hasNextPage} onLoadNext={fetchNextPage} isLoaderVisible={isFetching && dayjs().isAfter(startDate)}>
+                <DaySkeleton count={3} />
             </ItemLoader>
         </main>
     );

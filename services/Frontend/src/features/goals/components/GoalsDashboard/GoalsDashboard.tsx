@@ -16,7 +16,6 @@ import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 const SEARCH_DEBOUNCE_IN_MS = 350;
 
-// TODO: Handle empty state, handle error state
 export const GoalsDashboard = () => {
     const t = useTranslate();
 
@@ -69,8 +68,8 @@ export const GoalsDashboard = () => {
                 selectedGoalId={selectedGoalId}
             />
 
-            <ItemLoader shouldLoadNext={hasNextPage} onLoadNext={fetchNextPage}>
-                {isFetching && <GoalCardSkeleton count={1} />}
+            <ItemLoader shouldLoadNext={hasNextPage} onLoadNext={fetchNextPage} isLoaderVisible={isFetching}>
+                <GoalCardSkeleton count={1} />
             </ItemLoader>
 
             {selectedGoal && <GoalsManagementFloatingBar selectedGoal={selectedGoal} onClose={clearSelection} />}

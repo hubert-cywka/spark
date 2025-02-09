@@ -1,6 +1,7 @@
 import styles from "./styles/EntryGoalsList.module.scss";
 
 import { ItemLoader } from "@/components/ItemLoader/ItemLoader";
+import { Spinner } from "@/components/Spinner";
 import { GoalLinkItem } from "@/features/entries/components/GoalLinkItem/GoalLinkItem";
 import { LinkGoalsPopover } from "@/features/entries/components/LinkGoalsPopover/LinkGoalsPopover";
 import { useUnlinkEntryFromGoal } from "@/features/entries/hooks";
@@ -12,11 +13,10 @@ type EntryGoalsListProps = {
     entryId: string;
 };
 
-// TODO: Clean up
 export const EntryGoalsList = ({ entryId }: EntryGoalsListProps) => {
     const t = useTranslate();
 
-    const { data: linkedGoalsData, hasNextPage, fetchNextPage } = useGoals({ entries: [entryId] });
+    const { data: linkedGoalsData, hasNextPage, fetchNextPage, isFetching } = useGoals({ entries: [entryId] });
     const linkedGoals = linkedGoalsData?.pages.flatMap((page) => page.data) ?? [];
 
     const { onUnlinkEntryError } = useUnlinkEntryFromGoalEvents();
@@ -30,7 +30,6 @@ export const EntryGoalsList = ({ entryId }: EntryGoalsListProps) => {
         }
     };
 
-    // TODO: Skeleton
     return (
         <div className={styles.container}>
             <div>
@@ -46,7 +45,9 @@ export const EntryGoalsList = ({ entryId }: EntryGoalsListProps) => {
                     ))}
                 </ul>
 
-                <ItemLoader shouldLoadNext={hasNextPage} onLoadNext={fetchNextPage} />
+                <ItemLoader shouldLoadNext={hasNextPage} onLoadNext={fetchNextPage} isLoaderVisible={isFetching}>
+                    <Spinner size="1" />
+                </ItemLoader>
             </div>
         </div>
     );

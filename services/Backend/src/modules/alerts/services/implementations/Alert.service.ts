@@ -1,9 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { Cron } from "@nestjs/schedule";
 import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc.js";
 
 import { AlertEntity } from "@/modules/alerts/entities/Alert.entity";
 import { AlertNotFoundError } from "@/modules/alerts/errors/AlertNotFound.error";
@@ -11,10 +8,8 @@ import { ALERTS_MODULE_DATA_SOURCE } from "@/modules/alerts/infrastructure/datab
 import { type IAlertMapper, AlertMapperToken } from "@/modules/alerts/mappers/IAlert.mapper";
 import { type Alert } from "@/modules/alerts/models/Alert.model";
 import { type IAlertService } from "@/modules/alerts/services/interfaces/IAlert.service";
-import { type IAlertPublisherService, AlertPublisherServiceToken } from "@/modules/alerts/services/interfaces/IAlertPublisher.service";
-import { UTCDay } from "@/modules/alerts/types/UTCDay";
-
-dayjs.extend(utc);
+import { type IAlertSchedulerService, AlertSchedulerServiceToken } from "@/modules/alerts/services/interfaces/IAlertScheduler.service";
+import { type UTCDay } from "@/modules/alerts/types/UTCDay";
 
 @Injectable()
 export class AlertService implements IAlertService {
@@ -22,8 +17,8 @@ export class AlertService implements IAlertService {
         @InjectTransactionHost(ALERTS_MODULE_DATA_SOURCE)
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
         @Inject(AlertMapperToken) private readonly alertMapper: IAlertMapper,
-        @Inject(AlertPublisherServiceToken)
-        private readonly alertPublisher: IAlertPublisherService
+        @Inject(AlertSchedulerServiceToken)
+        private readonly alertScheduler: IAlertSchedulerService
     ) {}
 
     public async getAll(recipientId: string): Promise<Alert[]> {
@@ -42,7 +37,7 @@ export class AlertService implements IAlertService {
             .into(AlertEntity)
             .values({
                 recipient: { id: recipientId },
-                nextTriggerAt: this.findNextTriggerTime(time, daysOfWeek),
+                nextTriggerAt: this.alertScheduler.findNextTriggerTime(time, daysOfWeek),
                 daysOfWeek,
                 time,
                 enabled: true,
@@ -75,7 +70,7 @@ export class AlertService implements IAlertService {
         return this.updatePartially(recipientId, alertId, {
             time,
             daysOfWeek,
-            nextTriggerAt: this.findNextTriggerTime(time, daysOfWeek),
+            nextTriggerAt: this.alertScheduler.findNextTriggerTime(time, daysOfWeek),
         });
     }
 
@@ -99,54 +94,5 @@ export class AlertService implements IAlertService {
 
     private getRepository() {
         return this.txHost.tx.getRepository(AlertEntity);
-    }
-
-    private findNextTriggerTime(time: string, daysOfWeek: UTCDay[]): Date | null {
-        if (!daysOfWeek.length) {
-            return null;
-        }
-
-        const now = dayjs().utc();
-        let nextAlertTime = dayjs().utc();
-
-        const [hour, minute, second] = time.split(":");
-        nextAlertTime = nextAlertTime.set("hour", parseInt(hour)).set("minute", parseInt(minute)).set("second", parseInt(second));
-
-        const currentDayOfWeek = now.day();
-        const daysLeftInCurrentWeek = daysOfWeek.filter((day) => day >= currentDayOfWeek);
-
-        if (!!daysLeftInCurrentWeek.length && nextAlertTime.isAfter(now)) {
-            const daysOffset = Math.min(...daysLeftInCurrentWeek.map(Number)) - currentDayOfWeek;
-            nextAlertTime = nextAlertTime.add(daysOffset, "days");
-        } else {
-            const daysOffset = 7 - (currentDayOfWeek - Math.min(...daysOfWeek.map(Number)));
-            nextAlertTime = nextAlertTime.add(daysOffset, "days");
-        }
-
-        return nextAlertTime.toDate();
-    }
-
-    // TODO: Move to separate class
-    @Cron("*/30 * * * * *")
-    private async processAlerts() {
-        const now = dayjs().utc();
-
-        const alertsToProcess = await this.getRepository()
-            .createQueryBuilder("alert")
-            .leftJoinAndSelect("alert.recipient", "recipient")
-            .where(":now >= alert.nextTriggerAt", { now })
-            .andWhere("alert.nextTriggerAt IS NOT NULL")
-            .andWhere("alert.enabled IS true")
-            .getMany();
-
-        for (const alert of alertsToProcess) {
-            await this.txHost.withTransaction(async () => {
-                await this.alertPublisher.onReminderAlertTriggered(alert.recipient.email);
-                await this.getRepository().save({
-                    ...alert,
-                    nextTriggerAt: this.findNextTriggerTime(alert.time, alert.daysOfWeek),
-                });
-            });
-        }
     }
 }

@@ -4,6 +4,9 @@ import styles from "./styles/DailyListHeader.module.scss";
 
 import { IconButton } from "@/components/IconButton";
 
+const TIMEFRAME_BIG_CHANGE_UNITS = 12;
+const TIMEFRAME_SMALL_CHANGE_UNITS = 1;
+
 type DailyListHeaderProps = {
     timeframeStart: Date;
     onReset: () => void;
@@ -24,15 +27,15 @@ export const DailyListHeader = ({ timeframeStart, onNextTimeframe, onPrevTimefra
 
                 <IconButton
                     variant="secondary"
-                    onPress={() => onPrevTimeframe(12)}
+                    onPress={() => onPrevTimeframe(TIMEFRAME_BIG_CHANGE_UNITS)}
                     className={styles.changeYearButton}
                     iconSlot={ChevronsLeft}
                 />
-                <IconButton variant="secondary" onPress={() => onPrevTimeframe(1)} iconSlot={ChevronLeft} />
-                <IconButton variant="secondary" onPress={() => onNextTimeframe(1)} iconSlot={ChevronRight} />
+                <IconButton variant="secondary" onPress={() => onPrevTimeframe(TIMEFRAME_SMALL_CHANGE_UNITS)} iconSlot={ChevronLeft} />
+                <IconButton variant="secondary" onPress={() => onNextTimeframe(TIMEFRAME_SMALL_CHANGE_UNITS)} iconSlot={ChevronRight} />
                 <IconButton
                     variant="secondary"
-                    onPress={() => onNextTimeframe(12)}
+                    onPress={() => onNextTimeframe(TIMEFRAME_BIG_CHANGE_UNITS)}
                     className={styles.changeYearButton}
                     iconSlot={ChevronsRight}
                 />
