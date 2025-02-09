@@ -1,10 +1,9 @@
 export const AppConfig = () => ({
     port: parseInt(process.env.PORT ?? ""),
 
-    // TODO: Make it configurable
     throttle: {
-        ttl: 10 * 100,
-        limit: 50,
+        ttl: process.env.RATE_LIMITING_BASE_TTL,
+        limit: process.env.RATE_LIMITING_BASE_LIMIT,
     },
 
     client: {

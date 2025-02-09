@@ -173,6 +173,15 @@ resource "kubernetes_deployment" "backend" {
                         name  = "GOOGLE_OIDC_REDIRECT_URL"
                         value = var.GOOGLE_OIDC_REDIRECT_URL
                     }
+
+                    env {
+                        name = "RATE_LIMITING_BASE_LIMIT"
+                        value = var.RATE_LIMITING_BASE_LIMIT
+                    }
+                    env {
+                        name = "RATE_LIMITING_BASE_TTL"
+                        value = var.RATE_LIMITING_BASE_TTL
+                    }
                 }
             }
         }
