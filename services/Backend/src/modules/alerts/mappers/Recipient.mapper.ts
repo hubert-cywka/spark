@@ -2,7 +2,7 @@ import { plainToClass } from "class-transformer";
 
 import { BaseModelDTOEntityMapper } from "@/common/mappers/BaseModelDTOEntity.mapper";
 import { RecipientDto } from "@/modules/alerts/dto/Recipient.dto";
-import { RecipientEntity } from "@/modules/alerts/entities/RecipientEntity";
+import { RecipientEntity } from "@/modules/alerts/entities/Recipient.entity";
 import { type IRecipientMapper } from "@/modules/alerts/mappers/IRecipient.mapper";
 import { type Recipient } from "@/modules/alerts/models/Recipient.model";
 

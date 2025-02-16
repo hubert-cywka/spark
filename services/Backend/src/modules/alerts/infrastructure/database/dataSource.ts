@@ -5,7 +5,7 @@ import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { AppConfig } from "@/config/configuration";
 import { AlertEntity } from "@/modules/alerts/entities/Alert.entity";
-import { RecipientEntity } from "@/modules/alerts/entities/RecipientEntity";
+import { RecipientEntity } from "@/modules/alerts/entities/Recipient.entity";
 
 configDotenv();
 

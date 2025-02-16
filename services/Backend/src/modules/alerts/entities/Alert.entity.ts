@@ -9,7 +9,7 @@ import {
     UpdateDateColumn,
 } from "typeorm";
 
-import { RecipientEntity } from "@/modules/alerts/entities/RecipientEntity";
+import { RecipientEntity } from "@/modules/alerts/entities/Recipient.entity";
 import { UTCDay } from "@/modules/alerts/types/UTCDay";
 
 @Entity("alert")
