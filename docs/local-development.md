@@ -1,5 +1,11 @@
 # Local development
 
+##
+TODO: <br/>
+`npm install -g @swc/cli` <br/>
+`npm install -g @nest/cli` <br/>
+`choco install pwsh` <br/>
+
 ## Running locally
 `npm run start` is our entrypoint. It executes a script which allows to run all services, dockerized or not. By default, all services specified in [docker-compose.yml](./docker-compose.yml) are dockerized.
 

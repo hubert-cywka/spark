@@ -14,7 +14,7 @@ dist-ssr
 .vite
 
 # Secrets
-**/.env
+**/.env  
 .npmrc
 .tfvars
 
