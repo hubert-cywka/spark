@@ -43,6 +43,16 @@ export class AlertsController {
         }
     }
 
+    @Post(":alertId/restore")
+    @UseGuards(new AuthenticationGuard())
+    public async restoreAlert(@Param("alertId", new ParseUUIDPipe()) alertId: string, @CurrentUser() user: User) {
+        try {
+            return await this.alertService.restore(user.id, alertId);
+        } catch (err) {
+            whenError(err).is(EntityNotFoundError).throw(new NotFoundException()).elseRethrow();
+        }
+    }
+
     @Patch(":alertId/status")
     @UseGuards(new AuthenticationGuard())
     public async changeAlertStatus(

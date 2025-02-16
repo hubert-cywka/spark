@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 
@@ -13,6 +13,8 @@ import { type UTCDay } from "@/modules/alerts/types/UTCDay";
 
 @Injectable()
 export class AlertService implements IAlertService {
+    private readonly logger = new Logger(AlertService.name);
+
     public constructor(
         @InjectTransactionHost(ALERTS_MODULE_DATA_SOURCE)
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
@@ -55,6 +57,19 @@ export class AlertService implements IAlertService {
         });
 
         if (!result.affected) {
+            this.logger.warn({ recipientId, alertId }, "Alert not found, cannot delete.");
+            throw new AlertNotFoundError();
+        }
+    }
+
+    public async restore(recipientId: string, alertId: string): Promise<void> {
+        const result = await this.getRepository().restore({
+            id: alertId,
+            recipient: { id: recipientId },
+        });
+
+        if (!result.affected) {
+            this.logger.warn({ recipientId, alertId }, "Alert not found, cannot restore.");
             throw new AlertNotFoundError();
         }
     }
@@ -86,6 +101,7 @@ export class AlertService implements IAlertService {
             .execute();
 
         if (!result.affected) {
+            this.logger.warn({ recipientId, alertId }, "Alert not found, cannot update.");
             throw new AlertNotFoundError();
         }
 

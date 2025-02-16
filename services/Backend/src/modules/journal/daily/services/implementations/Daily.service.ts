@@ -3,7 +3,6 @@ import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactiona
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import { Repository } from "typeorm";
 
-import { PageMetaDto } from "@/common/pagination/dto/PageMeta.dto";
 import { PageOptions } from "@/common/pagination/types/PageOptions";
 import { Paginated } from "@/common/pagination/types/Paginated";
 import { DailyEntity } from "@/modules/journal/daily/entities/Daily.entity";
@@ -36,14 +35,13 @@ export class DailyService implements IDailyService {
 
         const [dailies, itemCount] = await queryBuilder.getManyAndCount();
 
-        // TODO: Do not use DTOs here
         return {
             data: this.dailyMapper.fromEntityToModelBulk(dailies),
-            meta: new PageMetaDto({
+            meta: {
                 itemCount,
                 page: pageOptions.page,
                 take: pageOptions.take,
-            }),
+            },
         };
     }
 
@@ -104,6 +102,18 @@ export class DailyService implements IDailyService {
 
         if (!result.affected) {
             this.logger.warn({ authorId, dailyId }, "Daily not found, cannot delete.");
+            throw new DailyNotFoundError();
+        }
+    }
+
+    public async restoreById(authorId: string, dailyId: string): Promise<void> {
+        const result = await this.getRepository().restore({
+            id: dailyId,
+            author: { id: authorId },
+        });
+
+        if (!result.affected) {
+            this.logger.warn({ authorId, dailyId }, "Daily not found, cannot restore.");
             throw new DailyNotFoundError();
         }
     }

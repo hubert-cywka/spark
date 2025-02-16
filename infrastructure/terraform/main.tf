@@ -1,5 +1,3 @@
-// TODO: Split terraform into modules
-
 provider "kubernetes" {
     config_path = "~/.kube/config"
 }
@@ -17,6 +15,9 @@ resource "kubernetes_config_map" "app_config" {
     }
 
     data = {
+        RATE_LIMITING_BASE_LIMIT                            = var.RATE_LIMITING_BASE_LIMIT
+        RATE_LIMITING_BASE_TTL                              = var.RATE_LIMITING_BASE_TTL
+
         DATABASE_PORT                                       = var.DATABASE_PORT
         DATABASE_USERNAME                                   = var.DATABASE_USERNAME
         DATABASE_PASSWORD                                   = var.DATABASE_PASSWORD

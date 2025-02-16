@@ -132,6 +132,18 @@ export class GoalService implements IGoalService {
         }
     }
 
+    public async restoreById(authorId: string, goalId: string): Promise<void> {
+        const result = await this.getRepository().restore({
+            id: goalId,
+            author: { id: authorId },
+        });
+
+        if (!result.affected) {
+            this.logger.warn({ authorId, goalId }, "Goal not found, cannot restore.");
+            throw new GoalNotFoundError();
+        }
+    }
+
     private async updateProperties(authorId: string, goalId: string, partialGoal: Partial<GoalEntity>): Promise<Goal> {
         const result = await this.getRepository()
             .createQueryBuilder()

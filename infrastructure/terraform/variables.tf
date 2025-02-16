@@ -1,3 +1,11 @@
+variable "RATE_LIMITING_BASE_TTL" {
+    type        = number
+}
+
+variable "RATE_LIMITING_BASE_LIMIT" {
+    type        = number
+}
+
 variable "DATABASE_PORT" {
     type        = number
 }

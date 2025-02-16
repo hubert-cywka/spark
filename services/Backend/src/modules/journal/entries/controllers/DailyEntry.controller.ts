@@ -61,12 +61,21 @@ export class DailyEntryController {
         }
     }
 
-    // TODO: Add restore operation
     @Delete(":entryId")
     @UseGuards(new AuthenticationGuard())
     public async removeEntry(@Param("entryId") entryId: string, @Param("dailyId") dailyId: string, @CurrentUser() user: User) {
         try {
             await this.entryService.deleteById(user.id, dailyId, entryId);
+        } catch (err) {
+            whenError(err).is(EntityNotFoundError).throw(new NotFoundException());
+        }
+    }
+
+    @Post(":entryId/restore")
+    @UseGuards(new AuthenticationGuard())
+    public async restoreEntry(@Param("entryId") entryId: string, @Param("dailyId") dailyId: string, @CurrentUser() user: User) {
+        try {
+            await this.entryService.restoreById(user.id, dailyId, entryId);
         } catch (err) {
             whenError(err).is(EntityNotFoundError).throw(new NotFoundException());
         }

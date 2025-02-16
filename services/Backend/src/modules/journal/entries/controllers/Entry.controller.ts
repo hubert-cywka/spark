@@ -19,6 +19,6 @@ export class EntryController {
     @UseGuards(new AuthenticationGuard())
     public async getEntries(@Query() filters: FindEntriesFiltersDto, @Query() pageOptions: PageOptionsDto, @CurrentUser() user: User) {
         const result = await this.entryService.findAll(user.id, pageOptions, filters);
-        return this.entryMapper.fromModelToDtoPaginated(result);
+        return this.entryMapper.fromModelToDtoPage(result);
     }
 }

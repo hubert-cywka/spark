@@ -3,7 +3,6 @@ import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactiona
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import { Repository } from "typeorm";
 
-import { PageMetaDto } from "@/common/pagination/dto/PageMeta.dto";
 import { type PageOptions } from "@/common/pagination/types/PageOptions";
 import { type Paginated } from "@/common/pagination/types/Paginated";
 import { EntryEntity } from "@/modules/journal/entries/entities/Entry.entity";
@@ -48,14 +47,13 @@ export class EntryService implements IEntryService {
 
         const [entries, itemCount] = await queryBuilder.getManyAndCount();
 
-        // TODO: Do not use DTOs here
         return {
             data: this.entryMapper.fromEntityToModelBulk(entries),
-            meta: new PageMetaDto({
+            meta: {
                 itemCount,
                 page: pageOptions.page,
                 take: pageOptions.take,
-            }),
+            },
         };
     }
 
@@ -86,6 +84,19 @@ export class EntryService implements IEntryService {
 
         if (!result.affected) {
             this.logger.warn({ authorId, dailyId, entryId }, "Entry not found, cannot delete.");
+            throw new EntryNotFoundError();
+        }
+    }
+
+    public async restoreById(authorId: string, dailyId: string, entryId: string): Promise<void> {
+        const result = await this.getRepository().restore({
+            id: entryId,
+            author: { id: authorId },
+            daily: { id: dailyId },
+        });
+
+        if (!result.affected) {
+            this.logger.warn({ authorId, dailyId, entryId }, "Entry not found, cannot restore.");
             throw new EntryNotFoundError();
         }
     }

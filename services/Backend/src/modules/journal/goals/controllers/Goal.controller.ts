@@ -35,7 +35,7 @@ export class GoalController {
     @UseGuards(new AuthenticationGuard())
     public async getGoals(@Query() filters: FindGoalsFiltersDto, @Query() pageOptions: PageOptionsDto, @CurrentUser() author: User) {
         const result = await this.goalService.findAll(author.id, pageOptions, filters);
-        return this.goalMapper.fromModelToDtoPaginated(result);
+        return this.goalMapper.fromModelToDtoPage(result);
     }
 
     @Get(":id")
@@ -71,12 +71,21 @@ export class GoalController {
         }
     }
 
-    // TODO: Add restore operation
     @Delete(":id")
     @UseGuards(new AuthenticationGuard())
     public async deleteGoal(@Param("id", new ParseUUIDPipe()) goalId: string, @CurrentUser() author: User) {
         try {
             await this.goalService.deleteById(author.id, goalId);
+        } catch (err) {
+            whenError(err).is(EntityNotFoundError).throw(new NotFoundException()).elseRethrow();
+        }
+    }
+
+    @Post(":id/restore")
+    @UseGuards(new AuthenticationGuard())
+    public async restoreGoal(@Param("id", new ParseUUIDPipe()) goalId: string, @CurrentUser() author: User) {
+        try {
+            await this.goalService.restoreById(author.id, goalId);
         } catch (err) {
             whenError(err).is(EntityNotFoundError).throw(new NotFoundException()).elseRethrow();
         }
