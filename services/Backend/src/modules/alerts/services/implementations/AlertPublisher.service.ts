@@ -10,7 +10,7 @@ export class AlertPublisherService implements IAlertPublisherService {
         private readonly outbox: IEventOutbox
     ) {}
 
-    public async onReminderAlertTriggered(email: string) {
+    public async onReminderTriggered(email: string) {
         await this.outbox.enqueue(new DailyReminderTriggeredEvent({ email }));
     }
 }

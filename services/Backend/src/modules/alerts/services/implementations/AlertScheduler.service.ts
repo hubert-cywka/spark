@@ -9,7 +9,7 @@ dayjs.extend(utc);
 
 @Injectable()
 export class AlertSchedulerService implements IAlertSchedulerService {
-    public findNextTriggerTime(time: string, daysOfWeek: UTCDay[]): Date | null {
+    public scheduleNextTrigger(time: string, daysOfWeek: UTCDay[]): Date | null {
         if (!daysOfWeek.length) {
             return null;
         }

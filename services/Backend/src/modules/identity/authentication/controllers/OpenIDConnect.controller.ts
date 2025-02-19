@@ -173,7 +173,7 @@ export class OpenIDConnectController {
             partitioned: true,
             httpOnly: true,
             secure: true,
-            maxAge: 60 * 5 * 1000,
+            maxAge: 60 * 5 * 1000, // TODO: Make it configurable
             sameSite: "lax",
             path: "/",
         };
@@ -184,7 +184,7 @@ export class OpenIDConnectController {
             partitioned: true,
             httpOnly: true,
             secure: true,
-            maxAge: 60 * 10 * 1000,
+            maxAge: 60 * 10 * 1000, // TODO: Make it configurable
             sameSite: "strict",
             path: "/api/open-id-connect/register",
             signed: true,
