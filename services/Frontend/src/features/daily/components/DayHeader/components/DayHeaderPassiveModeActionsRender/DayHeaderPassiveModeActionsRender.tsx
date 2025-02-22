@@ -1,15 +1,15 @@
 import { Pencil, Trash } from "lucide-react";
 
 import { IconButton } from "@/components/IconButton";
+import { PassiveTextInputPassiveModeActionsRenderProps } from "@/components/PassiveTextInput";
 import { DeleteDailyModal } from "@/features/daily/components/DeleteDailyModal/DeleteDailyModal";
 import { Daily } from "@/features/daily/types/Daily";
 
-type DailyPassiveModeActionsProps = {
-    onStartEditMode: () => void;
+type DayHeaderPassiveModeActionsRenderProps = {
     daily: Daily;
-};
+} & PassiveTextInputPassiveModeActionsRenderProps;
 
-export const DailyPassiveModeActions = ({ daily, onStartEditMode }: DailyPassiveModeActionsProps) => {
+export const DayHeaderPassiveModeActionsRender = ({ daily, onStartEditMode }: DayHeaderPassiveModeActionsRenderProps) => {
     return (
         <>
             <IconButton variant="secondary" size="1" onPress={onStartEditMode} iconSlot={Pencil} />

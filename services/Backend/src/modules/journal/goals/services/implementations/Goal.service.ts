@@ -3,7 +3,6 @@ import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactiona
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import { Repository } from "typeorm";
 
-import { PageMetaDto } from "@/common/pagination/dto/PageMeta.dto";
 import { PageOptions } from "@/common/pagination/types/PageOptions";
 import { Paginated } from "@/common/pagination/types/Paginated";
 import { GoalEntity } from "@/modules/journal/goals/entities/Goal.entity";
@@ -64,11 +63,11 @@ export class GoalService implements IGoalService {
 
         return {
             data: this.goalMapper.fromEntityToModelBulk(goals),
-            meta: new PageMetaDto({
+            meta: {
                 itemCount,
                 page: pageOptions.page,
                 take: pageOptions.take,
-            }),
+            },
         };
     }
 

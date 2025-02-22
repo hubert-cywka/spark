@@ -1,0 +1,12 @@
+@use "src/styles/tokens";
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: tokens.$spacing-300;
+
+    .buttons {
+        display: flex;
+        gap: tokens.$spacing-200;
+    }
+}
