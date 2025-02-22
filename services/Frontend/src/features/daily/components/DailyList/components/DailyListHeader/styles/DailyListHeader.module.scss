@@ -4,6 +4,7 @@
     display: flex;
     align-items: center;
     gap: tokens.$spacing-600;
+    width: fit-content;
 
     position: sticky;
     z-index: 10;
