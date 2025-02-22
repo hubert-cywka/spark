@@ -4,7 +4,7 @@ import styles from "./styles/GoalPageDashboard.module.scss";
 
 import { GoalEntriesList } from "@/app/goals/[id]/components/GoalEntriesList";
 import { GoalPageHeader } from "@/app/goals/[id]/components/GoalPageHeader";
-import { Spinner } from "@/components/Spinner";
+import { LoadingOverlay } from "@/components/LoadingOverlay/LoadingOverlay";
 import { useEntries } from "@/features/entries/hooks";
 import { GoalCard } from "@/features/goals/components/GoalCard";
 import { useGoal } from "@/features/goals/hooks/useGoals/useGoal";
@@ -21,11 +21,7 @@ export const GoalPageDashboard = ({ goalId }: EntriesProps) => {
     const { data: goal } = useGoal({ goalId });
 
     if (!goal) {
-        return (
-            <div className={styles.spinnerWrapper}>
-                <Spinner />
-            </div>
-        );
+        return <LoadingOverlay />;
     }
 
     return (

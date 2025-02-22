@@ -7,6 +7,7 @@ import { Card } from "@/components/Card";
 import { Divider } from "@/components/Divider";
 import { LoginForm } from "@/features/auth/components/LoginForm";
 import { onlyAsUnauthenticated } from "@/features/auth/hoc/withAuthorization";
+import { withSessionRestore } from "@/features/auth/hoc/withSessionRestore";
 import { GoogleOIDCButton } from "@/features/auth/oidc/providers/google/components/GoogleOIDCButton";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
@@ -40,4 +41,4 @@ function Page() {
     );
 }
 
-export default onlyAsUnauthenticated(Page);
+export default withSessionRestore(onlyAsUnauthenticated(Page));

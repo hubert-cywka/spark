@@ -4,6 +4,7 @@ import "server-only";
 import { GoalPageDashboard } from "@/app/goals/[id]/components/GoalPageDashboard";
 import { Container } from "@/components/Container";
 import { onlyAsAuthenticated } from "@/features/auth/hoc/withAuthorization";
+import { withSessionRestore } from "@/features/auth/hoc/withSessionRestore";
 
 async function Page({ params }: { params: Promise<{ id: string }> }) {
     const goalId = (await params).id;
@@ -15,4 +16,4 @@ async function Page({ params }: { params: Promise<{ id: string }> }) {
     );
 }
 
-export default onlyAsAuthenticated(Page);
+export default withSessionRestore(onlyAsAuthenticated(Page));

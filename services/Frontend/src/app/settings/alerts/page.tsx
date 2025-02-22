@@ -7,6 +7,7 @@ import { Container } from "@/components/Container";
 import { AddDefaultReminderButton } from "@/features/alerts/components/AddDefaultReminderButton/AddDefaultReminderButton";
 import { AlertsList } from "@/features/alerts/components/AlertsList/AlertsList";
 import { onlyAsAuthenticated } from "@/features/auth/hoc/withAuthorization";
+import { withSessionRestore } from "@/features/auth/hoc/withSessionRestore";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 function Page() {
@@ -35,4 +36,4 @@ function Page() {
     );
 }
 
-export default onlyAsAuthenticated(Page);
+export default withSessionRestore(onlyAsAuthenticated(Page));
