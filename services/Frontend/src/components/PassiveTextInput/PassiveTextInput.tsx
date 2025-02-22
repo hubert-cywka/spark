@@ -29,7 +29,7 @@ export function PassiveTextInput<T extends object>({
     onRenderPassiveModeActions,
 }: PassiveTextInputProps<T>) {
     const [internalValue, setInternalValue] = useState<T | null>(value);
-    const hasValueChanged = !!internalValue && value.toString() !== internalValue.toString();
+    const hasValueChanged = !!internalValue && value?.toString() !== internalValue.toString();
 
     const restoreInitialValue = () => {
         setInternalValue(value);
