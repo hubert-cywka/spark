@@ -1,4 +1,5 @@
 import { Calendar, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Plus } from "lucide-react";
+import { useFormatter } from "next-intl";
 
 import styles from "./styles/DailyListHeader.module.scss";
 
@@ -17,6 +18,7 @@ type DailyListHeaderProps = {
 
 export const DailyListHeader = ({ timeframeStart, onNextTimeframe, onPrevTimeframe, onReset, onCreateNewDaily }: DailyListHeaderProps) => {
     const now = new Date();
+    const formatter = useFormatter();
     const isCurrentYearAndMonth = now.getMonth() === timeframeStart.getMonth() && now.getFullYear() === timeframeStart.getFullYear();
 
     return (
@@ -42,8 +44,10 @@ export const DailyListHeader = ({ timeframeStart, onNextTimeframe, onPrevTimefra
             </div>
 
             <h1 className={styles.header}>
-                {/* TODO: Locale */}
-                {timeframeStart.getFullYear()}, {timeframeStart.toLocaleString("en", { month: "long" })}
+                {timeframeStart.getFullYear()},{" "}
+                {formatter.dateTime(timeframeStart, {
+                    month: "long",
+                })}
             </h1>
         </div>
     );

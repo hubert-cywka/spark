@@ -3,7 +3,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
 import { useCommonAuthenticationRequirements } from "@/features/auth/hooks";
-import { useAdaptedForm } from "@/hooks/useAdaptedForm";
+import { useHookFormAdapter } from "@/hooks/useHookFormAdapter";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 const NAME_MAX_LENGTH = 30;
@@ -43,7 +43,7 @@ export const useRegisterForm = () => {
         [confirmPassword, email, password, t]
     );
 
-    return useAdaptedForm<RegisterFormInputs>({
+    return useHookFormAdapter<RegisterFormInputs>({
         resolver: yupResolver<RegisterFormInputs>(requirements),
     });
 };

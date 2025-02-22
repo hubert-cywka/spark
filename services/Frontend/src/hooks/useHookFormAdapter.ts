@@ -5,12 +5,12 @@ type RegisterResult<T extends FieldValues> = (field: Path<T>) => Omit<ReturnType
     onChange: (value: PathValue<T, Path<T>>) => void;
 };
 
-type UseAdaptedFormOptions<T extends FieldValues> = UseFormProps<T>;
-type UseAdaptedFormResult<T extends FieldValues> = Omit<UseFormReturn<T>, "register"> & {
+type UseHookFormAdapterOptions<T extends FieldValues> = UseFormProps<T>;
+type UseHookFormAdapterResult<T extends FieldValues> = Omit<UseFormReturn<T>, "register"> & {
     register: RegisterResult<T>;
 };
 
-export const useAdaptedForm = <T extends FieldValues>(options?: UseAdaptedFormOptions<T>): UseAdaptedFormResult<T> => {
+export const useHookFormAdapter = <T extends FieldValues>(options?: UseHookFormAdapterOptions<T>): UseHookFormAdapterResult<T> => {
     const { register, setValue, ...rest } = useForm<T>(options);
 
     const adaptedRegister: RegisterResult<T> = useCallback(
