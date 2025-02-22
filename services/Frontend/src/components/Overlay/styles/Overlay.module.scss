@@ -5,11 +5,18 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: rgba(tokens.$color-neutral-surface-300, 0.9);
 
     position: absolute;
     left: 0;
     top: 0;
     right: 0;
     bottom: 0;
+
+    &[data-variant="solid"] {
+        background: rgba(tokens.$color-neutral-surface-300, 0.9);
+    }
+
+    &[data-variant="translucent"] {
+        background: tokens.$color-neutral-background-alpha-300;
+    }
 }

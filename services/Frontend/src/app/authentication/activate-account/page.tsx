@@ -9,6 +9,7 @@ import { Card } from "@/components/Card";
 import { AccountActivationHandler } from "@/features/auth/components/AccountActivationHandler";
 import { RequestActivationLinkForm } from "@/features/auth/components/RequestActivationLinkForm";
 import { onlyAsUnauthenticated } from "@/features/auth/hoc/withAuthorization";
+import { withSessionRestore } from "@/features/auth/hoc/withSessionRestore";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 function Page() {
@@ -30,4 +31,4 @@ function Page() {
     );
 }
 
-export default onlyAsUnauthenticated(Page);
+export default withSessionRestore(onlyAsUnauthenticated(Page));

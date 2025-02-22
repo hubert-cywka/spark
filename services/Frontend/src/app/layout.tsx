@@ -8,7 +8,7 @@ import "../styles/tokens.scss";
 import "../styles/normalize.scss";
 import "react-loading-skeleton/dist/skeleton.css";
 
-import { Provider } from "@/app/Provider/Provider";
+import { Provider } from "@/app/components/Provider/Provider";
 import { Shell } from "@/features/layout/components/Shell/Shell";
 
 const montserrat = Montserrat({ subsets: ["latin"] });

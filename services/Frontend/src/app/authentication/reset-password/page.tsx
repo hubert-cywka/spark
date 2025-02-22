@@ -7,6 +7,7 @@ import { Card } from "@/components/Card";
 import { ResetPasswordForm } from "@/features/auth/components/ResetPasswordForm";
 import { UpdatePasswordForm } from "@/features/auth/components/UpdatePasswordForm";
 import { onlyAsUnauthenticated } from "@/features/auth/hoc/withAuthorization";
+import { withSessionRestore } from "@/features/auth/hoc/withSessionRestore";
 import { getTranslationsAsync } from "@/lib/i18n/hooks/useTranslate";
 import { PageSearchParams } from "@/types/Page";
 
@@ -44,4 +45,4 @@ async function Page({ searchParams }: ResetPasswordPageProps) {
     );
 }
 
-export default onlyAsUnauthenticated(Page);
+export default withSessionRestore(onlyAsUnauthenticated(Page));

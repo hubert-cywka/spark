@@ -6,6 +6,7 @@ import { Anchor } from "@/components/Anchor";
 import { Card } from "@/components/Card";
 import { RegisterForm } from "@/features/auth/components/RegisterForm";
 import { onlyAsUnauthenticated } from "@/features/auth/hoc/withAuthorization";
+import { withSessionRestore } from "@/features/auth/hoc/withSessionRestore";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 function Page() {
@@ -25,4 +26,4 @@ function Page() {
     );
 }
 
-export default onlyAsUnauthenticated(Page);
+export default withSessionRestore(onlyAsUnauthenticated(Page));
