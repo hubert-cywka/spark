@@ -2,7 +2,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
 import { useCommonAuthenticationRequirements } from "@/features/auth/hooks";
-import { useAdaptedForm } from "@/hooks/useAdaptedForm";
+import { useHookFormAdapter } from "@/hooks/useHookFormAdapter";
 
 export type ResetPasswordFormInputs = {
     email: string;
@@ -13,7 +13,7 @@ export const useResetPasswordForm = () => {
 
     const requirements = yup.object({ email });
 
-    return useAdaptedForm<ResetPasswordFormInputs>({
+    return useHookFormAdapter<ResetPasswordFormInputs>({
         resolver: yupResolver<ResetPasswordFormInputs>(requirements),
     });
 };

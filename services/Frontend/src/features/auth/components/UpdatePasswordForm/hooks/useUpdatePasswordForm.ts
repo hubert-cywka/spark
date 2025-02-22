@@ -2,7 +2,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
 import { useCommonAuthenticationRequirements } from "@/features/auth/hooks";
-import { useAdaptedForm } from "@/hooks/useAdaptedForm";
+import { useHookFormAdapter } from "@/hooks/useHookFormAdapter";
 
 export type UpdatePasswordFormInputs = {
     password: string;
@@ -17,7 +17,7 @@ export const useUpdatePasswordForm = () => {
         confirmPassword: confirmPassword("password"),
     });
 
-    return useAdaptedForm<UpdatePasswordFormInputs>({
+    return useHookFormAdapter<UpdatePasswordFormInputs>({
         resolver: yupResolver<UpdatePasswordFormInputs>(requirements),
     });
 };
