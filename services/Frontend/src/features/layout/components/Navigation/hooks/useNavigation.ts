@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Bell, Calendar, Home, LogIn, Target, UserPlus } from "lucide-react";
+import { Bell, Calendar, Home, Lightbulb, LogIn, Target, UserPlus } from "lucide-react";
 
 import { AppRoute } from "@/app/appRoute";
 import { AccessScope } from "@/features/auth/types/Identity";
@@ -49,6 +49,11 @@ export const useNavigation = (): UseAppNavigation => {
                         target: AppRoute.GOALS,
                         label: t("common.navigation.sections.journal.goals.label"),
                         icon: Target,
+                    },
+                    {
+                        target: AppRoute.INSIGHTS,
+                        label: t("common.navigation.sections.journal.insights.label"),
+                        icon: Lightbulb,
                     },
                 ],
             },
