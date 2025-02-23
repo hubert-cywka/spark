@@ -1,6 +1,6 @@
 import { Controller, Get, Inject, NotFoundException, UseGuards } from "@nestjs/common";
 
-import { CurrentUser } from "@/common/decorators/CurrentUser.decorator";
+import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
 import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
@@ -17,7 +17,7 @@ export class UserController {
 
     @Get("myself")
     @UseGuards(AuthenticationGuard)
-    public async getMyself(@CurrentUser() user: User) {
+    public async getMyself(@AuthenticatedUserContext() user: User) {
         try {
             const result = await this.usersService.findOneById(user.id);
             return this.userMapper.fromModelToDto(result);

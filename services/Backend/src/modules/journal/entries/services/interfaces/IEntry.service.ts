@@ -10,6 +10,5 @@ export interface IEntryService {
     create(authorId: string, dailyId: string, content: string): Promise<Entry>;
     deleteById(authorId: string, dailyId: string, entryId: string): Promise<void>;
     restoreById(authorId: string, dailyId: string, entryId: string): Promise<void>;
-    updateContent(authorId: string, dailyId: string, entryId: string, content: string): Promise<Entry>;
-    updateStatus(authorId: string, dailyId: string, entryId: string, isCompleted: boolean): Promise<Entry>;
+    update(authorId: string, dailyId: string, entryId: string, entry: Partial<Entry>): Promise<Entry>;
 }

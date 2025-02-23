@@ -1,6 +1,6 @@
 import { createParamDecorator, ExecutionContext, UnauthorizedException } from "@nestjs/common";
 
-export const CurrentUser = createParamDecorator((data: unknown, ctx: ExecutionContext) => {
+export const AuthenticatedUserContext = createParamDecorator((data: unknown, ctx: ExecutionContext) => {
     const { user } = ctx.switchToHttp().getRequest();
 
     if (!user) {

@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Inject, NotFoundException, Param, ParseUUIDPipe, Post, UseGuards } from "@nestjs/common";
 
-import { CurrentUser } from "@/common/decorators/CurrentUser.decorator";
+import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
 import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
@@ -20,7 +20,7 @@ export class GoalEntryLinkController {
     public async createLink(
         @Param("goalId", new ParseUUIDPipe()) goalId: string,
         @Body() dto: LinkEntryWithGoalDto,
-        @CurrentUser() author: User
+        @AuthenticatedUserContext() author: User
     ) {
         try {
             await this.goalEntryLinkService.createLink(author.id, goalId, dto.entryId);
@@ -34,7 +34,7 @@ export class GoalEntryLinkController {
     public async removeLink(
         @Param("goalId", new ParseUUIDPipe()) goalId: string,
         @Param("entryId", new ParseUUIDPipe()) entryId: string,
-        @CurrentUser() author: User
+        @AuthenticatedUserContext() author: User
     ) {
         try {
             await this.goalEntryLinkService.removeLink(author.id, goalId, entryId);
