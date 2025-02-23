@@ -1,10 +1,19 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { AxiosInstance, HttpStatusCode } from "axios";
 
+import { useRefreshSession } from "@/features/auth/hooks";
 import { logger } from "@/lib/logger/logger";
 
-export const useAuthRefreshInterceptor = (client: AxiosInstance, reAuthenticate: () => Promise<string>) => {
+let refreshRequest: Promise<string> | null = null;
+
+export const useAuthRefreshInterceptor = (client: AxiosInstance) => {
     const isInterceptorMountedRef = useRef<boolean>(false);
+    const { mutateAsync: refreshSession } = useRefreshSession();
+
+    const reAuthenticate = useCallback(async (): Promise<string> => {
+        const { accessToken } = await refreshSession();
+        return accessToken;
+    }, [refreshSession]);
 
     useEffect(() => {
         if (isInterceptorMountedRef.current) {
@@ -15,20 +24,26 @@ export const useAuthRefreshInterceptor = (client: AxiosInstance, reAuthenticate:
             (response) => response,
             async (error) => {
                 const originalRequest = error.config;
+                const isRefreshTokenRequest = error.request.url.includes("/auth/refresh");
+
                 const shouldReAuthenticate =
                     error.response?.status === HttpStatusCode.Unauthorized &&
-                    !originalRequest._retry &&
-                    !!originalRequest.headers.Authorization;
+                    !!originalRequest.headers?.Authorization &&
+                    !isRefreshTokenRequest;
 
                 if (shouldReAuthenticate) {
-                    originalRequest._retry = true;
+                    if (!refreshRequest) {
+                        refreshRequest = reAuthenticate();
+                    }
 
                     try {
-                        const accessToken = await reAuthenticate();
-                        originalRequest.headers["Authorization"] = `Bearer ${accessToken}`;
+                        const accessToken = await refreshRequest;
+                        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+                        refreshRequest = null;
 
-                        return client(originalRequest);
+                        return await client(originalRequest);
                     } catch (refreshError) {
+                        refreshRequest = null;
                         logger.error({
                             msg: "Failed to refresh access token.",
                         });
