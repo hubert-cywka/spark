@@ -13,7 +13,7 @@ import {
     UseGuards,
 } from "@nestjs/common";
 
-import { CurrentUser } from "@/common/decorators/CurrentUser.decorator";
+import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
 import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
@@ -33,14 +33,18 @@ export class GoalController {
 
     @Get()
     @UseGuards(new AuthenticationGuard())
-    public async getGoals(@Query() filters: FindGoalsFiltersDto, @Query() pageOptions: PageOptionsDto, @CurrentUser() author: User) {
+    public async getGoals(
+        @Query() filters: FindGoalsFiltersDto,
+        @Query() pageOptions: PageOptionsDto,
+        @AuthenticatedUserContext() author: User
+    ) {
         const result = await this.goalService.findAll(author.id, pageOptions, filters);
         return this.goalMapper.fromModelToDtoPage(result);
     }
 
     @Get(":id")
     @UseGuards(new AuthenticationGuard())
-    public async getGoalById(@Param("id", new ParseUUIDPipe()) goalId: string, @CurrentUser() author: User) {
+    public async getGoalById(@Param("id", new ParseUUIDPipe()) goalId: string, @AuthenticatedUserContext() author: User) {
         try {
             const result = await this.goalService.findOneById(author.id, goalId);
             return this.goalMapper.fromModelToDto(result);
@@ -51,7 +55,7 @@ export class GoalController {
 
     @Post()
     @UseGuards(new AuthenticationGuard())
-    public async createGoal(@Body() dto: CreateOrUpdateGoalDto, @CurrentUser() author: User) {
+    public async createGoal(@Body() dto: CreateOrUpdateGoalDto, @AuthenticatedUserContext() author: User) {
         const result = await this.goalService.create(author.id, dto);
         return this.goalMapper.fromModelToDto(result);
     }
@@ -61,7 +65,7 @@ export class GoalController {
     public async updateGoalsName(
         @Param("id", new ParseUUIDPipe()) goalId: string,
         @Body() dto: CreateOrUpdateGoalDto,
-        @CurrentUser() author: User
+        @AuthenticatedUserContext() author: User
     ) {
         try {
             const result = await this.goalService.update(author.id, goalId, dto);
@@ -73,7 +77,7 @@ export class GoalController {
 
     @Delete(":id")
     @UseGuards(new AuthenticationGuard())
-    public async deleteGoal(@Param("id", new ParseUUIDPipe()) goalId: string, @CurrentUser() author: User) {
+    public async deleteGoal(@Param("id", new ParseUUIDPipe()) goalId: string, @AuthenticatedUserContext() author: User) {
         try {
             await this.goalService.deleteById(author.id, goalId);
         } catch (err) {
@@ -83,7 +87,7 @@ export class GoalController {
 
     @Post(":id/restore")
     @UseGuards(new AuthenticationGuard())
-    public async restoreGoal(@Param("id", new ParseUUIDPipe()) goalId: string, @CurrentUser() author: User) {
+    public async restoreGoal(@Param("id", new ParseUUIDPipe()) goalId: string, @AuthenticatedUserContext() author: User) {
         try {
             await this.goalService.restoreById(author.id, goalId);
         } catch (err) {

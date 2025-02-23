@@ -13,7 +13,7 @@ import {
     UseGuards,
 } from "@nestjs/common";
 
-import { CurrentUser } from "@/common/decorators/CurrentUser.decorator";
+import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
 import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
@@ -34,14 +34,18 @@ export class DailyController {
 
     @Get()
     @UseGuards(new AuthenticationGuard())
-    public async getDailies(@Query() { from, to }: FindDailyFiltersDto, @Query() pageOptions: PageOptionsDto, @CurrentUser() author: User) {
+    public async getDailies(
+        @Query() { from, to }: FindDailyFiltersDto,
+        @Query() pageOptions: PageOptionsDto,
+        @AuthenticatedUserContext() author: User
+    ) {
         const result = await this.dailyService.findAllByDateRange(author.id, from, to, pageOptions);
         return this.dailyMapper.fromModelToDtoPage(result);
     }
 
     @Get(":id")
     @UseGuards(new AuthenticationGuard())
-    public async getDailyById(@Param("id", new ParseUUIDPipe()) dailyId: string, @CurrentUser() author: User) {
+    public async getDailyById(@Param("id", new ParseUUIDPipe()) dailyId: string, @AuthenticatedUserContext() author: User) {
         try {
             const result = await this.dailyService.findOneById(author.id, dailyId);
             return this.dailyMapper.fromModelToDto(result);
@@ -52,7 +56,7 @@ export class DailyController {
 
     @Post()
     @UseGuards(new AuthenticationGuard())
-    public async createDaily(@Body() dto: CreateDailyDto, @CurrentUser() author: User) {
+    public async createDaily(@Body() dto: CreateDailyDto, @AuthenticatedUserContext() author: User) {
         const result = await this.dailyService.create(author.id, dto.date);
         return this.dailyMapper.fromModelToDto(result);
     }
@@ -62,7 +66,7 @@ export class DailyController {
     public async updateDaily(
         @Param("id", new ParseUUIDPipe()) dailyId: string,
         @Body() dto: UpdateDailyDateDto,
-        @CurrentUser() author: User
+        @AuthenticatedUserContext() author: User
     ) {
         try {
             const result = await this.dailyService.update(author.id, dailyId, dto.date);
@@ -74,7 +78,7 @@ export class DailyController {
 
     @Delete(":id")
     @UseGuards(new AuthenticationGuard())
-    public async deleteDaily(@Param("id", new ParseUUIDPipe()) dailyId: string, @CurrentUser() author: User) {
+    public async deleteDaily(@Param("id", new ParseUUIDPipe()) dailyId: string, @AuthenticatedUserContext() author: User) {
         try {
             await this.dailyService.deleteById(author.id, dailyId);
         } catch (err) {
@@ -84,7 +88,7 @@ export class DailyController {
 
     @Post(":id/restore")
     @UseGuards(new AuthenticationGuard())
-    public async restoreDaily(@Param("id", new ParseUUIDPipe()) dailyId: string, @CurrentUser() author: User) {
+    public async restoreDaily(@Param("id", new ParseUUIDPipe()) dailyId: string, @AuthenticatedUserContext() author: User) {
         try {
             await this.dailyService.restoreById(author.id, dailyId);
         } catch (err) {

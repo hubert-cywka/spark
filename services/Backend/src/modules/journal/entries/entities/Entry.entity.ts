@@ -25,6 +25,9 @@ export class EntryEntity {
     @Column({ type: "boolean", default: false })
     isCompleted!: boolean;
 
+    @Column({ type: "boolean", default: false })
+    isFeatured!: boolean;
+
     @CreateDateColumn({ type: "timestamptz" })
     createdAt!: Date;
 

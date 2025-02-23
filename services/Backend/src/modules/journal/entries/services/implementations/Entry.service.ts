@@ -101,17 +101,7 @@ export class EntryService implements IEntryService {
         }
     }
 
-    public async updateContent(authorId: string, dailyId: string, entryId: string, content: string): Promise<Entry> {
-        return await this.updateEntry(authorId, dailyId, entryId, { content });
-    }
-
-    public async updateStatus(authorId: string, dailyId: string, entryId: string, isCompleted: boolean): Promise<Entry> {
-        return await this.updateEntry(authorId, dailyId, entryId, {
-            isCompleted,
-        });
-    }
-
-    private async updateEntry(authorId: string, dailyId: string, entryId: string, partialEntry: Partial<EntryEntity>): Promise<Entry> {
+    public async update(authorId: string, dailyId: string, entryId: string, partialEntry: Partial<Entry>): Promise<Entry> {
         const result = await this.getRepository()
             .createQueryBuilder()
             .update(EntryEntity)

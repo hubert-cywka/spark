@@ -16,6 +16,9 @@ export class EntryDto {
     @IsBoolean()
     isCompleted!: boolean;
 
+    @IsBoolean()
+    isFeatured!: boolean;
+
     @IsDateString()
     createdAt!: string;
 

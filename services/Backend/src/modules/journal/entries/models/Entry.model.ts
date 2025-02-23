@@ -4,6 +4,7 @@ export type Entry = {
     dailyId: string;
     content: string;
     isCompleted: boolean;
+    isFeatured: boolean;
     createdAt: Date;
     updatedAt: Date;
 };

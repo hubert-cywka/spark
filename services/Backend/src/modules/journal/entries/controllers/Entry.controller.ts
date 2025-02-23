@@ -1,6 +1,6 @@
 import { Controller, Get, Inject, Query, UseGuards } from "@nestjs/common";
 
-import { CurrentUser } from "@/common/decorators/CurrentUser.decorator";
+import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
 import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
 import { PageOptionsDto } from "@/common/pagination/dto/PageOptions.dto";
 import { FindEntriesFiltersDto } from "@/modules/journal/entries/dto/FindEntriesFilters.dto";
@@ -17,7 +17,11 @@ export class EntryController {
 
     @Get()
     @UseGuards(new AuthenticationGuard())
-    public async getEntries(@Query() filters: FindEntriesFiltersDto, @Query() pageOptions: PageOptionsDto, @CurrentUser() user: User) {
+    public async getEntries(
+        @Query() filters: FindEntriesFiltersDto,
+        @Query() pageOptions: PageOptionsDto,
+        @AuthenticatedUserContext() user: User
+    ) {
         const result = await this.entryService.findAll(user.id, pageOptions, filters);
         return this.entryMapper.fromModelToDtoPage(result);
     }
