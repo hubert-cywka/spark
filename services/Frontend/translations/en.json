@@ -171,6 +171,9 @@
                     },
                     "daily": {
                         "label": "Daily"
+                    },
+                    "insights": {
+                        "label": "Insights"
                     }
                 },
                 "settings": {
