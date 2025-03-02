@@ -51,6 +51,11 @@
                     "notFound": "Perhaps it was already deleted?"
                 }
             },
+            "updateIsFeatured": {
+                "errors": {
+                    "notFound": "Perhaps it was already deleted?"
+                }
+            },
             "delete": {
                 "errors": {
                     "notFound": "Perhaps it was already deleted?"
@@ -213,7 +218,14 @@
         "updateStatus": {
             "notifications": {
                 "error": {
-                    "title": "Couldn't update entry status"
+                    "title": "Couldn't update entry"
+                }
+            }
+        },
+        "updateIsFeatured": {
+            "notifications": {
+                "error": {
+                    "title": "Couldn't update entry"
                 }
             }
         },

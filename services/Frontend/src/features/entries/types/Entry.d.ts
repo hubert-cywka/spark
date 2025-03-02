@@ -4,5 +4,6 @@ export type Entry = {
     authorId: string;
     content: string;
     isCompleted: boolean;
+    isFeatured: boolean;
     createdAt: Date;
 };

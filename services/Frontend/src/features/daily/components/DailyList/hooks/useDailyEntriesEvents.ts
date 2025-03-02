@@ -1,4 +1,4 @@
-import { useUpdateEntryStatusEvents } from "@/features/entries/hooks";
+import { useUpdateEntryIsFeatured, useUpdateEntryIsFeaturedEvents, useUpdateEntryStatusEvents } from "@/features/entries/hooks";
 import {
     useCreateEntry,
     useCreateEntryEvents,
@@ -22,6 +22,9 @@ export const useDailyEntriesEvents = () => {
 
     const { mutateAsync: updateEntryStatus } = useUpdateEntryStatus();
     const { onUpdateEntryStatusError } = useUpdateEntryStatusEvents();
+
+    const { mutateAsync: updateEntryIsFeatured } = useUpdateEntryIsFeatured();
+    const { onUpdateEntryIsFeaturedError } = useUpdateEntryIsFeaturedEvents();
 
     const onDeleteEntry = async (dailyId: string, entryId: string) => {
         try {
@@ -55,6 +58,18 @@ export const useDailyEntriesEvents = () => {
         }
     };
 
+    const onUpdateEntryIsFeatured = async (entry: Entry, isFeatured: boolean) => {
+        try {
+            return await updateEntryIsFeatured({
+                entryId: entry.id,
+                dailyId: entry.dailyId,
+                isFeatured,
+            });
+        } catch (err) {
+            onUpdateEntryIsFeaturedError(err);
+        }
+    };
+
     const onCreateEntry = async (dailyId: string, content: string) => {
         try {
             return await createEntry({ dailyId, content });
@@ -68,5 +83,6 @@ export const useDailyEntriesEvents = () => {
         onUpdateEntryContent,
         onDeleteEntry,
         onUpdateEntryStatus,
+        onUpdateEntryIsFeatured,
     };
 };

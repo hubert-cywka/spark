@@ -4,5 +4,6 @@ export type EntryDto = {
     authorId: string;
     content: string;
     isCompleted: boolean;
+    isFeatured: boolean;
     createdAt: string;
 };

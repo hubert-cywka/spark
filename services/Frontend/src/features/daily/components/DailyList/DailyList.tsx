@@ -51,7 +51,7 @@ export const DailyList = () => {
         startDate,
     });
 
-    const { onCreateEntry, onUpdateEntryContent, onDeleteEntry, onUpdateEntryStatus } = useDailyEntriesEvents();
+    const { onCreateEntry, onUpdateEntryContent, onDeleteEntry, onUpdateEntryStatus, onUpdateEntryIsFeatured } = useDailyEntriesEvents();
     const { placeholders, addPlaceholder, removePlaceholder } = useDailyEntriesPlaceholders();
 
     const { navigateByIndex, navigateByEntryId } = useNavigationBetweenEntries({
@@ -91,6 +91,7 @@ export const DailyList = () => {
                                 onDelete={onDeleteEntry}
                                 onChangeStatus={onUpdateEntryStatus}
                                 onSaveContent={onUpdateEntryContent}
+                                onChangeIsFeatured={onUpdateEntryIsFeatured}
                                 onFocusColumn={(column: DailyEntryColumn) => navigateByIndex(column, daily.id, index)}
                                 onNavigateDown={(target) => navigateByIndex(target, daily.id, index + 1)}
                                 onNavigateUp={(target) => navigateByIndex(target, daily.id, index - 1)}
