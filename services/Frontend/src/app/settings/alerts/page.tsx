@@ -26,9 +26,7 @@ function Page() {
                 ]}
             />
             <div className={styles.section}>
-                <div className={styles.headerWrapper}>
-                    <h2 className={styles.header}>{t("alerts.reminders.header")}</h2>
-                </div>
+                <h2 className={styles.header}>{t("alerts.reminders.header")}</h2>
                 <p className={styles.description}>{t("alerts.reminders.description")}</p>
 
                 <AlertsList

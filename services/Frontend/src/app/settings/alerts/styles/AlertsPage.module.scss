@@ -9,18 +9,12 @@
     .section {
         max-width: tokens.$breakpoint-sm;
 
-        .headerWrapper {
-            display: flex;
-            align-items: center;
-            gap: tokens.$spacing-300;
-
-            .header {
-                font: tokens.$typography-title-100;
-            }
+        .header {
+            font: tokens.$typography-title-100;
         }
 
         .description {
-            margin-bottom: tokens.$spacing-400;
+            margin-bottom: tokens.$spacing-500;
             margin-top: tokens.$spacing-200;
 
             text-align: justify;
