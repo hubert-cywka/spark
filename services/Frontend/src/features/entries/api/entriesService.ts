@@ -2,6 +2,7 @@ import { PageDto } from "@/api/dto/PageDto";
 import { CreateEntryRequestDto } from "@/features/entries/api/dto/CreateEntryRequestDto";
 import { EntryDto } from "@/features/entries/api/dto/EntryDto";
 import { UpdateEntryContentRequestDto } from "@/features/entries/api/dto/UpdateEntryContentRequestDto";
+import { UpdateEntryIsFeaturedRequestDto } from "@/features/entries/api/dto/UpdateEntryIsFeaturedRequestDto.ts";
 import { UpdateEntryStatusRequestDto } from "@/features/entries/api/dto/UpdateEntryStatusRequestDto";
 import { EntriesQueryFilters } from "@/features/entries/api/types/EntriesQueryFilters";
 import { Entry } from "@/features/entries/types/Entry";
@@ -48,6 +49,15 @@ export class EntriesService {
         return EntriesService.mapDtoToEntry(data);
     }
 
+    public static async updateIsFeatured({
+        entryId,
+        dailyId,
+        ...dto
+    }: UpdateEntryIsFeaturedRequestDto & { entryId: string; dailyId: string }) {
+        const { data } = await apiClient.patch(`/daily/${dailyId}/entry/${entryId}/featured`, dto);
+        return EntriesService.mapDtoToEntry(data);
+    }
+
     public static async deleteOne({ entryId, dailyId }: { entryId: string; dailyId: string }) {
         await apiClient.delete(`/daily/${dailyId}/entry/${entryId}`);
     }
@@ -59,6 +69,7 @@ export class EntriesService {
             authorId: dto.authorId,
             content: dto.content,
             isCompleted: dto.isCompleted,
+            isFeatured: dto.isFeatured,
             createdAt: new Date(dto.createdAt),
         };
     }

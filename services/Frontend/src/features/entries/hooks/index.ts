@@ -8,5 +8,7 @@ export { useEntries } from "./useGetEntry/useEntries";
 export { useGetDailyEntriesByDateRange } from "./useGetEntry/useGetDailyEntriesByDateRange";
 export { useUpdateEntryContent } from "./useUpdateEntry/useUpdateEntryContent";
 export { useUpdateEntryContentEvents } from "./useUpdateEntry/useUpdateEntryContentEvents";
+export { useUpdateEntryIsFeatured } from "./useUpdateEntry/useUpdateEntryIsFeatured";
+export { useUpdateEntryIsFeaturedEvents } from "./useUpdateEntry/useUpdateEntryIsFeaturedEvents";
 export { useUpdateEntryStatus } from "./useUpdateEntry/useUpdateEntryStatus";
 export { useUpdateEntryStatusEvents } from "./useUpdateEntry/useUpdateEntryStatusEvents";

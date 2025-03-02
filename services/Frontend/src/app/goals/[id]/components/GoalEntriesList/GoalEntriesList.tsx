@@ -16,7 +16,7 @@ type GoalEntriesListProps = {
 export const GoalEntriesList = ({ entries, goalId }: GoalEntriesListProps) => {
     const t = useTranslate();
 
-    const { onUpdateEntryContent, onDeleteEntry, onUpdateEntryStatus } = useDailyEntriesEvents();
+    const { onUpdateEntryContent, onDeleteEntry, onUpdateEntryStatus, onUpdateEntryIsFeatured } = useDailyEntriesEvents();
     const { navigateByIndex } = useNavigationBetweenEntries({
         entriesGroups: { [goalId]: entries },
     });
@@ -35,6 +35,7 @@ export const GoalEntriesList = ({ entries, goalId }: GoalEntriesListProps) => {
                         onDelete={onDeleteEntry}
                         onChangeStatus={onUpdateEntryStatus}
                         onSaveContent={onUpdateEntryContent}
+                        onChangeIsFeatured={onUpdateEntryIsFeatured}
                         onFocusColumn={(column) => navigateByIndex(column, goalId, index)}
                         onNavigateDown={(column) => navigateByIndex(column, goalId, index + 1)}
                         onNavigateUp={(column) => navigateByIndex(column, goalId, index - 1)}

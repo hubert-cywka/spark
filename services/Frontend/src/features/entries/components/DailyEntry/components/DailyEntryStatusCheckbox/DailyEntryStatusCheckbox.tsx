@@ -1,11 +1,11 @@
 import { KeyboardEvent } from "react";
 import { Checkbox as BaseCheckbox } from "react-aria-components";
 
-import styles from "./styles/DailyEntryCheckbox.module.scss";
+import styles from "./styles/DailyEntryStatusCheckbox.module.scss";
 
 import { DailyEntryColumn } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
 
-type DailyEntryCheckboxProps = {
+type DailyEntryStatusCheckboxProps = {
     onChange: (value: boolean) => void;
     value: boolean;
     onNavigateRight: () => void;
@@ -15,7 +15,7 @@ type DailyEntryCheckboxProps = {
     column: DailyEntryColumn;
 };
 
-export const DailyEntryCheckbox = ({
+export const DailyEntryStatusCheckbox = ({
     onChange,
     onNavigateDown,
     onNavigateRight,
@@ -23,7 +23,7 @@ export const DailyEntryCheckbox = ({
     onNavigateLeft,
     value,
     column,
-}: DailyEntryCheckboxProps) => {
+}: DailyEntryStatusCheckboxProps) => {
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "ArrowUp") {
             e.preventDefault();
