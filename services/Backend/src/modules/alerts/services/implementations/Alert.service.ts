@@ -3,6 +3,7 @@ import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactiona
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 
 import { AlertEntity } from "@/modules/alerts/entities/Alert.entity";
+import { AlertLimitReachedError } from "@/modules/alerts/errors/AlertLimitReached.error";
 import { AlertNotFoundError } from "@/modules/alerts/errors/AlertNotFound.error";
 import { ALERTS_MODULE_DATA_SOURCE } from "@/modules/alerts/infrastructure/database/constants";
 import { type IAlertMapper, AlertMapperToken } from "@/modules/alerts/mappers/IAlert.mapper";
@@ -10,6 +11,8 @@ import { type Alert } from "@/modules/alerts/models/Alert.model";
 import { type IAlertService } from "@/modules/alerts/services/interfaces/IAlert.service";
 import { type IAlertSchedulerService, AlertSchedulerServiceToken } from "@/modules/alerts/services/interfaces/IAlertScheduler.service";
 import { type UTCDay } from "@/modules/alerts/types/UTCDay";
+
+const MAX_NUMBER_OF_ALERTS_PER_RECIPIENT = 5;
 
 @Injectable()
 export class AlertService implements IAlertService {
@@ -30,24 +33,26 @@ export class AlertService implements IAlertService {
         });
         return this.alertMapper.fromEntityToModelBulk(result);
     }
-
-    // TODO: Limit number of alerts per user
     public async create(recipientId: string, time: string, daysOfWeek: UTCDay[]): Promise<Alert> {
-        const result = await this.getRepository()
-            .createQueryBuilder()
-            .insert()
-            .into(AlertEntity)
-            .values({
-                recipient: { id: recipientId },
-                nextTriggerAt: this.alertScheduler.findNextTriggerTime(time, daysOfWeek),
-                daysOfWeek,
-                time,
-                enabled: true,
-            })
-            .returning("*")
-            .execute();
+        return await this.txHost.withTransaction(async () => {
+            await this.assertEligibilityToCreate(recipientId);
 
-        return this.alertMapper.fromEntityToModel(result.raw[0]);
+            const result = await this.getRepository()
+                .createQueryBuilder()
+                .insert()
+                .into(AlertEntity)
+                .values({
+                    recipient: { id: recipientId },
+                    nextTriggerAt: this.alertScheduler.scheduleNextTrigger(time, daysOfWeek),
+                    daysOfWeek,
+                    time,
+                    enabled: true,
+                })
+                .returning("*")
+                .execute();
+
+            return this.alertMapper.fromEntityToModel(result.raw[0]);
+        });
     }
 
     public async delete(recipientId: string, alertId: string): Promise<void> {
@@ -85,7 +90,7 @@ export class AlertService implements IAlertService {
         return this.updatePartially(recipientId, alertId, {
             time,
             daysOfWeek,
-            nextTriggerAt: this.alertScheduler.findNextTriggerTime(time, daysOfWeek),
+            nextTriggerAt: this.alertScheduler.scheduleNextTrigger(time, daysOfWeek),
         });
     }
 
@@ -106,6 +111,21 @@ export class AlertService implements IAlertService {
         }
 
         return this.alertMapper.fromEntityToModel(result.raw[0] as AlertEntity);
+    }
+
+    private async assertEligibilityToCreate(recipientId: string): Promise<void> {
+        const existingAlertsCount = await this.count(recipientId);
+
+        if (existingAlertsCount >= MAX_NUMBER_OF_ALERTS_PER_RECIPIENT) {
+            this.logger.log({ recipientId, existingAlertsCount }, "Maximum number of alerts reached.");
+            throw new AlertLimitReachedError();
+        }
+    }
+
+    private async count(recipientId: string): Promise<number> {
+        return await this.getRepository().count({
+            where: { recipient: { id: recipientId } },
+        });
     }
 
     private getRepository() {

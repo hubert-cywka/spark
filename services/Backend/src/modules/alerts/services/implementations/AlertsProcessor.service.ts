@@ -38,10 +38,10 @@ export class AlertsProcessorService implements IAlertsProcessorService {
 
         for (const alert of alertsToProcess) {
             await this.txHost.withTransaction(async () => {
-                await this.alertPublisher.onReminderAlertTriggered(alert.recipient.email);
+                await this.alertPublisher.onReminderTriggered(alert.recipient.email);
                 await this.getRepository().save({
                     ...alert,
-                    nextTriggerAt: this.alertScheduler.findNextTriggerTime(alert.time, alert.daysOfWeek),
+                    nextTriggerAt: this.alertScheduler.scheduleNextTrigger(alert.time, alert.daysOfWeek),
                 });
             });
         }

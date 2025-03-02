@@ -20,8 +20,6 @@ export class GoalEntryLinkService implements IGoalEntryLinkService {
 
     public async createLink(authorId: string, goalId: string, entryId: string): Promise<void> {
         await this.assertOwnership(authorId, goalId, entryId);
-
-        // TODO: Should ignore or throw error if link already exists?
         await this.getRepository().createQueryBuilder().insert().into("goal_entries").values({ goalId, entryId }).orIgnore().execute();
     }
 

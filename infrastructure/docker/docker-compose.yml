@@ -24,6 +24,7 @@ services:
         build:
             context: ../../services/Backend
             dockerfile: Dockerfile
+        restart: always
         networks:
             - services_network
         depends_on:
@@ -34,6 +35,7 @@ services:
         build:
             context: ../../services/Frontend
             dockerfile: Dockerfile
+        restart: always
         networks:
             - services_network
 
@@ -41,6 +43,7 @@ services:
         build:
             context: ../../services/Gateway
             dockerfile: Dockerfile
+        restart: always
         networks:
             - services_network
 

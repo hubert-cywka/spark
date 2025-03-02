@@ -1,3 +1,5 @@
+"use client";
+
 import { Trash } from "lucide-react";
 
 import styles from "./styles/ReminderCard.module.scss";
@@ -5,20 +7,11 @@ import styles from "./styles/ReminderCard.module.scss";
 import { Card } from "@/components/Card";
 import { IconButton } from "@/components/IconButton";
 import { Toggle } from "@/components/Toggle";
+import { AlertRenderProps } from "@/features/alerts/components/AlertsList/types/AlertsList";
 import { AlertTimeInput } from "@/features/alerts/components/AlertTimeInput/AlertTimeInput";
 import { DaysSelect } from "@/features/alerts/components/DaysSelect/DaysSelect";
-import { Alert } from "@/features/alerts/types/Alert";
-import { Day } from "@/types/Day";
 
-type ReminderCardProps = {
-    alert: Alert;
-    onUpdateStatus: (value: boolean) => void;
-    onUpdateTime: (value: string) => void;
-    onUpdateDays: (value: Day[]) => void;
-    onDelete: () => void;
-};
-
-export const ReminderCard = ({ alert, onUpdateStatus, onUpdateTime, onUpdateDays, onDelete }: ReminderCardProps) => {
+export const ReminderCard = ({ alert, onUpdateStatus, onUpdateTime, onUpdateDays, onDelete }: AlertRenderProps) => {
     return (
         <Card key={alert.id} className={styles.container} variant="translucent">
             <div className={styles.wrapper}>

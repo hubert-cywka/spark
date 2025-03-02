@@ -5,7 +5,6 @@ Param(
     $Build
 )
 
-############# FUNCTIONS ####################
 function Build-EnvVar {
     param ($value)
     return "      - $value`n"
@@ -35,7 +34,6 @@ function Update-Or-Add-EnvVariable {
     }
 }
 
-################### SCRIPT #####################
 # Shutdown all running containers to ensure smooth start-up
 docker kill $(docker ps -q)
 
@@ -121,9 +119,6 @@ foreach ($DetachedService in $DetachedServices) {
 }
 
 $DockerComposeLocal | ConvertTo-Yaml | Out-File -FilePath $DockerComposeRootDir/docker-compose.local.override.yml -Encoding UTF8
-
-Write-Host "Make sure all detached services that need to start before, are started, and press 'Enter':" -ForegroundColor Cyan
-Read-Host ">"
 
 if ($Build) {
     docker-compose -f $DockerComposeRootDir/docker-compose.yml -f $DockerComposeRootDir/docker-compose.local.yml -f $DockerComposeRootDir/docker-compose.local.override.yml up $ServicesToRunInContainer --build -d

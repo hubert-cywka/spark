@@ -8,7 +8,7 @@ import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { AlertsSubscriber } from "@/modules/alerts/Alerts.subscriber";
 import { AlertsController } from "@/modules/alerts/controllers/Alerts.controller";
 import { AlertEntity } from "@/modules/alerts/entities/Alert.entity";
-import { RecipientEntity } from "@/modules/alerts/entities/RecipientEntity";
+import { RecipientEntity } from "@/modules/alerts/entities/Recipient.entity";
 import { RecipientRegisteredEventHandler } from "@/modules/alerts/events/RecipientRegisteredEvent.handler";
 import { ALERTS_MODULE_DATA_SOURCE } from "@/modules/alerts/infrastructure/database/constants";
 import { InitializeInboxAndOutbox1737489799641 } from "@/modules/alerts/infrastructure/database/migrations/1737489799641-InitializeInboxAndOutbox";

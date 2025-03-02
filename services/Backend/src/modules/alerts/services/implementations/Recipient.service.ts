@@ -3,7 +3,7 @@ import { InjectTransactionHost, Transactional, TransactionHost } from "@nestjs-c
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import { Repository } from "typeorm";
 
-import { RecipientEntity } from "@/modules/alerts/entities/RecipientEntity";
+import { RecipientEntity } from "@/modules/alerts/entities/Recipient.entity";
 import { ALERTS_MODULE_DATA_SOURCE } from "@/modules/alerts/infrastructure/database/constants";
 import { type IRecipientMapper, RecipientMapperToken } from "@/modules/alerts/mappers/IRecipient.mapper";
 import { type Recipient } from "@/modules/alerts/models/Recipient.model";

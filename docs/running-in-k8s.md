@@ -23,5 +23,3 @@ Verification: `k9s --help`.
 2. Verify if cluster is running with `kubectl cluster-info`.
 3. Go to [terraform directory](../infrastructure/terraform).
 4. Run `terraform init` -> `terraform plan` -> `terraform apply --auto-approve`.
-
-// TODO: Add a powershell script that will also enable port forwarding.
