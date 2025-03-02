@@ -342,10 +342,11 @@
                 }
             }
         },
-        "section": {
-            "reminders": {
-                "header": "Reminders",
-                "description": "Regular reminders, triggered always on the same time on the days you select. Finishing your work at 4PM? Set a reminder and we will send you an email, so you can note down your progress."
+        "reminders": {
+            "header": "Reminders",
+            "description": "Regular reminders, triggered always on the same time on the days you select. Finishing your work at 4PM? Set a reminder and we will send you an email, so you can note down your progress.",
+            "addButton": {
+                "label": "Add new reminder"
             }
         }
     },

@@ -12,8 +12,8 @@ import { Spinner } from "@/components/Spinner";
 
 export const Button = ({
     children,
-    isLoading,
-    isDisabled,
+    isLoading = false,
+    isDisabled = false,
     className,
     variant = "primary",
     size = "2",
@@ -22,13 +22,7 @@ export const Button = ({
     ...rest
 }: ButtonProps) => {
     return (
-        <BaseButton
-            {...rest}
-            isDisabled={isLoading ?? isDisabled}
-            className={clsx(className, styles.button)}
-            data-variant={variant}
-            data-size={size}
-        >
+        <BaseButton {...rest} isDisabled={isDisabled} className={clsx(className, styles.button)} data-variant={variant} data-size={size}>
             <>
                 {leftDecorator}
                 {children}
