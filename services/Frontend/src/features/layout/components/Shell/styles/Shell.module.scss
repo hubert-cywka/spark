@@ -11,15 +11,19 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: fit-content;
-
-        width: 100vw;
+        
         padding: tokens.$spacing-500;
         color: tokens.$color-neutral-text-100;
 
+        height: fit-content;
+        width: 100%;
+        
+        @media (min-width: tokens.$breakpoint-sm) {
+            width: calc(100% - #{tokens.$sidebar-size});
+        }
+        
         .content {
             font: tokens.$typography-body-100;
-            max-width: tokens.$breakpoint-xl;
             width: 100%;
 
             display: flex;

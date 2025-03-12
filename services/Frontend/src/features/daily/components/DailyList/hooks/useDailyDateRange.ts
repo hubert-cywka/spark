@@ -15,7 +15,12 @@ export const useDailyDateRange = ({ granularity }: UseDailyDateRangeOptions) => 
 
     const setPrev = (amount: number = 1) => adjustDate(amount * -1);
     const setNext = (amount: number = 1) => adjustDate(amount);
+
+    const setRange = (start: Date) => {
+        setStartDate(start);
+    };
+
     const reset = () => setStartDate(dayjs().startOf(granularity).toDate());
 
-    return { startDate, endDate, setPrev, setNext, reset };
+    return { startDate, endDate, setRange, setPrev, setNext, reset };
 };

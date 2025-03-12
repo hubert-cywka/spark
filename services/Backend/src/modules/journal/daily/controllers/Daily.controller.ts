@@ -12,6 +12,7 @@ import {
     Query,
     UseGuards,
 } from "@nestjs/common";
+import { plainToClass } from "class-transformer";
 
 import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
@@ -19,16 +20,21 @@ import { whenError } from "@/common/errors/whenError";
 import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
 import { PageOptionsDto } from "@/common/pagination/dto/PageOptions.dto";
 import { CreateDailyDto } from "@/modules/journal/daily/dto/CreateDaily.dto";
+import { DailyActivityDto } from "@/modules/journal/daily/dto/DailyActivity.dto";
 import { FindDailyFiltersDto } from "@/modules/journal/daily/dto/FindDailyFilters.dto";
+import { GetDailyActivityFiltersDto } from "@/modules/journal/daily/dto/GetDailyActivityFilters.dto";
 import { UpdateDailyDateDto } from "@/modules/journal/daily/dto/UpdateDailyDate.dto";
 import { type IDailyMapper, DailyMapperToken } from "@/modules/journal/daily/mappers/IDaily.mapper";
 import { type IDailyService, DailyServiceToken } from "@/modules/journal/daily/services/interfaces/IDaily.service";
+import { type IDailyActivityService, DailyActivityServiceToken } from "@/modules/journal/daily/services/interfaces/IDailyActivity.service";
 import { type User } from "@/types/User";
 
 @Controller("daily")
 export class DailyController {
     public constructor(
         @Inject(DailyServiceToken) private readonly dailyService: IDailyService,
+        @Inject(DailyActivityServiceToken)
+        private readonly dailyActivityService: IDailyActivityService,
         @Inject(DailyMapperToken) private readonly dailyMapper: IDailyMapper
     ) {}
 
@@ -41,6 +47,13 @@ export class DailyController {
     ) {
         const result = await this.dailyService.findAllByDateRange(author.id, from, to, pageOptions);
         return this.dailyMapper.fromModelToDtoPage(result);
+    }
+
+    @Get("activity")
+    @UseGuards(new AuthenticationGuard())
+    public async getDailyActivity(@Query() { from, to }: GetDailyActivityFiltersDto, @AuthenticatedUserContext() author: User) {
+        const result = await this.dailyActivityService.getByDateRange(author.id, from, to);
+        return result.map((dailyActivity) => plainToClass(DailyActivityDto, dailyActivity));
     }
 
     @Get(":id")

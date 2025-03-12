@@ -1,9 +1,5 @@
-export type Daily = {
-    id: string;
-    date: string;
-};
-
 export type DailyActivity = {
+    id: string;
     date: string;
     entriesCount: number;
 };
