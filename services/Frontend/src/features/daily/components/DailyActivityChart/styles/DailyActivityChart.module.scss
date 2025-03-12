@@ -1,0 +1,28 @@
+@use "src/styles/tokens";
+
+.container {
+    * {
+        max-width: unset;
+
+        ::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: tokens.$color-neutral-background-100;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: tokens.$color-accent-solid-100;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: tokens.$color-accent-solid-200;
+        }
+
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: tokens.$color-accent-solid-100 tokens.$color-accent-background-200;
+        }
+    }
+}

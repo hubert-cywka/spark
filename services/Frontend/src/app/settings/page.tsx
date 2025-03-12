@@ -1,4 +1,3 @@
-import styles from "./styles/SettingsPage.module.scss";
 import "server-only";
 
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -11,7 +10,7 @@ function Page() {
     const t = useTranslate();
 
     return (
-        <Container className={styles.container}>
+        <Container>
             <Breadcrumbs items={[{ label: t("settings.navigation.label") }]} />
         </Container>
     );

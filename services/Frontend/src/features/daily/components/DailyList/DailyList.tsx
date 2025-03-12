@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import dayjs from "dayjs";
 
 import styles from "./styles/DailyList.module.scss";
 
 import { ItemLoader } from "@/components/ItemLoader/ItemLoader";
+import { DailyActivityChart } from "@/features/daily/components/DailyActivityChart/DailyActivityChart.tsx";
 import { DailyListHeader } from "@/features/daily/components/DailyList/components/DailyListHeader/DailyListHeader";
 import { useDailiesEvents } from "@/features/daily/components/DailyList/hooks/useDailiesEvents";
 import { useDailyDateRange } from "@/features/daily/components/DailyList/hooks/useDailyDateRange";
@@ -16,14 +17,24 @@ import { getEntryElementId, getEntryPlaceholderElementId } from "@/features/dail
 import { DayHeader } from "@/features/daily/components/DayHeader/DayHeader";
 import { DaySkeleton } from "@/features/daily/components/DaySkeleton";
 import { useGetDailiesByDateRange } from "@/features/daily/hooks/useGetDailiesByDateRange";
+import { useGetDailyActivityByDateRange } from "@/features/daily/hooks/useGetDailyActivityByDateRange.ts";
 import { getFormattedDailyDate } from "@/features/daily/utils/dateUtils";
 import { DailyEntry, DailyEntryPlaceholder } from "@/features/entries/components/DailyEntry";
 import { useGetDailyEntriesByDateRange } from "@/features/entries/hooks";
+import { onNextTick } from "@/utils/onNextTick.ts";
 
 // TODO: Improve UX of navigation between entries
 export const DailyList = () => {
-    const { setPrev, setNext, reset, endDate, startDate } = useDailyDateRange({
+    const containerRef = useRef<HTMLElement | null>(null);
+    const targetDailyDateRef = useRef<string | null>(null);
+
+    const { setPrev, setNext, setRange, reset, endDate, startDate } = useDailyDateRange({
         granularity: "month",
+    });
+
+    const { data: dailyActivity } = useGetDailyActivityByDateRange({
+        from: getFormattedDailyDate(dayjs(startDate).startOf("year").toDate()),
+        to: getFormattedDailyDate(dayjs(startDate).endOf("year").toDate()),
     });
 
     const {
@@ -39,7 +50,7 @@ export const DailyList = () => {
 
     const dailies = useMemo(() => dailyData?.pages?.flatMap((page) => page.data) ?? [], [dailyData?.pages]);
 
-    const { data: entriesGroups } = useGetDailyEntriesByDateRange({
+    const { data: entriesGroups, isFetching: isFetchingEntries } = useGetDailyEntriesByDateRange({
         from: getFormattedDailyDate(startDate),
         to: getFormattedDailyDate(endDate),
         autoFetch: true,
@@ -69,8 +80,49 @@ export const DailyList = () => {
         }
     };
 
+    const scrollToDaily = (date: string) => {
+        if (!containerRef.current) {
+            return false;
+        }
+
+        const dailyHeader = containerRef.current?.querySelector(`[data-daily-date="${date}"]`);
+
+        if (dailyHeader) {
+            targetDailyDateRef.current = null;
+            dailyHeader.scrollIntoView({ behavior: "smooth", block: "center" });
+            return true;
+        }
+
+        return false;
+    };
+
+    const navigateToDailyByDate = (date: string) => {
+        if (!containerRef.current) {
+            return;
+        }
+
+        setRange(dayjs(date).startOf("month").toDate());
+
+        onNextTick(() => {
+            if (!scrollToDaily(date)) {
+                targetDailyDateRef.current = date;
+            }
+        });
+    };
+
+    useEffect(
+        function processPendingDailyNavigation() {
+            if (isFetching || isFetchingEntries || !targetDailyDateRef.current) {
+                return;
+            }
+
+            scrollToDaily(targetDailyDateRef.current);
+        },
+        [isFetching, isFetchingEntries]
+    );
+
     return (
-        <main className={styles.container}>
+        <main className={styles.container} ref={containerRef}>
             <DailyListHeader
                 onCreateNewDaily={onCreateNewDaily}
                 onNextTimeframe={setNext}
@@ -79,8 +131,10 @@ export const DailyList = () => {
                 timeframeStart={startDate}
             />
 
+            <DailyActivityChart activity={dailyActivity ?? []} onSelectDay={navigateToDailyByDate} isLoading={!dailyActivity} />
+
             {dailies.map((daily) => (
-                <div className={styles.day} key={daily.id}>
+                <div className={styles.day} key={daily.id} data-daily-date={daily.date}>
                     <DayHeader daily={daily} onUpdateDate={onUpdateDailyDate} />
                     <ul className={styles.entries}>
                         {entriesGroups[daily.id]?.map((entry, index) => (

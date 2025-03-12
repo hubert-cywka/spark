@@ -265,6 +265,29 @@
         }
     },
     "daily": {
+        "activity": {
+            "chart": {
+                "legend": {
+                    "less": "Less",
+                    "more": "More"
+                },
+                "tooltip": "{count} activities on {date}",
+                "months": {
+                    "jan": "Jan",
+                    "feb": "Feb",
+                    "mar": "Mar",
+                    "apr": "Apr",
+                    "may": "May",
+                    "jun": "Jun",
+                    "jul": "Jul",
+                    "aug": "Aug",
+                    "sep": "Sep",
+                    "oct": "Oct",
+                    "nov": "Nov",
+                    "dec": "Dec"
+                }
+            }
+        },
         "day": {
             "date": {
                 "label": "Daily's date"

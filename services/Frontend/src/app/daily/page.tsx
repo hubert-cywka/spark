@@ -1,4 +1,3 @@
-import styles from "./styles/DailyPage.module.scss";
 import "server-only";
 
 import { Container } from "@/components/Container";
@@ -8,7 +7,7 @@ import { DailyList } from "@/features/daily/components/DailyList/DailyList";
 
 function Page() {
     return (
-        <Container className={styles.container}>
+        <Container>
             <DailyList />
         </Container>
     );

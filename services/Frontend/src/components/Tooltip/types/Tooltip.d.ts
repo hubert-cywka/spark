@@ -1,5 +1,5 @@
 import { PropsWithChildren } from "react";
 
 export type TooltipProps = PropsWithChildren<{
-    label?: string;
+    label?: string | number;
 }>;
