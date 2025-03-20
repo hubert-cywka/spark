@@ -271,7 +271,7 @@
                     "less": "Less",
                     "more": "More"
                 },
-                "tooltip": "{count} activities on {date}",
+                "tooltip": "{count} daily entries on {date}",
                 "months": {
                     "jan": "Jan",
                     "feb": "Feb",
