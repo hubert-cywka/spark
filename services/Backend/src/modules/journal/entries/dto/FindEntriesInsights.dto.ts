@@ -1,3 +1,3 @@
 import { DailyRangeDto } from "@/modules/journal/shared/dto/DailyRange.dto";
 
-export class FindDailyFiltersDto extends DailyRangeDto {}
+export class FindEntriesInsightsDto extends DailyRangeDto {}
