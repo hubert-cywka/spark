@@ -1,0 +1,31 @@
+@use "src/styles/tokens";
+
+.container {
+    display: flex;
+    gap: tokens.$spacing-400;
+    flex-direction: column;
+
+    @media (min-width: tokens.$breakpoint-sm) {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+
+    .presetsContainer {
+        display: grid;
+        grid-gap: tokens.$spacing-200;
+        grid-template-columns: repeat(6, 1fr);
+
+        .preset {
+            grid-column: span 3;
+
+            @media (min-width: tokens.$breakpoint-xs) {
+                grid-column: span 2;
+            }
+
+            @media (min-width: tokens.$breakpoint-md) {
+                grid-column: span 1;
+            }
+        }
+    }
+}

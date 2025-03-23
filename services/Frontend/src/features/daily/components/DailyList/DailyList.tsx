@@ -18,7 +18,7 @@ import { DayHeader } from "@/features/daily/components/DayHeader/DayHeader";
 import { DaySkeleton } from "@/features/daily/components/DaySkeleton";
 import { useDailyInsights } from "@/features/daily/hooks/useDailyInsights.ts";
 import { useGetDailiesByDateRange } from "@/features/daily/hooks/useGetDailiesByDateRange";
-import { getFormattedDailyDate } from "@/features/daily/utils/dateUtils";
+import { formatToISODateString } from "@/features/daily/utils/dateUtils";
 import { DailyEntry, DailyEntryPlaceholder } from "@/features/entries/components/DailyEntry";
 import { useGetDailyEntriesByDateRange } from "@/features/entries/hooks";
 import { onNextTick } from "@/utils/onNextTick.ts";
@@ -33,8 +33,8 @@ export const DailyList = () => {
     });
 
     const { data: dailyInsights } = useDailyInsights({
-        from: getFormattedDailyDate(dayjs(startDate).startOf("year").toDate()),
-        to: getFormattedDailyDate(dayjs(startDate).endOf("year").toDate()),
+        from: formatToISODateString(dayjs(startDate).startOf("year").toDate()),
+        to: formatToISODateString(dayjs(startDate).endOf("year").toDate()),
     });
 
     const {
@@ -44,15 +44,15 @@ export const DailyList = () => {
         isFetching,
         queryKey,
     } = useGetDailiesByDateRange({
-        from: getFormattedDailyDate(startDate),
-        to: getFormattedDailyDate(endDate),
+        from: formatToISODateString(startDate),
+        to: formatToISODateString(endDate),
     });
 
     const dailies = useMemo(() => dailyData?.pages?.flatMap((page) => page.data) ?? [], [dailyData?.pages]);
 
     const { data: entriesGroups, isFetching: isFetchingEntries } = useGetDailyEntriesByDateRange({
-        from: getFormattedDailyDate(startDate),
-        to: getFormattedDailyDate(endDate),
+        from: formatToISODateString(startDate),
+        to: formatToISODateString(endDate),
         autoFetch: true,
     });
 

@@ -1,15 +1,15 @@
 "use client";
 
 import { ReactNode } from "react";
-import { DateField, DateInput as BaseDateInput, DateSegment, DateValue, FieldError, Label } from "react-aria-components";
+import { DateField, DateValue, FieldError, Label } from "react-aria-components";
 import { Control, FieldValues, Path, useController } from "react-hook-form";
 import { fromDate } from "@internationalized/date";
-import classNames from "clsx";
 
 import { InputSize } from "./types/Input";
 
-import ownStyles from "./styles/DateInput.module.scss";
 import sharedStyles from "./styles/Input.module.scss";
+
+import { SegmentedDateInputSlot } from "@/components/Input/SegmentedDateInputSlot";
 
 type DateInputProps<T extends FieldValues> = {
     name: Path<T>;
@@ -64,9 +64,7 @@ export const DateInput = <T extends FieldValues>({
                 {required && <span className={sharedStyles.highlight}> *</span>}
             </Label>
 
-            <BaseDateInput className={classNames(sharedStyles.input, ownStyles.input)} data-size={size}>
-                {(segment) => <DateSegment className={ownStyles.dateSegment} segment={segment} />}
-            </BaseDateInput>
+            <SegmentedDateInputSlot className={sharedStyles.input} size={size} />
 
             {error && <FieldError className={sharedStyles.error}>{error.message}</FieldError>}
         </DateField>

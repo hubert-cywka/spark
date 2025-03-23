@@ -7,7 +7,7 @@ import { PassiveTextInput } from "@/components/PassiveTextInput/PassiveTextInput
 import { DayHeaderEditModeActionsRender } from "@/features/daily/components/DayHeader/components/DayHeaderEditModeActionsRender/DayHeaderEditModeActionsRender";
 import { DayHeaderPassiveModeActionsRender } from "@/features/daily/components/DayHeader/components/DayHeaderPassiveModeActionsRender/DayHeaderPassiveModeActionsRender";
 import { Daily } from "@/features/daily/types/Daily";
-import { getFormattedDailyDate } from "@/features/daily/utils/dateUtils";
+import { formatToISODateString } from "@/features/daily/utils/dateUtils";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 type DayHeaderProps = {
@@ -46,4 +46,4 @@ export const DayHeader = ({ daily, onUpdateDate }: DayHeaderProps) => {
 };
 
 const mapToDateValue = (date: string) => fromDate(new Date(date), "UTC");
-const mapToISODate = (date: DateValue) => getFormattedDailyDate(date.toDate("UTC"));
+const mapToISODate = (date: DateValue) => formatToISODateString(date.toDate("UTC"));
