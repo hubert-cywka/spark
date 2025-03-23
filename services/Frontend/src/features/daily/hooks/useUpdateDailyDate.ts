@@ -3,7 +3,7 @@ import { InfiniteData, useMutation } from "@tanstack/react-query";
 import { PageDto } from "@/api/dto/PageDto";
 import { DailyService } from "@/features/daily/api/dailyService";
 import { Daily } from "@/features/daily/types/Daily";
-import { DailyActivityQueryKeyFactory } from "@/features/daily/utils/dailyActivityQueryKeyFactory.ts";
+import { DailyInsightsQueryKeyFactory } from "@/features/daily/utils/dailyInsightsQueryKeyFactory.ts";
 import { DailyQueryKeyFactory } from "@/features/daily/utils/dailyQueryKeyFactory";
 import { useQueryCache } from "@/hooks/useQueryCache";
 
@@ -44,7 +44,7 @@ export const useUpdateDailyDate = () => {
             revert(context);
         },
         onSuccess: async () => {
-            void invalidate(DailyActivityQueryKeyFactory.createForAll());
+            void invalidate(DailyInsightsQueryKeyFactory.createForAll());
         },
     });
 };

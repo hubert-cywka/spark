@@ -1,12 +1,18 @@
+export type ChartData = { key: string; value: number }[];
+
 export type ChartProps<T> = {
-    data: { key: string; value: number }[];
+    data: ChartData;
     title?: string;
-    color?: string;
+    chartColor?: `#${string}`;
+    chartOpacityStart?: number;
+    chartOpacityStop?: number;
 } & T;
 
 export type CartesianChartProps<T = object> = ChartProps<T> & {
     keyLabel: string;
     height?: number;
-    color?: string;
     minTickGap?: number;
+    gridOpacity?: number;
+    xLabel?: string;
+    yLabel?: string;
 };

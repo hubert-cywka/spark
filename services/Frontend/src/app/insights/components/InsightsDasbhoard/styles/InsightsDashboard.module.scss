@@ -11,23 +11,27 @@
         grid-template-columns: repeat(12, 1fr);
         grid-template-rows: repeat(1, 1fr);
 
-        .sm, .md, .lg, .xl {
+        .xs, .sm, .md, .lg, .xl {
             grid-column: span 12;
         }
 
         @media (min-width: tokens.$breakpoint-sm) {
-            .sm {
+            .xs {
                 grid-column: span 6;
             }
         }
 
         @media (min-width: tokens.$breakpoint-xl) {
-            .sm {
+            .xs {
                 grid-column: span 3;
             }
 
-            .md {
+            .sm {
                 grid-column: span 4;
+            }
+
+            .md {
+                grid-column: span 6;
             }
 
             .lg {

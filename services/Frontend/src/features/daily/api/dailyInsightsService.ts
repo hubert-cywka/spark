@@ -1,27 +1,23 @@
 import { DailyActivityDto } from "@/features/daily/api/dto/DailyActivityDto.ts";
-import { DailyActivity } from "@/features/daily/types/Daily";
-import { getFormattedDailyDate } from "@/features/daily/utils/dateUtils.ts";
+import { DailyInsightsDto } from "@/features/daily/api/dto/DailyInsightsDto";
+import { DailyActivity, DailyInsights } from "@/features/daily/types/Daily";
 import { apiClient } from "@/lib/apiClient/apiClient";
 
-export class DailyActivityService {
-    public static async getActivity(from: string, to: string) {
-        const { data } = await apiClient.get<DailyActivityDto[]>(`/daily/activity?from=${from}&to=${to}`);
-        const activities = data.map(DailyActivityService.mapDtoToDailyActivity);
+export class DailyInsightsService {
+    public static async getInsights(from: string, to: string) {
+        const { data } = await apiClient.get<DailyInsightsDto>(`/daily/insights?from=${from}&to=${to}`);
+        return DailyInsightsService.mapDtoToInsights(data);
+    }
 
-        const allDates: string[] = [];
-        const currentDate = new Date(from);
-        const endDate = new Date(to);
-
-        while (currentDate <= endDate) {
-            allDates.push(getFormattedDailyDate(currentDate));
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
-
-        const dataMap = new Map(activities.map((activity) => [activity.date, activity]));
-
-        return allDates.map((date) => {
-            return dataMap.get(date) || { date, id: null, entriesCount: 0 };
-        });
+    private static mapDtoToInsights(dto: DailyInsightsDto): DailyInsights {
+        return {
+            dailyRange: dto.dailyRange,
+            activityHistory: dto.activityHistory.map(DailyInsightsService.mapDtoToDailyActivity),
+            currentActivityStreak: dto.currentActivityStreak,
+            longestActivityStreak: dto.longestActivityStreak,
+            meanActivityPerDay: dto.meanActivityPerDay,
+            totalActiveDays: dto.totalActiveDays,
+        };
     }
 
     private static mapDtoToDailyActivity(dto: DailyActivityDto): DailyActivity {

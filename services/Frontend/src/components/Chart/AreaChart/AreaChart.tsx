@@ -8,7 +8,9 @@ import { CartesianChartProps } from "@/components/Chart/types/Chart";
 export const AreaChart = (props: CartesianChartProps) => {
     return (
         <CartesianChart {...props}>
-            {({ solidColor, gradientColor, dataKey }) => <Area type="natural" dataKey={dataKey} stroke={solidColor} fill={gradientColor} />}
+            {({ solidColor, gradientColor, dataKey }) => (
+                <Area type="monotone" dataKey={dataKey} stroke={solidColor} fill={gradientColor} />
+            )}
         </CartesianChart>
     );
 };

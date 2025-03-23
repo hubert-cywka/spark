@@ -264,6 +264,68 @@
             }
         }
     },
+    "insights": {
+        "charts": {
+            "featuredEntriesRatio": {
+                "featuredLabel": "Featured",
+                "otherLabel": "Other",
+                "title": "Featured entries ratio"
+            },
+            "completedEntriesRatio": {
+                "completedLabel": "Completed",
+                "pendingLabel": "Pending",
+                "title": "Completed entries ratio"
+            },
+            "pendingEntriesAmount": {
+                "title": "Pending entries"
+            },
+            "completedEntriesAmount": {
+                "title": "Completed entries"
+            },
+            "featuredEntriesAmount": {
+                "title": "Featured entries"
+            },
+            "totalEntriesAmount": {
+                "title": "All entries"
+            },
+            "accumulatedEntries": {
+                "xLabel": "Day",
+                "yLabel": "Entries",
+                "title": "Total number of entries",
+                "label": "Entries"
+            },
+            "entryLoggingDistributionGranular": {
+                "title": "Entry logging distribution",
+                "label": "Entries",
+                "xLabel": "Time period",
+                "yLabel": "Entries"
+            },
+            "entriesLoggedForDay": {
+                "title": "Entries logged for day of week",
+                "label": "Entries",
+                "xLabel": "Day of week",
+                "yLabel": "Entries"
+            },
+            "longestStreak": {
+                "title": "Longest streak of active days"
+            },
+            "currentStreak": {
+                "title": "Current streak of active days"
+            },
+            "meanActivityPerDay": {
+                "title": "Mean logged entries per day"
+            },
+            "totalActiveDays": {
+                "title": "Total active days"
+            },
+            "dailyActivityHistogram": {
+                "xLabel": "Entries per day",
+                "yLabel": "Number of days",
+                "title": "Daily activity histogram",
+                "label": "Entries"
+            }
+        }
+    },
     "daily": {
         "activity": {
             "chart": {

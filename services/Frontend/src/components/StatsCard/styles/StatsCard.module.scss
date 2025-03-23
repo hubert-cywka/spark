@@ -1,0 +1,14 @@
+@use "src/styles/tokens";
+
+.container {
+    display: flex;
+    justify-content: space-between;
+
+    .title {
+        max-width: 60%;
+        font-weight: tokens.$font-weight-400;
+        font-size: tokens.$font-size-500;
+        color: tokens.$color-accent-text-200;
+    }
+}
+

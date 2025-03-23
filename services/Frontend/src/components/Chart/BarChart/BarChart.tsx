@@ -6,5 +6,9 @@ import { CartesianChart } from "@/components/Chart/CartesianChart/CartesianChart
 import { CartesianChartProps } from "@/components/Chart/types/Chart";
 
 export const BarChart = (props: CartesianChartProps) => {
-    return <CartesianChart {...props}>{({ gradientColor, dataKey }) => <Bar dataKey={dataKey} fill={gradientColor} />}</CartesianChart>;
+    return (
+        <CartesianChart {...props}>
+            {({ semiTransparentColor, dataKey }) => <Bar dataKey={dataKey} fill={semiTransparentColor} />}
+        </CartesianChart>
+    );
 };

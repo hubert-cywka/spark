@@ -1,34 +1,22 @@
-import { DailyActivityDto } from "@/features/daily/api/dto/DailyActivityDto.ts";
-import { DailyActivity } from "@/features/daily/types/Daily";
-import { getFormattedDailyDate } from "@/features/daily/utils/dateUtils.ts";
+import { EntriesInsightsDto } from "@/features/entries/api/dto/EntriesInsightsDto";
+import { EntriesInsights } from "@/features/entries/types/Entry";
 import { apiClient } from "@/lib/apiClient/apiClient";
 
-export class DailyInsightsService {
-    // TODO: Adjust to newer response format
+export class EntriesInsightsService {
     public static async getInsights(from: string, to: string) {
-        const { data } = await apiClient.get<DailyActivityDto[]>(`/daily/insights?from=${from}&to=${to}`);
-        const activities = data.map(DailyInsightsService.mapDtoToDailyActivity);
-
-        const allDates: string[] = [];
-        const currentDate = new Date(from);
-        const endDate = new Date(to);
-
-        while (currentDate <= endDate) {
-            allDates.push(getFormattedDailyDate(currentDate));
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
-
-        const dataMap = new Map(activities.map((activity) => [activity.date, activity]));
-
-        return allDates.map((date) => {
-            return dataMap.get(date) || { date, id: null, entriesCount: 0 };
-        });
+        const { data } = await apiClient.get<EntriesInsightsDto>(`/entry/insights?from=${from}&to=${to}`);
+        return EntriesInsightsService.mapDtoToInsights(data);
     }
 
-    private static mapDtoToDailyActivity(dto: DailyActivityDto): DailyActivity {
+    private static mapDtoToInsights(dto: EntriesInsightsDto): EntriesInsights {
         return {
-            date: dto.date,
-            entriesCount: dto.entriesCount,
+            dailyRange: dto.dailyRange,
+            completedEntriesAmount: dto.completedEntriesAmount,
+            completedEntriesRatio: dto.completedEntriesRatio,
+            featuredEntriesAmount: dto.featuredEntriesAmount,
+            featuredEntriesRatio: dto.featuredEntriesRatio,
+            pendingEntriesAmount: dto.pendingEntriesAmount,
+            totalEntriesAmount: dto.totalEntriesAmount,
         };
     }
 }

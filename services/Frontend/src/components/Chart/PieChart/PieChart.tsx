@@ -6,19 +6,34 @@ import { Pie, PieChart as BasePieChart, ResponsiveContainer } from "recharts";
 import { ChartContainer } from "@/components/Chart/ChartContainer/ChartContainer.tsx";
 import { ChartProps } from "@/components/Chart/types/Chart";
 
+const DEFAULT_OUTER_RADIUS = 125;
+const DEFAULT_INNER_RADIUS = 50;
+const LABELS_PADDING = 100;
+
+const DEFAULT_HUE_OFFSET = 200;
+const DEFAULT_HUE_MULTIPLIER = 120;
+
+const DEFAULT_STROKE_COLOR = "#ffffff33";
+const DEFAULT_DEFAULT_CHART_OPACITY_START = 0.75;
+const DEFAULT_DEFAULT_CHART_OPACITY_STOP = 0.5;
+
 type RadialChartProps = ChartProps<{
     innerRadius?: number;
     outerRadius?: number;
+    withPercentage?: boolean;
 }>;
 
-const generateColor = (index: number, total: number) => {
-    const hue = (index / total) * 120 + 200;
-    return `hsla(${hue}, 30%, 50%, 50%)`;
-};
-
-export const PieChart = ({ data, title, outerRadius = 125, innerRadius = 50 }: RadialChartProps) => {
+export const PieChart = ({
+    data,
+    title,
+    withPercentage = false,
+    outerRadius = DEFAULT_OUTER_RADIUS,
+    innerRadius = DEFAULT_INNER_RADIUS,
+    chartOpacityStop = DEFAULT_DEFAULT_CHART_OPACITY_STOP,
+    chartOpacityStart = DEFAULT_DEFAULT_CHART_OPACITY_START,
+}: RadialChartProps) => {
     const colors = useMemo(() => data.map((_, i) => generateColor(i, data.length)), [data]);
-    const heightWithPadding = outerRadius * 2 + 100;
+    const heightWithPadding = outerRadius * 2 + LABELS_PADDING;
 
     return (
         <ChartContainer height={heightWithPadding} title={title}>
@@ -27,8 +42,8 @@ export const PieChart = ({ data, title, outerRadius = 125, innerRadius = 50 }: R
                     <defs>
                         {colors.map((color, i) => (
                             <linearGradient key={i} id={`colorValue${i}`} x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="20%" stopColor={color} stopOpacity={1} />
-                                <stop offset="95%" stopColor={color} stopOpacity={0.5} />
+                                <stop offset="5%" stopColor={color} stopOpacity={chartOpacityStart} />
+                                <stop offset="95%" stopColor={color} stopOpacity={chartOpacityStop} />
                             </linearGradient>
                         ))}
                     </defs>
@@ -38,17 +53,21 @@ export const PieChart = ({ data, title, outerRadius = 125, innerRadius = 50 }: R
                             ...data,
                             fill: `url(#colorValue${i})`,
                         }))}
-                        stroke="#ffffff33"
+                        stroke={DEFAULT_STROKE_COLOR}
                         dataKey="value"
                         nameKey="key"
-                        cx="50%"
-                        cy="50%"
                         innerRadius={innerRadius}
                         outerRadius={outerRadius}
-                        label={({ key, value }) => `${key}: ${value}`}
+                        label={({ key, value }) => `${key}: ${value}${withPercentage ? "%" : ""}`}
                     />
                 </BasePieChart>
             </ResponsiveContainer>
         </ChartContainer>
     );
+};
+
+// TODO: Generate color based on chart color
+const generateColor = (index: number, total: number) => {
+    const hue = (index / total) * DEFAULT_HUE_MULTIPLIER + DEFAULT_HUE_OFFSET;
+    return `hsla(${hue}, 30%, 50%)`;
 };

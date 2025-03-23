@@ -1,7 +1,7 @@
 import { InfiniteData, useMutation } from "@tanstack/react-query";
 
 import { PageDto } from "@/api/dto/PageDto";
-import { DailyActivityQueryKeyFactory } from "@/features/daily/utils/dailyActivityQueryKeyFactory.ts";
+import { DailyInsightsQueryKeyFactory } from "@/features/daily/utils/dailyInsightsQueryKeyFactory.ts";
 import { EntriesService } from "@/features/entries/api/entriesService";
 import { Entry } from "@/features/entries/types/Entry";
 import { EntriesQueryKeyFactory } from "@/features/entries/utils/entriesQueryKeyFactory";
@@ -15,7 +15,7 @@ export const useCreateEntry = () => {
     return useMutation({
         mutationFn: EntriesService.createOne,
         onSuccess: async (createdEntry) => {
-            void invalidate(DailyActivityQueryKeyFactory.createForAll());
+            void invalidate(DailyInsightsQueryKeyFactory.createForAll());
 
             return await update<InfiniteData<PageDto<Entry>>>(queryKey, ({ pages, pageParams }) => {
                 const lastPage = pages[pages.length - 1];
