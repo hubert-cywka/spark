@@ -1,0 +1,6 @@
+@use "src/styles/tokens";
+
+.slot {
+    font-size: tokens.$font-size-1100;
+    font-weight: tokens.$font-weight-400;
+}

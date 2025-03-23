@@ -4,9 +4,9 @@ import { DailyController } from "@/modules/journal/daily/controllers/Daily.contr
 import { DailyMapper } from "@/modules/journal/daily/mappers/Daily.mapper";
 import { DailyMapperToken } from "@/modules/journal/daily/mappers/IDaily.mapper";
 import { DailyService } from "@/modules/journal/daily/services/implementations/Daily.service";
-import { DailyActivityService } from "@/modules/journal/daily/services/implementations/DailyActivity.service";
+import { DailyInsightsService } from "@/modules/journal/daily/services/implementations/DailyInsights.service";
 import { DailyServiceToken } from "@/modules/journal/daily/services/interfaces/IDaily.service";
-import { DailyActivityServiceToken } from "@/modules/journal/daily/services/interfaces/IDailyActivity.service";
+import { DailyActivityServiceToken } from "@/modules/journal/daily/services/interfaces/IDailyInsights.service";
 import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.module";
 
 @Module({
@@ -22,7 +22,7 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
         },
         {
             provide: DailyActivityServiceToken,
-            useClass: DailyActivityService,
+            useClass: DailyInsightsService,
         },
     ],
     controllers: [DailyController],

@@ -1,3 +1,5 @@
+"use client";
+
 import { cloneElement } from "react";
 import ActivityCalendar from "react-activity-calendar";
 import { Tooltip } from "react-tooltip";
@@ -5,6 +7,7 @@ import { Tooltip } from "react-tooltip";
 import styles from "./styles/DailyActivityChart.module.scss";
 import "react-tooltip/dist/react-tooltip.css";
 
+import { Card } from "@/components/Card";
 import { DailyActivity } from "@/features/daily/types/Daily";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
@@ -12,7 +15,7 @@ const TOOLTIP_ID = "daily-activity-block-tooltip";
 
 type DailyActivityChartProps = {
     activity: DailyActivity[];
-    onSelectDay: (date: string) => void;
+    onSelectDay?: (date: string) => void;
     isLoading?: boolean;
 };
 
@@ -48,7 +51,7 @@ export const DailyActivityChart = ({ activity, onSelectDay, isLoading }: DailyAc
     };
 
     return (
-        <div className={styles.container}>
+        <Card className={styles.container} variant="semi-translucent">
             <ActivityCalendar
                 hideTotalCount
                 hideColorLegend
@@ -56,7 +59,7 @@ export const DailyActivityChart = ({ activity, onSelectDay, isLoading }: DailyAc
                 maxLevel={maxActivity}
                 blockSize={16}
                 eventHandlers={{
-                    onClick: (_event) => (activity) => onSelectDay(activity.date),
+                    onClick: (_event) => (activity) => onSelectDay?.(activity.date),
                 }}
                 renderBlock={(block, activity) =>
                     cloneElement(block, {
@@ -71,9 +74,9 @@ export const DailyActivityChart = ({ activity, onSelectDay, isLoading }: DailyAc
                 labels={labels}
                 data={chartData}
                 colorScheme="dark"
-                theme={{ dark: ["#22222288", "#5500FF"] }}
+                theme={{ dark: ["#40404088", "#5500FF"] }}
             />
             <Tooltip id={TOOLTIP_ID} />
-        </div>
+        </Card>
     );
 };

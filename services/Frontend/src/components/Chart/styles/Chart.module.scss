@@ -1,0 +1,15 @@
+@use "src/styles/tokens";
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: tokens.$spacing-600;
+
+    .title {
+        font: tokens.$typography-body-400;
+        font-weight: tokens.$font-weight-300;
+        text-align: center;
+    }
+}

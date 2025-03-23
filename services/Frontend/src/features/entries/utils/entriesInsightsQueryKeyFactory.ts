@@ -1,6 +1,6 @@
-const BASE_QUERY_KEY = "daily_activity";
+const BASE_QUERY_KEY = "entries_insights";
 
-export class DailyActivityQueryKeyFactory {
+export class EntriesInsightsQueryKeyFactory {
     public static createForAll() {
         return [BASE_QUERY_KEY];
     }

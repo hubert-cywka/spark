@@ -16,8 +16,8 @@ import { DailyEntryColumn, useNavigationBetweenEntries } from "@/features/daily/
 import { getEntryElementId, getEntryPlaceholderElementId } from "@/features/daily/components/DailyList/utils/dailyEntriesSelectors";
 import { DayHeader } from "@/features/daily/components/DayHeader/DayHeader";
 import { DaySkeleton } from "@/features/daily/components/DaySkeleton";
+import { useDailyInsights } from "@/features/daily/hooks/useDailyInsights.ts";
 import { useGetDailiesByDateRange } from "@/features/daily/hooks/useGetDailiesByDateRange";
-import { useGetDailyActivityByDateRange } from "@/features/daily/hooks/useGetDailyActivityByDateRange.ts";
 import { getFormattedDailyDate } from "@/features/daily/utils/dateUtils";
 import { DailyEntry, DailyEntryPlaceholder } from "@/features/entries/components/DailyEntry";
 import { useGetDailyEntriesByDateRange } from "@/features/entries/hooks";
@@ -32,7 +32,7 @@ export const DailyList = () => {
         granularity: "month",
     });
 
-    const { data: dailyActivity } = useGetDailyActivityByDateRange({
+    const { data: dailyInsights } = useDailyInsights({
         from: getFormattedDailyDate(dayjs(startDate).startOf("year").toDate()),
         to: getFormattedDailyDate(dayjs(startDate).endOf("year").toDate()),
     });
@@ -131,7 +131,11 @@ export const DailyList = () => {
                 timeframeStart={startDate}
             />
 
-            <DailyActivityChart activity={dailyActivity ?? []} onSelectDay={navigateToDailyByDate} isLoading={!dailyActivity} />
+            <DailyActivityChart
+                activity={dailyInsights?.activityHistory ?? []}
+                onSelectDay={navigateToDailyByDate}
+                isLoading={!dailyInsights}
+            />
 
             {dailies.map((daily) => (
                 <div className={styles.day} key={daily.id} data-daily-date={daily.date}>

@@ -1,6 +1,7 @@
 import { InfiniteData, useMutation } from "@tanstack/react-query";
 
 import { PageDto } from "@/api/dto/PageDto";
+import { DailyInsightsQueryKeyFactory } from "@/features/daily/utils/dailyInsightsQueryKeyFactory";
 import { EntriesService } from "@/features/entries/api/entriesService";
 import { Entry } from "@/features/entries/types/Entry";
 import { EntriesQueryKeyFactory } from "@/features/entries/utils/entriesQueryKeyFactory";
@@ -30,6 +31,7 @@ export const useUpdateEntryStatus = () => {
             revert(context);
         },
         onSuccess: () => {
+            void invalidate(DailyInsightsQueryKeyFactory.createForAll());
             void invalidate(GoalQueryKeyFactory.createForAll());
         },
     });

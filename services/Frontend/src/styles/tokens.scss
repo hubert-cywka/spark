@@ -25,6 +25,7 @@ $font-size-1100: 3rem;
 $font-weight-100: 450;
 $font-weight-200: 500;
 $font-weight-300: 700;
+$font-weight-400: 800;
 
 /* Typography - Body */
 $typography-body-100: $font-weight-200 $font-size-300 'Montserrat', sans-serif;
@@ -64,6 +65,12 @@ $color-neutral-solid-300: #797B86;
 $color-neutral-text-100: #EEEEF0;
 $color-neutral-text-200: #BFBFC0;
 $color-neutral-text-300: #797B86;
+$color-neutral-text-inversed-100: #222325;
+$color-neutral-text-inversed-200: #19191B;
+$color-neutral-text-inversed-300: #111113;
+$color-neutral-background-inversed-100: #EEEEF0;
+$color-neutral-background-inversed-200: #BFBFC0;
+$color-neutral-background-inversed-300: #797B86;
 $color-neutral-background-100: #222325;
 $color-neutral-background-200: #19191B;
 $color-neutral-background-300: #111113;

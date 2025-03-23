@@ -2,6 +2,7 @@ export { useCreateEntry } from "./useCreateEntry/useCreateEntry";
 export { useCreateEntryEvents } from "./useCreateEntry/useCreateEntryEvents";
 export { useDeleteEntry } from "./useDeleteEntry/useDeleteEntry";
 export { useDeleteEntryEvents } from "./useDeleteEntry/useDeleteEntryEvents";
+export { useEntriesInsights } from "./useEntriesInsights";
 export { useLinkEntryWithGoal } from "./useEntryLink/useLinkEntryWithGoal";
 export { useUnlinkEntryFromGoal } from "./useEntryLink/useUnlinkEntryFromGoal";
 export { useEntries } from "./useGetEntry/useEntries";

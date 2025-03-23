@@ -20,13 +20,13 @@ import { whenError } from "@/common/errors/whenError";
 import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
 import { PageOptionsDto } from "@/common/pagination/dto/PageOptions.dto";
 import { CreateDailyDto } from "@/modules/journal/daily/dto/CreateDaily.dto";
-import { DailyActivityDto } from "@/modules/journal/daily/dto/DailyActivity.dto";
+import { DailyInsightsDto } from "@/modules/journal/daily/dto/DailyInsights.dto";
 import { FindDailyFiltersDto } from "@/modules/journal/daily/dto/FindDailyFilters.dto";
-import { GetDailyActivityFiltersDto } from "@/modules/journal/daily/dto/GetDailyActivityFilters.dto";
+import { FindDailyInsightsDto } from "@/modules/journal/daily/dto/FindDailyInsights.dto";
 import { UpdateDailyDateDto } from "@/modules/journal/daily/dto/UpdateDailyDate.dto";
 import { type IDailyMapper, DailyMapperToken } from "@/modules/journal/daily/mappers/IDaily.mapper";
 import { type IDailyService, DailyServiceToken } from "@/modules/journal/daily/services/interfaces/IDaily.service";
-import { type IDailyActivityService, DailyActivityServiceToken } from "@/modules/journal/daily/services/interfaces/IDailyActivity.service";
+import { type IDailyInsightsService, DailyActivityServiceToken } from "@/modules/journal/daily/services/interfaces/IDailyInsights.service";
 import { type User } from "@/types/User";
 
 @Controller("daily")
@@ -34,7 +34,7 @@ export class DailyController {
     public constructor(
         @Inject(DailyServiceToken) private readonly dailyService: IDailyService,
         @Inject(DailyActivityServiceToken)
-        private readonly dailyActivityService: IDailyActivityService,
+        private readonly insightsService: IDailyInsightsService,
         @Inject(DailyMapperToken) private readonly dailyMapper: IDailyMapper
     ) {}
 
@@ -49,11 +49,11 @@ export class DailyController {
         return this.dailyMapper.fromModelToDtoPage(result);
     }
 
-    @Get("activity")
+    @Get("insights")
     @UseGuards(new AuthenticationGuard())
-    public async getDailyActivity(@Query() { from, to }: GetDailyActivityFiltersDto, @AuthenticatedUserContext() author: User) {
-        const result = await this.dailyActivityService.getByDateRange(author.id, from, to);
-        return result.map((dailyActivity) => plainToClass(DailyActivityDto, dailyActivity));
+    public async getDailyActivity(@Query() { from, to }: FindDailyInsightsDto, @AuthenticatedUserContext() author: User) {
+        const result = await this.insightsService.findByDateRange(author.id, from, to);
+        return plainToClass(DailyInsightsDto, result);
     }
 
     @Get(":id")

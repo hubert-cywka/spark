@@ -1,13 +1,3 @@
-import { IsDateString } from "class-validator";
+import { DailyRangeDto } from "@/modules/journal/shared/dto/DailyRange.dto";
 
-import { IsDateOnly } from "@/lib/validation";
-
-export class FindDailyFiltersDto {
-    @IsDateOnly()
-    @IsDateString({ strict: true })
-    readonly from!: string;
-
-    @IsDateOnly()
-    @IsDateString({ strict: true })
-    readonly to!: string;
-}
+export class FindDailyFiltersDto extends DailyRangeDto {}
