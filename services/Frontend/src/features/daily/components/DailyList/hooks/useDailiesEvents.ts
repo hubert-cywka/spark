@@ -5,7 +5,7 @@ import { useCreateDaily } from "@/features/daily/hooks/useCreateDaily";
 import { useCreateDailyEvents } from "@/features/daily/hooks/useCreateDailyEvents";
 import { useUpdateDailyDate } from "@/features/daily/hooks/useUpdateDailyDate";
 import { useUpdateDailyDateEvents } from "@/features/daily/hooks/useUpdateDailyDateEvents";
-import { getFormattedDailyDate } from "@/features/daily/utils/dateUtils";
+import { formatToISODateString } from "@/features/daily/utils/dateUtils";
 
 type UseDailiesEvents = {
     queryKey: QueryKey;
@@ -38,7 +38,7 @@ export const useDailiesEvents = ({ queryKey, endDate, startDate }: UseDailiesEve
 
         try {
             await createDaily({
-                date: getFormattedDailyDate(newDailyDate.toDate()),
+                date: formatToISODateString(newDailyDate.toDate()),
             });
             onCreateDailySuccess();
         } catch (err) {

@@ -1,0 +1,14 @@
+@use "src/styles/tokens";
+
+.wrapper {
+    display: flex;
+    gap: tokens.$spacing-200;
+    align-items: center;
+
+    .inputsWrapper {
+        display: flex;
+        gap: tokens.$spacing-200;
+        width: fit-content;
+        padding: tokens.$spacing-200 tokens.$spacing-400;
+    }
+}

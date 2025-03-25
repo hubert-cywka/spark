@@ -1,0 +1,57 @@
+@use "src/styles/tokens";
+
+.container {
+    width: fit-content;
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: tokens.$spacing-300;
+    }
+
+    .gridWrapper {
+        display: flex;
+        gap: tokens.$spacing-600;
+        align-items: start;
+
+        .grid {
+            border-spacing: 0 tokens.$spacing-200;
+
+            td {
+                padding: 0;
+
+                .cell {
+                    font: tokens.$typography-body-100;
+                    padding: tokens.$spacing-300;
+                    text-align: center;
+                    cursor: pointer;
+
+                    &[data-selected] {
+                        background: tokens.$color-accent-solid-200;
+                    }
+
+                    &[data-selection-start] {
+                        border-bottom-left-radius: tokens.$radius-100;
+                        border-top-left-radius: tokens.$radius-100;
+                    }
+
+                    &[data-selection-end] {
+                        border-bottom-right-radius: tokens.$radius-100;
+                        border-top-right-radius: tokens.$radius-100;
+                    }
+
+                    &[data-outside-month] {
+                        color: tokens.$color-neutral-text-300;
+                    }
+
+                    &[data-focused] {
+                        outline: 2px solid tokens.$color-accent-solid-300;
+                        background: tokens.$color-accent-solid-300;
+                        border-radius: tokens.$radius-100;
+                    }
+                }
+            }
+        }
+    }
+}

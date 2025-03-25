@@ -265,10 +265,26 @@
         }
     },
     "insights": {
+        "navigation": {
+            "label": "Insights"
+        },
+        "filters": {
+            "dateRange": {
+                "label": "Date range"
+            },
+            "presets": {
+                "pastYear": "Past year",
+                "lastYear": "Last year",
+                "thisYear": "This year",
+                "pastMonth": "Past month",
+                "lastMonth": "Last month",
+                "thisMonth": "This month"
+            }
+        },
         "charts": {
             "featuredEntriesRatio": {
                 "featuredLabel": "Featured",
-                "otherLabel": "Other",
+                "otherLabel": "Not featured",
                 "title": "Featured entries ratio"
             },
             "completedEntriesRatio": {

@@ -1,17 +1,30 @@
 "use client";
 
+import { useState } from "react";
+
+import { ChartContainer } from "./components/ChartContainer";
+import { InsightsDashboardFilters } from "./components/InsightsDashboardFilters";
+
 import styles from "./styles/InsightsDashboard.module.scss";
 
-import { Card } from "@/components/Card";
+import { getDateRange } from "@/app/insights/components/InsightsDasbhoard/components/InsightsDashboardFilters/utils/getDateRange";
 import { AreaChart, BarChart, PieChart } from "@/components/Chart";
 import { Divider } from "@/components/Divider";
 import { StatsCard } from "@/components/StatsCard";
+import { StatsCardSkeleton } from "@/components/StatsCard/StatsCardSkeleton";
 import { useDailyInsights } from "@/features/daily/hooks/useDailyInsights";
 import { accumulateEntries, calculateHistogram, distributeEntriesByDayOfWeek } from "@/features/daily/utils/chartUtils";
 import { useEntriesInsights } from "@/features/entries/hooks";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
+import { DateRangePreset } from "@/types/DateRangePreset";
 import { Day } from "@/types/Day";
+import { ISODateString } from "@/types/ISODateString";
 import { round } from "@/utils/round";
+
+const STATS_CARD_HEIGHT = 130;
+const BAR_CHART_HEIGHT = 400;
+const AREA_CHART_HEIGHT = 450;
+const PIE_CHART_HEIGHT = 400;
 
 // TODO: Do not use mock data
 const entryLoggingData = [
@@ -94,22 +107,25 @@ const entryLoggingData = [
     { key: "Sun 22-24", value: 0 },
 ];
 
+// TODO: Clean up
 export const InsightsDashboard = () => {
     const t = useTranslate();
-    // TODO: Dynamic date range
+
+    // TODO: Save date range setting
+    const [dateRange, setDateRange] = useState<{
+        from: ISODateString;
+        to: ISODateString;
+    }>(getDateRange(DateRangePreset.THIS_YEAR));
+
     const { data: dailyInsights } = useDailyInsights({
-        from: "2025-01-01",
-        to: "2025-03-31",
-    });
-    const { data: entriesInsights } = useEntriesInsights({
-        from: "2025-01-01",
-        to: "2025-03-31",
+        from: dateRange.from,
+        to: dateRange.to,
     });
 
-    if (!dailyInsights || !entriesInsights) {
-        // TODO: Loading & error state
-        return null;
-    }
+    const { data: entriesInsights } = useEntriesInsights({
+        from: dateRange.from,
+        to: dateRange.to,
+    });
 
     const translateWeekday = (day: Day) => {
         switch (day) {
@@ -130,137 +146,169 @@ export const InsightsDashboard = () => {
         }
     };
 
-    const dailyActivityHistogram = calculateHistogram(dailyInsights.activityHistory);
-    const accumulatedEntries = accumulateEntries(dailyInsights.activityHistory);
-    const entriesLoggedForDay = distributeEntriesByDayOfWeek(dailyInsights.activityHistory).map(({ key, ...rest }) => {
-        return { ...rest, key: translateWeekday(key) };
-    });
+    const dailyActivityHistogram = dailyInsights ? calculateHistogram(dailyInsights.activityHistory) : null;
+    const accumulatedEntries = dailyInsights ? accumulateEntries(dailyInsights.activityHistory) : null;
+    const entriesLoggedForDay = dailyInsights
+        ? distributeEntriesByDayOfWeek(dailyInsights.activityHistory).map(({ key, ...rest }) => {
+              return { ...rest, key: translateWeekday(key) };
+          })
+        : null;
 
-    const featuredEntriesRatio = [
-        {
-            key: t("insights.charts.featuredEntriesRatio.featuredLabel"),
-            value: round(entriesInsights.featuredEntriesRatio),
-        },
-        {
-            key: t("insights.charts.featuredEntriesRatio.otherLabel"),
-            value: round(100 - entriesInsights.featuredEntriesRatio),
-        },
-    ];
+    const featuredEntriesRatio = entriesInsights
+        ? [
+              {
+                  key: t("insights.charts.featuredEntriesRatio.featuredLabel"),
+                  value: round(entriesInsights.featuredEntriesRatio),
+              },
+              {
+                  key: t("insights.charts.featuredEntriesRatio.otherLabel"),
+                  value: round(100 - entriesInsights.featuredEntriesRatio),
+              },
+          ]
+        : null;
 
-    const completedEntriesRatio = [
-        {
-            key: t("insights.charts.completedEntriesRatio.completedLabel"),
-            value: round(entriesInsights.completedEntriesRatio),
-        },
-        {
-            key: t("insights.charts.completedEntriesRatio.pendingLabel"),
-            value: round(100 - entriesInsights.completedEntriesRatio),
-        },
-    ];
+    const completedEntriesRatio = entriesInsights
+        ? [
+              {
+                  key: t("insights.charts.completedEntriesRatio.completedLabel"),
+                  value: round(entriesInsights.completedEntriesRatio),
+              },
+              {
+                  key: t("insights.charts.completedEntriesRatio.pendingLabel"),
+                  value: round(100 - entriesInsights.completedEntriesRatio),
+              },
+          ]
+        : null;
 
     return (
         <main className={styles.container}>
+            <InsightsDashboardFilters onDateRangeChange={setDateRange} dateRange={dateRange} />
+
+            <Divider />
+
             <div className={styles.row}>
-                <Card className={styles.xl}>
+                <ChartContainer className={styles.xl} isLoading={!accumulatedEntries} height={AREA_CHART_HEIGHT}>
                     <AreaChart
-                        height={450}
-                        data={accumulatedEntries}
+                        height={AREA_CHART_HEIGHT}
+                        data={accumulatedEntries ?? []}
                         xLabel={t("insights.charts.accumulatedEntries.xLabel")}
                         yLabel={t("insights.charts.accumulatedEntries.yLabel")}
                         keyLabel={t("insights.charts.accumulatedEntries.label")}
                         title={t("insights.charts.accumulatedEntries.title")}
                     />
-                </Card>
+                </ChartContainer>
             </div>
 
-            <div className={styles.row}>
-                <StatsCard
-                    className={styles.xs}
-                    title={t("insights.charts.meanActivityPerDay.title")}
-                    value={dailyInsights.meanActivityPerDay}
-                />
-                <StatsCard className={styles.xs} title={t("insights.charts.totalActiveDays.title")} value={dailyInsights.totalActiveDays} />
-                <StatsCard
-                    className={styles.xs}
-                    title={t("insights.charts.currentStreak.title")}
-                    value={dailyInsights.currentActivityStreak}
-                />
-                <StatsCard
-                    className={styles.xs}
-                    title={t("insights.charts.longestStreak.title")}
-                    value={dailyInsights.longestActivityStreak}
-                />
-            </div>
+            {dailyInsights ? (
+                <div className={styles.row}>
+                    <StatsCard
+                        className={styles.xs}
+                        title={t("insights.charts.meanActivityPerDay.title")}
+                        value={dailyInsights.meanActivityPerDay}
+                    />
+                    <StatsCard
+                        className={styles.xs}
+                        title={t("insights.charts.totalActiveDays.title")}
+                        value={dailyInsights.totalActiveDays}
+                    />
+                    <StatsCard
+                        className={styles.xs}
+                        title={t("insights.charts.currentStreak.title")}
+                        value={dailyInsights.currentActivityStreak}
+                    />
+                    <StatsCard
+                        className={styles.xs}
+                        title={t("insights.charts.longestStreak.title")}
+                        value={dailyInsights.longestActivityStreak}
+                    />
+                </div>
+            ) : (
+                <div className={styles.row}>
+                    <StatsCardSkeleton height={STATS_CARD_HEIGHT} className={styles.xs} />
+                    <StatsCardSkeleton height={STATS_CARD_HEIGHT} className={styles.xs} />
+                    <StatsCardSkeleton height={STATS_CARD_HEIGHT} className={styles.xs} />
+                    <StatsCardSkeleton height={STATS_CARD_HEIGHT} className={styles.xs} />
+                </div>
+            )}
 
             <Divider />
 
             <div className={styles.row}>
-                <Card className={styles.md}>
-                    <PieChart title={t("insights.charts.completedEntriesRatio.title")} withPercentage data={completedEntriesRatio} />
-                </Card>
+                <ChartContainer className={styles.md} isLoading={!completedEntriesRatio} height={PIE_CHART_HEIGHT}>
+                    <PieChart title={t("insights.charts.completedEntriesRatio.title")} withPercentage data={completedEntriesRatio ?? []} />
+                </ChartContainer>
 
-                <Card className={styles.md}>
-                    <PieChart title={t("insights.charts.featuredEntriesRatio.title")} withPercentage data={featuredEntriesRatio} />
-                </Card>
+                <ChartContainer className={styles.md} isLoading={!featuredEntriesRatio} height={PIE_CHART_HEIGHT}>
+                    <PieChart title={t("insights.charts.featuredEntriesRatio.title")} withPercentage data={featuredEntriesRatio ?? []} />
+                </ChartContainer>
             </div>
 
-            <div className={styles.row}>
-                <StatsCard
-                    className={styles.xs}
-                    title={t("insights.charts.pendingEntriesAmount.title")}
-                    value={entriesInsights.pendingEntriesAmount}
-                />
-                <StatsCard
-                    className={styles.xs}
-                    title={t("insights.charts.completedEntriesAmount.title")}
-                    value={entriesInsights.completedEntriesAmount}
-                />
-                <StatsCard
-                    className={styles.xs}
-                    title={t("insights.charts.featuredEntriesAmount.title")}
-                    value={entriesInsights.featuredEntriesAmount}
-                />
-                <StatsCard
-                    className={styles.xs}
-                    title={t("insights.charts.totalEntriesAmount.title")}
-                    value={entriesInsights.totalEntriesAmount}
-                />
-            </div>
+            {entriesInsights ? (
+                <div className={styles.row}>
+                    <StatsCard
+                        className={styles.xs}
+                        title={t("insights.charts.pendingEntriesAmount.title")}
+                        value={entriesInsights.pendingEntriesAmount}
+                    />
+                    <StatsCard
+                        className={styles.xs}
+                        title={t("insights.charts.completedEntriesAmount.title")}
+                        value={entriesInsights.completedEntriesAmount}
+                    />
+                    <StatsCard
+                        className={styles.xs}
+                        title={t("insights.charts.featuredEntriesAmount.title")}
+                        value={entriesInsights.featuredEntriesAmount}
+                    />
+                    <StatsCard
+                        className={styles.xs}
+                        title={t("insights.charts.totalEntriesAmount.title")}
+                        value={entriesInsights.totalEntriesAmount}
+                    />
+                </div>
+            ) : (
+                <div className={styles.row}>
+                    <StatsCardSkeleton height={STATS_CARD_HEIGHT} className={styles.xs} />
+                    <StatsCardSkeleton height={STATS_CARD_HEIGHT} className={styles.xs} />
+                    <StatsCardSkeleton height={STATS_CARD_HEIGHT} className={styles.xs} />
+                    <StatsCardSkeleton height={STATS_CARD_HEIGHT} className={styles.xs} />
+                </div>
+            )}
 
             <Divider />
 
             <div className={styles.row}>
-                <Card className={styles.md}>
+                <ChartContainer className={styles.md} isLoading={!dailyActivityHistogram} height={BAR_CHART_HEIGHT}>
                     <BarChart
-                        data={dailyActivityHistogram}
+                        data={dailyActivityHistogram ?? []}
                         xLabel={t("insights.charts.dailyActivityHistogram.xLabel")}
                         yLabel={t("insights.charts.dailyActivityHistogram.yLabel")}
                         keyLabel={t("insights.charts.dailyActivityHistogram.label")}
                         title={t("insights.charts.dailyActivityHistogram.title")}
                     />
-                </Card>
+                </ChartContainer>
 
-                <Card className={styles.md}>
+                <ChartContainer className={styles.md} isLoading={!entriesLoggedForDay} height={BAR_CHART_HEIGHT}>
                     <BarChart
-                        data={entriesLoggedForDay}
+                        data={entriesLoggedForDay ?? []}
                         xLabel={t("insights.charts.entriesLoggedForDay.xLabel")}
                         yLabel={t("insights.charts.entriesLoggedForDay.yLabel")}
                         keyLabel={t("insights.charts.entriesLoggedForDay.label")}
                         title={t("insights.charts.entriesLoggedForDay.title")}
                     />
-                </Card>
+                </ChartContainer>
             </div>
 
             <div className={styles.row}>
-                <Card className={styles.xl}>
+                <ChartContainer className={styles.xl} isLoading={!entryLoggingData} height={BAR_CHART_HEIGHT}>
                     <BarChart
-                        data={entryLoggingData}
+                        data={entryLoggingData ?? []}
                         xLabel={t("insights.charts.entryLoggingDistributionGranular.xLabel")}
                         yLabel={t("insights.charts.entryLoggingDistributionGranular.yLabel")}
                         keyLabel={t("insights.charts.entryLoggingDistributionGranular.label")}
                         title={t("insights.charts.entryLoggingDistributionGranular.title")}
                     />
-                </Card>
+                </ChartContainer>
             </div>
         </main>
     );

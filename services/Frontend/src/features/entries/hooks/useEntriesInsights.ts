@@ -2,13 +2,15 @@ import { useQuery } from "@tanstack/react-query";
 
 import { EntriesInsightsService } from "@/features/entries/api/entriesInsightsService";
 import { EntriesInsightsQueryKeyFactory } from "@/features/entries/utils/entriesInsightsQueryKeyFactory";
+import { ISODateString } from "@/types/ISODateString";
 
 type UseEntriesInsightsOptions = {
-    from: string;
-    to: string;
+    from: ISODateString;
+    to: ISODateString;
+    enabled?: boolean;
 };
 
-export const useEntriesInsights = ({ from, to }: UseEntriesInsightsOptions) => {
+export const useEntriesInsights = ({ from, to, enabled }: UseEntriesInsightsOptions) => {
     const queryKey = EntriesInsightsQueryKeyFactory.createForDateRange(from, to);
 
     return {
@@ -18,5 +20,6 @@ export const useEntriesInsights = ({ from, to }: UseEntriesInsightsOptions) => {
             staleTime: 0, // TODO: Can this be optimized?
         }),
         queryKey,
+        enabled,
     };
 };
