@@ -14,7 +14,7 @@ import { StatsCard } from "@/components/StatsCard";
 import { StatsCardSkeleton } from "@/components/StatsCard/StatsCardSkeleton";
 import { useDailyInsights } from "@/features/daily/hooks/useDailyInsights";
 import { accumulateEntries, calculateHistogram, distributeEntriesByDayOfWeek } from "@/features/daily/utils/chartUtils";
-import { useEntriesInsights } from "@/features/entries/hooks";
+import { useEntriesMetrics, useEntryLoggingHistogram } from "@/features/entries/hooks";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 import { DateRangePreset } from "@/types/DateRangePreset";
 import { Day } from "@/types/Day";
@@ -25,87 +25,6 @@ const STATS_CARD_HEIGHT = 130;
 const BAR_CHART_HEIGHT = 400;
 const AREA_CHART_HEIGHT = 450;
 const PIE_CHART_HEIGHT = 400;
-
-// TODO: Do not use mock data
-const entryLoggingData = [
-    { key: "Mon 0-2", value: 0 },
-    { key: "Mon 2-4", value: 0 },
-    { key: "Mon 4-6", value: 0 },
-    { key: "Mon 8-10", value: 0 },
-    { key: "Mon 10-12", value: 0 },
-    { key: "Mon 12-14", value: 0 },
-    { key: "Mon 14-16", value: 0 },
-    { key: "Mon 16-18", value: 0 },
-    { key: "Mon 18-20", value: 0 },
-    { key: "Mon 20-22", value: 0 },
-    { key: "Mon 22-24", value: 0 },
-    { key: "Tue 0-2", value: 0 },
-    { key: "Tue 2-4", value: 0 },
-    { key: "Tue 4-6", value: 0 },
-    { key: "Tue 8-10", value: 2 },
-    { key: "Tue 10-12", value: 0 },
-    { key: "Tue 12-14", value: 0 },
-    { key: "Tue 14-16", value: 2 },
-    { key: "Tue 16-18", value: 0 },
-    { key: "Tue 18-20", value: 0 },
-    { key: "Tue 20-22", value: 0 },
-    { key: "Tue 22-24", value: 0 },
-    { key: "Wed 0-2", value: 0 },
-    { key: "Wed 2-4", value: 0 },
-    { key: "Wed 4-6", value: 0 },
-    { key: "Wed 8-10", value: 3 },
-    { key: "Wed 10-12", value: 1 },
-    { key: "Wed 12-14", value: 1 },
-    { key: "Wed 14-16", value: 2 },
-    { key: "Wed 16-18", value: 3 },
-    { key: "Wed 18-20", value: 0 },
-    { key: "Wed 20-22", value: 0 },
-    { key: "Wed 22-24", value: 0 },
-    { key: "Thu 0-2", value: 0 },
-    { key: "Thu 2-4", value: 0 },
-    { key: "Thu 4-6", value: 0 },
-    { key: "Thu 8-10", value: 4 },
-    { key: "Thu 10-12", value: 1 },
-    { key: "Thu 12-14", value: 0 },
-    { key: "Thu 14-16", value: 1 },
-    { key: "Thu 16-18", value: 4 },
-    { key: "Thu 18-20", value: 1 },
-    { key: "Thu 20-22", value: 0 },
-    { key: "Thu 22-24", value: 0 },
-    { key: "Fri 0-2", value: 0 },
-    { key: "Fri 2-4", value: 0 },
-    { key: "Fri 4-6", value: 0 },
-    { key: "Fri 8-10", value: 2 },
-    { key: "Fri 10-12", value: 1 },
-    { key: "Fri 12-14", value: 0 },
-    { key: "Fri 14-16", value: 0 },
-    { key: "Fri 16-18", value: 9 },
-    { key: "Fri 18-20", value: 3 },
-    { key: "Fri 20-22", value: 0 },
-    { key: "Fri 22-24", value: 0 },
-    { key: "Sat 0-2", value: 0 },
-    { key: "Sat 2-4", value: 0 },
-    { key: "Sat 4-6", value: 0 },
-    { key: "Sat 8-10", value: 0 },
-    { key: "Sat 10-12", value: 0 },
-    { key: "Sat 12-14", value: 0 },
-    { key: "Sat 14-16", value: 0 },
-    { key: "Sat 16-18", value: 3 },
-    { key: "Sat 18-20", value: 12 },
-    { key: "Sat 20-22", value: 0 },
-    { key: "Sat 22-24", value: 0 },
-    { key: "Sun 0-2", value: 0 },
-    { key: "Sun 2-4", value: 0 },
-    { key: "Sun 4-6", value: 0 },
-    { key: "Sun 8-10", value: 0 },
-    { key: "Sun 10-12", value: 0 },
-    { key: "Sun 12-14", value: 0 },
-    { key: "Sun 14-16", value: 0 },
-    { key: "Sun 16-18", value: 0 },
-    { key: "Sun 18-20", value: 0 },
-    { key: "Sun 20-22", value: 0 },
-    { key: "Sun 22-24", value: 0 },
-];
 
 // TODO: Clean up
 export const InsightsDashboard = () => {
@@ -122,7 +41,12 @@ export const InsightsDashboard = () => {
         to: dateRange.to,
     });
 
-    const { data: entriesInsights } = useEntriesInsights({
+    const { data: entriesMetrics } = useEntriesMetrics({
+        from: dateRange.from,
+        to: dateRange.to,
+    });
+
+    const { data: histogram } = useEntryLoggingHistogram({
         from: dateRange.from,
         to: dateRange.to,
     });
@@ -146,6 +70,15 @@ export const InsightsDashboard = () => {
         }
     };
 
+    const entryLoggingData = !histogram
+        ? null
+        : histogram.days.flatMap((day) =>
+              day.hours.flatMap(({ hour, count }) => ({
+                  key: `${translateWeekday(day.dayOfWeek)}, ${hour}-${hour + 1}`,
+                  value: count,
+              }))
+          );
+
     const dailyActivityHistogram = dailyInsights ? calculateHistogram(dailyInsights.activityHistory) : null;
     const accumulatedEntries = dailyInsights ? accumulateEntries(dailyInsights.activityHistory) : null;
     const entriesLoggedForDay = dailyInsights
@@ -154,28 +87,28 @@ export const InsightsDashboard = () => {
           })
         : null;
 
-    const featuredEntriesRatio = entriesInsights
+    const featuredEntriesRatio = entriesMetrics
         ? [
               {
                   key: t("insights.charts.featuredEntriesRatio.featuredLabel"),
-                  value: round(entriesInsights.featuredEntriesRatio),
+                  value: round(entriesMetrics.featuredEntriesRatio),
               },
               {
                   key: t("insights.charts.featuredEntriesRatio.otherLabel"),
-                  value: round(100 - entriesInsights.featuredEntriesRatio),
+                  value: round(100 - entriesMetrics.featuredEntriesRatio),
               },
           ]
         : null;
 
-    const completedEntriesRatio = entriesInsights
+    const completedEntriesRatio = entriesMetrics
         ? [
               {
                   key: t("insights.charts.completedEntriesRatio.completedLabel"),
-                  value: round(entriesInsights.completedEntriesRatio),
+                  value: round(entriesMetrics.completedEntriesRatio),
               },
               {
                   key: t("insights.charts.completedEntriesRatio.pendingLabel"),
-                  value: round(100 - entriesInsights.completedEntriesRatio),
+                  value: round(100 - entriesMetrics.completedEntriesRatio),
               },
           ]
         : null;
@@ -243,27 +176,27 @@ export const InsightsDashboard = () => {
                 </ChartContainer>
             </div>
 
-            {entriesInsights ? (
+            {entriesMetrics ? (
                 <div className={styles.row}>
                     <StatsCard
                         className={styles.xs}
                         title={t("insights.charts.pendingEntriesAmount.title")}
-                        value={entriesInsights.pendingEntriesAmount}
+                        value={entriesMetrics.pendingEntriesAmount}
                     />
                     <StatsCard
                         className={styles.xs}
                         title={t("insights.charts.completedEntriesAmount.title")}
-                        value={entriesInsights.completedEntriesAmount}
+                        value={entriesMetrics.completedEntriesAmount}
                     />
                     <StatsCard
                         className={styles.xs}
                         title={t("insights.charts.featuredEntriesAmount.title")}
-                        value={entriesInsights.featuredEntriesAmount}
+                        value={entriesMetrics.featuredEntriesAmount}
                     />
                     <StatsCard
                         className={styles.xs}
                         title={t("insights.charts.totalEntriesAmount.title")}
-                        value={entriesInsights.totalEntriesAmount}
+                        value={entriesMetrics.totalEntriesAmount}
                     />
                 </div>
             ) : (
