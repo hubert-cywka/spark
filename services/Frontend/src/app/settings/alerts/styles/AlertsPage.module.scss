@@ -2,6 +2,7 @@
 
 .container {
     .section {
+        margin-top: tokens.$spacing-600;
         max-width: tokens.$breakpoint-sm;
 
         .header {

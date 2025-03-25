@@ -8,7 +8,7 @@ import { ChartProps } from "@/components/Chart/types/Chart";
 
 const DEFAULT_OUTER_RADIUS = 125;
 const DEFAULT_INNER_RADIUS = 50;
-const LABELS_PADDING = 100;
+const LABELS_PADDING = 150;
 
 const DEFAULT_HUE_OFFSET = 200;
 const DEFAULT_HUE_MULTIPLIER = 120;

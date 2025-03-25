@@ -107,6 +107,7 @@ const entryLoggingData = [
     { key: "Sun 22-24", value: 0 },
 ];
 
+// TODO: Clean up
 export const InsightsDashboard = () => {
     const t = useTranslate();
 

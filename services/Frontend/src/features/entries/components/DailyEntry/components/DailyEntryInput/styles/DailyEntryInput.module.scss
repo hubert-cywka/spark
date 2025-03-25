@@ -20,6 +20,7 @@
 
     &.editable {
         resize: none;
+        margin: calc(-1 * #{tokens.$spacing-100});
 
         @keyframes pulsate {
             0% {
