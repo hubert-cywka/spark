@@ -1,3 +1,5 @@
+import { Day } from "@/types/Day.ts";
+
 export type Entry = {
     id: string;
     dailyId: string;
@@ -8,7 +10,7 @@ export type Entry = {
     createdAt: Date;
 };
 
-export type EntriesInsights = {
+export type EntriesMetrics = {
     dailyRange: {
         from: string;
         to: string;
@@ -19,4 +21,15 @@ export type EntriesInsights = {
     featuredEntriesAmount: number;
     featuredEntriesRatio: number;
     totalEntriesAmount: number;
+};
+
+export type EntryLoggingHistogram = {
+    dailyRange: {
+        from: string;
+        to: string;
+    };
+    days: {
+        dayOfWeek: Day;
+        hours: { hour: number; count: number }[];
+    }[];
 };

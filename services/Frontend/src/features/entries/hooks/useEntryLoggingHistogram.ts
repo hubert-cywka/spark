@@ -4,19 +4,19 @@ import { EntriesInsightsService } from "@/features/entries/api/entriesInsightsSe
 import { EntriesInsightsQueryKeyFactory } from "@/features/entries/utils/entriesInsightsQueryKeyFactory";
 import { ISODateString } from "@/types/ISODateString";
 
-type UseEntriesInsightsOptions = {
+type UseEntryLoggingHistogramOptions = {
     from: ISODateString;
     to: ISODateString;
     enabled?: boolean;
 };
 
-export const useEntriesInsights = ({ from, to, enabled }: UseEntriesInsightsOptions) => {
-    const queryKey = EntriesInsightsQueryKeyFactory.createForDateRange(from, to);
+export const useEntryLoggingHistogram = ({ from, to, enabled }: UseEntryLoggingHistogramOptions) => {
+    const queryKey = EntriesInsightsQueryKeyFactory.createForLoggingHistogram(from, to);
 
     return {
         ...useQuery({
             queryKey,
-            queryFn: async () => await EntriesInsightsService.getInsights(from, to),
+            queryFn: async () => await EntriesInsightsService.getLoggingHistogram(from, to),
             staleTime: 0, // TODO: Can this be optimized?
         }),
         queryKey,

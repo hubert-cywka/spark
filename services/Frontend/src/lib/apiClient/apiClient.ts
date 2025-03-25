@@ -5,4 +5,7 @@ export const apiClient = axios.create({
     baseURL: "/api",
     withCredentials: true,
     adapter: "fetch",
+    headers: {
+        "x-user-timezone": Intl.DateTimeFormat().resolvedOptions().timeZone,
+    },
 });

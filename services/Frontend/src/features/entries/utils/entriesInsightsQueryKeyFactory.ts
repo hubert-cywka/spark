@@ -5,7 +5,11 @@ export class EntriesInsightsQueryKeyFactory {
         return [BASE_QUERY_KEY];
     }
 
-    public static createForDateRange(from: string, to: string) {
-        return [BASE_QUERY_KEY, { from, to }];
+    public static createForMetrics(from: string, to: string) {
+        return [BASE_QUERY_KEY, "metrics", { from, to }];
+    }
+
+    public static createForLoggingHistogram(from: string, to: string) {
+        return [BASE_QUERY_KEY, "histogram", { from, to }];
     }
 }

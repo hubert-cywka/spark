@@ -1,4 +1,3 @@
-import { Logger } from "@nestjs/common";
 import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import { Repository } from "typeorm";
@@ -9,14 +8,12 @@ import { type IEntriesInsightsService } from "@/modules/journal/entries/services
 import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
 
 export class EntriesInsightsService implements IEntriesInsightsService {
-    private readonly logger = new Logger(EntriesInsightsService.name);
-
     public constructor(
         @InjectTransactionHost(JOURNAL_MODULE_DATA_SOURCE)
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
     ) {}
 
-    public async findByDateRange(authorId: string, from: string, to: string): Promise<EntriesInsights> {
+    public async findMetricsByDateRange(authorId: string, from: string, to: string): Promise<EntriesInsights> {
         const result = await this.getRepository()
             .createQueryBuilder("entry")
             .innerJoin("entry.daily", "daily")
@@ -35,14 +32,55 @@ export class EntriesInsightsService implements IEntriesInsightsService {
         const completedEntriesAmount = parseInt(result.completedentriesamount) || 0;
 
         return {
-            dailyRange: { from, to },
             totalEntriesAmount,
             featuredEntriesAmount,
             completedEntriesAmount,
-            pendingEntriesAmount: totalEntriesAmount - featuredEntriesAmount,
+            pendingEntriesAmount: totalEntriesAmount - completedEntriesAmount,
             featuredEntriesRatio: totalEntriesAmount > 0 ? (featuredEntriesAmount / totalEntriesAmount) * 100 : 0,
             completedEntriesRatio: totalEntriesAmount > 0 ? (completedEntriesAmount / totalEntriesAmount) * 100 : 0,
         };
+    }
+
+    public async findLoggingHistogram(authorId: string, from: string, to: string, timezone: string): Promise<EntryLoggingHistogram> {
+        const histogramResult = await this.getRepository()
+            .createQueryBuilder("entry")
+            .innerJoin("entry.daily", "daily")
+            .where("entry.authorId = :authorId", { authorId })
+            .andWhere("daily.date >= :from", { from })
+            .andWhere("daily.date <= :to", { to })
+            .select([
+                "EXTRACT(DOW FROM entry.createdAt AT TIME ZONE :timezone AT TIME ZONE 'UTC') AS dayOfWeek",
+                "EXTRACT(HOUR FROM entry.createdAt AT TIME ZONE :timezone AT TIME ZONE 'UTC') AS hour",
+                "COUNT(entry.id) AS count",
+            ])
+            .setParameter("timezone", timezone)
+            .groupBy("1, 2")
+            .orderBy("dayOfWeek, hour")
+            .getRawMany();
+
+        const daysOfWeek = [0, 1, 2, 3, 4, 5, 6];
+        const result: EntryLoggingHistogram = [];
+
+        for (const dayOfWeek of daysOfWeek) {
+            const hours = Array.from({ length: 24 }, (_, hour) => ({
+                hour,
+                count: 0,
+            }));
+
+            histogramResult
+                .filter((row) => parseInt(row.dayofweek) === dayOfWeek)
+                .forEach((row) => {
+                    const hour = parseInt(row.hour);
+                    hours[hour].count = parseInt(row.count) || 0;
+                });
+
+            result.push({
+                dayOfWeek,
+                hours,
+            });
+        }
+
+        return result;
     }
 
     private getRepository(): Repository<EntryEntity> {

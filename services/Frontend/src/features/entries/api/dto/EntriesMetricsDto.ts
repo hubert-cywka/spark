@@ -1,4 +1,4 @@
-export type EntriesInsightsDto = {
+export type EntriesMetricsDto = {
     dailyRange: {
         from: string;
         to: string;

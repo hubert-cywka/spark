@@ -2,7 +2,7 @@ import { IsNumber, IsObject } from "class-validator";
 
 import { DailyRangeDto } from "@/modules/journal/shared/dto/DailyRange.dto";
 
-export class EntriesInsightsDto {
+export class EntriesMetricsDto {
     @IsObject()
     dailyRange!: DailyRangeDto;
 
