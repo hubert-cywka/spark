@@ -7,11 +7,13 @@ import { useAutoFetch } from "@/hooks/useAutoFetch";
 type UseGetDailyEntriesByDateRangeOptions = {
     from: string;
     to: string;
+    featured?: boolean;
+    completed?: boolean;
     autoFetch?: boolean;
 };
 
-export const useGetDailyEntriesByDateRange = ({ from, to, autoFetch }: UseGetDailyEntriesByDateRangeOptions) => {
-    const { data: entriesData, hasNextPage, fetchNextPage, ...rest } = useEntries({ from, to });
+export const useGetDailyEntriesByDateRange = ({ from, to, featured, completed, autoFetch }: UseGetDailyEntriesByDateRangeOptions) => {
+    const { data: entriesData, hasNextPage, fetchNextPage, ...rest } = useEntries({ from, to, featured, completed });
     useAutoFetch({
         shouldFetch: !!autoFetch && hasNextPage,
         fetch: fetchNextPage,

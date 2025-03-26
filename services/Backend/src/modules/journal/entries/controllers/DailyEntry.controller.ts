@@ -23,7 +23,11 @@ export class DailyEntryController {
     @UseGuards(new AuthenticationGuard())
     public async createEntry(@Param("dailyId") dailyId: string, @AuthenticatedUserContext() user: User, @Body() dto: CreateEntryDto) {
         try {
-            const result = await this.entryService.create(user.id, dailyId, dto.content);
+            const result = await this.entryService.create(user.id, dailyId, {
+                content: dto.content,
+                isFeatured: dto.isFeatured ?? false,
+                isCompleted: dto.isCompleted ?? false,
+            });
             return this.entryMapper.fromModelToDto(result);
         } catch (err) {
             whenError(err).is(EntityNotFoundError).throw(new NotFoundException());

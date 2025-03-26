@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import dayjs from "dayjs";
 
 import styles from "./styles/DailyList.module.scss";
@@ -20,6 +20,7 @@ import { useDailyInsights } from "@/features/daily/hooks/useDailyInsights.ts";
 import { useGetDailiesByDateRange } from "@/features/daily/hooks/useGetDailiesByDateRange";
 import { formatToISODateString } from "@/features/daily/utils/dateUtils";
 import { DailyEntry, DailyEntryPlaceholder } from "@/features/entries/components/DailyEntry";
+import { EntryFiltersGroup } from "@/features/entries/components/EntryFiltersGroup";
 import { useGetDailyEntriesByDateRange } from "@/features/entries/hooks";
 import { onNextTick } from "@/utils/onNextTick.ts";
 
@@ -27,6 +28,11 @@ import { onNextTick } from "@/utils/onNextTick.ts";
 export const DailyList = () => {
     const containerRef = useRef<HTMLElement | null>(null);
     const targetDailyDateRef = useRef<string | null>(null);
+
+    const [filters, setFilters] = useState<{
+        completed?: boolean;
+        featured?: boolean;
+    }>({});
 
     const { setPrev, setNext, setRange, reset, endDate, startDate } = useDailyDateRange({
         granularity: "month",
@@ -53,6 +59,8 @@ export const DailyList = () => {
     const { data: entriesGroups, isFetching: isFetchingEntries } = useGetDailyEntriesByDateRange({
         from: formatToISODateString(startDate),
         to: formatToISODateString(endDate),
+        featured: filters.featured,
+        completed: filters.completed,
         autoFetch: true,
     });
 
@@ -72,7 +80,11 @@ export const DailyList = () => {
     });
 
     const onSavePlaceholder = async (dailyId: string, content: string) => {
-        const entry = await onCreateEntry(dailyId, content);
+        const entry = await onCreateEntry(dailyId, {
+            content,
+            isCompleted: filters.completed ?? false,
+            isFeatured: filters.featured ?? false,
+        });
 
         if (entry) {
             navigateByEntryId("input", entry.id);
@@ -129,7 +141,9 @@ export const DailyList = () => {
                 onPrevTimeframe={setPrev}
                 onReset={reset}
                 timeframeStart={startDate}
-            />
+            >
+                <EntryFiltersGroup onFiltersChange={setFilters} />
+            </DailyListHeader>
 
             <DailyActivityChart
                 activity={dailyInsights?.activityHistory ?? []}

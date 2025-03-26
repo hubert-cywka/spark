@@ -2,9 +2,10 @@
 
 .headerWrapper {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    justify-content: space-between;
     gap: tokens.$spacing-600;
-    width: fit-content;
+    width: 100%;
 
     position: sticky;
     z-index: 10;
@@ -16,22 +17,33 @@
     margin-left: calc(#{tokens.$spacing-400} * -1);
     margin-bottom: tokens.$spacing-400;
 
-    .buttons {
-        display: flex;
-        gap: tokens.$spacing-200;
-
-        @media (max-width: tokens.$breakpoint-sm) {
-            .changeYearButton {
-                display: none;
-            }
-        }
+    @media (min-width: tokens.$breakpoint-md) {
+        flex-direction: row;
+        align-items: center;
     }
 
-    .header {
-        font: tokens.$typography-title-300;
+    .dateRangeFilters {
+        display: flex;
+        align-items: center;
+        gap: tokens.$spacing-600;
+        
+        .buttons {
+            display: flex;
+            gap: tokens.$spacing-200;
 
-        @media (min-width: tokens.$breakpoint-sm) {
-            font: tokens.$typography-title-400;
+            @media (max-width: tokens.$breakpoint-sm) {
+                .changeYearButton {
+                    display: none;
+                }
+            }
+        }
+
+        .header {
+            font: tokens.$typography-title-300;
+
+            @media (min-width: tokens.$breakpoint-sm) {
+                font: tokens.$typography-title-400;
+            }
         }
     }
 }

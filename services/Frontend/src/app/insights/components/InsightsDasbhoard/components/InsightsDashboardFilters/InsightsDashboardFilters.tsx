@@ -1,9 +1,10 @@
-import { getDateRange } from "./utils/getDateRange";
+import { getDateRange, getPresetFromDateRange } from "./utils/getDateRange";
 
 import styles from "./styles/InsightsDasbhoardFilters.module.scss";
 
-import { Button } from "@/components/Button";
 import { DateRangePicker } from "@/components/Input";
+import { ToggleButton } from "@/components/ToggleButton";
+import { ToggleButtonGroup } from "@/components/ToggleButtonGroup";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 import { DateRangePreset } from "@/types/DateRangePreset";
 import { ISODateStringRange } from "@/types/ISODateString";
@@ -15,6 +16,7 @@ type InsightsDashboardFiltersProps = {
 
 export const InsightsDashboardFilters = ({ onDateRangeChange, dateRange }: InsightsDashboardFiltersProps) => {
     const t = useTranslate();
+    const selectedPreset = getPresetFromDateRange(dateRange);
 
     const presets = [
         {
@@ -43,22 +45,21 @@ export const InsightsDashboardFilters = ({ onDateRangeChange, dateRange }: Insig
         },
     ];
 
-    // TODO: Use dedicated component (like button group to render presets)
     return (
         <div className={styles.container}>
-            <div className={styles.presetsContainer}>
+            <ToggleButtonGroup className={styles.presetsContainer} selectedKeys={selectedPreset ? [selectedPreset] : []}>
                 {presets.map(({ label, preset }) => (
-                    <Button
-                        key={preset}
+                    <ToggleButton
                         size="1"
-                        variant="secondary"
+                        id={preset}
+                        key={preset}
                         className={styles.preset}
                         onPress={() => onDateRangeChange(getDateRange(preset))}
                     >
                         {label}
-                    </Button>
+                    </ToggleButton>
                 ))}
-            </div>
+            </ToggleButtonGroup>
 
             <DateRangePicker label={t("insights.filters.dateRange.label")} value={dateRange} onChange={onDateRangeChange} />
         </div>

@@ -1,0 +1,6 @@
+@use "src/styles/tokens";
+
+.entriesFilters {
+    display: flex;
+    gap: tokens.$spacing-300;
+}
