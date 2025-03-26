@@ -70,9 +70,9 @@ export const useDailyEntriesEvents = () => {
         }
     };
 
-    const onCreateEntry = async (dailyId: string, content: string) => {
+    const onCreateEntry = async (dailyId: string, entry: Pick<Entry, "content" | "isCompleted" | "isFeatured">) => {
         try {
-            return await createEntry({ dailyId, content });
+            return await createEntry({ dailyId, ...entry });
         } catch (err) {
             onCreateEntryError(err);
         }

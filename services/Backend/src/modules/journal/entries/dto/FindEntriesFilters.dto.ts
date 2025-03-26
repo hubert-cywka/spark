@@ -1,5 +1,5 @@
 import { Transform, Type } from "class-transformer";
-import { IsArray, IsDateString, IsOptional, IsUUID } from "class-validator";
+import { IsArray, IsBoolean, IsDateString, IsOptional, IsUUID } from "class-validator";
 
 import { IsDateOnly } from "@/lib/validation";
 
@@ -20,4 +20,22 @@ export class FindEntriesFiltersDto {
     @IsDateOnly()
     @IsDateString({ strict: true })
     readonly to?: string;
+
+    @IsOptional()
+    @IsBoolean()
+    @Transform(({ value }) => {
+        if (value === "true") return true;
+        if (value === "false") return false;
+        return value;
+    })
+    readonly featured?: boolean;
+
+    @IsOptional()
+    @IsBoolean()
+    @Transform(({ value }) => {
+        if (value === "true") return true;
+        if (value === "false") return false;
+        return value;
+    })
+    readonly completed?: boolean;
 }

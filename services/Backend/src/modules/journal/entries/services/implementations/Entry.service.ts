@@ -22,7 +22,11 @@ export class EntryService implements IEntryService {
         @Inject(EntryMapperToken) private readonly entryMapper: IEntryMapper
     ) {}
 
-    public async findAll(authorId: string, pageOptions: PageOptions, { from, to, goals }: EntryFilters = {}): Promise<Paginated<Entry>> {
+    public async findAll(
+        authorId: string,
+        pageOptions: PageOptions,
+        { from, to, goals, featured, completed }: EntryFilters = {}
+    ): Promise<Paginated<Entry>> {
         const queryBuilder = this.getRepository().createQueryBuilder("entry");
 
         queryBuilder.innerJoinAndSelect("entry.daily", "daily").where("entry.authorId = :authorId", { authorId });
@@ -33,6 +37,16 @@ export class EntryService implements IEntryService {
 
         if (to) {
             queryBuilder.andWhere("daily.date <= :to", { to });
+        }
+
+        if (featured !== undefined) {
+            queryBuilder.andWhere("entry.isFeatured = :featured", { featured });
+        }
+
+        if (completed !== undefined) {
+            queryBuilder.andWhere("entry.isCompleted = :completed", {
+                completed,
+            });
         }
 
         if (goals) {
@@ -58,13 +72,19 @@ export class EntryService implements IEntryService {
     }
 
     // FIXME: Don't save/update/delete Entry if Daily is soft-removed
-    public async create(authorId: string, dailyId: string, content: string): Promise<Entry> {
+    public async create(
+        authorId: string,
+        dailyId: string,
+        { isCompleted, content, isFeatured }: Pick<Entry, "content" | "isFeatured" | "isCompleted">
+    ): Promise<Entry> {
         const result = await this.getRepository()
             .createQueryBuilder()
             .insert()
             .into(EntryEntity)
             .values({
                 content,
+                isCompleted,
+                isFeatured,
                 daily: { id: dailyId },
                 author: { id: authorId },
             })

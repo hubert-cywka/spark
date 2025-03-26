@@ -19,6 +19,7 @@ type DailyActivityChartProps = {
     isLoading?: boolean;
 };
 
+// TODO: Keyboard navigation is horrible.
 export const DailyActivityChart = ({ activity, onSelectDay, isLoading }: DailyActivityChartProps) => {
     const t = useTranslate();
 

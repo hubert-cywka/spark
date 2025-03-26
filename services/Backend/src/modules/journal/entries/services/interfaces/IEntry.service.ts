@@ -7,7 +7,7 @@ export const EntryServiceToken = Symbol("EntryService");
 
 export interface IEntryService {
     findAll(authorId: string, pageOptions: PageOptions, filters?: EntryFilters): Promise<Paginated<Entry>>;
-    create(authorId: string, dailyId: string, content: string): Promise<Entry>;
+    create(authorId: string, dailyId: string, entry: Pick<Entry, "content" | "isCompleted" | "isFeatured">): Promise<Entry>;
     deleteById(authorId: string, dailyId: string, entryId: string): Promise<void>;
     restoreById(authorId: string, dailyId: string, entryId: string): Promise<void>;
     update(authorId: string, dailyId: string, entryId: string, entry: Partial<Entry>): Promise<Entry>;

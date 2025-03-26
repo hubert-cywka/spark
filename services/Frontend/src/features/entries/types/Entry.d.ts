@@ -33,3 +33,8 @@ export type EntryLoggingHistogram = {
         hours: { hour: number; count: number }[];
     }[];
 };
+
+export type EntryFilters = {
+    completed?: boolean;
+    featured?: boolean;
+};

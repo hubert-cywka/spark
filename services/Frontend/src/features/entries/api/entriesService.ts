@@ -11,7 +11,7 @@ import { apiClient } from "@/lib/apiClient/apiClient";
 const PAGE_SIZE = 100;
 
 export class EntriesService {
-    public static async getPage(page: number, { from, to, goals }: EntriesQueryFilters = {}) {
+    public static async getPage(page: number, { from, to, goals, featured, completed }: EntriesQueryFilters = {}) {
         const searchParams = new URLSearchParams({
             order: "DESC",
             page: String(page),
@@ -28,6 +28,14 @@ export class EntriesService {
 
         if (goals) {
             searchParams.append("goals", goals.join(","));
+        }
+
+        if (featured !== undefined) {
+            searchParams.append("featured", featured.toString());
+        }
+
+        if (completed !== undefined) {
+            searchParams.append("completed", completed.toString());
         }
 
         const { data } = await apiClient.get<PageDto<EntryDto>>(`/entry?${searchParams}`);
