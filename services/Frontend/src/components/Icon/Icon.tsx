@@ -3,10 +3,11 @@ import { IconSize, IconSlot } from "@/components/Icon/types/Icon";
 type IconProps = {
     slot: IconSlot;
     size?: IconSize;
+    className?: string;
 };
 
-export const Icon = ({ slot: Slot, size = "2" }: IconProps) => {
-    return <Slot size={mapIconSizeToSlotSize(size)} />;
+export const Icon = ({ slot: Slot, className, size = "2" }: IconProps) => {
+    return <Slot className={className} size={mapIconSizeToSlotSize(size)} />;
 };
 
 const mapIconSizeToSlotSize = (size: IconSize) => {

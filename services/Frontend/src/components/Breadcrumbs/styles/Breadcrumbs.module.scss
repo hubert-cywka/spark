@@ -9,9 +9,23 @@
     font: tokens.$typography-title-300;
     list-style: none;
 
+    white-space: nowrap;
+    overflow: hidden;
+
+    .chevron {
+        flex-shrink: 0;
+    }
+
     .breadcrumb {
         display: flex;
         align-items: center;
         gap: tokens.$spacing-300;
+        overflow: hidden;
+
+        .label {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
     }
 }

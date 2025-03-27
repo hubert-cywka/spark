@@ -12,7 +12,11 @@
     display: flex;
     flex-direction: column;
 
-    background: tokens.$color-neutral-background-200;
+    background:
+        linear-gradient(to bottom, rgba(tokens.$color-accent-background-100, 0.75) 0%, rgba(tokens.$color-accent-background-300, 0.1) 30%) fixed,
+        linear-gradient(to top, rgba(tokens.$color-neutral-background-300, 0.75) 0%, rgba(tokens.$color-accent-background-300, 0.1) 30%) fixed,
+        tokens.$color-neutral-background-200;
+    
     border-right: thin solid tokens.$color-neutral-surface-300;
     transition: transform 0.25s;
 

@@ -17,8 +17,14 @@ export const Breadcrumbs = ({ items }: BreadcrumbsProps) => {
         <BaseBreadcrumbs items={items} className={styles.container}>
             {items.map(({ label, href }, index) => (
                 <Breadcrumb key={label} className={styles.breadcrumb}>
-                    {href ? <Anchor href={href}>{label}</Anchor> : label}
-                    {index < items.length - 1 && <Icon slot={ChevronRight} size="3" />}
+                    {href ? (
+                        <Anchor className={styles.label} href={href}>
+                            {label}
+                        </Anchor>
+                    ) : (
+                        <span className={styles.label}>{label}</span>
+                    )}
+                    {index < items.length - 1 && <Icon className={styles.chevron} slot={ChevronRight} size="3" />}
                 </Breadcrumb>
             ))}
         </BaseBreadcrumbs>

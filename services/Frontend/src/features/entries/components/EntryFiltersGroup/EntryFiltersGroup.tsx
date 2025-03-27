@@ -19,9 +19,10 @@ enum EntryCompletedFilter {
 
 type EntryFiltersGroupProps = {
     onFiltersChange: (value: EntryFilters) => void;
+    size?: "1" | "2" | "3";
 };
 
-export const EntryFiltersGroup = ({ onFiltersChange }: EntryFiltersGroupProps) => {
+export const EntryFiltersGroup = ({ onFiltersChange, size = "2" }: EntryFiltersGroupProps) => {
     const [featured, setFeatured] = useState<boolean | undefined>();
     const [completed, setCompleted] = useState<boolean | undefined>();
 
@@ -54,13 +55,13 @@ export const EntryFiltersGroup = ({ onFiltersChange }: EntryFiltersGroupProps) =
     return (
         <div className={styles.entriesFilters}>
             <ToggleButtonGroup onSelectionChange={onCompletedFiltersChange}>
-                <IconToggleButton id={EntryCompletedFilter.WITHOUT_COMPLETED} iconSlot={SquareIcon} />
-                <IconToggleButton id={EntryCompletedFilter.ONLY_COMPLETED} iconSlot={SquareCheckBigIcon} />
+                <IconToggleButton size={size} id={EntryCompletedFilter.WITHOUT_COMPLETED} iconSlot={SquareIcon} />
+                <IconToggleButton size={size} id={EntryCompletedFilter.ONLY_COMPLETED} iconSlot={SquareCheckBigIcon} />
             </ToggleButtonGroup>
 
             <ToggleButtonGroup onSelectionChange={onFeaturedFiltersChange}>
-                <IconToggleButton id={EntryFeaturedFilter.WITHOUT_FEATURED} iconSlot={StarOffIcon} />
-                <IconToggleButton id={EntryFeaturedFilter.ONLY_FEATURED} iconSlot={StarIcon} />
+                <IconToggleButton size={size} id={EntryFeaturedFilter.WITHOUT_FEATURED} iconSlot={StarOffIcon} />
+                <IconToggleButton size={size} id={EntryFeaturedFilter.ONLY_FEATURED} iconSlot={StarIcon} />
             </ToggleButtonGroup>
         </div>
     );
