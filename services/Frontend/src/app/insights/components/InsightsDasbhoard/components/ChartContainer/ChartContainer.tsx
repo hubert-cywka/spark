@@ -10,5 +10,9 @@ type ChartContainerProps = PropsWithChildren<{
 }>;
 
 export const ChartContainer = ({ className, children, isLoading, height }: ChartContainerProps) => {
-    return <Card className={className}>{isLoading ? <Skeleton height={height} /> : children}</Card>;
+    return (
+        <Card variant="semi-translucent" className={className}>
+            {isLoading ? <Skeleton height={height} /> : children}
+        </Card>
+    );
 };
