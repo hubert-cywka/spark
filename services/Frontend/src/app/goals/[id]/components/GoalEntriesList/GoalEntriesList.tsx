@@ -1,3 +1,5 @@
+import { PropsWithChildren } from "react";
+
 import styles from "./styles/GoalEntriesList.module.scss";
 
 import { useDailyEntriesEvents } from "@/features/daily/components/DailyList/hooks/useDailyEntriesEvents";
@@ -7,13 +9,13 @@ import { DailyEntry } from "@/features/entries/components/DailyEntry";
 import { Entry } from "@/features/entries/types/Entry";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
-type GoalEntriesListProps = {
+type GoalEntriesListProps = PropsWithChildren<{
     entries: Entry[];
     goalId: string;
-};
+}>;
 
 // TODO: Handle loading state
-export const GoalEntriesList = ({ entries, goalId }: GoalEntriesListProps) => {
+export const GoalEntriesList = ({ entries, goalId, children }: GoalEntriesListProps) => {
     const t = useTranslate();
 
     const { onUpdateEntryContent, onDeleteEntry, onUpdateEntryStatus, onUpdateEntryIsFeatured } = useDailyEntriesEvents();
@@ -23,7 +25,10 @@ export const GoalEntriesList = ({ entries, goalId }: GoalEntriesListProps) => {
 
     return (
         <div className={styles.container}>
-            <h2 className={styles.header}>{t("goal.entries.header")}</h2>
+            <div className={styles.headerWrapper}>
+                <h2 className={styles.header}>{t("goal.entries.header")}</h2>
+                {children}
+            </div>
             {!entries.length && t("goal.entries.noResults")}
 
             <ul className={styles.entries}>

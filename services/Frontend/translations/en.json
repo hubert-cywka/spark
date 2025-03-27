@@ -200,7 +200,7 @@
         }
     },
     "entries": {
-        "placeholder": "What are your plans for today? What have you already done?",
+        "placeholder": "Add entry...",
         "create": {
             "notifications": {
                 "error": {
