@@ -10,7 +10,7 @@ import {
     IntegrationEventTopics,
 } from "@/common/events";
 import { type AccountRemovalCompletedEventPayload } from "@/common/events/types/account/AccountRemovalCompletedEvent";
-import { AuthorServiceToken, IAuthorService } from "@/modules/journal/authors/services/interfaces/IAuthor.service";
+import { type IAuthorService, AuthorServiceToken } from "@/modules/journal/authors/services/interfaces/IAuthor.service";
 
 @Injectable()
 export class AuthorRemovedEventHandler implements IInboxEventHandler {
