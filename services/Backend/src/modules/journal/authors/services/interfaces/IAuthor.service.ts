@@ -4,4 +4,5 @@ export const AuthorServiceToken = Symbol("AuthorServiceToken");
 
 export interface IAuthorService {
     create(id: string): Promise<Author>;
+    remove(id: string): Promise<void>;
 }

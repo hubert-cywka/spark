@@ -8,10 +8,14 @@ export class AuthorEntity {
     @PrimaryColumn({ type: "varchar" })
     id!: string;
 
-    @OneToMany((type) => DailyEntity, (daily) => daily.author)
+    @OneToMany((type) => DailyEntity, (daily) => daily.author, {
+        onDelete: "CASCADE",
+    })
     dailies!: Relation<DailyEntity>[];
 
-    @OneToMany((type) => GoalEntity, (goal) => goal.author)
+    @OneToMany((type) => GoalEntity, (goal) => goal.author, {
+        onDelete: "CASCADE",
+    })
     goals!: Relation<GoalEntity>[];
 
     @CreateDateColumn({ type: "timestamptz" })

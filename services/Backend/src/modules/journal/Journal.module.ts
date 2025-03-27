@@ -8,6 +8,7 @@ import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { AuthorsModule } from "@/modules/journal/authors/Authors.module";
 import { AuthorEntity } from "@/modules/journal/authors/entities/Author.entity";
 import { AccountRegisteredEventHandler } from "@/modules/journal/authors/events/AccountRegisteredEvent.handler";
+import { AuthorRemovedEventHandler } from "@/modules/journal/authors/events/AuthorRemovedEvent.handler";
 import { DailyModule } from "@/modules/journal/daily/Daily.module";
 import { DailyEntity } from "@/modules/journal/daily/entities/Daily.entity";
 import { EntryEntity } from "@/modules/journal/entries/entities/Entry.entity";
@@ -36,7 +37,7 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
-            inject: [AccountRegisteredEventHandler],
+            inject: [AccountRegisteredEventHandler, AuthorRemovedEventHandler],
         },
     ],
     imports: [

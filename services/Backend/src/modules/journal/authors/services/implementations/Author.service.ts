@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { InjectTransactionHost, Transactional, TransactionHost } from "@nestjs-cls/transactional";
+import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import { Repository } from "typeorm";
 
@@ -18,7 +18,6 @@ export class AuthorService implements IAuthorService {
         @Inject(AuthorMapperToken) private readonly authorMapper: IAuthorMapper
     ) {}
 
-    @Transactional(JOURNAL_MODULE_DATA_SOURCE)
     public async create(id: string): Promise<Author> {
         return await this.txHost.withTransaction(async () => {
             const repository = this.getRepository();
@@ -31,6 +30,11 @@ export class AuthorService implements IAuthorService {
             const result = await repository.save({ id });
             return this.authorMapper.fromEntityToModel(result);
         });
+    }
+
+    public async remove(id: string): Promise<void> {
+        const repository = this.getRepository();
+        await repository.delete({ id });
     }
 
     private getRepository(): Repository<AuthorEntity> {
