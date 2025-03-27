@@ -9,6 +9,7 @@ import { UserController } from "@/modules/users/controllers/User.controller";
 import { UserEntity } from "@/modules/users/entities/User.entity";
 import { UserActivatedEventHandler } from "@/modules/users/events/UserActivatedEvent.handler";
 import { UserRegisteredEventHandler } from "@/modules/users/events/UserRegisteredEvent.handler";
+import { UserRemovedEventHandler } from "@/modules/users/events/UserRemovedEvent.handler";
 import { USERS_MODULE_DATA_SOURCE } from "@/modules/users/infrastructure/database/constants";
 import { InitializeUsersModule1735737579670 } from "@/modules/users/infrastructure/database/migrations/1735737579670-InitializeUsersModule";
 import { AddTenantIdToOutboxAndInbox1743101796654 } from "@/modules/users/infrastructure/database/migrations/1743101796654-addTenantIdToOutboxAndInbox";
@@ -25,10 +26,11 @@ import { UsersSubscriber } from "@/modules/users/Users.subscriber";
         { provide: UsersServiceToken, useClass: UsersService },
         UserActivatedEventHandler,
         UserRegisteredEventHandler,
+        UserRemovedEventHandler,
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
-            inject: [UserActivatedEventHandler, UserRegisteredEventHandler],
+            inject: [UserActivatedEventHandler, UserRegisteredEventHandler, UserRemovedEventHandler],
         },
     ],
     imports: [

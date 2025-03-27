@@ -68,6 +68,11 @@ export class UsersService implements IUsersService {
         return this.userMapper.fromEntityToModel(activatedUser);
     }
 
+    public async remove(id: string): Promise<void> {
+        const repository = this.getRepository();
+        await repository.delete({ id });
+    }
+
     private getRepository(): Repository<UserEntity> {
         return this.txHost.tx.getRepository(UserEntity);
     }

@@ -6,4 +6,5 @@ export interface IUsersService {
     create(user: User): Promise<User>;
     activate(id: string): Promise<User>;
     findOneById(id: string): Promise<User>;
+    remove(id: string): Promise<void>;
 }
