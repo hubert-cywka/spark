@@ -4,11 +4,11 @@ import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-t
 import { Repository } from "typeorm";
 
 import { RecipientEntity } from "@/modules/alerts/entities/Recipient.entity";
+import { RecipientAlreadyExistsError } from "@/modules/alerts/errors/RecipientAlreadyExists.error";
 import { ALERTS_MODULE_DATA_SOURCE } from "@/modules/alerts/infrastructure/database/constants";
 import { type IRecipientMapper, RecipientMapperToken } from "@/modules/alerts/mappers/IRecipient.mapper";
 import { type Recipient } from "@/modules/alerts/models/Recipient.model";
 import { type IRecipientService } from "@/modules/alerts/services/interfaces/IRecipient.service";
-import { AuthorAlreadyExistsError } from "@/modules/journal/authors/errors/AuthorAlreadyExists.error";
 
 @Injectable()
 export class RecipientService implements IRecipientService {
@@ -26,7 +26,7 @@ export class RecipientService implements IRecipientService {
             const exists = await repository.exists({ where: { id } });
 
             if (exists) {
-                throw new AuthorAlreadyExistsError();
+                throw new RecipientAlreadyExistsError();
             }
 
             const result = await repository.save({ id, email });

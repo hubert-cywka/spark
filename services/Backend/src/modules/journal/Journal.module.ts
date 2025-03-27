@@ -27,6 +27,7 @@ import { AddEntryEntity1736876093309 } from "@/modules/journal/infrastructure/da
 import { AddIsCompletedFlagToEntries1737048686159 } from "@/modules/journal/infrastructure/database/migrations/1737048686159-AddIsCompletedFlagToEntries";
 import { RenameJoinTableForGoalAndEntries1737103643312 } from "@/modules/journal/infrastructure/database/migrations/1737103643312-RenameJoinTableForGoalAndEntries";
 import { AddIsFeaturedFlagToEntries1740304775599 } from "@/modules/journal/infrastructure/database/migrations/1740304775599-AddIsFeaturedFlagToEntries";
+import { AddTenantIdToOutboxAndInbox1743101763604 } from "@/modules/journal/infrastructure/database/migrations/1743101763604-addTenantIdToOutboxAndInbox";
 import { JournalSubscriber } from "@/modules/journal/Journal.subscriber";
 import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.module";
 
@@ -62,6 +63,7 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
                         AddIsCompletedFlagToEntries1737048686159,
                         RenameJoinTableForGoalAndEntries1737103643312,
                         AddIsFeaturedFlagToEntries1740304775599,
+                        AddTenantIdToOutboxAndInbox1743101763604,
                     ],
                 }),
                 inject: [ConfigService],

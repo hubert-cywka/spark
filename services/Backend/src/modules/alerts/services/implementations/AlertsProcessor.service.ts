@@ -38,7 +38,7 @@ export class AlertsProcessorService implements IAlertsProcessorService {
 
         for (const alert of alertsToProcess) {
             await this.txHost.withTransaction(async () => {
-                await this.alertPublisher.onReminderTriggered(alert.recipient.email);
+                await this.alertPublisher.onReminderTriggered(alert.recipient.id, alert.recipient.email);
                 await this.getRepository().save({
                     ...alert,
                     nextTriggerAt: this.alertScheduler.scheduleNextTrigger(alert.time, alert.daysOfWeek),

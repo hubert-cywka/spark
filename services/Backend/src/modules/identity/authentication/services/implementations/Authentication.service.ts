@@ -58,7 +58,7 @@ export class AuthenticationService implements IAuthenticationService {
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
     public async registerWithCredentials({ email, password, lastName, firstName }: RegisterWithCredentialsDto): Promise<void> {
         const account = await this.accountService.createAccountWithCredentials(email, password);
-        await this.publisher.onAccountRegistered({
+        await this.publisher.onAccountRegistered(account.id, {
             account: {
                 firstName,
                 lastName,
@@ -80,7 +80,7 @@ export class AuthenticationService implements IAuthenticationService {
         const account = await this.externalAccountService.createAccountWithExternalIdentity(identity);
         const { firstName, lastName, email } = identity;
 
-        await this.publisher.onAccountRegistered({
+        await this.publisher.onAccountRegistered(account.id, {
             account: {
                 firstName,
                 lastName,

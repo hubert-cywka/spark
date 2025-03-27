@@ -12,6 +12,7 @@ import { AccountRequestedPasswordResetEventHandler } from "@/modules/mail/events
 import { DailyReminderTriggeredEventHandler } from "@/modules/mail/events/DailyReminderTriggeredEvent.handler";
 import { MAIL_MODULE_DATA_SOURCE } from "@/modules/mail/infrastructure/database/constants";
 import { InitializeMailModule1735737562761 } from "@/modules/mail/infrastructure/database/migrations/1735737562761-InitializeMailModule";
+import { AddTenantIdToOutboxAndInbox1743101783697 } from "@/modules/mail/infrastructure/database/migrations/1743101783697-addTenantIdToOutboxAndInbox";
 import { MailSubscriber } from "@/modules/mail/Mail.subscriber";
 import { MailerService } from "@/modules/mail/services/implementations/Mailer.service";
 import { MailEventBoxFactory } from "@/modules/mail/services/implementations/MailEventBox.factory";
@@ -48,7 +49,7 @@ import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.s
                 password: configService.getOrThrow<string>("modules.mail.database.password"),
                 host: configService.getOrThrow<string>("modules.mail.database.host"),
                 database: configService.getOrThrow<string>("modules.mail.database.name"),
-                migrations: [InitializeMailModule1735737562761],
+                migrations: [InitializeMailModule1735737562761, AddTenantIdToOutboxAndInbox1743101783697],
             }),
             inject: [ConfigService],
         }),

@@ -34,6 +34,7 @@ export class EventOutbox implements IEventOutbox {
 
         const entity = repository.create({
             id: event.getId(),
+            tenantId: event.getTenantId(),
             topic: event.getTopic(),
             payload: event.getPayload(),
             createdAt: event.getCreatedAt(),

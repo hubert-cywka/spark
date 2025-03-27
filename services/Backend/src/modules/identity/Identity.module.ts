@@ -15,6 +15,7 @@ import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/R
 import { AccountPasswordUpdatedEventHandler } from "@/modules/identity/authentication/events/AccountPasswordUpdatedEvent.handler";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 import { InitializeIdentityModule1735737549567 } from "@/modules/identity/infrastructure/database/migrations/1735737549567-InitializeIdentityModule";
+import { AddTenantIdToOutboxAndInbox1743101746907 } from "@/modules/identity/infrastructure/database/migrations/1743101746907-addTenantIdToOutboxAndInbox";
 import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.module";
 
 @Module({
@@ -44,7 +45,7 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
                     password: configService.getOrThrow<string>("modules.identity.database.password"),
                     host: configService.getOrThrow<string>("modules.identity.database.host"),
                     database: configService.getOrThrow<string>("modules.identity.database.name"),
-                    migrations: [InitializeIdentityModule1735737549567],
+                    migrations: [InitializeIdentityModule1735737549567, AddTenantIdToOutboxAndInbox1743101746907],
                 }),
                 inject: [ConfigService],
             }

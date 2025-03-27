@@ -1,22 +1,20 @@
 @use "src/styles/tokens";
 
-.container {
-    .section {
-        margin-top: tokens.$spacing-600;
-        max-width: tokens.$breakpoint-sm;
+.section {
+    margin-top: tokens.$spacing-600;
+    max-width: tokens.$breakpoint-sm;
 
-        .header {
-            font: tokens.$typography-title-100;
-        }
+    .header {
+        font: tokens.$typography-title-100;
+    }
 
-        .description {
-            margin-bottom: tokens.$spacing-500;
-            margin-top: tokens.$spacing-200;
+    .description {
+        margin-bottom: tokens.$spacing-500;
+        margin-top: tokens.$spacing-200;
 
-            text-align: justify;
-            font: tokens.$typography-body-100;
-            color: tokens.$color-neutral-text-200;
-        }
+        text-align: justify;
+        font: tokens.$typography-body-100;
+        color: tokens.$color-neutral-text-200;
     }
 }
 
