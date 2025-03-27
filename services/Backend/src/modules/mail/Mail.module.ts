@@ -8,6 +8,7 @@ import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { AccountActivatedEventHandler } from "@/modules/mail/events/AccountActivatedEvent.handler";
 import { AccountActivationTokenRequestedEventHandler } from "@/modules/mail/events/AccountActivationTokenRequestedEvent.handler";
 import { AccountPasswordUpdatedEventHandler } from "@/modules/mail/events/AccountPasswordUpdatedEvent.handler";
+import { AccountRemovedEventHandler } from "@/modules/mail/events/AccountRemovedEvent.handler";
 import { AccountRequestedPasswordResetEventHandler } from "@/modules/mail/events/AccountRequestedPasswordResetEvent.handler";
 import { DailyReminderTriggeredEventHandler } from "@/modules/mail/events/DailyReminderTriggeredEvent.handler";
 import { MAIL_MODULE_DATA_SOURCE } from "@/modules/mail/infrastructure/database/constants";
@@ -29,6 +30,7 @@ import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.s
         AccountPasswordUpdatedEventHandler,
         AccountRequestedPasswordResetEventHandler,
         DailyReminderTriggeredEventHandler,
+        AccountRemovedEventHandler,
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
@@ -38,6 +40,7 @@ import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.s
                 AccountPasswordUpdatedEventHandler,
                 AccountRequestedPasswordResetEventHandler,
                 DailyReminderTriggeredEventHandler,
+                AccountRemovedEventHandler,
             ],
         },
     ],
