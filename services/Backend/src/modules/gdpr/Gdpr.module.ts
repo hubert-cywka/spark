@@ -7,6 +7,7 @@ import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { TenantEntity } from "@/modules/gdpr/entities/Tenant.entity";
 import { TenantRegisteredEventHandler } from "@/modules/gdpr/events/TenantRegisteredEvent.handler";
+import { TenantRemovedEventHandler } from "@/modules/gdpr/events/TenantRemovedEvent.handler";
 import { GdprSubscriber } from "@/modules/gdpr/Gdpr.subscriber";
 import { GDPR_MODULE_DATA_SOURCE } from "@/modules/gdpr/infrastructure/database/constants";
 import { AddTenantEntity1743100640810 } from "@/modules/gdpr/infrastructure/database/migrations/1743100640810-addTenantEntity";
@@ -28,10 +29,11 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
             useClass: TenantService,
         },
         TenantRegisteredEventHandler,
+        TenantRemovedEventHandler,
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
-            inject: [TenantRegisteredEventHandler],
+            inject: [TenantRegisteredEventHandler, TenantRemovedEventHandler],
         },
     ],
     imports: [

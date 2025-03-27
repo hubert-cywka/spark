@@ -17,7 +17,7 @@ export class GdprSubscriber extends BaseEventSubscriber {
         super(inbox, handlers, new Logger(GdprSubscriber.name));
     }
 
-    @EventPattern([IntegrationEventTopics.account.registration.completed])
+    @EventPattern([IntegrationEventTopics.account.registration.completed, IntegrationEventTopics.account.registration.completed])
     private async onEventReceived(
         @Payload(new HydratePipe(IntegrationEvent)) event: IntegrationEvent,
         @Ctx() context: NatsJetStreamContext

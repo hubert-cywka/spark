@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { InjectTransactionHost, Transactional, TransactionHost } from "@nestjs-cls/transactional";
+import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import { Repository } from "typeorm";
 
@@ -19,7 +19,6 @@ export class TenantService implements ITenantService {
         private readonly tenantMapper: ITenantMapper
     ) {}
 
-    @Transactional(GDPR_MODULE_DATA_SOURCE)
     public async create(id: string): Promise<Tenant> {
         return await this.txHost.withTransaction(async () => {
             const repository = this.getRepository();
@@ -32,6 +31,11 @@ export class TenantService implements ITenantService {
             const result = await repository.save({ id });
             return this.tenantMapper.fromEntityToModel(result);
         });
+    }
+
+    public async remove(id: string): Promise<void> {
+        const repository = this.getRepository();
+        await repository.delete({ id });
     }
 
     private getRepository(): Repository<TenantEntity> {
