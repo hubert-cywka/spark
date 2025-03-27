@@ -86,6 +86,11 @@ export class FederatedAccountService implements IFederatedAccountService {
         return this.accountMapper.fromEntityToModel(account);
     }
 
+    public async remove(id: string): Promise<void> {
+        const repository = this.getRepository();
+        await repository.delete({ id });
+    }
+
     private getRepository(): Repository<FederatedAccountEntity> {
         return this.txHost.tx.getRepository(FederatedAccountEntity);
     }

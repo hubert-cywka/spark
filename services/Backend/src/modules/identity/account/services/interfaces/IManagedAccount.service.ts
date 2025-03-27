@@ -11,4 +11,6 @@ export interface IManagedAccountService {
 
     requestPasswordChange(email: string): Promise<void>;
     updatePassword(passwordChangeToken: string, password: string): Promise<void>;
+
+    remove(id: string): Promise<void>;
 }

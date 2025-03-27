@@ -10,6 +10,7 @@ import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccou
 import { FederatedAccountEntity } from "@/modules/identity/account/entities/FederatedAccountEntity";
 import { ManagedAccountEntity } from "@/modules/identity/account/entities/ManagedAccountEntity";
 import { SingleUseTokenEntity } from "@/modules/identity/account/entities/SingleUseTokenEntity";
+import { AccountRemovedEventHandler } from "@/modules/identity/account/events/AccountRemovedEvent.handler";
 import { AuthenticationModule } from "@/modules/identity/authentication/Authentication.module";
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
 import { AccountPasswordUpdatedEventHandler } from "@/modules/identity/authentication/events/AccountPasswordUpdatedEvent.handler";
@@ -23,7 +24,7 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
-            inject: [AccountPasswordUpdatedEventHandler],
+            inject: [AccountPasswordUpdatedEventHandler, AccountRemovedEventHandler],
         },
     ],
     imports: [

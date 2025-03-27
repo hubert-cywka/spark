@@ -159,6 +159,11 @@ export class ManagedAccountService implements IManagedAccountService {
         await this.publisher.onAccountActivationTokenRequested(account.id, email, activationToken);
     }
 
+    public async remove(id: string): Promise<void> {
+        const repository = this.getRepository();
+        await repository.delete({ id });
+    }
+
     private async findOne(providerAccountId: string): Promise<ManagedAccountEntity> {
         const account = await this.getRepository().findOne({
             where: {
