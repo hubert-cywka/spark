@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { InjectTransactionHost, Transactional, TransactionHost } from "@nestjs-cls/transactional";
+import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import { Repository } from "typeorm";
 
@@ -19,7 +19,6 @@ export class RecipientService implements IRecipientService {
         private readonly recipientMapper: IRecipientMapper
     ) {}
 
-    @Transactional(ALERTS_MODULE_DATA_SOURCE)
     public async create(id: string, email: string): Promise<Recipient> {
         return await this.txHost.withTransaction(async () => {
             const repository = this.getRepository();
@@ -32,6 +31,11 @@ export class RecipientService implements IRecipientService {
             const result = await repository.save({ id, email });
             return this.recipientMapper.fromEntityToModel(result);
         });
+    }
+
+    public async remove(id: string): Promise<void> {
+        const repository = this.getRepository();
+        await repository.delete({ id });
     }
 
     private getRepository(): Repository<RecipientEntity> {

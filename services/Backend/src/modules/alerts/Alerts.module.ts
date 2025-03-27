@@ -10,6 +10,7 @@ import { AlertsController } from "@/modules/alerts/controllers/Alerts.controller
 import { AlertEntity } from "@/modules/alerts/entities/Alert.entity";
 import { RecipientEntity } from "@/modules/alerts/entities/Recipient.entity";
 import { RecipientRegisteredEventHandler } from "@/modules/alerts/events/RecipientRegisteredEvent.handler";
+import { RecipientRemovedEventHandler } from "@/modules/alerts/events/RecipientRemovedEvent.handler";
 import { ALERTS_MODULE_DATA_SOURCE } from "@/modules/alerts/infrastructure/database/constants";
 import { InitializeInboxAndOutbox1737489799641 } from "@/modules/alerts/infrastructure/database/migrations/1737489799641-InitializeInboxAndOutbox";
 import { InitializeAlertsDatabase1737493814968 } from "@/modules/alerts/infrastructure/database/migrations/1737493814968-InitializeAlertsDatabase";
@@ -54,10 +55,11 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
             useClass: AlertPublisherService,
         },
         RecipientRegisteredEventHandler,
+        RecipientRemovedEventHandler,
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
-            inject: [RecipientRegisteredEventHandler],
+            inject: [RecipientRegisteredEventHandler, RecipientRemovedEventHandler],
         },
     ],
     imports: [

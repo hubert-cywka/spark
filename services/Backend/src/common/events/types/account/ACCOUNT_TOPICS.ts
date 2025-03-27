@@ -11,4 +11,8 @@ export const ACCOUNT_TOPICS = {
         resetRequested: "account.password_reset_requested",
         updated: "account.password_updated",
     },
+    removal: {
+        requested: "account.removal_requested",
+        completed: "account.removal_completed",
+    },
 };
