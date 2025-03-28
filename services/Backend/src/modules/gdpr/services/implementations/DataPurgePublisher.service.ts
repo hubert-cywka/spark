@@ -6,16 +6,16 @@ import {
     AccountRemovalCompletedEvent,
     AccountRemovalCompletedEventPayload,
 } from "@/common/events/types/account/AccountRemovalCompletedEvent";
-import { type ITenantPublisherService } from "@/modules/gdpr/services/interfaces/ITenantPublisher.service";
+import { type IDataPurgePublisherService } from "@/modules/gdpr/services/interfaces/IDataPurgePublisher.service";
 
 @Injectable()
-export class TenantPublisherService implements ITenantPublisherService {
+export class DataPurgePublisherService implements IDataPurgePublisherService {
     public constructor(
         @Inject(EventOutboxToken)
         private readonly outbox: IEventOutbox
     ) {}
 
-    public async onDataPurged(tenantId: string, payload: AccountRemovalCompletedEventPayload): Promise<void> {
+    public async onPurgePlanProcessed(tenantId: string, payload: AccountRemovalCompletedEventPayload): Promise<void> {
         await this.outbox.enqueue(new AccountRemovalCompletedEvent(tenantId, payload));
     }
 }

@@ -8,7 +8,10 @@ import { IsNull, Repository } from "typeorm";
 import { DataPurgePlanEntity } from "@/modules/gdpr/entities/DataPurgePlan.entity";
 import { GDPR_MODULE_DATA_SOURCE } from "@/modules/gdpr/infrastructure/database/constants";
 import { type IDataPurgeService } from "@/modules/gdpr/services/interfaces/IDataPurge.service";
-import { type ITenantPublisherService, TenantPublisherServiceToken } from "@/modules/gdpr/services/interfaces/ITenantPublisher.service";
+import {
+    type IDataPurgePublisherService,
+    DataPurgePublisherServiceToken,
+} from "@/modules/gdpr/services/interfaces/IDataPurgePublisher.service";
 
 const PURGE_PROCESSING_INTERVAL = 1000 * 60 * 60;
 const DATA_RETENTION_PERIOD = 1000 * 60 * 60 * 24 * 7;
@@ -20,8 +23,8 @@ export class DataPurgeService implements IDataPurgeService {
     public constructor(
         @InjectTransactionHost(GDPR_MODULE_DATA_SOURCE)
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
-        @Inject(TenantPublisherServiceToken)
-        private readonly tenantPublisher: ITenantPublisherService
+        @Inject(DataPurgePublisherServiceToken)
+        private readonly publisher: IDataPurgePublisherService
     ) {}
 
     @Transactional(GDPR_MODULE_DATA_SOURCE)
@@ -66,7 +69,7 @@ export class DataPurgeService implements IDataPurgeService {
             const repository = this.getRepository();
             await repository.save({ ...plan, processedAt: now });
 
-            await this.tenantPublisher.onDataPurged(plan.tenantId, {
+            await this.publisher.onPurgePlanProcessed(plan.tenantId, {
                 account: { id: plan.tenantId },
             });
             this.logger.log({ planId: plan.id, scheduledAt: plan.scheduledAt }, "Purge plan processed.");

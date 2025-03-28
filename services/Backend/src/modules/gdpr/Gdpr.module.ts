@@ -20,12 +20,12 @@ import { DeleteOnCascade1743158769846 } from "@/modules/gdpr/infrastructure/data
 import { TenantMapperToken } from "@/modules/gdpr/mappers/ITenant.mapper";
 import { TenantMapper } from "@/modules/gdpr/mappers/Tenant.mapper";
 import { DataPurgeService } from "@/modules/gdpr/services/implementations/DataPurge.service";
+import { DataPurgePublisherService } from "@/modules/gdpr/services/implementations/DataPurgePublisher.service";
 import { GdprEventBoxFactory } from "@/modules/gdpr/services/implementations/GdprEventBox.factory";
 import { TenantService } from "@/modules/gdpr/services/implementations/Tenant.service";
-import { TenantPublisherService } from "@/modules/gdpr/services/implementations/TenantPublisher.service";
 import { DataPurgeServiceToken } from "@/modules/gdpr/services/interfaces/IDataPurge.service";
+import { DataPurgePublisherServiceToken } from "@/modules/gdpr/services/interfaces/IDataPurgePublisher.service";
 import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.service";
-import { TenantPublisherServiceToken } from "@/modules/gdpr/services/interfaces/ITenantPublisher.service";
 
 @Module({
     providers: [
@@ -42,8 +42,8 @@ import { TenantPublisherServiceToken } from "@/modules/gdpr/services/interfaces/
             useClass: DataPurgeService,
         },
         {
-            provide: TenantPublisherServiceToken,
-            useClass: TenantPublisherService,
+            provide: DataPurgePublisherServiceToken,
+            useClass: DataPurgePublisherService,
         },
         TenantRegisteredEventHandler,
         TenantRemovedEventHandler,

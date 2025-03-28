@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
+import { InjectTransactionHost, Transactional, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import { Repository } from "typeorm";
 
@@ -68,6 +68,7 @@ export class UsersService implements IUsersService {
         return this.userMapper.fromEntityToModel(activatedUser);
     }
 
+    @Transactional(USERS_MODULE_DATA_SOURCE)
     public async remove(id: string): Promise<void> {
         const repository = this.getRepository();
         const user = await repository.findOne({ where: { id } });
