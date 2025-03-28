@@ -1,33 +1,31 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 import styles from "./styles/OpenIDConnectFlowHandler.module.scss";
 
-import { AppRoute } from "@/app/appRoute";
 import { Overlay } from "@/components/Overlay";
 import { Spinner } from "@/components/Spinner";
+import { useHandleOIDCError } from "@/features/auth/components/OpenIDConnectFlowHandler/hooks/useHandleOIDCError.ts";
 import { useAuthSession, useGetAuthSessionFromQueryParams, useLoginEvents } from "@/features/auth/hooks";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 export const OpenIDConnectFlowHandler = () => {
     const t = useTranslate();
-    const router = useRouter();
 
     const { onLoginSuccess } = useLoginEvents();
     const storeSession = useAuthSession((state) => state.storeSession);
     const session = useGetAuthSessionFromQueryParams();
+    const { hasOIDCFailed, onOIDCError } = useHandleOIDCError();
 
     useEffect(() => {
         if (session) {
             storeSession(session);
             onLoginSuccess();
-        } else {
-            // TODO: Do we need to add something else here?
-            router.push(AppRoute.LOGIN);
+        } else if (hasOIDCFailed) {
+            onOIDCError();
         }
-    }, [onLoginSuccess, router, session, storeSession]);
+    }, [hasOIDCFailed, onLoginSuccess, onOIDCError, session, storeSession]);
 
     return (
         <Overlay>
