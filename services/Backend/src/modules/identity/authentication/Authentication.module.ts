@@ -13,11 +13,14 @@ import { AuthenticationService } from "@/modules/identity/authentication/service
 import { AuthPublisherService } from "@/modules/identity/authentication/services/implementations/AuthPublisher.service";
 import { OIDCProviderFactory } from "@/modules/identity/authentication/services/implementations/OIDCProvider.factory";
 import { RefreshTokenService } from "@/modules/identity/authentication/services/implementations/RefreshToken.service";
+import { SudoModeService } from "@/modules/identity/authentication/services/implementations/SudoMode.service";
 import { AuthenticationServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
 import { AuthPublisherServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthPublisher.service";
 import { OIDCProviderFactoryToken } from "@/modules/identity/authentication/services/interfaces/IOIDCProvider.factory";
 import { RefreshTokenServiceToken } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
+import { SudoModeServiceToken } from "@/modules/identity/authentication/services/interfaces/ISudoMode.service";
 import { AccessTokenStrategy } from "@/modules/identity/authentication/strategies/passport/AccessToken.strategy";
+import { SudoModeStrategy } from "@/modules/identity/authentication/strategies/passport/SudoMode.strategy";
 import { RefreshTokenCookieStrategyToken } from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
 import { SecureRefreshTokenCookieStrategy } from "@/modules/identity/authentication/strategies/refreshToken/SecureRefreshTokenCookie.strategy";
 import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.module";
@@ -25,6 +28,10 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
 @Module({
     imports: [IdentitySharedModule, PassportModule, JwtModule, AccountModule],
     providers: [
+        {
+            provide: SudoModeServiceToken,
+            useClass: SudoModeService,
+        },
         {
             provide: AuthenticationMapperToken,
             useClass: AuthenticationMapper,
@@ -50,10 +57,11 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
             useClass: SecureRefreshTokenCookieStrategy,
         },
         AccessTokenStrategy,
+        SudoModeStrategy,
         AccountPasswordUpdatedEventHandler,
         AccountSuspendedEventHandler,
     ],
     controllers: [AuthenticationController, OpenIDConnectController],
-    exports: [AccessTokenStrategy, AccountPasswordUpdatedEventHandler, AccountSuspendedEventHandler],
+    exports: [AccessTokenStrategy, SudoModeStrategy, AccountPasswordUpdatedEventHandler, AccountSuspendedEventHandler],
 })
 export class AuthenticationModule {}

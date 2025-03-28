@@ -1,4 +1,4 @@
-import { IsEmail, IsString } from "class-validator";
+import { IsBoolean, IsEmail, IsString } from "class-validator";
 
 import { FederatedAccountProvider, ManagedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
 
@@ -14,4 +14,7 @@ export class Account {
 
     @IsEmail()
     email!: string;
+
+    @IsBoolean()
+    sudoMode!: boolean;
 }

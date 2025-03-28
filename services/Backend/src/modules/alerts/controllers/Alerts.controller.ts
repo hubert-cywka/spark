@@ -19,14 +19,14 @@ export class AlertsController {
     ) {}
 
     @Get()
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async getAlerts(@AuthenticatedUserContext() user: User) {
         const result = await this.alertService.getAll(user.id);
         return this.alertMapper.fromModelToDtoBulk(result);
     }
 
     @Post()
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async createAlert(@Body() createAlertDto: CreateAlertDto, @AuthenticatedUserContext() user: User) {
         const { time, daysOfWeek } = createAlertDto;
         const result = await this.alertService.create(user.id, time, daysOfWeek);
@@ -34,7 +34,7 @@ export class AlertsController {
     }
 
     @Delete(":alertId")
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async deleteAlert(@Param("alertId", new ParseUUIDPipe()) alertId: string, @AuthenticatedUserContext() user: User) {
         try {
             return await this.alertService.delete(user.id, alertId);
@@ -44,7 +44,7 @@ export class AlertsController {
     }
 
     @Post(":alertId/restore")
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async restoreAlert(@Param("alertId", new ParseUUIDPipe()) alertId: string, @AuthenticatedUserContext() user: User) {
         try {
             return await this.alertService.restore(user.id, alertId);
@@ -54,7 +54,7 @@ export class AlertsController {
     }
 
     @Patch(":alertId/status")
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async changeAlertStatus(
         @Param("alertId", new ParseUUIDPipe()) alertId: string,
         @Body() updateAlertStatusDto: UpdateAlertStatusDto,
@@ -71,7 +71,7 @@ export class AlertsController {
     }
 
     @Patch(":alertId/time")
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async changeAlertTime(
         @Param("alertId", new ParseUUIDPipe()) alertId: string,
         @Body() updateAlertTimeDto: UpdateAlertTimeDto,

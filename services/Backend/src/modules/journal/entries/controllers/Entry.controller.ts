@@ -27,7 +27,7 @@ export class EntryController {
     ) {}
 
     @Get()
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async getEntries(
         @Query() filters: FindEntriesFiltersDto,
         @Query() pageOptions: PageOptionsDto,
@@ -38,7 +38,7 @@ export class EntryController {
     }
 
     @Get("insights/metrics")
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async getEntriesMetrics(@Query() filters: FindEntriesInsightsDto, @AuthenticatedUserContext() user: User) {
         const result = await this.insightsService.findMetricsByDateRange(user.id, filters.from, filters.to);
         return plainToClass(EntriesMetricsDto, {
@@ -48,7 +48,7 @@ export class EntryController {
     }
 
     @Get("insights/logging-histogram")
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async getEntryLoggingHistogram(
         @Query() filters: FindEntriesInsightsDto,
         @AuthenticatedUserContext() user: User,

@@ -42,7 +42,7 @@ export class AuthenticationController {
         private readonly authenticationMapper: IAuthenticationMapper,
         @Inject(RefreshTokenCookieStrategyToken)
         private readonly refreshTokenCookieStrategy: IRefreshTokenCookieStrategy,
-        private readonly configService: ConfigService
+        configService: ConfigService
     ) {
         this.refreshTokenCookieMaxAge = configService.getOrThrow<number>("modules.identity.refreshToken.expirationTimeInSeconds") * 1000;
     }
@@ -61,7 +61,7 @@ export class AuthenticationController {
     @Post("login")
     async login(@Body() dto: LoginDto, @Res() response: Response) {
         try {
-            const result = await this.authService.loginWithCredentials(dto);
+            const result = await this.authService.loginWithCredentials(dto.email, dto.password);
 
             const cookieOptions = this.refreshTokenCookieStrategy.getCookieOptions(this.refreshTokenCookieMaxAge);
             response.cookie(REFRESH_TOKEN_COOKIE_NAME, result.refreshToken, cookieOptions);

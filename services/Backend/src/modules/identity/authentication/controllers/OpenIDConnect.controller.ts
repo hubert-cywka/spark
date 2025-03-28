@@ -62,7 +62,7 @@ export class OpenIDConnectController {
         private readonly refreshTokenCookieStrategy: IRefreshTokenCookieStrategy,
         @Inject(AuthenticationServiceToken)
         private readonly authService: IAuthenticationService,
-        private readonly configService: ConfigService
+        configService: ConfigService
     ) {
         const oidcLoginPage = configService.getOrThrow<string>("client.url.oidcLoginPage");
         const oidcRegisterPage = configService.getOrThrow<string>("client.url.oidcRegisterPage");
@@ -85,6 +85,7 @@ export class OpenIDConnectController {
 
         response.cookie(OIDC_CODE_VERIFIER_COOKIE_NAME, codeVerifier, this.getOIDCCookieOptions());
         response.cookie(OIDC_STATE_COOKIE_NAME, state, this.getOIDCCookieOptions());
+
         return response.send(this.authenticationMapper.toOIDCRedirectDTO(url));
     }
 

@@ -13,7 +13,6 @@ import {
     ManagedAccountServiceToken,
 } from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
 import { CURRENT_JWT_VERSION } from "@/modules/identity/authentication/constants";
-import { LoginDto } from "@/modules/identity/authentication/dto/incoming/Login.dto";
 import { RegisterWithCredentialsDto } from "@/modules/identity/authentication/dto/incoming/RegisterWithCredentials.dto";
 import { type IAuthenticationService } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
 import {
@@ -35,7 +34,7 @@ export class AuthenticationService implements IAuthenticationService {
     private readonly accessTokenExpirationTimeInSeconds: number;
 
     constructor(
-        private configService: ConfigService,
+        configService: ConfigService,
         private jwtService: JwtService,
         @Inject(ManagedAccountServiceToken)
         private accountService: IManagedAccountService,
@@ -50,7 +49,7 @@ export class AuthenticationService implements IAuthenticationService {
         this.accessTokenExpirationTimeInSeconds = configService.getOrThrow<number>("modules.identity.jwt.expirationTimeInSeconds");
     }
 
-    public async loginWithCredentials({ email, password }: LoginDto): Promise<AuthenticationResult> {
+    public async loginWithCredentials(email: string, password: string): Promise<AuthenticationResult> {
         const account = await this.accountService.findActivatedByCredentials(email, password);
         return await this.createAuthenticationResult(account);
     }
@@ -94,7 +93,10 @@ export class AuthenticationService implements IAuthenticationService {
 
     public async redeemRefreshToken(refreshToken: string): Promise<AuthenticationResult> {
         const { account } = await this.refreshTokenService.redeem(refreshToken);
-        return await this.createAuthenticationResult(account);
+        return await this.createAuthenticationResult({
+            ...account,
+            sudoMode: false,
+        });
     }
 
     public async logout(refreshToken: string): Promise<void> {

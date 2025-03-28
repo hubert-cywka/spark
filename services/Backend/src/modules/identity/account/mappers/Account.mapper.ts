@@ -18,6 +18,7 @@ export class AccountMapper
             providerAccountId: dto.providerAccountId,
             email: dto.email,
             providerId: dto.providerId as ManagedAccountProvider | FederatedAccountProvider,
+            sudoMode: false,
         };
     }
 

@@ -32,7 +32,7 @@ export class GoalController {
     ) {}
 
     @Get()
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async getGoals(
         @Query() filters: FindGoalsFiltersDto,
         @Query() pageOptions: PageOptionsDto,
@@ -43,7 +43,7 @@ export class GoalController {
     }
 
     @Get(":id")
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async getGoalById(@Param("id", new ParseUUIDPipe()) goalId: string, @AuthenticatedUserContext() author: User) {
         try {
             const result = await this.goalService.findOneById(author.id, goalId);
@@ -54,14 +54,14 @@ export class GoalController {
     }
 
     @Post()
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async createGoal(@Body() dto: CreateOrUpdateGoalDto, @AuthenticatedUserContext() author: User) {
         const result = await this.goalService.create(author.id, dto);
         return this.goalMapper.fromModelToDto(result);
     }
 
     @Put(":id")
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async updateGoalsName(
         @Param("id", new ParseUUIDPipe()) goalId: string,
         @Body() dto: CreateOrUpdateGoalDto,
@@ -76,7 +76,7 @@ export class GoalController {
     }
 
     @Delete(":id")
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async deleteGoal(@Param("id", new ParseUUIDPipe()) goalId: string, @AuthenticatedUserContext() author: User) {
         try {
             await this.goalService.deleteById(author.id, goalId);
@@ -86,7 +86,7 @@ export class GoalController {
     }
 
     @Post(":id/restore")
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async restoreGoal(@Param("id", new ParseUUIDPipe()) goalId: string, @AuthenticatedUserContext() author: User) {
         try {
             await this.goalService.restoreById(author.id, goalId);

@@ -16,7 +16,7 @@ export class GoalEntryLinkController {
     ) {}
 
     @Post()
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async createLink(
         @Param("goalId", new ParseUUIDPipe()) goalId: string,
         @Body() dto: LinkEntryWithGoalDto,
@@ -30,7 +30,7 @@ export class GoalEntryLinkController {
     }
 
     @Delete(":entryId")
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async removeLink(
         @Param("goalId", new ParseUUIDPipe()) goalId: string,
         @Param("entryId", new ParseUUIDPipe()) entryId: string,

@@ -20,7 +20,7 @@ export class DailyEntryController {
     ) {}
 
     @Post()
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async createEntry(@Param("dailyId") dailyId: string, @AuthenticatedUserContext() user: User, @Body() dto: CreateEntryDto) {
         try {
             const result = await this.entryService.create(user.id, dailyId, {
@@ -35,7 +35,7 @@ export class DailyEntryController {
     }
 
     @Patch(":entryId/content")
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async updateEntryContent(
         @Param("entryId") entryId: string,
         @Param("dailyId") dailyId: string,
@@ -51,7 +51,7 @@ export class DailyEntryController {
     }
 
     @Patch(":entryId/completed")
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async updateEntryStatus(
         @Param("entryId") entryId: string,
         @Param("dailyId") dailyId: string,
@@ -67,7 +67,7 @@ export class DailyEntryController {
     }
 
     @Patch(":entryId/featured")
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async updateEntryIsFeatured(
         @Param("entryId") entryId: string,
         @Param("dailyId") dailyId: string,
@@ -83,7 +83,7 @@ export class DailyEntryController {
     }
 
     @Delete(":entryId")
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async removeEntry(@Param("entryId") entryId: string, @Param("dailyId") dailyId: string, @AuthenticatedUserContext() user: User) {
         try {
             await this.entryService.deleteById(user.id, dailyId, entryId);
@@ -93,7 +93,7 @@ export class DailyEntryController {
     }
 
     @Post(":entryId/restore")
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AuthenticationGuard)
     public async restoreEntry(
         @Param("entryId") entryId: string,
         @Param("dailyId") dailyId: string,

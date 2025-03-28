@@ -4,6 +4,7 @@ import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserC
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
 import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
+import { SudoModeGuard } from "@/common/guards/SudoMode.guard";
 import { type IUserMapper, UserMapperToken } from "@/modules/users/mappers/IUser.mapper";
 import { type IUserPublisherService, UserPublisherServiceToken } from "@/modules/users/services/interfaces/IUserPublisher.service";
 import { type IUsersService, UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
@@ -30,7 +31,7 @@ export class UserController {
     }
 
     @Delete("myself")
-    @UseGuards(AuthenticationGuard)
+    @UseGuards(SudoModeGuard)
     public async removeMyData(@AuthenticatedUserContext() user: User) {
         try {
             // TODO: Extract to service method
