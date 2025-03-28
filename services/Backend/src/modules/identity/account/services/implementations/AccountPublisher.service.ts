@@ -7,6 +7,7 @@ import {
     AccountRequestedPasswordResetEvent,
 } from "@/common/events";
 import { type IEventOutbox, EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
+import { AccountSuspendedEvent } from "@/common/events/types/account/AccountSuspendedEvent";
 import { type IAccountPublisherService } from "@/modules/identity/account/services/interfaces/IAccountPublisher.service";
 
 export class AccountPublisherService implements IAccountPublisherService {
@@ -41,6 +42,14 @@ export class AccountPublisherService implements IAccountPublisherService {
         await this.outbox.enqueue(
             new AccountPasswordUpdatedEvent(tenantId, {
                 email,
+                id: tenantId,
+            })
+        );
+    }
+
+    public async onAccountSuspended(tenantId: string) {
+        await this.outbox.enqueue(
+            new AccountSuspendedEvent(tenantId, {
                 id: tenantId,
             })
         );

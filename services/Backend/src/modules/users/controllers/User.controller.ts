@@ -36,7 +36,11 @@ export class UserController {
             // TODO: Extract to service method
             const result = await this.usersService.findOneById(user.id);
             await this.userPublisher.onDataRemovalRequested(result.id, {
-                account: { email: result.email, id: result.id },
+                account: {
+                    email: result.email,
+                    id: result.id,
+                    providerId: user.providerId,
+                },
             });
         } catch (e) {
             whenError(e).is(EntityNotFoundError).throw(new NotFoundException()).elseRethrow();

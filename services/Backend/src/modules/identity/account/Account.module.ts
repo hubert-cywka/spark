@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 
 import { AccountController } from "@/modules/identity/account/controllers/Account.controller";
+import { AccountRemovalRequestedEventHandler } from "@/modules/identity/account/events/AccountRemovalRequestedEvent.handler";
 import { AccountRemovedEventHandler } from "@/modules/identity/account/events/AccountRemovedEvent.handler";
 import { AccountMapper } from "@/modules/identity/account/mappers/Account.mapper";
 import { AccountMapperToken } from "@/modules/identity/account/mappers/IAccount.mapper";
@@ -38,6 +39,7 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
             useClass: AccountPublisherService,
         },
         AccountRemovedEventHandler,
+        AccountRemovalRequestedEventHandler,
     ],
     controllers: [AccountController],
     exports: [
@@ -46,6 +48,7 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
         ManagedAccountServiceToken,
         SingleUseTokenServiceToken,
         AccountRemovedEventHandler,
+        AccountRemovalRequestedEventHandler,
     ],
 })
 export class AccountModule {}

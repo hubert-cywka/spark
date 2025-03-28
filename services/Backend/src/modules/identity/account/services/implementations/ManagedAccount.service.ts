@@ -10,6 +10,7 @@ import { AccountAlreadyActivatedError } from "@/modules/identity/account/errors/
 import { AccountAlreadyExistsError } from "@/modules/identity/account/errors/AccountAlreadyExists.error";
 import { AccountNotActivatedError } from "@/modules/identity/account/errors/AccountNotActivated.error";
 import { AccountNotFoundError } from "@/modules/identity/account/errors/AccountNotFound.error";
+import { AccountSuspendedError } from "@/modules/identity/account/errors/AccountSuspended.error";
 import { type IAccountMapper, AccountMapperToken } from "@/modules/identity/account/mappers/IAccount.mapper";
 import { Account } from "@/modules/identity/account/models/Account.model";
 import {
@@ -65,6 +66,11 @@ export class ManagedAccountService implements IManagedAccountService {
         if (!account.activatedAt) {
             this.logger.warn({ id: account.id }, "Account not activated.");
             throw new AccountNotActivatedError();
+        }
+
+        if (account.suspendedAt) {
+            this.logger.warn({ accountId: account.id, suspendedAt: account.suspendedAt }, "Account is suspended.");
+            throw new AccountSuspendedError();
         }
 
         return this.accountMapper.fromEntityToModel(account);
@@ -160,7 +166,7 @@ export class ManagedAccountService implements IManagedAccountService {
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
-    public async remove(id: string): Promise<void> {
+    public async removeByInternalId(id: string): Promise<void> {
         const repository = this.getRepository();
         const account = await repository.findOne({ where: { id } });
 
@@ -170,6 +176,20 @@ export class ManagedAccountService implements IManagedAccountService {
         }
 
         await repository.remove([account]);
+    }
+
+    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
+    public async suspendByInternalId(id: string): Promise<void> {
+        const repository = this.getRepository();
+        const account = await repository.findOne({ where: { id } });
+
+        if (!account) {
+            this.logger.warn({ accountId: id }, "Couldn't find account.");
+            throw new AccountNotFoundError();
+        }
+
+        await repository.save({ ...account, suspendedAt: new Date() });
+        await this.publisher.onAccountSuspended(id);
     }
 
     private async findOne(providerAccountId: string): Promise<ManagedAccountEntity> {
