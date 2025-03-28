@@ -98,6 +98,12 @@
                     "badRequest": "Account information provided by external provider had expired. Try logging in again.",
                     "unauthorized": "Account information provided by external provider is incomplete. Please try again later or report this issue."
                 }
+            },
+            "login": {
+                "errors": {
+                    "default": "Please try again later.",
+                    "suspended": "Your account is suspended."
+                }
             }
         },
         "authentication": {
@@ -114,7 +120,7 @@
             "login": {
                 "errors": {
                     "unauthorized": "Incorrect credentials.",
-                    "forbidden": "Your account is not activated."
+                    "forbidden": "Your account is not active."
                 }
             },
             "register": {
@@ -588,6 +594,11 @@
                 "label": "OR"
             },
             "login": {
+                "notifications": {
+                    "error": {
+                        "title": "Can't log in"
+                    }
+                },
                 "redirect": {
                     "title": "Authenticated",
                     "info": "You will be redirected soon."

@@ -19,12 +19,13 @@ export class MailSubscriber extends BaseEventSubscriber {
     }
 
     @EventPattern([
+        IntegrationEventTopics.alert.daily.reminder.triggered,
         IntegrationEventTopics.account.activation.requested,
         IntegrationEventTopics.account.password.resetRequested,
         IntegrationEventTopics.account.password.updated,
         IntegrationEventTopics.account.activation.completed,
-        IntegrationEventTopics.alert.daily.reminder.triggered,
         IntegrationEventTopics.account.removal.completed,
+        IntegrationEventTopics.account.removal.requested,
     ])
     private async onEventReceived(
         @Payload(new HydratePipe(IntegrationEvent)) event: IntegrationEvent,

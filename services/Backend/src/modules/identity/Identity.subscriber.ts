@@ -12,7 +12,12 @@ export class IdentitySubscriber extends BaseEventSubscriber {
         super(inbox, handlers, new Logger(IdentitySubscriber.name));
     }
 
-    @EventPattern([IntegrationEventTopics.account.password.updated, IntegrationEventTopics.account.removal.completed])
+    @EventPattern([
+        IntegrationEventTopics.account.password.updated,
+        IntegrationEventTopics.account.removal.completed,
+        IntegrationEventTopics.account.removal.requested,
+        IntegrationEventTopics.account.suspended,
+    ])
     private async onEventReceived(
         @Payload(new HydratePipe(IntegrationEvent)) event: IntegrationEvent,
         @Ctx() context: NatsJetStreamContext

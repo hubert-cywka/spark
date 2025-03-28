@@ -6,6 +6,7 @@ export type AccountRemovalRequestedEventPayload = {
     account: {
         id: string;
         email: string;
+        providerId: string;
     };
 };
 

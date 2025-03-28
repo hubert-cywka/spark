@@ -10,15 +10,18 @@ import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccou
 import { FederatedAccountEntity } from "@/modules/identity/account/entities/FederatedAccountEntity";
 import { ManagedAccountEntity } from "@/modules/identity/account/entities/ManagedAccountEntity";
 import { SingleUseTokenEntity } from "@/modules/identity/account/entities/SingleUseTokenEntity";
+import { AccountRemovalRequestedEventHandler } from "@/modules/identity/account/events/AccountRemovalRequestedEvent.handler";
 import { AccountRemovedEventHandler } from "@/modules/identity/account/events/AccountRemovedEvent.handler";
 import { AuthenticationModule } from "@/modules/identity/authentication/Authentication.module";
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
 import { AccountPasswordUpdatedEventHandler } from "@/modules/identity/authentication/events/AccountPasswordUpdatedEvent.handler";
+import { AccountSuspendedEventHandler } from "@/modules/identity/authentication/events/AccountSuspendedEvent.handler";
 import { IdentitySubscriber } from "@/modules/identity/Identity.subscriber";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 import { InitializeIdentityModule1735737549567 } from "@/modules/identity/infrastructure/database/migrations/1735737549567-InitializeIdentityModule";
 import { AddTenantIdToOutboxAndInbox1743101746907 } from "@/modules/identity/infrastructure/database/migrations/1743101746907-addTenantIdToOutboxAndInbox";
 import { DeleteOnCascade1743158756974 } from "@/modules/identity/infrastructure/database/migrations/1743158756974-deleteOnCascade";
+import { AddOptionToSuspendAccounts1743167408668 } from "@/modules/identity/infrastructure/database/migrations/1743167408668-addOptionToSuspendAccounts";
 import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.module";
 
 @Module({
@@ -26,7 +29,12 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
-            inject: [AccountPasswordUpdatedEventHandler, AccountRemovedEventHandler],
+            inject: [
+                AccountPasswordUpdatedEventHandler,
+                AccountRemovedEventHandler,
+                AccountSuspendedEventHandler,
+                AccountRemovalRequestedEventHandler,
+            ],
         },
     ],
     imports: [
@@ -52,6 +60,7 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
                         InitializeIdentityModule1735737549567,
                         AddTenantIdToOutboxAndInbox1743101746907,
                         DeleteOnCascade1743158756974,
+                        AddOptionToSuspendAccounts1743167408668,
                     ],
                 }),
                 inject: [ConfigService],

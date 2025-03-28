@@ -6,6 +6,7 @@ import { AccountModule } from "@/modules/identity/account/Account.module";
 import { AuthenticationController } from "@/modules/identity/authentication/controllers/Authentication.controller";
 import { OpenIDConnectController } from "@/modules/identity/authentication/controllers/OpenIDConnect.controller";
 import { AccountPasswordUpdatedEventHandler } from "@/modules/identity/authentication/events/AccountPasswordUpdatedEvent.handler";
+import { AccountSuspendedEventHandler } from "@/modules/identity/authentication/events/AccountSuspendedEvent.handler";
 import { AuthenticationMapper } from "@/modules/identity/authentication/mappers/Authentication.mapper";
 import { AuthenticationMapperToken } from "@/modules/identity/authentication/mappers/IAuthentication.mapper";
 import { AuthenticationService } from "@/modules/identity/authentication/services/implementations/Authentication.service";
@@ -50,8 +51,9 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
         },
         AccessTokenStrategy,
         AccountPasswordUpdatedEventHandler,
+        AccountSuspendedEventHandler,
     ],
     controllers: [AuthenticationController, OpenIDConnectController],
-    exports: [AccessTokenStrategy, AccountPasswordUpdatedEventHandler],
+    exports: [AccessTokenStrategy, AccountPasswordUpdatedEventHandler, AccountSuspendedEventHandler],
 })
 export class AuthenticationModule {}

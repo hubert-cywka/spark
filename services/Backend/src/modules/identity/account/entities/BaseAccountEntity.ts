@@ -39,6 +39,9 @@ export class BaseAccountEntity {
     @UpdateDateColumn({ type: "timestamptz" })
     updatedAt!: Date;
 
+    @Column({ type: "timestamptz", nullable: true })
+    suspendedAt!: Date | null;
+
     @OneToMany((type) => RefreshTokenEntity, (token) => token.owner)
     refreshTokens!: Relation<RefreshTokenEntity>[];
 

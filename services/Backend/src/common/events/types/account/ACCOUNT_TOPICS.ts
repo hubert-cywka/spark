@@ -1,5 +1,6 @@
 export const ACCOUNT_TOPICS = {
     all: "account.*",
+    suspended: "account.suspended",
     activation: {
         completed: "account.activation_completed",
         requested: "account.activation_requested",

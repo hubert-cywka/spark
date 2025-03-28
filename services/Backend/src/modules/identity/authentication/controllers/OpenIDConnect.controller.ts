@@ -21,6 +21,7 @@ import { type CookieOptions, type Response } from "express";
 import { Cookie } from "@/common/decorators/Cookie.decorator";
 import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
+import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
 import {
     OIDC_CODE_VERIFIER_COOKIE_NAME,
@@ -128,7 +129,11 @@ export class OpenIDConnectController {
                 return response.redirect(this.clientOIDCRegisterPageUrl);
             }
 
-            loginRedirectUrl.searchParams.set("error", "1"); // TODO: OIDC Notify user about this error
+            if (err instanceof ForbiddenError && !!externalIdentity) {
+                loginRedirectUrl.searchParams.set("error", "ACCOUNT_SUSPENDED");
+            } else {
+                loginRedirectUrl.searchParams.set("error", "UNKNOWN");
+            }
         }
 
         return response.redirect(loginRedirectUrl.toString());

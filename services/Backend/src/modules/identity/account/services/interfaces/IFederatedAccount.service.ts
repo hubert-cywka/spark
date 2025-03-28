@@ -6,5 +6,6 @@ export const FederatedAccountServiceToken = Symbol("IFederatedAccountService");
 export interface IFederatedAccountService {
     findByExternalIdentity(identity: ExternalIdentity): Promise<Account>;
     createAccountWithExternalIdentity(identity: ExternalIdentity): Promise<Account>;
-    remove(id: string): Promise<void>;
+    removeByInternalId(id: string): Promise<void>;
+    suspendByInternalId(id: string): Promise<void>;
 }

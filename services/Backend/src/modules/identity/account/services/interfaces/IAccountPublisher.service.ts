@@ -5,4 +5,5 @@ export interface IAccountPublisherService {
     onAccountActivationTokenRequested(tenantId: string, email: string, activationToken: string): Promise<void>;
     onPasswordResetRequested(tenantId: string, email: string, passwordResetToken: string): Promise<void>;
     onPasswordUpdated(tenantId: string, email: string): Promise<void>;
+    onAccountSuspended(tenantId: string): Promise<void>;
 }
