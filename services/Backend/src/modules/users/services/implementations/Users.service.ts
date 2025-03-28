@@ -70,7 +70,14 @@ export class UsersService implements IUsersService {
 
     public async remove(id: string): Promise<void> {
         const repository = this.getRepository();
-        await repository.delete({ id });
+        const user = await repository.findOne({ where: { id } });
+
+        if (!user) {
+            this.logger.warn({ userId: id }, "Couldn't find user.");
+            throw new UserNotFoundError();
+        }
+
+        await repository.remove([user]);
     }
 
     private getRepository(): Repository<UserEntity> {

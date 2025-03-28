@@ -6,5 +6,5 @@ export interface IEventOutbox {
     enqueue(event: IntegrationEvent): Promise<void>;
     process(): Promise<void>;
     clearProcessedEvents(processedBefore: Date): Promise<void>;
-    removeEvents(tenantId: string): Promise<void>;
+    clearTenantEvents(tenantId: string): Promise<void>;
 }

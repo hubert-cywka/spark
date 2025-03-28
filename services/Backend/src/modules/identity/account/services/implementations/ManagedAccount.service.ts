@@ -161,7 +161,14 @@ export class ManagedAccountService implements IManagedAccountService {
 
     public async remove(id: string): Promise<void> {
         const repository = this.getRepository();
-        await repository.delete({ id });
+        const account = await repository.findOne({ where: { id } });
+
+        if (!account) {
+            this.logger.warn({ accountId: id }, "Couldn't find account.");
+            throw new AccountNotFoundError();
+        }
+
+        await repository.remove([account]);
     }
 
     private async findOne(providerAccountId: string): Promise<ManagedAccountEntity> {

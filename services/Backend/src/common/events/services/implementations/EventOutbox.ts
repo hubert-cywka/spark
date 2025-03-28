@@ -84,7 +84,7 @@ export class EventOutbox implements IEventOutbox {
         }
     }
 
-    public async removeEvents(tenantId: string): Promise<void> {
+    public async clearTenantEvents(tenantId: string): Promise<void> {
         await this.txHost.withTransaction(async () => {
             const repository = this.getRepository();
             const result = await repository.delete({ tenantId });

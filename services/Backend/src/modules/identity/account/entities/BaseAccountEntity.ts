@@ -39,13 +39,9 @@ export class BaseAccountEntity {
     @UpdateDateColumn({ type: "timestamptz" })
     updatedAt!: Date;
 
-    @OneToMany((type) => RefreshTokenEntity, (token) => token.owner, {
-        onDelete: "CASCADE",
-    })
+    @OneToMany((type) => RefreshTokenEntity, (token) => token.owner)
     refreshTokens!: Relation<RefreshTokenEntity>[];
 
-    @OneToMany((type) => SingleUseTokenEntity, (token) => token.owner, {
-        onDelete: "CASCADE",
-    })
+    @OneToMany((type) => SingleUseTokenEntity, (token) => token.owner)
     singleUseTokens!: Relation<SingleUseTokenEntity>[];
 }

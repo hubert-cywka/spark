@@ -15,8 +15,10 @@ import { InitializeUsersModule1735737579670 } from "@/modules/users/infrastructu
 import { AddTenantIdToOutboxAndInbox1743101796654 } from "@/modules/users/infrastructure/database/migrations/1743101796654-addTenantIdToOutboxAndInbox";
 import { UserMapperToken } from "@/modules/users/mappers/IUser.mapper";
 import { UserMapper } from "@/modules/users/mappers/User.mapper";
+import { UserPublisherService } from "@/modules/users/services/implementations/UserPublisher.service";
 import { UsersService } from "@/modules/users/services/implementations/Users.service";
 import { UsersEventBoxFactory } from "@/modules/users/services/implementations/UsersEventBox.factory";
+import { UserPublisherServiceToken } from "@/modules/users/services/interfaces/IUserPublisher.service";
 import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
 import { UsersSubscriber } from "@/modules/users/Users.subscriber";
 
@@ -24,6 +26,7 @@ import { UsersSubscriber } from "@/modules/users/Users.subscriber";
     providers: [
         { provide: UserMapperToken, useClass: UserMapper },
         { provide: UsersServiceToken, useClass: UsersService },
+        { provide: UserPublisherServiceToken, useClass: UserPublisherService },
         UserActivatedEventHandler,
         UserRegisteredEventHandler,
         UserRemovedEventHandler,

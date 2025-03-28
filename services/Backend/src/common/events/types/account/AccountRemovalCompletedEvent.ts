@@ -5,7 +5,6 @@ import { IntegrationEventTopics } from "@/common/events";
 export type AccountRemovalCompletedEventPayload = {
     account: {
         id: string;
-        email: string;
     };
 };
 

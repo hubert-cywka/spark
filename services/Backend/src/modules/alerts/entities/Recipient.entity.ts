@@ -10,8 +10,6 @@ export class RecipientEntity {
     @Column({ type: "varchar" })
     email!: string;
 
-    @OneToMany(() => AlertEntity, (alert) => alert.recipient, {
-        onDelete: "CASCADE",
-    })
+    @OneToMany(() => AlertEntity, (alert) => alert.recipient)
     alerts!: Relation<AlertEntity[]>;
 }

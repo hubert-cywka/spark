@@ -20,6 +20,8 @@ export class RefreshTokenEntity {
     @Column({ type: "timestamptz", nullable: true })
     invalidatedAt!: Date | null;
 
-    @ManyToOne((type) => BaseAccountEntity, (user) => user.refreshTokens)
+    @ManyToOne((type) => BaseAccountEntity, (user) => user.refreshTokens, {
+        onDelete: "CASCADE",
+    })
     owner!: Relation<BaseAccountEntity>;
 }

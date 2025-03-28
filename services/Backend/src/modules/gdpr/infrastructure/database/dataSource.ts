@@ -4,6 +4,7 @@ import { DataSource } from "typeorm";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { AppConfig } from "@/config/configuration";
+import { DataPurgePlanEntity } from "@/modules/gdpr/entities/DataPurgePlan.entity";
 import { TenantEntity } from "@/modules/gdpr/entities/Tenant.entity";
 
 configDotenv();
@@ -20,6 +21,6 @@ export const dataSource = new DataSource({
     synchronize: false,
     dropSchema: false,
     migrationsRun: false,
-    entities: [OutboxEventEntity, InboxEventEntity, TenantEntity],
+    entities: [OutboxEventEntity, InboxEventEntity, TenantEntity, DataPurgePlanEntity],
     migrations: [],
 });

@@ -88,7 +88,14 @@ export class FederatedAccountService implements IFederatedAccountService {
 
     public async remove(id: string): Promise<void> {
         const repository = this.getRepository();
-        await repository.delete({ id });
+        const account = await repository.findOne({ where: { id } });
+
+        if (!account) {
+            this.logger.warn({ accountId: id }, "Couldn't find account.");
+            throw new AccountNotFoundError();
+        }
+
+        await repository.remove([account]);
     }
 
     private getRepository(): Repository<FederatedAccountEntity> {

@@ -20,6 +20,7 @@ import { CleanUpAlertsModule1737573565566 } from "@/modules/alerts/infrastructur
 import { FixDaysOfWeekColumnType1737574459955 } from "@/modules/alerts/infrastructure/database/migrations/1737574459955-FixDaysOfWeekColumnType";
 import { SwitchFromLastTriggeredAtToNextTriggerAt1738948797659 } from "@/modules/alerts/infrastructure/database/migrations/1738948797659-SwitchFromLastTriggeredAtToNextTriggerAt";
 import { AddTenantIdToOutboxAndInbox1743101730316 } from "@/modules/alerts/infrastructure/database/migrations/1743101730316-addTenantIdToOutboxAndInbox";
+import { DeleteAlertsOnCascade1743158723835 } from "@/modules/alerts/infrastructure/database/migrations/1743158723835-deleteAlertsOnCascade";
 import { AlertMapper } from "@/modules/alerts/mappers/Alert.mapper";
 import { AlertMapperToken } from "@/modules/alerts/mappers/IAlert.mapper";
 import { RecipientMapperToken } from "@/modules/alerts/mappers/IRecipient.mapper";
@@ -79,6 +80,7 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
                     FixDaysOfWeekColumnType1737574459955,
                     SwitchFromLastTriggeredAtToNextTriggerAt1738948797659,
                     AddTenantIdToOutboxAndInbox1743101730316,
+                    DeleteAlertsOnCascade1743158723835,
                 ],
             }),
             inject: [ConfigService],

@@ -29,6 +29,9 @@ import { AddIsCompletedFlagToEntries1737048686159 } from "@/modules/journal/infr
 import { RenameJoinTableForGoalAndEntries1737103643312 } from "@/modules/journal/infrastructure/database/migrations/1737103643312-RenameJoinTableForGoalAndEntries";
 import { AddIsFeaturedFlagToEntries1740304775599 } from "@/modules/journal/infrastructure/database/migrations/1740304775599-AddIsFeaturedFlagToEntries";
 import { AddTenantIdToOutboxAndInbox1743101763604 } from "@/modules/journal/infrastructure/database/migrations/1743101763604-addTenantIdToOutboxAndInbox";
+import { DeleteOnCascade1743158742983 } from "@/modules/journal/infrastructure/database/migrations/1743158742983-deleteOnCascade";
+import { DeleteGoalsOnCascade1743159095911 } from "@/modules/journal/infrastructure/database/migrations/1743159095911-deleteGoalsOnCascade";
+import { DeleteOnCascadeFix1743159586254 } from "@/modules/journal/infrastructure/database/migrations/1743159586254-deleteOnCascadeFix";
 import { JournalSubscriber } from "@/modules/journal/Journal.subscriber";
 import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.module";
 
@@ -65,6 +68,9 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
                         RenameJoinTableForGoalAndEntries1737103643312,
                         AddIsFeaturedFlagToEntries1740304775599,
                         AddTenantIdToOutboxAndInbox1743101763604,
+                        DeleteOnCascade1743158742983,
+                        DeleteGoalsOnCascade1743159095911,
+                        DeleteOnCascadeFix1743159586254,
                     ],
                 }),
                 inject: [ConfigService],

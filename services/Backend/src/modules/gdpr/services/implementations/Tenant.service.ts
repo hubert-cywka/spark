@@ -1,10 +1,11 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import { Repository } from "typeorm";
 
 import { TenantEntity } from "@/modules/gdpr/entities/Tenant.entity";
 import { TenantAlreadyExistsError } from "@/modules/gdpr/errors/TenantAlreadyExists.error";
+import { TenantNotFoundError } from "@/modules/gdpr/errors/TenantNotFound.error";
 import { GDPR_MODULE_DATA_SOURCE } from "@/modules/gdpr/infrastructure/database/constants";
 import { type ITenantMapper, TenantMapperToken } from "@/modules/gdpr/mappers/ITenant.mapper";
 import { type Tenant } from "@/modules/gdpr/models/Tenant.model";
@@ -12,6 +13,8 @@ import { type ITenantService } from "@/modules/gdpr/services/interfaces/ITenant.
 
 @Injectable()
 export class TenantService implements ITenantService {
+    private readonly logger = new Logger(TenantService.name);
+
     public constructor(
         @InjectTransactionHost(GDPR_MODULE_DATA_SOURCE)
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
@@ -35,7 +38,14 @@ export class TenantService implements ITenantService {
 
     public async remove(id: string): Promise<void> {
         const repository = this.getRepository();
-        await repository.delete({ id });
+        const tenant = await repository.findOne({ where: { id } });
+
+        if (!tenant) {
+            this.logger.warn({ tenantId: id }, "Couldn't find tenant.");
+            throw new TenantNotFoundError();
+        }
+
+        await repository.remove([tenant]);
     }
 
     private getRepository(): Repository<TenantEntity> {

@@ -1,10 +1,11 @@
-import { Controller, Get, Inject, NotFoundException, UseGuards } from "@nestjs/common";
+import { Controller, Delete, Get, Inject, NotFoundException, UseGuards } from "@nestjs/common";
 
 import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
 import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
 import { type IUserMapper, UserMapperToken } from "@/modules/users/mappers/IUser.mapper";
+import { type IUserPublisherService, UserPublisherServiceToken } from "@/modules/users/services/interfaces/IUserPublisher.service";
 import { type IUsersService, UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
 import { type User } from "@/types/User";
 
@@ -12,6 +13,8 @@ import { type User } from "@/types/User";
 export class UserController {
     public constructor(
         @Inject(UsersServiceToken) private readonly usersService: IUsersService,
+        @Inject(UserPublisherServiceToken)
+        private readonly userPublisher: IUserPublisherService,
         @Inject(UserMapperToken) private readonly userMapper: IUserMapper
     ) {}
 
@@ -21,6 +24,20 @@ export class UserController {
         try {
             const result = await this.usersService.findOneById(user.id);
             return this.userMapper.fromModelToDto(result);
+        } catch (e) {
+            whenError(e).is(EntityNotFoundError).throw(new NotFoundException()).elseRethrow();
+        }
+    }
+
+    @Delete("myself")
+    @UseGuards(AuthenticationGuard)
+    public async removeMyData(@AuthenticatedUserContext() user: User) {
+        try {
+            // TODO: Extract to service method
+            const result = await this.usersService.findOneById(user.id);
+            await this.userPublisher.onDataRemovalRequested(result.id, {
+                account: { email: result.email, id: result.id },
+            });
         } catch (e) {
             whenError(e).is(EntityNotFoundError).throw(new NotFoundException()).elseRethrow();
         }
