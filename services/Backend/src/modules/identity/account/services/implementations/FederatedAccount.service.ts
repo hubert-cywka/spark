@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
+import { InjectTransactionHost, Transactional, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import dayjs from "dayjs";
 import { Repository } from "typeorm";
@@ -84,6 +84,19 @@ export class FederatedAccountService implements IFederatedAccountService {
 
         const account = insertionResult.raw[0] as FederatedAccountEntity;
         return this.accountMapper.fromEntityToModel(account);
+    }
+
+    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
+    public async remove(id: string): Promise<void> {
+        const repository = this.getRepository();
+        const account = await repository.findOne({ where: { id } });
+
+        if (!account) {
+            this.logger.warn({ accountId: id }, "Couldn't find account.");
+            throw new AccountNotFoundError();
+        }
+
+        await repository.remove([account]);
     }
 
     private getRepository(): Repository<FederatedAccountEntity> {

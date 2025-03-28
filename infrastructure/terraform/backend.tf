@@ -127,6 +127,11 @@ resource "kubernetes_deployment" "backend" {
                     }
 
                     env {
+                        name  = "GDPR_DATABASE_NAME"
+                        value = var.GDPR_DATABASE_NAME
+                    }
+                    
+                    env {
                         name  = "MAIL_DATABASE_NAME"
                         value = var.MAIL_DATABASE_NAME
                     }

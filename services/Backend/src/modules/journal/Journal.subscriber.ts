@@ -18,7 +18,7 @@ export class JournalSubscriber extends BaseEventSubscriber {
         super(inbox, handlers, new Logger(JournalSubscriber.name));
     }
 
-    @EventPattern([IntegrationEventTopics.account.registration.completed])
+    @EventPattern([IntegrationEventTopics.account.registration.completed, IntegrationEventTopics.account.removal.completed])
     private async onEventReceived(
         @Payload(new HydratePipe(IntegrationEvent)) event: IntegrationEvent,
         @Ctx() context: NatsJetStreamContext

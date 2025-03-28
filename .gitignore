@@ -31,3 +31,5 @@ dist-ssr
 
 # Auto-generated files
 docker-compose.local.override.yml
+
+infrastructure/docker/ollama-models/**

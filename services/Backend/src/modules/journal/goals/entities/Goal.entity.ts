@@ -37,13 +37,17 @@ export class GoalEntity {
     @DeleteDateColumn({ type: "timestamptz", nullable: true })
     deletedAt!: Date | null;
 
-    @ManyToOne((type) => AuthorEntity, (author) => author.goals)
+    @ManyToOne((type) => AuthorEntity, (author) => author.goals, {
+        onDelete: "CASCADE",
+    })
     author!: Relation<AuthorEntity>;
 
     @Column({ type: "uuid" })
     authorId!: string;
 
-    @ManyToMany((type) => EntryEntity, (entry) => entry.goals)
+    @ManyToMany((type) => EntryEntity, (entry) => entry.goals, {
+        onDelete: "CASCADE",
+    })
     @JoinTable({ name: "goal_entries" })
     entries!: Relation<EntryEntity>[];
 }

@@ -27,6 +27,8 @@ export class SingleUseTokenEntity {
     @Column({ type: "timestamptz", nullable: true })
     usedAt!: Date | null;
 
-    @ManyToOne((type) => BaseAccountEntity, (account) => account.singleUseTokens)
+    @ManyToOne((type) => BaseAccountEntity, (account) => account.singleUseTokens, {
+        onDelete: "CASCADE",
+    })
     owner!: Relation<BaseAccountEntity>;
 }

@@ -15,33 +15,33 @@ export class AccountPublisherService implements IAccountPublisherService {
         private readonly outbox: IEventOutbox
     ) {}
 
-    public async onAccountActivated(email: string, id: string) {
-        await this.outbox.enqueue(new AccountActivatedEvent({ email, id }));
+    public async onAccountActivated(email: string, tenantId: string) {
+        await this.outbox.enqueue(new AccountActivatedEvent(tenantId, { email, id: tenantId }));
     }
 
-    public async onAccountActivationTokenRequested(email: string, activationToken: string) {
+    public async onAccountActivationTokenRequested(tenantId: string, email: string, activationToken: string) {
         await this.outbox.enqueue(
-            new AccountActivationTokenRequestedEvent({
+            new AccountActivationTokenRequestedEvent(tenantId, {
                 email,
                 activationToken,
             })
         );
     }
 
-    public async onPasswordResetRequested(email: string, passwordResetToken: string) {
+    public async onPasswordResetRequested(tenantId: string, email: string, passwordResetToken: string) {
         await this.outbox.enqueue(
-            new AccountRequestedPasswordResetEvent({
+            new AccountRequestedPasswordResetEvent(tenantId, {
                 email,
                 passwordResetToken,
             })
         );
     }
 
-    public async onPasswordUpdated(email: string, id: string) {
+    public async onPasswordUpdated(email: string, tenantId: string) {
         await this.outbox.enqueue(
-            new AccountPasswordUpdatedEvent({
+            new AccountPasswordUpdatedEvent(tenantId, {
                 email,
-                id,
+                id: tenantId,
             })
         );
     }

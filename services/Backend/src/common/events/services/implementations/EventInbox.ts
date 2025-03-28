@@ -51,6 +51,7 @@ export class EventInbox implements IEventInbox {
 
             await repository.save({
                 id: event.getId(),
+                tenantId: event.getTenantId(),
                 topic: event.getTopic(),
                 payload: event.getPayload(),
                 createdAt: event.getCreatedAt(),
@@ -58,6 +59,14 @@ export class EventInbox implements IEventInbox {
             });
 
             this.logger.log(event, "Event added to inbox.");
+        });
+    }
+
+    public async clearTenantEvents(tenantId: string): Promise<void> {
+        await this.txHost.withTransaction(async () => {
+            const repository = this.getRepository();
+            const result = await repository.delete({ tenantId });
+            this.logger.log({ tenantId, events: result.affected }, "Deleted tenant's events.");
         });
     }
 

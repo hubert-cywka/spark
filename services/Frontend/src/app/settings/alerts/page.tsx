@@ -15,7 +15,7 @@ function Page() {
     const t = useTranslate();
 
     return (
-        <Container className={styles.container}>
+        <Container>
             <Breadcrumbs
                 items={[
                     {

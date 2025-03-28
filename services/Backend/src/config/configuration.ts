@@ -26,6 +26,16 @@ export const AppConfig = () => ({
     },
 
     modules: {
+        gdpr: {
+            database: {
+                port: process.env.DATABASE_PORT,
+                username: process.env.DATABASE_USERNAME,
+                password: process.env.DATABASE_PASSWORD,
+                host: process.env.DATABASE_HOST,
+                name: process.env.GDPR_DATABASE_NAME,
+            },
+        },
+
         alerts: {
             database: {
                 port: process.env.DATABASE_PORT,

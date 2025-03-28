@@ -12,7 +12,7 @@ export class AuthPublisherService implements IAuthPublisherService {
         private readonly outbox: IEventOutbox
     ) {}
 
-    public async onAccountRegistered(payload: AccountRegisteredEventPayload) {
-        await this.outbox.enqueue(new AccountRegisteredEvent(payload));
+    public async onAccountRegistered(tenantId: string, payload: AccountRegisteredEventPayload) {
+        await this.outbox.enqueue(new AccountRegisteredEvent(tenantId, payload));
     }
 }

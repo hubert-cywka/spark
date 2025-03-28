@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 
 import { whenError } from "@/common/errors/whenError";
 import { IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
-import { type DailyReminderTriggeredEventPayload } from "@/common/events/types/alert/AccountRegisteredEvent";
+import { type DailyReminderTriggeredEventPayload } from "@/common/events/types/alert/DailyReminderTriggeredEvent";
 import { EmailDeliveryError } from "@/modules/mail/errors/EmailDelivery.error";
 import { type IMailerService, MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
 import { DailyReminderEmail } from "@/modules/mail/templates/DailyReminderEmail";

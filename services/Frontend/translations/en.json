@@ -185,6 +185,9 @@
                     "label": "Settings",
                     "alerts": {
                         "label": "Alerts"
+                    },
+                    "profile": {
+                        "label": "Profile"
                     }
                 },
                 "auth": {
@@ -421,6 +424,9 @@
             "label": "Settings",
             "alerts": {
                 "label": "Alerts"
+            },
+            "profile": {
+                "label": "Profile"
             }
         }
     },

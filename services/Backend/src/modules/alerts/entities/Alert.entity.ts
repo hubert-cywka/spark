@@ -26,7 +26,9 @@ export class AlertEntity {
     @Column("int", { array: true })
     daysOfWeek!: UTCDay[];
 
-    @ManyToOne(() => RecipientEntity, (recipient) => recipient.alerts)
+    @ManyToOne(() => RecipientEntity, (recipient) => recipient.alerts, {
+        onDelete: "CASCADE",
+    })
     recipient!: Relation<RecipientEntity>;
 
     @Column({ type: "varchar" })

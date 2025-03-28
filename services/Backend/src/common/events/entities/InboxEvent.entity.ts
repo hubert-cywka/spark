@@ -5,6 +5,9 @@ export class InboxEventEntity<T = unknown> {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
+    @Column({ type: "uuid" })
+    tenantId!: string;
+
     @Column({ type: "varchar" })
     topic!: string;
 

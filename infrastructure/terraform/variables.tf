@@ -98,6 +98,10 @@ variable "ALERTS_DATABASE_NAME" {
     type        = string
 }
 
+variable "GDPR_DATABASE_NAME" {
+    type        = string
+}
+
 variable "MAIL_DATABASE_NAME" {
     type        = string
 }

@@ -37,7 +37,9 @@ export class EntryEntity {
     @DeleteDateColumn({ type: "timestamptz", nullable: true })
     deletedAt!: Date | null;
 
-    @ManyToOne((type) => AuthorEntity, (author) => author.dailies)
+    @ManyToOne((type) => AuthorEntity, (author) => author.dailies, {
+        onDelete: "CASCADE",
+    })
     author!: Relation<AuthorEntity>;
 
     @Column({ type: "uuid" })
@@ -49,6 +51,8 @@ export class EntryEntity {
     @Column({ type: "uuid" })
     dailyId!: string;
 
-    @ManyToMany((type) => GoalEntity, (goal) => goal.entries)
+    @ManyToMany((type) => GoalEntity, (goal) => goal.entries, {
+        onDelete: "CASCADE",
+    })
     goals!: Relation<GoalEntity>[];
 }

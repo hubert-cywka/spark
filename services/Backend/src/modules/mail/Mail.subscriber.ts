@@ -24,6 +24,7 @@ export class MailSubscriber extends BaseEventSubscriber {
         IntegrationEventTopics.account.password.updated,
         IntegrationEventTopics.account.activation.completed,
         IntegrationEventTopics.alert.daily.reminder.triggered,
+        IntegrationEventTopics.account.removal.completed,
     ])
     private async onEventReceived(
         @Payload(new HydratePipe(IntegrationEvent)) event: IntegrationEvent,

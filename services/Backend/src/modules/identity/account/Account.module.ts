@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 
 import { AccountController } from "@/modules/identity/account/controllers/Account.controller";
+import { AccountRemovedEventHandler } from "@/modules/identity/account/events/AccountRemovedEvent.handler";
 import { AccountMapper } from "@/modules/identity/account/mappers/Account.mapper";
 import { AccountMapperToken } from "@/modules/identity/account/mappers/IAccount.mapper";
 import { AccountPublisherService } from "@/modules/identity/account/services/implementations/AccountPublisher.service";
@@ -36,8 +37,15 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
             provide: AccountPublisherServiceToken,
             useClass: AccountPublisherService,
         },
+        AccountRemovedEventHandler,
     ],
     controllers: [AccountController],
-    exports: [AccountPublisherServiceToken, FederatedAccountServiceToken, ManagedAccountServiceToken, SingleUseTokenServiceToken],
+    exports: [
+        AccountPublisherServiceToken,
+        FederatedAccountServiceToken,
+        ManagedAccountServiceToken,
+        SingleUseTokenServiceToken,
+        AccountRemovedEventHandler,
+    ],
 })
 export class AccountModule {}

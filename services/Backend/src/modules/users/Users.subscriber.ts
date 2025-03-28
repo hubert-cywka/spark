@@ -13,7 +13,11 @@ export class UsersSubscriber extends BaseEventSubscriber {
         super(inbox, handlers, new Logger(UsersSubscriber.name));
     }
 
-    @EventPattern([IntegrationEventTopics.account.registration.completed, IntegrationEventTopics.account.activation.completed])
+    @EventPattern([
+        IntegrationEventTopics.account.registration.completed,
+        IntegrationEventTopics.account.activation.completed,
+        IntegrationEventTopics.account.registration.completed,
+    ])
     private async onEventReceived(
         @Payload(new HydratePipe(IntegrationEvent)) event: IntegrationEvent,
         @Ctx() context: NatsJetStreamContext

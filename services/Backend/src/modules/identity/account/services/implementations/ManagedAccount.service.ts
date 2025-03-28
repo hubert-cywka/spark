@@ -105,7 +105,7 @@ export class ManagedAccountService implements IManagedAccountService {
     public async requestPasswordChange(email: string): Promise<void> {
         const account = await this.findOne(email);
         const passwordResetToken = await this.singleUseTokenService.issuePasswordChangeToken(account.id);
-        await this.publisher.onPasswordResetRequested(account.email, passwordResetToken);
+        await this.publisher.onPasswordResetRequested(account.id, account.email, passwordResetToken);
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
@@ -127,7 +127,7 @@ export class ManagedAccountService implements IManagedAccountService {
             password: hashedPassword,
         });
 
-        await this.publisher.onPasswordUpdated(account.email, account.id);
+        await this.publisher.onPasswordUpdated(account.id, account.email);
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
@@ -147,7 +147,7 @@ export class ManagedAccountService implements IManagedAccountService {
             id: ownerId,
             activatedAt: dayjs(),
         });
-        await this.publisher.onAccountActivated(account.email, account.id);
+        await this.publisher.onAccountActivated(account.id, account.email);
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
@@ -156,7 +156,20 @@ export class ManagedAccountService implements IManagedAccountService {
         this.assertEligibilityForActivation(account);
 
         const activationToken = await this.singleUseTokenService.issueAccountActivationToken(account.id);
-        await this.publisher.onAccountActivationTokenRequested(email, activationToken);
+        await this.publisher.onAccountActivationTokenRequested(account.id, email, activationToken);
+    }
+
+    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
+    public async remove(id: string): Promise<void> {
+        const repository = this.getRepository();
+        const account = await repository.findOne({ where: { id } });
+
+        if (!account) {
+            this.logger.warn({ accountId: id }, "Couldn't find account.");
+            throw new AccountNotFoundError();
+        }
+
+        await repository.remove([account]);
     }
 
     private async findOne(providerAccountId: string): Promise<ManagedAccountEntity> {

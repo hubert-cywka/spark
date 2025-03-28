@@ -9,12 +9,16 @@ import { UserController } from "@/modules/users/controllers/User.controller";
 import { UserEntity } from "@/modules/users/entities/User.entity";
 import { UserActivatedEventHandler } from "@/modules/users/events/UserActivatedEvent.handler";
 import { UserRegisteredEventHandler } from "@/modules/users/events/UserRegisteredEvent.handler";
+import { UserRemovedEventHandler } from "@/modules/users/events/UserRemovedEvent.handler";
 import { USERS_MODULE_DATA_SOURCE } from "@/modules/users/infrastructure/database/constants";
 import { InitializeUsersModule1735737579670 } from "@/modules/users/infrastructure/database/migrations/1735737579670-InitializeUsersModule";
+import { AddTenantIdToOutboxAndInbox1743101796654 } from "@/modules/users/infrastructure/database/migrations/1743101796654-addTenantIdToOutboxAndInbox";
 import { UserMapperToken } from "@/modules/users/mappers/IUser.mapper";
 import { UserMapper } from "@/modules/users/mappers/User.mapper";
+import { UserPublisherService } from "@/modules/users/services/implementations/UserPublisher.service";
 import { UsersService } from "@/modules/users/services/implementations/Users.service";
 import { UsersEventBoxFactory } from "@/modules/users/services/implementations/UsersEventBox.factory";
+import { UserPublisherServiceToken } from "@/modules/users/services/interfaces/IUserPublisher.service";
 import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
 import { UsersSubscriber } from "@/modules/users/Users.subscriber";
 
@@ -22,12 +26,14 @@ import { UsersSubscriber } from "@/modules/users/Users.subscriber";
     providers: [
         { provide: UserMapperToken, useClass: UserMapper },
         { provide: UsersServiceToken, useClass: UsersService },
+        { provide: UserPublisherServiceToken, useClass: UserPublisherService },
         UserActivatedEventHandler,
         UserRegisteredEventHandler,
+        UserRemovedEventHandler,
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
-            inject: [UserActivatedEventHandler, UserRegisteredEventHandler],
+            inject: [UserActivatedEventHandler, UserRegisteredEventHandler, UserRemovedEventHandler],
         },
     ],
     imports: [
@@ -38,7 +44,7 @@ import { UsersSubscriber } from "@/modules/users/Users.subscriber";
                 password: configService.getOrThrow<string>("modules.users.database.password"),
                 host: configService.getOrThrow<string>("modules.users.database.host"),
                 database: configService.getOrThrow<string>("modules.users.database.name"),
-                migrations: [InitializeUsersModule1735737579670],
+                migrations: [InitializeUsersModule1735737579670, AddTenantIdToOutboxAndInbox1743101796654],
             }),
             inject: [ConfigService],
         }),
