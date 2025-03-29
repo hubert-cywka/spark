@@ -27,3 +27,10 @@ export type ExternalIdentity = {
     id: string;
     providerId: FederatedAccountProvider;
 };
+
+export type OIDCAuthorizationOptions = {
+    enableSudo?: boolean;
+    targetAccountEmail?: string;
+    loginRedirectUrl: string;
+    registerRedirectUrl: string;
+};

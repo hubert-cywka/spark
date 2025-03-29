@@ -49,9 +49,12 @@ export class AuthenticationService implements IAuthenticationService {
         this.accessTokenExpirationTimeInSeconds = configService.getOrThrow<number>("modules.identity.jwt.expirationTimeInSeconds");
     }
 
-    public async loginWithCredentials(email: string, password: string): Promise<AuthenticationResult> {
+    public async loginWithCredentials(email: string, password: string, withSudoMode?: boolean): Promise<AuthenticationResult> {
         const account = await this.accountService.findActivatedByCredentials(email, password);
-        return await this.createAuthenticationResult(account);
+        return await this.createAuthenticationResult({
+            ...account,
+            sudoMode: !!withSudoMode,
+        });
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
@@ -69,9 +72,12 @@ export class AuthenticationService implements IAuthenticationService {
         await this.accountService.requestActivation(email);
     }
 
-    public async loginWithExternalIdentity(identity: ExternalIdentity): Promise<AuthenticationResult> {
+    public async loginWithExternalIdentity(identity: ExternalIdentity, withSudoMode?: boolean): Promise<AuthenticationResult> {
         const account = await this.externalAccountService.findByExternalIdentity(identity);
-        return await this.createAuthenticationResult(account);
+        return await this.createAuthenticationResult({
+            ...account,
+            sudoMode: !!withSudoMode,
+        });
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
