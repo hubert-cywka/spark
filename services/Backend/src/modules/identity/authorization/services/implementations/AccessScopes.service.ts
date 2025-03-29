@@ -26,8 +26,4 @@ export class AccessScopesService implements IAccessScopesService {
             "delete:alert",
         ];
     }
-
-    public validate(required: AccessScope[], owned: AccessScope[]): boolean {
-        return required.every((scope) => owned.includes(scope));
-    }
 }
