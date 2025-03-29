@@ -15,7 +15,7 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, "jwt") {
         });
     }
 
-    validate({ account }: AccessTokenPayload): User {
-        return account;
+    validate({ account, accessScopes }: AccessTokenPayload): User {
+        return { ...account, accessScopes };
     }
 }

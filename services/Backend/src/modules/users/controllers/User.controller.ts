@@ -1,10 +1,10 @@
 import { Controller, Delete, Get, Inject, NotFoundException, UseGuards } from "@nestjs/common";
 
+import { AccessScopes } from "@/common/decorators/AccessScope.decorator";
 import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
-import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
-import { SudoModeGuard } from "@/common/guards/SudoMode.guard";
+import { AccessGuard } from "@/common/guards/Access.guard";
 import { type IUserMapper, UserMapperToken } from "@/modules/users/mappers/IUser.mapper";
 import { type IUserPublisherService, UserPublisherServiceToken } from "@/modules/users/services/interfaces/IUserPublisher.service";
 import { type IUsersService, UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
@@ -20,7 +20,8 @@ export class UserController {
     ) {}
 
     @Get("myself")
-    @UseGuards(AuthenticationGuard)
+    @UseGuards(AccessGuard)
+    @AccessScopes("read:account")
     public async getMyself(@AuthenticatedUserContext() user: User) {
         try {
             const result = await this.usersService.findOneById(user.id);
@@ -31,7 +32,8 @@ export class UserController {
     }
 
     @Delete("myself")
-    @UseGuards(SudoModeGuard)
+    @UseGuards(AccessGuard)
+    @AccessScopes("delete:account")
     public async removeMyData(@AuthenticatedUserContext() user: User) {
         try {
             // TODO: Extract to service method

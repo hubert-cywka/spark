@@ -30,14 +30,12 @@ export class GoogleOIDCProviderService implements IOIDCProviderService {
 
     public startAuthorizationProcess({
         targetAccountEmail,
-        enableSudo,
         loginRedirectUrl,
         registerRedirectUrl,
     }: OIDCAuthorizationOptions): OIDCAuthorizationMeans {
         const scopes = ["openid", "profile", "email"];
         const rawState = {
             state: generateState(),
-            enableSudo,
             loginRedirectUrl,
             registerRedirectUrl,
         };
@@ -46,8 +44,7 @@ export class GoogleOIDCProviderService implements IOIDCProviderService {
         const encodedState = Buffer.from(JSON.stringify(rawState)).toString("base64");
         const url = this.provider.createAuthorizationURL(encodedState, codeVerifier, scopes);
 
-        const prompt = enableSudo ? CONSENT_PROMPT : SELECT_ACCOUNT_PROMPT;
-        url.searchParams.set("prompt", prompt);
+        url.searchParams.set("prompt", SELECT_ACCOUNT_PROMPT);
 
         if (targetAccountEmail) {
             url.searchParams.set("login_hint", targetAccountEmail);

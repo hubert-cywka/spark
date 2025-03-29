@@ -10,6 +10,7 @@ export class AuthenticationMapper implements IAuthenticationMapper {
         return plainToClass(AuthenticationResultDto, {
             account: model.account,
             accessToken: model.accessToken,
+            accessScopes: model.accessScopes,
         });
     }
 

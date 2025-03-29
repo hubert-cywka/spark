@@ -73,6 +73,6 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
         AuthorizationModule,
     ],
     controllers: [IdentitySubscriber],
-    exports: [],
+    exports: [AuthorizationModule],
 })
 export class IdentityModule {}

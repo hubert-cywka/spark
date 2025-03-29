@@ -19,10 +19,11 @@ import { OIDCProviderFactoryToken } from "@/modules/identity/authentication/serv
 import { RefreshTokenServiceToken } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
 import { RefreshTokenCookieStrategyToken } from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
 import { SecureRefreshTokenCookieStrategy } from "@/modules/identity/authentication/strategies/refreshToken/SecureRefreshTokenCookie.strategy";
+import { AuthorizationModule } from "@/modules/identity/authorization/Authorization.module";
 import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.module";
 
 @Module({
-    imports: [IdentitySharedModule, PassportModule, JwtModule, AccountModule],
+    imports: [IdentitySharedModule, PassportModule, JwtModule, AccountModule, AuthorizationModule],
     providers: [
         {
             provide: AuthenticationMapperToken,
@@ -52,6 +53,6 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
         AccountSuspendedEventHandler,
     ],
     controllers: [AuthenticationController, OpenIDConnectController],
-    exports: [AccountPasswordUpdatedEventHandler, AccountSuspendedEventHandler, AuthenticationServiceToken, OIDCProviderFactoryToken],
+    exports: [AccountPasswordUpdatedEventHandler, AccountSuspendedEventHandler],
 })
 export class AuthenticationModule {}

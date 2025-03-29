@@ -29,7 +29,6 @@ export type ExternalIdentity = {
 };
 
 export type OIDCAuthorizationOptions = {
-    enableSudo?: boolean;
     targetAccountEmail?: string;
     loginRedirectUrl: string;
     registerRedirectUrl: string;

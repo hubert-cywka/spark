@@ -8,6 +8,11 @@ export const useRefreshSession = () => {
 
     return useMutation({
         mutationFn: AuthenticationService.refreshSession,
-        onSuccess: ({ accessToken, account }) => storeSession({ identity: account, accessToken }),
+        onSuccess: ({ accessToken, account, accessScopes }) =>
+            storeSession({
+                identity: account,
+                accessToken,
+                scopes: accessScopes,
+            }),
     });
 };

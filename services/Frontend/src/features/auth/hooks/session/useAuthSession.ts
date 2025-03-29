@@ -9,10 +9,10 @@ export const useAuthSession = create<AuthState>((set) => ({
     identity: null,
     accessToken: null,
 
-    storeSession: ({ accessToken, identity }) => {
+    storeSession: ({ accessToken, identity, scopes }) => {
         return set(() => ({
             _type: "authenticated",
-            scopes: ["browse_as_authenticated"],
+            scopes: [...scopes, "browse_as_authenticated"],
             identity,
             accessToken,
         }));

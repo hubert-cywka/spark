@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { Transactional } from "@nestjs-cls/transactional";
 
+import { AccessScope } from "@/common/types/AccessScope";
 import type { Account } from "@/modules/identity/account/models/Account.model";
 import {
     type IFederatedAccountService,
@@ -25,6 +26,10 @@ import {
 } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
 import { type AccessTokenPayload, type AuthenticationResult } from "@/modules/identity/authentication/types/Authentication";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
+import {
+    type IAccessScopesService,
+    AccessScopesServiceToken,
+} from "@/modules/identity/authorization/services/interfaces/IAccessScopes.service";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
 // TODO: Consider using Keycloak (or other auth provider)
@@ -43,18 +48,17 @@ export class AuthenticationService implements IAuthenticationService {
         @Inject(RefreshTokenServiceToken)
         private refreshTokenService: IRefreshTokenService,
         @Inject(AuthPublisherServiceToken)
-        private publisher: IAuthPublisherService
+        private publisher: IAuthPublisherService,
+        @Inject(AccessScopesServiceToken)
+        private authorizationService: IAccessScopesService
     ) {
         this.accessTokenSigningSecret = configService.getOrThrow<string>("modules.identity.jwt.signingSecret");
         this.accessTokenExpirationTimeInSeconds = configService.getOrThrow<number>("modules.identity.jwt.expirationTimeInSeconds");
     }
 
-    public async loginWithCredentials(email: string, password: string, withSudoMode?: boolean): Promise<AuthenticationResult> {
+    public async loginWithCredentials(email: string, password: string): Promise<AuthenticationResult> {
         const account = await this.accountService.findActivatedByCredentials(email, password);
-        return await this.createAuthenticationResult({
-            ...account,
-            sudoMode: !!withSudoMode,
-        });
+        return await this.createAuthenticationResult(account, this.authorizationService.getByAccountId(account.id));
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
@@ -72,12 +76,9 @@ export class AuthenticationService implements IAuthenticationService {
         await this.accountService.requestActivation(email);
     }
 
-    public async loginWithExternalIdentity(identity: ExternalIdentity, withSudoMode?: boolean): Promise<AuthenticationResult> {
+    public async loginWithExternalIdentity(identity: ExternalIdentity): Promise<AuthenticationResult> {
         const account = await this.externalAccountService.findByExternalIdentity(identity);
-        return await this.createAuthenticationResult({
-            ...account,
-            sudoMode: !!withSudoMode,
-        });
+        return await this.createAuthenticationResult(account, this.authorizationService.getByAccountId(account.id));
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
@@ -94,29 +95,27 @@ export class AuthenticationService implements IAuthenticationService {
                 isActivated: true,
             },
         });
-        return await this.createAuthenticationResult(account);
+        return await this.createAuthenticationResult(account, this.authorizationService.getByAccountId(account.id));
     }
 
     public async redeemRefreshToken(refreshToken: string): Promise<AuthenticationResult> {
         const { account } = await this.refreshTokenService.redeem(refreshToken);
-        return await this.createAuthenticationResult({
-            ...account,
-            sudoMode: false,
-        });
+        return await this.createAuthenticationResult(account, this.authorizationService.getByAccountId(account.id));
     }
 
     public async logout(refreshToken: string): Promise<void> {
         return this.refreshTokenService.invalidate(refreshToken);
     }
 
-    private async createAuthenticationResult(account: Account): Promise<AuthenticationResult> {
-        const tokens = await this.generateTokens(account);
-        return { ...tokens, account };
+    private async createAuthenticationResult(account: Account, accessScopes: AccessScope[]): Promise<AuthenticationResult> {
+        const tokens = await this.generateTokens(account, accessScopes);
+        return { ...tokens, account, accessScopes };
     }
 
-    private async generateTokens(account: Account): Promise<{ accessToken: string; refreshToken: string }> {
+    private async generateTokens(account: Account, accessScopes: AccessScope[]): Promise<{ accessToken: string; refreshToken: string }> {
         const payload: AccessTokenPayload = {
             account,
+            accessScopes,
             ver: CURRENT_JWT_VERSION,
         };
 

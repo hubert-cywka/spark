@@ -32,6 +32,7 @@ import {
 } from "@/modules/identity/authentication/constants";
 import { ExternalIdentityDto } from "@/modules/identity/authentication/dto/incoming/ExternalIdentity.dto";
 import { RegisterViaOIDCDto } from "@/modules/identity/authentication/dto/incoming/RegisterViaOIDC.dto";
+import { UntrustedDomainError } from "@/modules/identity/authentication/errors/UntrustedDomain.error";
 import { type IAuthenticationMapper, AuthenticationMapperToken } from "@/modules/identity/authentication/mappers/IAuthentication.mapper";
 import {
     type IAuthenticationService,
@@ -77,8 +78,12 @@ export class OpenIDConnectController {
         @Query("loginRedirectUrl") loginRedirectUrl: string,
         @Query("registerRedirectUrl") registerRedirectUrl: string
     ) {
-        if (!this.domainVerifier.verify(loginRedirectUrl, registerRedirectUrl)) {
-            throw new BadRequestException(); // TODO
+        if (!this.domainVerifier.verify(registerRedirectUrl)) {
+            throw new UntrustedDomainError(registerRedirectUrl);
+        }
+
+        if (!this.domainVerifier.verify(registerRedirectUrl)) {
+            throw new UntrustedDomainError(registerRedirectUrl);
         }
 
         const provider = this.oidcProviderFactory.create(providerId);
@@ -115,7 +120,7 @@ export class OpenIDConnectController {
             throw new BadRequestException();
         }
 
-        const { enableSudo, registerRedirectUrl } = decodedState;
+        const { registerRedirectUrl } = decodedState;
         const loginRedirectUrl = new URL(decodedState.loginRedirectUrl);
 
         let externalIdentity: ExternalIdentity | null = null;
@@ -124,7 +129,7 @@ export class OpenIDConnectController {
             externalIdentity = await provider.getIdentity(code, storedCodeVerifier);
             response.cookie(OIDC_EXTERNAL_IDENTITY, JSON.stringify(externalIdentity), this.getExternalIdentityCookieOptions());
 
-            const { accessToken, refreshToken, account } = await this.authService.loginWithExternalIdentity(externalIdentity, enableSudo);
+            const { accessToken, refreshToken, account } = await this.authService.loginWithExternalIdentity(externalIdentity);
             const cookieOptions = this.refreshTokenCookieStrategy.getCookieOptions(this.refreshTokenCookieMaxAge);
 
             response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieOptions);

@@ -1,9 +1,10 @@
 import { Body, Controller, Delete, Inject, NotFoundException, Param, Patch, Post, UseGuards } from "@nestjs/common";
 
+import { AccessScopes } from "@/common/decorators/AccessScope.decorator";
 import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
-import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
+import { AccessGuard } from "@/common/guards/Access.guard";
 import { CreateEntryDto } from "@/modules/journal/entries/dto/CreateEntry.dto";
 import { UpdateEntryContentDto } from "@/modules/journal/entries/dto/UpdateEntryContent.dto";
 import { UpdateEntryIsFeaturedDto } from "@/modules/journal/entries/dto/UpdateEntryIsFeatured.dto";
@@ -20,7 +21,8 @@ export class DailyEntryController {
     ) {}
 
     @Post()
-    @UseGuards(AuthenticationGuard)
+    @UseGuards(AccessGuard)
+    @AccessScopes("write:entry")
     public async createEntry(@Param("dailyId") dailyId: string, @AuthenticatedUserContext() user: User, @Body() dto: CreateEntryDto) {
         try {
             const result = await this.entryService.create(user.id, dailyId, {
@@ -35,7 +37,8 @@ export class DailyEntryController {
     }
 
     @Patch(":entryId/content")
-    @UseGuards(AuthenticationGuard)
+    @UseGuards(AccessGuard)
+    @AccessScopes("write:entry")
     public async updateEntryContent(
         @Param("entryId") entryId: string,
         @Param("dailyId") dailyId: string,
@@ -51,7 +54,8 @@ export class DailyEntryController {
     }
 
     @Patch(":entryId/completed")
-    @UseGuards(AuthenticationGuard)
+    @UseGuards(AccessGuard)
+    @AccessScopes("write:entry")
     public async updateEntryStatus(
         @Param("entryId") entryId: string,
         @Param("dailyId") dailyId: string,
@@ -67,7 +71,8 @@ export class DailyEntryController {
     }
 
     @Patch(":entryId/featured")
-    @UseGuards(AuthenticationGuard)
+    @UseGuards(AccessGuard)
+    @AccessScopes("write:entry")
     public async updateEntryIsFeatured(
         @Param("entryId") entryId: string,
         @Param("dailyId") dailyId: string,
@@ -83,7 +88,8 @@ export class DailyEntryController {
     }
 
     @Delete(":entryId")
-    @UseGuards(AuthenticationGuard)
+    @UseGuards(AccessGuard)
+    @AccessScopes("delete:entry")
     public async removeEntry(@Param("entryId") entryId: string, @Param("dailyId") dailyId: string, @AuthenticatedUserContext() user: User) {
         try {
             await this.entryService.deleteById(user.id, dailyId, entryId);
@@ -93,7 +99,8 @@ export class DailyEntryController {
     }
 
     @Post(":entryId/restore")
-    @UseGuards(AuthenticationGuard)
+    @UseGuards(AccessGuard)
+    @AccessScopes("write:entry")
     public async restoreEntry(
         @Param("entryId") entryId: string,
         @Param("dailyId") dailyId: string,

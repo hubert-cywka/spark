@@ -8,6 +8,11 @@ export const useCreateAccountWithOIDC = () => {
 
     return useMutation({
         mutationFn: OpenIDConnectService.register,
-        onSuccess: ({ accessToken, account }) => storeSession({ identity: account, accessToken }),
+        onSuccess: ({ accessToken, account, accessScopes }) =>
+            storeSession({
+                identity: account,
+                accessToken,
+                scopes: accessScopes,
+            }),
     });
 };
