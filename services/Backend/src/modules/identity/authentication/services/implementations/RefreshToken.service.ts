@@ -20,7 +20,7 @@ export class RefreshTokenService implements IRefreshTokenService {
     private readonly expirationTimeInSeconds: number;
 
     constructor(
-        private configService: ConfigService,
+        configService: ConfigService,
         private jwtService: JwtService,
         @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>

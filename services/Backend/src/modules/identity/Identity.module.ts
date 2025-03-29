@@ -16,6 +16,7 @@ import { AuthenticationModule } from "@/modules/identity/authentication/Authenti
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
 import { AccountPasswordUpdatedEventHandler } from "@/modules/identity/authentication/events/AccountPasswordUpdatedEvent.handler";
 import { AccountSuspendedEventHandler } from "@/modules/identity/authentication/events/AccountSuspendedEvent.handler";
+import { AuthorizationModule } from "@/modules/identity/authorization/Authorization.module";
 import { IdentitySubscriber } from "@/modules/identity/Identity.subscriber";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 import { InitializeIdentityModule1735737549567 } from "@/modules/identity/infrastructure/database/migrations/1735737549567-InitializeIdentityModule";
@@ -69,8 +70,9 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
         IdentitySharedModule,
         AccountModule,
         AuthenticationModule,
+        AuthorizationModule,
     ],
     controllers: [IdentitySubscriber],
-    exports: [],
+    exports: [AuthorizationModule],
 })
 export class IdentityModule {}

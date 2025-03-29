@@ -4,16 +4,20 @@ import { decodeIdToken, generateCodeVerifier, generateState, Google } from "arct
 
 import { type IOIDCProviderService } from "@/modules/identity/authentication/services/interfaces/IOIDCProvider.service";
 import { FederatedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
-import type {
+import {
     ExternalIdentity,
     GoogleClaims,
     OIDCAuthorizationMeans,
+    OIDCAuthorizationOptions,
     OIDCAuthorizationResponse,
 } from "@/modules/identity/authentication/types/OpenIDConnect";
 
+const SELECT_ACCOUNT_PROMPT = "select_account";
+const CONSENT_PROMPT = "consent";
+
 @Injectable()
 export class GoogleOIDCProviderService implements IOIDCProviderService {
-    private readonly logger: Logger;
+    private readonly logger = new Logger(GoogleOIDCProviderService.name);
     private provider: Google;
 
     constructor(private configService: ConfigService) {
@@ -21,21 +25,55 @@ export class GoogleOIDCProviderService implements IOIDCProviderService {
         const clientSecret = this.configService.getOrThrow<string>("modules.identity.oidc.google.clientSecret");
         const redirectUrl = this.configService.getOrThrow<string>("modules.identity.oidc.google.redirectUrl");
 
-        this.logger = new Logger(GoogleOIDCProviderService.name);
         this.provider = new Google(clientId, clientSecret, redirectUrl);
     }
 
-    public startAuthorizationProcess(): OIDCAuthorizationMeans {
+    public startAuthorizationProcess({
+        targetAccountEmail,
+        loginRedirectUrl,
+        registerRedirectUrl,
+    }: OIDCAuthorizationOptions): OIDCAuthorizationMeans {
         const scopes = ["openid", "profile", "email"];
-        const state = generateState();
-        const codeVerifier = generateCodeVerifier();
-        const url = this.provider.createAuthorizationURL(state, codeVerifier, scopes);
+        const rawState = {
+            state: generateState(),
+            loginRedirectUrl,
+            registerRedirectUrl,
+        };
 
-        return { state, codeVerifier, url };
+        const codeVerifier = generateCodeVerifier();
+        const encodedState = Buffer.from(JSON.stringify(rawState)).toString("base64");
+        const url = this.provider.createAuthorizationURL(encodedState, codeVerifier, scopes);
+
+        url.searchParams.set("prompt", SELECT_ACCOUNT_PROMPT);
+
+        if (targetAccountEmail) {
+            url.searchParams.set("login_hint", targetAccountEmail);
+        }
+
+        return { state: encodedState, codeVerifier, url };
     }
 
-    public validateAuthorizationResponse({ code, storedState, state, storedCodeVerifier }: OIDCAuthorizationResponse): boolean {
-        return !!code && !!storedState && state === storedState && !!storedCodeVerifier;
+    public validateAuthorizationResponse({
+        code,
+        storedState,
+        state,
+        storedCodeVerifier,
+    }: OIDCAuthorizationResponse): OIDCAuthorizationOptions | null {
+        let decodedStoredState;
+
+        try {
+            decodedStoredState = JSON.parse(Buffer.from(storedState, "base64").toString("utf-8"));
+        } catch (error) {
+            return null;
+        }
+
+        const isValid = !!code && !!storedState && state === storedState && !!storedCodeVerifier;
+
+        if (isValid) {
+            return decodedStoredState;
+        } else {
+            return null;
+        }
     }
 
     public validateExternalIdentity(identity: ExternalIdentity): boolean {

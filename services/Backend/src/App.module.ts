@@ -8,6 +8,7 @@ import { LoggerModule } from "nestjs-pino";
 import { IntegrationEventsModule } from "@/common/events";
 import { ThrottlingGuard } from "@/common/guards/Throttling.guard";
 import { AppConfig } from "@/config/configuration";
+import { GlobalModule } from "@/Global.module";
 import { loggerOptions } from "@/lib/logger";
 import { AlertsModule } from "@/modules/alerts/Alerts.module";
 import { GdprModule } from "@/modules/gdpr/Gdpr.module";
@@ -53,6 +54,7 @@ import { UsersModule } from "@/modules/users/Users.module";
             inject: [ConfigService],
             global: true,
         }),
+        GlobalModule,
         IdentityModule,
         MailModule,
         UsersModule,

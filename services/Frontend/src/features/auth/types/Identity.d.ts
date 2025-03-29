@@ -3,4 +3,7 @@ export type Identity = {
     email: string;
 };
 
-export type AccessScope = "browse_as_authenticated" | "browse_as_unauthenticated";
+type Action = "read" | "write" | "delete";
+type Resource = "daily" | "entry" | "goal" | "account" | "alert";
+
+export type AccessScope = `${Action}:${Resource}` | "browse_as_authenticated" | "browse_as_unauthenticated";

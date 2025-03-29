@@ -27,3 +27,9 @@ export type ExternalIdentity = {
     id: string;
     providerId: FederatedAccountProvider;
 };
+
+export type OIDCAuthorizationOptions = {
+    targetAccountEmail?: string;
+    loginRedirectUrl: string;
+    registerRedirectUrl: string;
+};

@@ -1,9 +1,10 @@
 import { Body, Controller, Delete, Get, Inject, NotFoundException, Param, ParseUUIDPipe, Patch, Post, UseGuards } from "@nestjs/common";
 
+import { AccessScopes } from "@/common/decorators/AccessScope.decorator";
 import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
-import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
+import { AccessGuard } from "@/common/guards/Access.guard";
 import { CreateAlertDto } from "@/modules/alerts/dto/CreateAlert.dto";
 import { UpdateAlertStatusDto } from "@/modules/alerts/dto/UpdateAlertStatus.dto";
 import { UpdateAlertTimeDto } from "@/modules/alerts/dto/UpdateAlertTime.dto";
@@ -19,14 +20,16 @@ export class AlertsController {
     ) {}
 
     @Get()
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AccessGuard)
+    @AccessScopes("read:alert")
     public async getAlerts(@AuthenticatedUserContext() user: User) {
         const result = await this.alertService.getAll(user.id);
         return this.alertMapper.fromModelToDtoBulk(result);
     }
 
     @Post()
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AccessGuard)
+    @AccessScopes("write:alert")
     public async createAlert(@Body() createAlertDto: CreateAlertDto, @AuthenticatedUserContext() user: User) {
         const { time, daysOfWeek } = createAlertDto;
         const result = await this.alertService.create(user.id, time, daysOfWeek);
@@ -34,7 +37,8 @@ export class AlertsController {
     }
 
     @Delete(":alertId")
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AccessGuard)
+    @AccessScopes("delete:alert")
     public async deleteAlert(@Param("alertId", new ParseUUIDPipe()) alertId: string, @AuthenticatedUserContext() user: User) {
         try {
             return await this.alertService.delete(user.id, alertId);
@@ -44,7 +48,8 @@ export class AlertsController {
     }
 
     @Post(":alertId/restore")
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AccessGuard)
+    @AccessScopes("write:alert")
     public async restoreAlert(@Param("alertId", new ParseUUIDPipe()) alertId: string, @AuthenticatedUserContext() user: User) {
         try {
             return await this.alertService.restore(user.id, alertId);
@@ -54,7 +59,8 @@ export class AlertsController {
     }
 
     @Patch(":alertId/status")
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AccessGuard)
+    @AccessScopes("write:alert")
     public async changeAlertStatus(
         @Param("alertId", new ParseUUIDPipe()) alertId: string,
         @Body() updateAlertStatusDto: UpdateAlertStatusDto,
@@ -71,7 +77,8 @@ export class AlertsController {
     }
 
     @Patch(":alertId/time")
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AccessGuard)
+    @AccessScopes("write:alert")
     public async changeAlertTime(
         @Param("alertId", new ParseUUIDPipe()) alertId: string,
         @Body() updateAlertTimeDto: UpdateAlertTimeDto,

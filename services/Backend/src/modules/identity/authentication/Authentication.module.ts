@@ -17,13 +17,13 @@ import { AuthenticationServiceToken } from "@/modules/identity/authentication/se
 import { AuthPublisherServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthPublisher.service";
 import { OIDCProviderFactoryToken } from "@/modules/identity/authentication/services/interfaces/IOIDCProvider.factory";
 import { RefreshTokenServiceToken } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
-import { AccessTokenStrategy } from "@/modules/identity/authentication/strategies/passport/AccessToken.strategy";
 import { RefreshTokenCookieStrategyToken } from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
 import { SecureRefreshTokenCookieStrategy } from "@/modules/identity/authentication/strategies/refreshToken/SecureRefreshTokenCookie.strategy";
+import { AuthorizationModule } from "@/modules/identity/authorization/Authorization.module";
 import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.module";
 
 @Module({
-    imports: [IdentitySharedModule, PassportModule, JwtModule, AccountModule],
+    imports: [IdentitySharedModule, PassportModule, JwtModule, AccountModule, AuthorizationModule],
     providers: [
         {
             provide: AuthenticationMapperToken,
@@ -49,11 +49,10 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
             provide: RefreshTokenCookieStrategyToken,
             useClass: SecureRefreshTokenCookieStrategy,
         },
-        AccessTokenStrategy,
         AccountPasswordUpdatedEventHandler,
         AccountSuspendedEventHandler,
     ],
     controllers: [AuthenticationController, OpenIDConnectController],
-    exports: [AccessTokenStrategy, AccountPasswordUpdatedEventHandler, AccountSuspendedEventHandler],
+    exports: [AccountPasswordUpdatedEventHandler, AccountSuspendedEventHandler],
 })
 export class AuthenticationModule {}

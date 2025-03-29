@@ -23,6 +23,7 @@ import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
+import { type IDomainVerifierService, DomainVerifierServiceToken } from "@/common/services/IDomainVerifier.service";
 import {
     OIDC_CODE_VERIFIER_COOKIE_NAME,
     OIDC_EXTERNAL_IDENTITY,
@@ -31,6 +32,7 @@ import {
 } from "@/modules/identity/authentication/constants";
 import { ExternalIdentityDto } from "@/modules/identity/authentication/dto/incoming/ExternalIdentity.dto";
 import { RegisterViaOIDCDto } from "@/modules/identity/authentication/dto/incoming/RegisterViaOIDC.dto";
+import { UntrustedDomainError } from "@/modules/identity/authentication/errors/UntrustedDomain.error";
 import { type IAuthenticationMapper, AuthenticationMapperToken } from "@/modules/identity/authentication/mappers/IAuthentication.mapper";
 import {
     type IAuthenticationService,
@@ -50,10 +52,10 @@ import { type ExternalIdentity } from "@/modules/identity/authentication/types/O
 @Controller("open-id-connect")
 export class OpenIDConnectController {
     private readonly refreshTokenCookieMaxAge: number;
-    private readonly clientOIDCLoginPageUrl: string;
-    private readonly clientOIDCRegisterPageUrl: string;
 
     public constructor(
+        @Inject(DomainVerifierServiceToken)
+        private readonly domainVerifier: IDomainVerifierService,
         @Inject(OIDCProviderFactoryToken)
         private readonly oidcProviderFactory: IOIDCProviderFactory,
         @Inject(AuthenticationMapperToken)
@@ -62,15 +64,9 @@ export class OpenIDConnectController {
         private readonly refreshTokenCookieStrategy: IRefreshTokenCookieStrategy,
         @Inject(AuthenticationServiceToken)
         private readonly authService: IAuthenticationService,
-        private readonly configService: ConfigService
+        configService: ConfigService
     ) {
-        const oidcLoginPage = configService.getOrThrow<string>("client.url.oidcLoginPage");
-        const oidcRegisterPage = configService.getOrThrow<string>("client.url.oidcRegisterPage");
-        const clientAppUrl = configService.getOrThrow<string>("client.url.base");
-
         this.refreshTokenCookieMaxAge = configService.getOrThrow<number>("modules.identity.refreshToken.expirationTimeInSeconds") * 1000;
-        this.clientOIDCLoginPageUrl = clientAppUrl.concat(oidcLoginPage);
-        this.clientOIDCRegisterPageUrl = clientAppUrl.concat(oidcRegisterPage);
     }
 
     @HttpCode(HttpStatus.OK)
@@ -78,10 +74,23 @@ export class OpenIDConnectController {
     async login(
         @Res() response: Response,
         @Param("providerId", new ParseEnumPipe(FederatedAccountProvider))
-        providerId: FederatedAccountProvider
+        providerId: FederatedAccountProvider,
+        @Query("loginRedirectUrl") loginRedirectUrl: string,
+        @Query("registerRedirectUrl") registerRedirectUrl: string
     ) {
+        if (!this.domainVerifier.verify(registerRedirectUrl)) {
+            throw new UntrustedDomainError(registerRedirectUrl);
+        }
+
+        if (!this.domainVerifier.verify(registerRedirectUrl)) {
+            throw new UntrustedDomainError(registerRedirectUrl);
+        }
+
         const provider = this.oidcProviderFactory.create(providerId);
-        const { url, state, codeVerifier } = provider.startAuthorizationProcess();
+        const { codeVerifier, url, state } = provider.startAuthorizationProcess({
+            loginRedirectUrl: loginRedirectUrl,
+            registerRedirectUrl: registerRedirectUrl,
+        });
 
         response.cookie(OIDC_CODE_VERIFIER_COOKIE_NAME, codeVerifier, this.getOIDCCookieOptions());
         response.cookie(OIDC_STATE_COOKIE_NAME, state, this.getOIDCCookieOptions());
@@ -100,33 +109,36 @@ export class OpenIDConnectController {
         @Cookie(OIDC_CODE_VERIFIER_COOKIE_NAME) storedCodeVerifier: string
     ) {
         const provider = this.oidcProviderFactory.create(providerId);
-        const isAuthResponseValid = provider.validateAuthorizationResponse({
+        const decodedState = provider.validateAuthorizationResponse({
             code,
             state,
             storedCodeVerifier,
             storedState,
         });
 
-        if (!isAuthResponseValid) {
+        if (!decodedState) {
             throw new BadRequestException();
         }
 
-        const loginRedirectUrl = new URL(this.clientOIDCLoginPageUrl);
+        const { registerRedirectUrl } = decodedState;
+        const loginRedirectUrl = new URL(decodedState.loginRedirectUrl);
+
         let externalIdentity: ExternalIdentity | null = null;
 
         try {
             externalIdentity = await provider.getIdentity(code, storedCodeVerifier);
             response.cookie(OIDC_EXTERNAL_IDENTITY, JSON.stringify(externalIdentity), this.getExternalIdentityCookieOptions());
 
-            const { accessToken, refreshToken, account } = await this.authService.loginWithExternalIdentity(externalIdentity);
+            const { accessToken, refreshToken, account, accessScopes } = await this.authService.loginWithExternalIdentity(externalIdentity);
             const cookieOptions = this.refreshTokenCookieStrategy.getCookieOptions(this.refreshTokenCookieMaxAge);
 
             response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieOptions);
             loginRedirectUrl.searchParams.set("accessToken", accessToken);
+            loginRedirectUrl.searchParams.set("accessScopes", encodeURIComponent(JSON.stringify(accessScopes)));
             loginRedirectUrl.searchParams.set("account", encodeURIComponent(JSON.stringify(account)));
         } catch (err) {
             if (err instanceof EntityNotFoundError && !!externalIdentity) {
-                return response.redirect(this.clientOIDCRegisterPageUrl);
+                return response.redirect(registerRedirectUrl);
             }
 
             if (err instanceof ForbiddenError && !!externalIdentity) {
@@ -143,7 +155,7 @@ export class OpenIDConnectController {
     @Post("register")
     async registerWithOIDC(
         @Res() response: Response,
-        @Body() dto: RegisterViaOIDCDto,
+        @Body() _dto: RegisterViaOIDCDto,
         @Cookie({
             name: OIDC_EXTERNAL_IDENTITY,
             signed: true,

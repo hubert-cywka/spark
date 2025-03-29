@@ -1,9 +1,10 @@
 import { Controller, Get, Inject, Query, UseGuards } from "@nestjs/common";
 import { plainToClass } from "class-transformer";
 
+import { AccessScopes } from "@/common/decorators/AccessScope.decorator";
 import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
 import { Timezone } from "@/common/decorators/Timezone.decorator";
-import { AuthenticationGuard } from "@/common/guards/Authentication.guard";
+import { AccessGuard } from "@/common/guards/Access.guard";
 import { PageOptionsDto } from "@/common/pagination/dto/PageOptions.dto";
 import { EntriesMetricsDto } from "@/modules/journal/entries/dto/EntriesMetrics.dto";
 import { EntryLoggingHistogramDto } from "@/modules/journal/entries/dto/EntryLoggingHistogram.dto";
@@ -27,7 +28,8 @@ export class EntryController {
     ) {}
 
     @Get()
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AccessGuard)
+    @AccessScopes("read:entry")
     public async getEntries(
         @Query() filters: FindEntriesFiltersDto,
         @Query() pageOptions: PageOptionsDto,
@@ -38,7 +40,8 @@ export class EntryController {
     }
 
     @Get("insights/metrics")
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AccessGuard)
+    @AccessScopes("read:entry")
     public async getEntriesMetrics(@Query() filters: FindEntriesInsightsDto, @AuthenticatedUserContext() user: User) {
         const result = await this.insightsService.findMetricsByDateRange(user.id, filters.from, filters.to);
         return plainToClass(EntriesMetricsDto, {
@@ -48,7 +51,8 @@ export class EntryController {
     }
 
     @Get("insights/logging-histogram")
-    @UseGuards(new AuthenticationGuard())
+    @UseGuards(AccessGuard)
+    @AccessScopes("read:entry")
     public async getEntryLoggingHistogram(
         @Query() filters: FindEntriesInsightsDto,
         @AuthenticatedUserContext() user: User,

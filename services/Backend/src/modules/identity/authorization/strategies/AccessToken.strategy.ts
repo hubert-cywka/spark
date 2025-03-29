@@ -8,14 +8,14 @@ import { type User } from "@/types/User";
 
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(Strategy, "jwt") {
-    constructor(private configService: ConfigService) {
+    constructor(configService: ConfigService) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             secretOrKey: configService.getOrThrow<string>("modules.identity.jwt.signingSecret"),
         });
     }
 
-    validate({ account }: AccessTokenPayload): User {
-        return account;
+    validate({ account, accessScopes }: AccessTokenPayload): User {
+        return { ...account, accessScopes };
     }
 }
