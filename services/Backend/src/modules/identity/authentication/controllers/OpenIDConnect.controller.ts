@@ -129,11 +129,12 @@ export class OpenIDConnectController {
             externalIdentity = await provider.getIdentity(code, storedCodeVerifier);
             response.cookie(OIDC_EXTERNAL_IDENTITY, JSON.stringify(externalIdentity), this.getExternalIdentityCookieOptions());
 
-            const { accessToken, refreshToken, account } = await this.authService.loginWithExternalIdentity(externalIdentity);
+            const { accessToken, refreshToken, account, accessScopes } = await this.authService.loginWithExternalIdentity(externalIdentity);
             const cookieOptions = this.refreshTokenCookieStrategy.getCookieOptions(this.refreshTokenCookieMaxAge);
 
             response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieOptions);
             loginRedirectUrl.searchParams.set("accessToken", accessToken);
+            loginRedirectUrl.searchParams.set("accessScopes", encodeURIComponent(JSON.stringify(accessScopes)));
             loginRedirectUrl.searchParams.set("account", encodeURIComponent(JSON.stringify(account)));
         } catch (err) {
             if (err instanceof EntityNotFoundError && !!externalIdentity) {
