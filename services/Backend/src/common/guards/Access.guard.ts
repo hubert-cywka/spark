@@ -27,7 +27,7 @@ export class AccessGuard extends AuthGuard("jwt") implements CanActivate {
             return true;
         }
 
-        if (!required.every((scope) => user.accessScopes.includes(scope))) {
+        if (!required.every((scope) => user.accessScopes.active.includes(scope))) {
             throw new InsufficientAccessError(required);
         }
 

@@ -1,7 +1,7 @@
-import { AccessScope } from "@/common/types/AccessScope";
+import { AccessScopes } from "@/common/types/AccessScope";
 
 export const AccessScopesServiceToken = Symbol("AccessScopesService");
 
 export interface IAccessScopesService {
-    getByAccountId(accountId: string): AccessScope[];
+    getByAccountId(accountId: string): AccessScopes;
 }

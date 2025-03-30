@@ -5,14 +5,20 @@ import { AuthState } from "@/features/auth/hooks/session/types/AuthSession";
 // TODO: Scopes below are mocks, remove them later
 export const useAuthSession = create<AuthState>((set) => ({
     _type: "unauthenticated",
-    scopes: ["browse_as_unauthenticated"],
+    scopes: {
+        active: ["browse_as_unauthenticated"],
+        inactive: [],
+    },
     identity: null,
     accessToken: null,
 
     storeSession: ({ accessToken, identity, scopes }) => {
         return set(() => ({
             _type: "authenticated",
-            scopes: [...scopes, "browse_as_authenticated"],
+            scopes: {
+                active: [...scopes.active, "browse_as_authenticated"],
+                inactive: scopes.inactive,
+            },
             identity,
             accessToken,
         }));
@@ -21,7 +27,10 @@ export const useAuthSession = create<AuthState>((set) => ({
     endSession: () => {
         return set(() => ({
             _type: "unauthenticated",
-            scopes: ["browse_as_unauthenticated"],
+            scopes: {
+                active: ["browse_as_unauthenticated"],
+                inactive: [],
+            },
             identity: null,
             accessToken: null,
         }));

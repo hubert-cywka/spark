@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { Transactional } from "@nestjs-cls/transactional";
 
-import { AccessScope } from "@/common/types/AccessScope";
+import { type AccessScopes } from "@/common/types/AccessScope";
 import type { Account } from "@/modules/identity/account/models/Account.model";
 import {
     type IFederatedAccountService,
@@ -107,12 +107,12 @@ export class AuthenticationService implements IAuthenticationService {
         return this.refreshTokenService.invalidate(refreshToken);
     }
 
-    private async createAuthenticationResult(account: Account, accessScopes: AccessScope[]): Promise<AuthenticationResult> {
+    private async createAuthenticationResult(account: Account, accessScopes: AccessScopes): Promise<AuthenticationResult> {
         const tokens = await this.generateTokens(account, accessScopes);
         return { ...tokens, account, accessScopes };
     }
 
-    private async generateTokens(account: Account, accessScopes: AccessScope[]): Promise<{ accessToken: string; refreshToken: string }> {
+    private async generateTokens(account: Account, accessScopes: AccessScopes): Promise<{ accessToken: string; refreshToken: string }> {
         const payload: AccessTokenPayload = {
             account,
             accessScopes,

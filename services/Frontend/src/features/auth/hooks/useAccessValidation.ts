@@ -12,11 +12,11 @@ export const useAccessValidation = () => {
                 return true;
             }
 
-            if (!accessScopes?.length) {
+            if (!accessScopes.active?.length) {
                 return false;
             }
 
-            return requiredScopes.every((required) => accessScopes.includes(required));
+            return requiredScopes.every((required) => accessScopes.active.includes(required));
         },
         [accessScopes]
     );
