@@ -14,6 +14,7 @@ import { AccountRemovalRequestedEventHandler } from "@/modules/identity/account/
 import { AccountRemovedEventHandler } from "@/modules/identity/account/events/AccountRemovedEvent.handler";
 import { AuthenticationModule } from "@/modules/identity/authentication/Authentication.module";
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
+import { TwoFactorAuthenticationOptionEntity } from "@/modules/identity/authentication/entities/TwoFactorAuthenticationOption.entity";
 import { AccountPasswordUpdatedEventHandler } from "@/modules/identity/authentication/events/AccountPasswordUpdatedEvent.handler";
 import { AccountSuspendedEventHandler } from "@/modules/identity/authentication/events/AccountSuspendedEvent.handler";
 import { AuthorizationModule } from "@/modules/identity/authorization/Authorization.module";
@@ -23,6 +24,7 @@ import { InitializeIdentityModule1735737549567 } from "@/modules/identity/infras
 import { AddTenantIdToOutboxAndInbox1743101746907 } from "@/modules/identity/infrastructure/database/migrations/1743101746907-addTenantIdToOutboxAndInbox";
 import { DeleteOnCascade1743158756974 } from "@/modules/identity/infrastructure/database/migrations/1743158756974-deleteOnCascade";
 import { AddOptionToSuspendAccounts1743167408668 } from "@/modules/identity/infrastructure/database/migrations/1743167408668-addOptionToSuspendAccounts";
+import { Introduce2FA1743366087775 } from "@/modules/identity/infrastructure/database/migrations/1743366087775-introduce2FA";
 import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.module";
 
 @Module({
@@ -49,6 +51,7 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
                 FederatedAccountEntity,
                 OutboxEventEntity,
                 InboxEventEntity,
+                TwoFactorAuthenticationOptionEntity,
             ],
             {
                 useFactory: (configService: ConfigService) => ({
@@ -62,6 +65,7 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
                         AddTenantIdToOutboxAndInbox1743101746907,
                         DeleteOnCascade1743158756974,
                         AddOptionToSuspendAccounts1743167408668,
+                        Introduce2FA1743366087775,
                     ],
                 }),
                 inject: [ConfigService],

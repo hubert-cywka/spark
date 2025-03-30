@@ -16,6 +16,7 @@ export class AccessScopesService implements IAccessScopesService {
                 "read:goal",
                 "read:daily",
                 "read:alert",
+                "read:2fa",
                 "write:account",
                 "write:goal",
                 "write:entry",
@@ -26,7 +27,7 @@ export class AccessScopesService implements IAccessScopesService {
                 "delete:daily",
                 "delete:alert",
             ],
-            inactive: ["delete:account"],
+            inactive: ["write:2fa", "delete:2fa", "delete:account"],
         };
     }
 }

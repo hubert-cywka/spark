@@ -9,14 +9,18 @@ import { AccountPasswordUpdatedEventHandler } from "@/modules/identity/authentic
 import { AccountSuspendedEventHandler } from "@/modules/identity/authentication/events/AccountSuspendedEvent.handler";
 import { AuthenticationMapper } from "@/modules/identity/authentication/mappers/Authentication.mapper";
 import { AuthenticationMapperToken } from "@/modules/identity/authentication/mappers/IAuthentication.mapper";
+import { TwoFactorAuthenticationOptionMapperToken } from "@/modules/identity/authentication/mappers/ITwoFactorAuthenticationOption.mapper";
+import { TwoFactorAuthenticationOptionMapper } from "@/modules/identity/authentication/mappers/TwoFactorAuthenticationOption.mapper";
 import { AuthenticationService } from "@/modules/identity/authentication/services/implementations/Authentication.service";
 import { AuthPublisherService } from "@/modules/identity/authentication/services/implementations/AuthPublisher.service";
 import { OIDCProviderFactory } from "@/modules/identity/authentication/services/implementations/OIDCProvider.factory";
 import { RefreshTokenService } from "@/modules/identity/authentication/services/implementations/RefreshToken.service";
+import { TwoFactorAuthenticationFactory } from "@/modules/identity/authentication/services/implementations/TwoFactorAuthentication.factory";
 import { AuthenticationServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
 import { AuthPublisherServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthPublisher.service";
 import { OIDCProviderFactoryToken } from "@/modules/identity/authentication/services/interfaces/IOIDCProvider.factory";
 import { RefreshTokenServiceToken } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
+import { TwoFactorAuthenticationFactoryToken } from "@/modules/identity/authentication/services/interfaces/ITwoFactorAuthentication.factory";
 import { RefreshTokenCookieStrategyToken } from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
 import { SecureRefreshTokenCookieStrategy } from "@/modules/identity/authentication/strategies/refreshToken/SecureRefreshTokenCookie.strategy";
 import { AuthorizationModule } from "@/modules/identity/authorization/Authorization.module";
@@ -44,6 +48,14 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
         {
             provide: RefreshTokenServiceToken,
             useClass: RefreshTokenService,
+        },
+        {
+            provide: TwoFactorAuthenticationOptionMapperToken,
+            useClass: TwoFactorAuthenticationOptionMapper,
+        },
+        {
+            provide: TwoFactorAuthenticationFactoryToken,
+            useClass: TwoFactorAuthenticationFactory,
         },
         {
             provide: RefreshTokenCookieStrategyToken,

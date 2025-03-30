@@ -9,6 +9,7 @@ import { FederatedAccountEntity } from "@/modules/identity/account/entities/Fede
 import { ManagedAccountEntity } from "@/modules/identity/account/entities/ManagedAccountEntity";
 import { SingleUseTokenEntity } from "@/modules/identity/account/entities/SingleUseTokenEntity";
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
+import { TwoFactorAuthenticationOptionEntity } from "@/modules/identity/authentication/entities/TwoFactorAuthenticationOption.entity";
 
 configDotenv();
 
@@ -32,6 +33,7 @@ export const dataSource = new DataSource({
         FederatedAccountEntity,
         ManagedAccountEntity,
         BaseAccountEntity,
+        TwoFactorAuthenticationOptionEntity,
     ],
     migrations: [],
 });

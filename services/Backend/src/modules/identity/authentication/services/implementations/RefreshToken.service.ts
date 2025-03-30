@@ -15,17 +15,16 @@ import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/d
 
 @Injectable()
 export class RefreshTokenService implements IRefreshTokenService {
-    private readonly logger: Logger;
+    private readonly logger = new Logger(RefreshTokenService.name);
     private readonly signingSecret: string;
     private readonly expirationTimeInSeconds: number;
 
     constructor(
         configService: ConfigService,
-        private jwtService: JwtService,
+        private readonly jwtService: JwtService,
         @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
     ) {
-        this.logger = new Logger(RefreshTokenService.name);
         this.signingSecret = configService.getOrThrow<string>("modules.identity.refreshToken.signingSecret");
         this.expirationTimeInSeconds = configService.getOrThrow<number>("modules.identity.refreshToken.expirationTimeInSeconds");
     }

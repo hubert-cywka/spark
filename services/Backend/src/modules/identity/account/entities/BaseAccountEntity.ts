@@ -11,6 +11,7 @@ import {
 
 import { SingleUseTokenEntity } from "@/modules/identity/account/entities/SingleUseTokenEntity";
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
+import { TwoFactorAuthenticationOptionEntity } from "@/modules/identity/authentication/entities/TwoFactorAuthenticationOption.entity";
 
 // Hubert: Using Single Table Inheritance over Concrete Table Inheritance or composition as I need to use One-to-Many
 // relationships which wouldn't work without any workarounds. This approach is simpler and still good enough as there
@@ -47,4 +48,7 @@ export class BaseAccountEntity {
 
     @OneToMany((type) => SingleUseTokenEntity, (token) => token.owner)
     singleUseTokens!: Relation<SingleUseTokenEntity>[];
+
+    @OneToMany((type) => TwoFactorAuthenticationOptionEntity, (option) => option.owner)
+    twoFactorAuthOptions!: Relation<TwoFactorAuthenticationOptionEntity>[];
 }
