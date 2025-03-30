@@ -6,6 +6,7 @@ import styles from "./styles/AccountTerminationForm.module.scss";
 
 import { Button } from "@/components/Button";
 import { Checkbox } from "@/components/Checkbox";
+import { useAccessValidation, useActivateAccessScopes } from "@/features/auth/hooks";
 import { useTerminateAccount } from "@/features/user/hooks/useTerminateAccount.ts";
 import { useTerminateAccountEvents } from "@/features/user/hooks/useTerminateAccountEvents.ts";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
@@ -17,8 +18,15 @@ export const AccountTerminationForm = () => {
     const { mutateAsync, isPending } = useTerminateAccount();
     const { onTerminateAccountSuccess, onTerminateAccountError } = useTerminateAccountEvents();
 
+    const { activate } = useActivateAccessScopes();
+    const { validate } = useAccessValidation();
+    const { inactiveScopes } = validate(["delete:account"]);
+
     const handleAccountTermination = async () => {
-        // TODO: Check user scopes before attempting to terminate the account (in order to display authorization modal)
+        if (inactiveScopes.length) {
+            activate(...inactiveScopes);
+            return;
+        }
 
         try {
             await mutateAsync();

@@ -209,6 +209,29 @@
             }
         }
     },
+    "authorization": {
+        "scopes": {
+            "errors": {
+                "alreadyActive": "Scopes are already active",
+                "forbidden": "Scopes cannot be activated"
+            }
+        },
+        "2fa": {
+            "modal": {
+                "header": "Authorization required",
+                "description": "You need to perform authorization in order to access this resource. Upon successful authorization, you'll gain required permissions for limited time.",
+                "codeInput": {
+                    "label": "Code from 2FA provider:"
+                },
+                "submitButton": {
+                    "label": "Authorize"
+                },
+                "cancelButton": {
+                    "label": "Cancel"
+                }
+            }
+        }
+    },
     "entries": {
         "placeholder": "Add entry...",
         "create": {

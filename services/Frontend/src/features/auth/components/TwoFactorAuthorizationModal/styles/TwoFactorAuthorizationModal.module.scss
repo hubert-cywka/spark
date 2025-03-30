@@ -1,0 +1,7 @@
+@use "src/styles/tokens";
+
+.codeInput {
+    margin-block: tokens.$spacing-600 tokens.$spacing-800;
+    width: fit-content;
+    margin-inline: auto;
+}

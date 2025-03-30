@@ -3,4 +3,6 @@
 .container {
     max-width: 500px;
     margin-bottom: tokens.$spacing-500;
+    font: tokens.$typography-body-200;
+    color: tokens.$color-neutral-text-200;
 }
