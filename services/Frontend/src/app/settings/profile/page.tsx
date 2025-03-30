@@ -5,6 +5,7 @@ import { AppRoute } from "@/app/appRoute";
 import { Section, SectionDescription, SectionTitle } from "@/app/settings/components/Section";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Container } from "@/components/Container";
+import { TwoFactorAuthenticationConfiguration } from "@/features/auth/components/TwoFactorAuthenticationConfiguration";
 import { onlyAsAuthenticated } from "@/features/auth/hoc/withAuthorization";
 import { withSessionRestore } from "@/features/auth/hoc/withSessionRestore";
 import { AccountTerminationForm } from "@/features/user/components/AccountTerminationForm";
@@ -24,6 +25,12 @@ function Page() {
                     { label: t("settings.navigation.profile.label") },
                 ]}
             />
+
+            <Section>
+                <SectionTitle>{t("settings.profile.2fa.header")}</SectionTitle>
+                <SectionDescription>{t("settings.profile.2fa.description")}</SectionDescription>
+                <TwoFactorAuthenticationConfiguration />
+            </Section>
 
             <Section>
                 <SectionTitle className={styles.danger}>{t("settings.profile.accountTermination.header")}</SectionTitle>

@@ -3,7 +3,7 @@ export { useRequestAccountActivationToken } from "./account/useRequestAccountAct
 export { useRequestAccountActivationTokenEvents } from "./account/useRequestAccountActivationTokenEvents";
 export { useAccessValidation } from "./authorization/useAccessValidation";
 export { useActivateAccessScopes } from "./authorization/useActivateAccessScopes";
-export { useTwoFactorAuthorization } from "./authorization/useTwoFactorAuthorization.ts";
+export { useTwoFactorAuthentication } from "./authorization/useTwoFactorAuthentication.ts";
 export { useLoginEvents } from "./login/useLoginEvents";
 export { useLoginWithCredentials } from "./login/useLoginWithCredentials";
 export { useLogout } from "./logout/useLogout";

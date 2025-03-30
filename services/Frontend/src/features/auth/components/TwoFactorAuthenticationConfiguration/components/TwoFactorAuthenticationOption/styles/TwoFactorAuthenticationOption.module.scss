@@ -1,0 +1,9 @@
+@use "src/styles/tokens";
+
+.option {
+    display: flex;
+    align-items: center;
+    gap: tokens.$spacing-300;
+    
+    font-weight: tokens.$font-weight-200;
+}

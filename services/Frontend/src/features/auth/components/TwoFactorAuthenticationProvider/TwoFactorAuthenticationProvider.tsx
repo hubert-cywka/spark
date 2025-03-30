@@ -1,9 +1,9 @@
 import { PropsWithChildren, useCallback, useMemo, useState } from "react";
 
-import { TwoFactorAuthorizationModal } from "@/features/auth/components/TwoFactorAuthorizationModal";
-import { TwoFactorAuthorizationContext } from "@/features/auth/context";
+import { TwoFactorAuthenticationModal } from "@/features/auth/components/TwoFactorAuthenticationModal";
+import { TwoFactorAuthenticationContext } from "@/features/auth/context";
 
-export const TwoFactorAuthorizationProvider = ({ children }: PropsWithChildren) => {
+export const TwoFactorAuthenticationProvider = ({ children }: PropsWithChildren) => {
     const [isAuthorizationInProgress, setIsAuthorizationInProgress] = useState(false);
 
     const cancelAuthorizationProcess = useCallback(() => {
@@ -24,9 +24,9 @@ export const TwoFactorAuthorizationProvider = ({ children }: PropsWithChildren) 
     );
 
     return (
-        <TwoFactorAuthorizationContext value={contextValue}>
-            <TwoFactorAuthorizationModal />
+        <TwoFactorAuthenticationContext value={contextValue}>
+            <TwoFactorAuthenticationModal />
             {children}
-        </TwoFactorAuthorizationContext>
+        </TwoFactorAuthenticationContext>
     );
 };

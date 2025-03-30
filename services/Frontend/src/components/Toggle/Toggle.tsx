@@ -1,3 +1,5 @@
+"use client";
+
 import { Switch, SwitchProps } from "react-aria-components";
 import classNames from "clsx";
 

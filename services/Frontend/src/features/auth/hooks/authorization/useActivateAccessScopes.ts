@@ -1,4 +1,4 @@
-import { useAuthSession, useTwoFactorAuthorization } from "@/features/auth/hooks";
+import { useAuthSession, useTwoFactorAuthentication } from "@/features/auth/hooks";
 import { AccessScope } from "@/features/auth/types/Identity";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 import { showToast } from "@/lib/notifications/showToast.tsx";
@@ -6,7 +6,7 @@ import { showToast } from "@/lib/notifications/showToast.tsx";
 export const useActivateAccessScopes = () => {
     const t = useTranslate();
     const { active, inactive } = useAuthSession((state) => state.scopes);
-    const { startAuthorizationProcess } = useTwoFactorAuthorization();
+    const { startAuthorizationProcess } = useTwoFactorAuthentication();
 
     const activate = (...scopes: AccessScope[]) => {
         if (active.some((activeScope) => scopes.includes(activeScope))) {

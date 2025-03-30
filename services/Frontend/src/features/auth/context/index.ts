@@ -1,1 +1,1 @@
-export { TwoFactorAuthorizationContext } from "./TwoFactorAuthorizationContext.ts";
+export { TwoFactorAuthenticationContext } from "./TwoFactorAuthenticationContext.ts";
