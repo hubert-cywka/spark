@@ -13,7 +13,7 @@ import { SegmentedDateInputSlot } from "@/components/Input/SegmentedDateInputSlo
 
 type DateInputProps<T extends FieldValues> = {
     name: Path<T>;
-    control: Control<T>;
+    control: Control<T>; // TODO: Do not use 'control' prop
     label: ReactNode;
     size?: InputSize;
     required?: boolean;

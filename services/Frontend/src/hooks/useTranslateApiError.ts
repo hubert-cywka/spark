@@ -31,4 +31,5 @@ const defaultErrorsMap: ErrorsMap = {
     [HttpStatusCode.TooManyRequests]: "api.common.errors.tooManyRequests",
     [HttpStatusCode.InternalServerError]: "api.common.errors.internalServerError",
     [HttpStatusCode.ServiceUnavailable]: "api.common.errors.serviceUnavailable",
+    [HttpStatusCode.Forbidden]: "api.common.errors.forbidden",
 };

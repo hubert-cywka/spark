@@ -4,7 +4,8 @@
             "errors": {
                 "tooManyRequests": "Too many requests. Please try again in a moment.",
                 "internalServerError": "Something went wrong. Please report the issue and try again later.",
-                "serviceUnavailable": "App is temporarily unavailable. Please try again later."
+                "serviceUnavailable": "App is temporarily unavailable. Please try again later.",
+                "forbidden": "You don't have permissions to access this resource."
             }
         },
         "alerts": {
@@ -433,6 +434,32 @@
             },
             "profile": {
                 "label": "Profile"
+            }
+        },
+        "profile": {
+            "accountTermination": {
+                "header": "Account termination",
+                "description": "If you want to close your account and remove your data, press the button below. You will be prompted to authorize the request, and after that, you'll be logged out. This action is irreversible."
+            }
+        }
+    },
+    "user": {
+        "account": {
+            "termination": {
+                "button": {
+                    "label": "Terminate my account"
+                },
+                "checkbox": {
+                    "label": "I am aware of the consequences of this action."
+                },
+                "notifications": {
+                    "success": {
+                        "title": "Account terminated"
+                    },
+                    "error": {
+                        "title": "Couldn't terminate account"
+                    }
+                }
             }
         }
     },
