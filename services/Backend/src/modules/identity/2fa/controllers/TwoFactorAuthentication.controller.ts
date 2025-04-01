@@ -3,6 +3,7 @@ import {
     ConflictException,
     Controller,
     ForbiddenException,
+    Get,
     Inject,
     NotFoundException,
     Param,
@@ -27,19 +28,32 @@ import {
     type ITwoFactorAuthenticationFactory,
     TwoFactorAuthenticationFactoryToken,
 } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthentication.factory";
+import {
+    type ITwoFactorAuthenticationMethodsProviderService,
+    TwoFactorAuthenticationMethodsProviderServiceToken,
+} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationMethodsProvider.service";
 import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 import { type User } from "@/types/User";
 
 @Controller("2fa")
 export class TwoFactorAuthenticationController {
     public constructor(
-        @Inject(TwoFactorAuthenticationOptionMapperToken)
-        private readonly twoFactorAuthMapper: ITwoFactorAuthenticationOptionMapper,
         @Inject(TwoFactorAuthenticationFactoryToken)
-        private readonly twoFactorAuthFactory: ITwoFactorAuthenticationFactory
+        private readonly twoFactorAuthFactory: ITwoFactorAuthenticationFactory,
+        @Inject(TwoFactorAuthenticationMethodsProviderServiceToken)
+        private readonly methodsProvider: ITwoFactorAuthenticationMethodsProviderService,
+        @Inject(TwoFactorAuthenticationOptionMapperToken)
+        private readonly mapper: ITwoFactorAuthenticationOptionMapper
     ) {}
 
-    @Post(":method/issue")
+    @Get("method")
+    @UseGuards(AccessGuard)
+    async getMethods(@AuthenticatedUserContext() user: User) {
+        const methods = await this.methodsProvider.findEnabledMethods(user.id);
+        return this.mapper.fromModelToDtoBulk(methods);
+    }
+
+    @Post("method/:method/issue")
     @UseGuards(AccessGuard)
     async issue2FACode(
         @Param("method", new ParseEnumPipe(TwoFactorAuthenticationMethod))
@@ -62,7 +76,7 @@ export class TwoFactorAuthenticationController {
         }
     }
 
-    @Post(":method/enable")
+    @Post("method/:method/enable")
     @UseGuards(AccessGuard)
     @AccessScopes("write:2fa")
     async enable2FA(
@@ -80,7 +94,7 @@ export class TwoFactorAuthenticationController {
         }
     }
 
-    @Post(":method/verify")
+    @Post("method/:method/verify")
     @UseGuards(AccessGuard)
     @AccessScopes("write:2fa")
     async verify2FA(
@@ -106,7 +120,7 @@ export class TwoFactorAuthenticationController {
         }
     }
 
-    @Post(":method/disable")
+    @Post("method/:method/disable")
     @UseGuards(AccessGuard)
     @AccessScopes("delete:2fa")
     async disable2FA(

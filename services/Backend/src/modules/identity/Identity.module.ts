@@ -6,7 +6,7 @@ import { IInboxEventHandler, InboxEventHandlersToken } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { TwoFactorAuthenticationOptionEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationOption.entity";
-import { TwoFactorAuthModule } from "@/modules/identity/2fa/TwoFactorAuth.module";
+import { TwoFactorAuthenticationModule } from "@/modules/identity/2fa/TwoFactorAuthentication.module";
 import { AccountModule } from "@/modules/identity/account/Account.module";
 import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccountEntity";
 import { FederatedAccountEntity } from "@/modules/identity/account/entities/FederatedAccountEntity";
@@ -74,7 +74,7 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
         IdentitySharedModule,
         AccountModule,
         AuthenticationModule,
-        TwoFactorAuthModule,
+        TwoFactorAuthenticationModule,
     ],
     controllers: [IdentitySubscriber],
     exports: [],

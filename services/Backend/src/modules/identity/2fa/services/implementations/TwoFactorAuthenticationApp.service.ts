@@ -22,7 +22,7 @@ export class TwoFactorAuthenticationAppService extends TwoFactorAuthenticationBa
         return false;
     }
 
-    protected onCodeIssued(user: User, code: string): Promise<void> {
+    protected onCodeIssued(_user: User, _code: string): Promise<void> {
         throw new IssuingCodesNotSupportedError();
     }
 

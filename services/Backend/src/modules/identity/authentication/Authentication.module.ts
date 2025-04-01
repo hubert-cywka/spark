@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 
-import { TwoFactorAuthModule } from "@/modules/identity/2fa/TwoFactorAuth.module";
+import { TwoFactorAuthenticationModule } from "@/modules/identity/2fa/TwoFactorAuthentication.module";
 import { AccountModule } from "@/modules/identity/account/Account.module";
 import { AccessScopesController } from "@/modules/identity/authentication/controllers/AccessScopes.controller";
 import { AuthenticationController } from "@/modules/identity/authentication/controllers/Authentication.controller";
@@ -27,7 +27,7 @@ import { SecureRefreshTokenCookieStrategy } from "@/modules/identity/authenticat
 import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.module";
 
 @Module({
-    imports: [IdentitySharedModule, PassportModule, JwtModule, AccountModule, TwoFactorAuthModule],
+    imports: [IdentitySharedModule, PassportModule, JwtModule, AccountModule, TwoFactorAuthenticationModule],
     providers: [
         {
             provide: AuthenticationMapperToken,

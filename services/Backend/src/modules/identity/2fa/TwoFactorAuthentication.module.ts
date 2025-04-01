@@ -4,8 +4,10 @@ import { TwoFactorAuthenticationController } from "@/modules/identity/2fa/contro
 import { TwoFactorAuthenticationOptionMapperToken } from "@/modules/identity/2fa/mappers/ITwoFactorAuthenticationOption.mapper";
 import { TwoFactorAuthenticationOptionMapper } from "@/modules/identity/2fa/mappers/TwoFactorAuthenticationOption.mapper";
 import { TwoFactorAuthenticationFactory } from "@/modules/identity/2fa/services/implementations/TwoFactorAuthentication.factory";
+import { TwoFactorAuthenticationMethodsProviderService } from "@/modules/identity/2fa/services/implementations/TwoFactorAuthenticationMethodsProvider.service";
 import { TwoFactorAuthenticationPublisherService } from "@/modules/identity/2fa/services/implementations/TwoFactorAuthenticationPublisher.service";
 import { TwoFactorAuthenticationFactoryToken } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthentication.factory";
+import { TwoFactorAuthenticationMethodsProviderServiceToken } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationMethodsProvider.service";
 import { TwoFactorAuthenticationPublisherServiceToken } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationPublisher.service";
 import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.module";
 
@@ -24,8 +26,12 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
             provide: TwoFactorAuthenticationPublisherServiceToken,
             useClass: TwoFactorAuthenticationPublisherService,
         },
+        {
+            provide: TwoFactorAuthenticationMethodsProviderServiceToken,
+            useClass: TwoFactorAuthenticationMethodsProviderService,
+        },
     ],
     controllers: [TwoFactorAuthenticationController],
     exports: [TwoFactorAuthenticationFactoryToken],
 })
-export class TwoFactorAuthModule {}
+export class TwoFactorAuthenticationModule {}
