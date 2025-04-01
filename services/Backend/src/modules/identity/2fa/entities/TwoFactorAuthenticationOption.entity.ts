@@ -1,7 +1,7 @@
 import { type Relation, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
+import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccountEntity";
-import { TwoFactorAuthenticationMethod } from "@/modules/identity/authentication/types/TwoFactorAuthenticationMethod";
 
 @Entity("two_factor_authentication_option")
 export class TwoFactorAuthenticationOptionEntity {

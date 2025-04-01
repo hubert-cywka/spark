@@ -9,7 +9,7 @@ import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 export const TwoFactorAuthenticationConfiguration = () => {
     const t = useTranslate();
 
-    const handle2FAOptionStateChange = (strategy: TwoFactorAuthenticationStrategy, value: boolean) => {
+    const handle2FAOptionStateChange = (_strategy: TwoFactorAuthenticationStrategy, _value: boolean) => {
         // TODO
     };
 

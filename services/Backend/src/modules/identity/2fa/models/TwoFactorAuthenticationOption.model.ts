@@ -1,4 +1,4 @@
-import { TwoFactorAuthenticationMethod } from "@/modules/identity/authentication/types/TwoFactorAuthenticationMethod";
+import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 
 export type TwoFactorAuthenticationOption = {
     id: string;

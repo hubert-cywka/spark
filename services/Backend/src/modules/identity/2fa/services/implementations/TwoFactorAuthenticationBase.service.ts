@@ -4,14 +4,14 @@ import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-t
 import { Secret, TOTP } from "otpauth";
 import { IsNull, Not, Repository } from "typeorm";
 
-import { TOTP_LENGTH } from "@/modules/identity/authentication/constants";
-import { TwoFactorAuthenticationOptionEntity } from "@/modules/identity/authentication/entities/TwoFactorAuthenticationOption.entity";
-import { AtLeastOne2FAMethodRequiredError } from "@/modules/identity/authentication/errors/AtLeastOne2FAMethodRequired.error";
-import { TOTPInvalidError } from "@/modules/identity/authentication/errors/TOTPInvalid.error";
-import { TwoFactorAuthMethodAlreadyEnabledError } from "@/modules/identity/authentication/errors/TwoFactorAuthMethodAlreadyEnabled.error";
-import { TwoFactorAuthMethodNotFoundError } from "@/modules/identity/authentication/errors/TwoFactorAuthMethodNotFound.error";
-import type { ITwoFactorAuthenticationService } from "@/modules/identity/authentication/services/interfaces/ITwoFactorAuthentication.service";
-import { TwoFactorAuthenticationMethod } from "@/modules/identity/authentication/types/TwoFactorAuthenticationMethod";
+import { TOTP_LENGTH } from "@/modules/identity/2fa/constants";
+import { TwoFactorAuthenticationOptionEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationOption.entity";
+import { AtLeastOne2FAMethodRequiredError } from "@/modules/identity/2fa/errors/AtLeastOne2FAMethodRequired.error";
+import { TOTPInvalidError } from "@/modules/identity/2fa/errors/TOTPInvalid.error";
+import { TwoFactorAuthMethodAlreadyEnabledError } from "@/modules/identity/2fa/errors/TwoFactorAuthMethodAlreadyEnabled.error";
+import { TwoFactorAuthMethodNotFoundError } from "@/modules/identity/2fa/errors/TwoFactorAuthMethodNotFound.error";
+import type { ITwoFactorAuthenticationService } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthentication.service";
+import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 import { type User } from "@/types/User";
 
 const DEFAULT_VERIFICATION_WINDOW = 1;

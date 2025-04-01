@@ -1,8 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
 
 import { type AccessScopes, AccessScope } from "@/common/types/AccessScope";
-import { AccessScopeUnavailableError } from "@/modules/identity/authorization/errors/AccessScopeUnavailable.error";
-import { type IAccessScopesService } from "@/modules/identity/authorization/services/interfaces/IAccessScopes.service";
+import { AccessScopeUnavailableError } from "@/modules/identity/authentication/errors/AccessScopeUnavailable.error";
+import { type IAccessScopesService } from "@/modules/identity/authentication/services/interfaces/IAccessScopes.service";
 
 @Injectable()
 export class AccessScopesService implements IAccessScopesService {

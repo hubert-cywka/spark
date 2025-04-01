@@ -6,16 +6,16 @@ import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
 import { AccessGuard } from "@/common/guards/Access.guard";
+import {
+    type ITwoFactorAuthenticationFactory,
+    TwoFactorAuthenticationFactoryToken,
+} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthentication.factory";
 import { ActivateAccessScopesDto } from "@/modules/identity/authentication/dto/incoming/ActivateAccessScopes.dto";
 import { type IAuthenticationMapper, AuthenticationMapperToken } from "@/modules/identity/authentication/mappers/IAuthentication.mapper";
 import {
     type IAuthenticationService,
     AuthenticationServiceToken,
 } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
-import {
-    type ITwoFactorAuthenticationFactory,
-    TwoFactorAuthenticationFactoryToken,
-} from "@/modules/identity/authentication/services/interfaces/ITwoFactorAuthentication.factory";
 import { type User } from "@/types/User";
 
 @Controller("scopes")

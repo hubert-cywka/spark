@@ -1,7 +1,7 @@
 import { IsDateString, IsEnum, IsUUID } from "class-validator";
 
 import { IsNullable } from "@/lib/validation";
-import { TwoFactorAuthenticationMethod } from "@/modules/identity/authentication/types/TwoFactorAuthenticationMethod";
+import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 
 export class TwoFactorAuthenticationOptionDto {
     @IsUUID("4")

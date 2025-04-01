@@ -18,16 +18,16 @@ import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
 import { AccessGuard } from "@/common/guards/Access.guard";
-import { Verify2FACodeDto } from "@/modules/identity/authentication/dto/incoming/Verify2FACode.dto";
+import { Verify2FACodeDto } from "@/modules/identity/2fa/dto/Verify2FACode.dto";
 import {
     type ITwoFactorAuthenticationOptionMapper,
     TwoFactorAuthenticationOptionMapperToken,
-} from "@/modules/identity/authentication/mappers/ITwoFactorAuthenticationOption.mapper";
+} from "@/modules/identity/2fa/mappers/ITwoFactorAuthenticationOption.mapper";
 import {
     type ITwoFactorAuthenticationFactory,
     TwoFactorAuthenticationFactoryToken,
-} from "@/modules/identity/authentication/services/interfaces/ITwoFactorAuthentication.factory";
-import { TwoFactorAuthenticationMethod } from "@/modules/identity/authentication/types/TwoFactorAuthenticationMethod";
+} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthentication.factory";
+import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 import { type User } from "@/types/User";
 
 @Controller("2fa")

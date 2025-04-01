@@ -2,13 +2,13 @@ import { Inject, Injectable } from "@nestjs/common";
 import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 
-import { TwoFactorAuthenticationBaseService } from "@/modules/identity/authentication/services/implementations/TwoFactorAuthenticationBase.service";
-import { type ITwoFactorAuthenticationService } from "@/modules/identity/authentication/services/interfaces/ITwoFactorAuthentication.service";
+import { TwoFactorAuthenticationBaseService } from "@/modules/identity/2fa/services/implementations/TwoFactorAuthenticationBase.service";
+import { type ITwoFactorAuthenticationService } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthentication.service";
 import {
     type ITwoFactorAuthenticationPublisherService,
     TwoFactorAuthenticationPublisherServiceToken,
-} from "@/modules/identity/authentication/services/interfaces/ITwoFactorAuthenticationPublisher.service";
-import { TwoFactorAuthenticationMethod } from "@/modules/identity/authentication/types/TwoFactorAuthenticationMethod";
+} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationPublisher.service";
+import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 import { type User } from "@/types/User";
 

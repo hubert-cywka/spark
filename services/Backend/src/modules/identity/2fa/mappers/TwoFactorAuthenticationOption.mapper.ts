@@ -1,10 +1,10 @@
 import { plainToClass } from "class-transformer";
 
 import { BaseModelDTOEntityMapper } from "@/common/mappers/BaseModelDTOEntity.mapper";
-import { TwoFactorAuthenticationOptionDto } from "@/modules/identity/authentication/dto/outgoing/TwoFactorAuthenticationOption.dto";
-import { TwoFactorAuthenticationOptionEntity } from "@/modules/identity/authentication/entities/TwoFactorAuthenticationOption.entity";
-import { type ITwoFactorAuthenticationOptionMapper } from "@/modules/identity/authentication/mappers/ITwoFactorAuthenticationOption.mapper";
-import { TwoFactorAuthenticationOption } from "@/modules/identity/authentication/models/TwoFactorAuthenticationOption.model";
+import { TwoFactorAuthenticationOptionDto } from "@/modules/identity/2fa/dto/TwoFactorAuthenticationOption.dto";
+import { TwoFactorAuthenticationOptionEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationOption.entity";
+import { type ITwoFactorAuthenticationOptionMapper } from "@/modules/identity/2fa/mappers/ITwoFactorAuthenticationOption.mapper";
+import { TwoFactorAuthenticationOption } from "@/modules/identity/2fa/models/TwoFactorAuthenticationOption.model";
 
 export class TwoFactorAuthenticationOptionMapper
     extends BaseModelDTOEntityMapper<TwoFactorAuthenticationOption, TwoFactorAuthenticationOptionDto, TwoFactorAuthenticationOptionEntity>

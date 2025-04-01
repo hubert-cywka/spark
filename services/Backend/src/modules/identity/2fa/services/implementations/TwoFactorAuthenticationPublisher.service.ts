@@ -3,7 +3,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { Email2FACodeIssuedEvent, Email2FACodeIssuedEventPayload } from "@/common/events";
 import { EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
 import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
-import { type ITwoFactorAuthenticationPublisherService } from "@/modules/identity/authentication/services/interfaces/ITwoFactorAuthenticationPublisher.service";
+import { type ITwoFactorAuthenticationPublisherService } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationPublisher.service";
 
 @Injectable()
 export class TwoFactorAuthenticationPublisherService implements ITwoFactorAuthenticationPublisherService {

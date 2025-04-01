@@ -16,6 +16,10 @@ import {
 import { CURRENT_JWT_VERSION } from "@/modules/identity/authentication/constants";
 import { RegisterWithCredentialsDto } from "@/modules/identity/authentication/dto/incoming/RegisterWithCredentials.dto";
 import { InvalidAccessTokenError } from "@/modules/identity/authentication/errors/InvalidAccessToken.error";
+import {
+    type IAccessScopesService,
+    AccessScopesServiceToken,
+} from "@/modules/identity/authentication/services/interfaces/IAccessScopes.service";
 import { type IAuthenticationService } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
 import {
     type IAuthPublisherService,
@@ -27,10 +31,6 @@ import {
 } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
 import { type AccessTokenPayload, type AuthenticationResult } from "@/modules/identity/authentication/types/Authentication";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
-import {
-    type IAccessScopesService,
-    AccessScopesServiceToken,
-} from "@/modules/identity/authorization/services/interfaces/IAccessScopes.service";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
 // TODO: Consider using Keycloak (or other auth provider)

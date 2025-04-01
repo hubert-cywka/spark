@@ -2,9 +2,10 @@ import { Injectable } from "@nestjs/common";
 import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 
-import { TwoFactorAuthenticationBaseService } from "@/modules/identity/authentication/services/implementations/TwoFactorAuthenticationBase.service";
-import { type ITwoFactorAuthenticationService } from "@/modules/identity/authentication/services/interfaces/ITwoFactorAuthentication.service";
-import { TwoFactorAuthenticationMethod } from "@/modules/identity/authentication/types/TwoFactorAuthenticationMethod";
+import { IssuingCodesNotSupportedError } from "@/modules/identity/2fa/errors/IssuingCodesNotSupported.error";
+import { TwoFactorAuthenticationBaseService } from "@/modules/identity/2fa/services/implementations/TwoFactorAuthenticationBase.service";
+import { type ITwoFactorAuthenticationService } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthentication.service";
+import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 import { type User } from "@/types/User";
 
@@ -22,7 +23,7 @@ export class TwoFactorAuthenticationAppService extends TwoFactorAuthenticationBa
     }
 
     protected onCodeIssued(user: User, code: string): Promise<void> {
-        throw new Error(); // TODO: Not supported, code is issued by authenticator app
+        throw new IssuingCodesNotSupportedError();
     }
 
     protected get2FAMethod(): TwoFactorAuthenticationMethod {
