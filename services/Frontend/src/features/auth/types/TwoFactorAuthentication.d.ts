@@ -1,1 +1,1 @@
-export type TwoFactorAuthenticationStrategy = "email" | "authenticator_app";
+export type TwoFactorAuthenticationStrategy = "email" | "app";

@@ -11,7 +11,6 @@ export const TwoFactorAuthenticationConfiguration = () => {
 
     const handle2FAOptionStateChange = (strategy: TwoFactorAuthenticationStrategy, value: boolean) => {
         // TODO
-        console.log({ strategy, value });
     };
 
     const available2FAOptions = [
@@ -21,7 +20,7 @@ export const TwoFactorAuthenticationConfiguration = () => {
         },
         {
             label: t("authentication.2fa.configuration.options.authenticator.label"),
-            strategy: "authenticator_app",
+            strategy: "app",
         },
     ] as const;
 

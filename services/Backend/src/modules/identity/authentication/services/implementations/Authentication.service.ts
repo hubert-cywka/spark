@@ -1,9 +1,9 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { Transactional } from "@nestjs-cls/transactional";
 
-import { type AccessScopes } from "@/common/types/AccessScope";
+import { type AccessScopes, AccessScope } from "@/common/types/AccessScope";
 import type { Account } from "@/modules/identity/account/models/Account.model";
 import {
     type IFederatedAccountService,
@@ -15,6 +15,7 @@ import {
 } from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
 import { CURRENT_JWT_VERSION } from "@/modules/identity/authentication/constants";
 import { RegisterWithCredentialsDto } from "@/modules/identity/authentication/dto/incoming/RegisterWithCredentials.dto";
+import { InvalidAccessTokenError } from "@/modules/identity/authentication/errors/InvalidAccessToken.error";
 import { type IAuthenticationService } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
 import {
     type IAuthPublisherService,
@@ -35,6 +36,7 @@ import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/d
 // TODO: Consider using Keycloak (or other auth provider)
 @Injectable()
 export class AuthenticationService implements IAuthenticationService {
+    private readonly logger = new Logger(AuthenticationService.name);
     private readonly accessTokenSigningSecret: string;
     private readonly accessTokenExpirationTimeInSeconds: number;
 
@@ -50,7 +52,7 @@ export class AuthenticationService implements IAuthenticationService {
         @Inject(AuthPublisherServiceToken)
         private publisher: IAuthPublisherService,
         @Inject(AccessScopesServiceToken)
-        private authorizationService: IAccessScopesService
+        private scopesService: IAccessScopesService
     ) {
         this.accessTokenSigningSecret = configService.getOrThrow<string>("modules.identity.jwt.signingSecret");
         this.accessTokenExpirationTimeInSeconds = configService.getOrThrow<number>("modules.identity.jwt.expirationTimeInSeconds");
@@ -58,7 +60,7 @@ export class AuthenticationService implements IAuthenticationService {
 
     public async loginWithCredentials(email: string, password: string): Promise<AuthenticationResult> {
         const account = await this.accountService.findActivatedByCredentials(email, password);
-        return await this.createAuthenticationResult(account, this.authorizationService.getByAccountId(account.id));
+        return await this.createAuthenticationResult(account, this.scopesService.getByAccountId(account.id));
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
@@ -78,7 +80,7 @@ export class AuthenticationService implements IAuthenticationService {
 
     public async loginWithExternalIdentity(identity: ExternalIdentity): Promise<AuthenticationResult> {
         const account = await this.externalAccountService.findByExternalIdentity(identity);
-        return await this.createAuthenticationResult(account, this.authorizationService.getByAccountId(account.id));
+        return await this.createAuthenticationResult(account, this.scopesService.getByAccountId(account.id));
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
@@ -95,16 +97,29 @@ export class AuthenticationService implements IAuthenticationService {
                 isActivated: true,
             },
         });
-        return await this.createAuthenticationResult(account, this.authorizationService.getByAccountId(account.id));
+        return await this.createAuthenticationResult(account, this.scopesService.getByAccountId(account.id));
     }
 
     public async redeemRefreshToken(refreshToken: string): Promise<AuthenticationResult> {
         const { account } = await this.refreshTokenService.redeem(refreshToken);
-        return await this.createAuthenticationResult(account, this.authorizationService.getByAccountId(account.id));
+        return await this.createAuthenticationResult(account, this.scopesService.getByAccountId(account.id));
     }
 
     public async logout(refreshToken: string): Promise<void> {
         return this.refreshTokenService.invalidate(refreshToken);
+    }
+
+    // TODO: Remember to invalidate refresh token before issuing new one
+    public async upgradeAccessToken(accessToken: string, scopes: AccessScope[]): Promise<AuthenticationResult> {
+        const payload: AccessTokenPayload | null = this.jwtService.decode(accessToken);
+
+        if (!payload) {
+            this.logger.warn("Invalid access token.");
+            throw new InvalidAccessTokenError();
+        }
+
+        const upgradedScopes = this.scopesService.activate(payload.account.id, scopes);
+        return this.createAuthenticationResult(payload.account, upgradedScopes);
     }
 
     private async createAuthenticationResult(account: Account, accessScopes: AccessScopes): Promise<AuthenticationResult> {

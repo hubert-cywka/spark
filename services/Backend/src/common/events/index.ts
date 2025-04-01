@@ -23,8 +23,13 @@ export {
     IntegrationEvent,
 };
 export { IntegrationEventTopics };
+export * from "./types/2fa/Email2FACodeIssuedEvent";
 export * from "./types/account/AccountActivatedEvent";
 export * from "./types/account/AccountActivationTokenRequestedEvent";
 export * from "./types/account/AccountPasswordUpdatedEvent";
 export * from "./types/account/AccountRegisteredEvent";
+export * from "./types/account/AccountRemovalCompletedEvent";
+export * from "./types/account/AccountRemovalRequestedEvent";
 export * from "./types/account/AccountRequestedPasswordResetEvent";
+export * from "./types/account/AccountSuspendedEvent";
+export * from "./types/alert/DailyReminderTriggeredEvent";

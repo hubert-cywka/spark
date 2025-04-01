@@ -1,11 +1,12 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 
-import { type AccessScopes } from "@/common/types/AccessScope";
+import { type AccessScopes, AccessScope } from "@/common/types/AccessScope";
+import { AccessScopeUnavailableError } from "@/modules/identity/authorization/errors/AccessScopeUnavailable.error";
 import { type IAccessScopesService } from "@/modules/identity/authorization/services/interfaces/IAccessScopes.service";
 
 @Injectable()
 export class AccessScopesService implements IAccessScopesService {
-    constructor() {}
+    private readonly logger = new Logger(AccessScopesService.name);
 
     // TODO: For now it's fine to have default set of scopes for everyone.
     public getByAccountId(_accountId: string): AccessScopes {
@@ -28,6 +29,27 @@ export class AccessScopesService implements IAccessScopesService {
                 "delete:alert",
             ],
             inactive: ["write:2fa", "delete:2fa", "delete:account"],
+        };
+    }
+
+    public activate(accountId: string, scopesToActivate: AccessScope[]): AccessScopes {
+        const scopes = this.getByAccountId(accountId);
+        const activeScopes = [...scopes.active];
+        let inactiveScopes = [...scopes.inactive];
+
+        scopesToActivate.forEach((scopeToActivate) => {
+            if (inactiveScopes.includes(scopeToActivate)) {
+                activeScopes.push(scopeToActivate);
+                inactiveScopes = inactiveScopes.filter((scopeToFilterOut) => scopeToActivate !== scopeToFilterOut);
+            } else if (!activeScopes.includes(scopeToActivate)) {
+                this.logger.warn({ accountId, scopeToActivate }, "Cannot activate access scope.");
+                throw new AccessScopeUnavailableError();
+            }
+        });
+
+        return {
+            active: activeScopes,
+            inactive: inactiveScopes,
         };
     }
 }

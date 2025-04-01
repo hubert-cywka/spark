@@ -12,6 +12,7 @@ import { AccountRemovalRequestedEventHandler } from "@/modules/mail/events/Accou
 import { AccountRemovedEventHandler } from "@/modules/mail/events/AccountRemovedEvent.handler";
 import { AccountRequestedPasswordResetEventHandler } from "@/modules/mail/events/AccountRequestedPasswordResetEvent.handler";
 import { DailyReminderTriggeredEventHandler } from "@/modules/mail/events/DailyReminderTriggeredEvent.handler";
+import { TwoFactorAuthCodeIssuedEventHandler } from "@/modules/mail/events/TwoFactorAuthCodeIssuedEvent.handler";
 import { MAIL_MODULE_DATA_SOURCE } from "@/modules/mail/infrastructure/database/constants";
 import { InitializeMailModule1735737562761 } from "@/modules/mail/infrastructure/database/migrations/1735737562761-InitializeMailModule";
 import { AddTenantIdToOutboxAndInbox1743101783697 } from "@/modules/mail/infrastructure/database/migrations/1743101783697-addTenantIdToOutboxAndInbox";
@@ -33,6 +34,7 @@ import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.s
         DailyReminderTriggeredEventHandler,
         AccountRemovedEventHandler,
         AccountRemovalRequestedEventHandler,
+        TwoFactorAuthCodeIssuedEventHandler,
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
@@ -44,6 +46,7 @@ import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.s
                 DailyReminderTriggeredEventHandler,
                 AccountRemovedEventHandler,
                 AccountRemovalRequestedEventHandler,
+                TwoFactorAuthCodeIssuedEventHandler,
             ],
         },
     ],

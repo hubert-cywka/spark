@@ -1,3 +1,4 @@
+import { AccessScope } from "@/common/types/AccessScope";
 import { RegisterWithCredentialsDto } from "@/modules/identity/authentication/dto/incoming/RegisterWithCredentials.dto";
 import { type AuthenticationResult } from "@/modules/identity/authentication/types/Authentication";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
@@ -14,4 +15,6 @@ export interface IAuthenticationService {
 
     redeemRefreshToken(refreshToken: string): Promise<AuthenticationResult>;
     logout(refreshToken: string): Promise<void>;
+
+    upgradeAccessToken(accountId: string, scopes: AccessScope[]): Promise<AuthenticationResult>;
 }
