@@ -11,6 +11,7 @@ import {
     Post,
     UseGuards,
 } from "@nestjs/common";
+import { plainToClass } from "class-transformer";
 
 import { AccessScopes } from "@/common/decorators/AccessScope.decorator";
 import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
@@ -19,6 +20,7 @@ import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
 import { AccessGuard } from "@/common/guards/Access.guard";
+import { EnableApp2FADto } from "@/modules/identity/2fa/dto/EnableApp2FA.dto";
 import { Verify2FACodeDto } from "@/modules/identity/2fa/dto/Verify2FACode.dto";
 import {
     type ITwoFactorAuthenticationOptionMapper,
@@ -35,6 +37,7 @@ import {
 import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 import { type User } from "@/types/User";
 
+// TODO: Stricter rate limiting
 @Controller("2fa")
 export class TwoFactorAuthenticationController {
     public constructor(
@@ -76,6 +79,20 @@ export class TwoFactorAuthenticationController {
         }
     }
 
+    @Post("method/app/enable")
+    @UseGuards(AccessGuard)
+    @AccessScopes("write:2fa")
+    async enableApp2FA(@AuthenticatedUserContext() user: User) {
+        const twoFactorAuthService = this.twoFactorAuthFactory.create(TwoFactorAuthenticationMethod.AUTHENTICATOR);
+
+        try {
+            const result = await twoFactorAuthService.createMethod(user);
+            return plainToClass(EnableApp2FADto, { url: result });
+        } catch (err) {
+            whenError(err).is(EntityConflictError).throw(new ConflictException()).elseRethrow();
+        }
+    }
+
     @Post("method/:method/enable")
     @UseGuards(AccessGuard)
     @AccessScopes("write:2fa")
@@ -87,8 +104,7 @@ export class TwoFactorAuthenticationController {
         const twoFactorAuthService = this.twoFactorAuthFactory.create(method);
 
         try {
-            const result = await twoFactorAuthService.createMethod(user);
-            return { url: result };
+            await twoFactorAuthService.createMethod(user);
         } catch (err) {
             whenError(err).is(EntityConflictError).throw(new ConflictException()).elseRethrow();
         }
@@ -106,17 +122,9 @@ export class TwoFactorAuthenticationController {
         const twoFactorAuthService = this.twoFactorAuthFactory.create(method);
 
         try {
-            const result = await twoFactorAuthService.confirmMethod(user, body.code);
-            return { status: result };
+            await twoFactorAuthService.confirmMethod(user, body.code);
         } catch (err) {
-            whenError(err)
-                .is(EntityConflictError)
-                .throw(new ConflictException())
-                .is(EntityNotFoundError)
-                .throw(new NotFoundException())
-                .is(ForbiddenError)
-                .throw(new ForbiddenException())
-                .elseRethrow();
+            whenError(err).is(EntityNotFoundError).throw(new NotFoundException()).elseRethrow();
         }
     }
 
@@ -131,8 +139,7 @@ export class TwoFactorAuthenticationController {
         const twoFactorAuthService = this.twoFactorAuthFactory.create(method);
 
         try {
-            const result = await twoFactorAuthService.deleteMethod(user);
-            return { url: result };
+            await twoFactorAuthService.deleteMethod(user);
         } catch (err) {
             whenError(err)
                 .is(EntityConflictError)

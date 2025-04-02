@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 
 import { TwoFactorAuthenticationController } from "@/modules/identity/2fa/controllers/TwoFactorAuthentication.controller";
+import { AccountActivatedEventHandler } from "@/modules/identity/2fa/events/AccountActivatedEvent.handler";
 import { TwoFactorAuthenticationOptionMapperToken } from "@/modules/identity/2fa/mappers/ITwoFactorAuthenticationOption.mapper";
 import { TwoFactorAuthenticationOptionMapper } from "@/modules/identity/2fa/mappers/TwoFactorAuthenticationOption.mapper";
 import { TwoFactorAuthenticationFactory } from "@/modules/identity/2fa/services/implementations/TwoFactorAuthentication.factory";
@@ -30,8 +31,9 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
             provide: TwoFactorAuthenticationMethodsProviderServiceToken,
             useClass: TwoFactorAuthenticationMethodsProviderService,
         },
+        AccountActivatedEventHandler,
     ],
     controllers: [TwoFactorAuthenticationController],
-    exports: [TwoFactorAuthenticationFactoryToken],
+    exports: [TwoFactorAuthenticationFactoryToken, AccountActivatedEventHandler],
 })
 export class TwoFactorAuthenticationModule {}

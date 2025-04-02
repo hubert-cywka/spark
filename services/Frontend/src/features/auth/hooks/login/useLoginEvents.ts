@@ -37,5 +37,5 @@ export const useLoginEvents = () => {
 
 const errorsMap: ErrorsMap = {
     [HttpStatusCode.Unauthorized]: "api.authentication.login.errors.unauthorized",
-    [HttpStatusCode.Forbidden]: "api.authentication.register.errors.forbidden",
+    [HttpStatusCode.Forbidden]: "api.authentication.login.errors.forbidden",
 };

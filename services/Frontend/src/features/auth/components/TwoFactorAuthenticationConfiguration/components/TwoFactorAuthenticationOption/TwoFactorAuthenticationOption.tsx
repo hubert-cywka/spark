@@ -1,19 +1,19 @@
 import styles from "./styles/TwoFactorAuthenticationOption.module.scss";
 
 import { Toggle } from "@/components/Toggle";
-import { TwoFactorAuthenticationStrategy } from "@/features/auth/types/TwoFactorAuthentication";
+import { TwoFactorAuthenticationMethod } from "@/features/auth/types/TwoFactorAuthentication";
 
 type TwoFactorAuthenticationOptionProps = {
-    strategy: TwoFactorAuthenticationStrategy;
+    method: TwoFactorAuthenticationMethod;
     label: string;
     isEnabled: boolean;
-    onChange: (strategy: TwoFactorAuthenticationStrategy, newValue: boolean) => void;
+    onChange: (strategy: TwoFactorAuthenticationMethod, newValue: boolean) => void;
 };
 
-export const TwoFactorAuthenticationOption = ({ label, strategy, isEnabled, onChange }: TwoFactorAuthenticationOptionProps) => {
+export const TwoFactorAuthenticationOption = ({ label, method, isEnabled, onChange }: TwoFactorAuthenticationOptionProps) => {
     return (
         <li className={styles.option}>
-            <Toggle isSelected={isEnabled} onChange={(value) => onChange(strategy, value)} /> {label}
+            <Toggle isSelected={isEnabled} onChange={(value) => onChange(method, value)} /> {label}
         </li>
     );
 };

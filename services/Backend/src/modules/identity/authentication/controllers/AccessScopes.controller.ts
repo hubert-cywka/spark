@@ -18,6 +18,7 @@ import {
 } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
 import { type User } from "@/types/User";
 
+// TODO: Stricter rate limiting
 @Controller("scopes")
 export class AccessScopesController {
     public constructor(

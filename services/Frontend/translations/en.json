@@ -107,7 +107,20 @@
                 }
             }
         },
+        "2fa": {
+            "requestCode": {
+                "email": {
+                    "notFound": "Couldn't find eligible 2FA method."
+                }
+            }
+        },
         "authentication": {
+            "upgradeSession": {
+                "errors": {
+                    "unauthorized": "This 2FA method is not enabled.",
+                    "forbidden": "Code invalid or has expired."
+                }
+            },
             "refresh": {
                 "errors": {
                     "unauthorized": "We couldn't re-authenticate you."
@@ -205,32 +218,6 @@
                     "register": {
                         "label": "Register"
                     }
-                }
-            }
-        }
-    },
-    "authorization": {
-        "scopes": {
-            "errors": {
-                "alreadyActive": "Scopes are already active",
-                "forbidden": "Scopes cannot be activated"
-            }
-        },
-        "2fa": {
-            "modal": {
-                "header": "Authorization required",
-                "description": "You need to perform authorization in order to access this resource. Upon successful authorization, you'll gain required permissions for limited time.",
-                "codeInput": {
-                    "label": "Code from 2FA provider:"
-                },
-                "submitButton": {
-                    "label": "Authorize"
-                },
-                "cancelButton": {
-                    "label": "Cancel"
-                },
-                "resendButton": {
-                    "label": "Get code via e-mail"
                 }
             }
         }
@@ -646,7 +633,118 @@
         }
     },
     "authentication": {
+        "upgradeSession": {
+            "notifications": {
+                "forbidden": {
+                    "title": "You are not allowed to access this resource."
+                },
+                "error": {
+                    "title": "Failed to upgrade session"
+                },
+                "success": {
+                    "title": "Access granted",
+                    "body": "You are now using upgraded session."
+                }
+            }
+        },
         "2fa": {
+            "requestCode": {
+                "email": {
+                    "notifications": {
+                        "error": {
+                            "title": "Failed to request code"
+                        },
+                        "success": {
+                            "title": "Code requested",
+                            "body": "Please check your email"
+                        }
+                    }
+                }
+            },
+            "confirm": {
+                "notifications": {
+                    "success": {
+                        "title": "2FA method enabled"
+                    },
+                    "error": {
+                        "title": "Can't disable 2FA"
+                    }
+                }
+            },
+            "disable": {
+                "notifications": {
+                    "2faRequired": {
+                        "title": "Can't disable 2FA",
+                        "body": "At least 1 method must be enabled."
+                    },
+                    "error": {
+                        "title": "Can't disable 2FA"
+                    }
+                }
+            },
+            "enable": {
+                "notifications": {
+                    "errors": {
+                        "title": "Can't enable 2FA method"
+                    }
+                },
+                "modal": {
+                    "title": "Enable 2FA",
+                    "codeInput": {
+                        "label": "6-digit code:"
+                    },
+                    "submitButton": {
+                        "label": "Submit"
+                    },
+                    "cancelButton": {
+                        "label": "Cancel"
+                    },
+                    "resendButton": {
+                        "label": "Request code"
+                    },
+                    "methods": {
+                        "email": {
+                            "description": "Request code using button below and after a while you will receive an email with the code."
+                        },
+                        "app": {
+                            "description": "Request code using button below and after a while you will receive an email with the code."
+                        }
+                    }
+                }
+            },
+            "prompt": {
+                "modal": {
+                    "header": "Two-factor authentication",
+                    "methods": {
+                        "email": {
+                            "label": "Email",
+                            "description": "Request code using button below and after a while you will receive an email with the code."
+                        },
+                        "app": {
+                            "label": "Authenticator app",
+                            "description": "Request code using button below and after a while you will receive an email with the code."
+                        },
+                        "selection": {
+                            "description": "You need to perform 2FA in order to access this resource. Upon successful authentication, you'll gain required permissions for limited time."
+                        }
+                    },
+                    "codeInput": {
+                        "label": "6-digit code:"
+                    },
+                    "submitButton": {
+                        "label": "Submit"
+                    },
+                    "cancelButton": {
+                        "label": "Cancel"
+                    },
+                    "resendButton": {
+                        "label": "Request code"
+                    },
+                    "backButton": {
+                        "label": "Select another 2FA method"
+                    }
+                }
+            },
             "configuration": {
                 "optionsHeader": "Available 2FA options:",
                 "options": {

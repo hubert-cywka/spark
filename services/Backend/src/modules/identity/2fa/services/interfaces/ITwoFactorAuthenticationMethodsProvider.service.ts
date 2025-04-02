@@ -4,4 +4,5 @@ export const TwoFactorAuthenticationMethodsProviderServiceToken = Symbol("TwoFac
 
 export interface ITwoFactorAuthenticationMethodsProviderService {
     findEnabledMethods(accountId: string): Promise<TwoFactorAuthenticationOption[]>;
+    enableDefaultMethods(accountId: string): Promise<void>;
 }

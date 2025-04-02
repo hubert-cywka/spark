@@ -58,6 +58,12 @@
         border: none;
     }
 
+    &[data-variant="link"] {
+        color: tokens.$color-info-text-300;
+        background: rgba(tokens.$color-info-solid-300, 0.1);
+        border: none;
+    }
+
     &[data-disabled] {
         filter: grayscale(0.9);
         opacity: 0.5;
@@ -66,11 +72,11 @@
 
     &:not(&[data-disabled]) {
         &[data-hovered] {
-            transform: scale(1.02);
+            transform: scale(1.01);
         }
 
         &[data-pressed] {
-            transform: scale(0.98);
+            transform: scale(0.99);
         }
     }
 

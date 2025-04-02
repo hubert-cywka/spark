@@ -1,75 +1,117 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { ArrowLeft } from "lucide-react";
 
 import styles from "./styles/TwoFactorAuthenticationModal.module.scss";
 
 import { Button } from "@/components/Button";
+import { Icon } from "@/components/Icon";
 import { CodeInput } from "@/components/Input/CodeInput.tsx";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "@/components/Modal";
+import { TwoFactorAuthenticationMethodSelection } from "@/features/auth/components/TwoFactorAuthenticationModal/components/TwoFactorAuthenticationMethodSelection";
+import {
+    AppTwoFactorAuthenticationPrompt,
+    EmailTwoFactorAuthenticationPrompt,
+} from "@/features/auth/components/TwoFactorAuthenticationModal/components/TwoFactorAuthenticationPrompt";
+import { TWO_FACTOR_AUTH_CODE_LENGTH } from "@/features/auth/constants";
 import { useTwoFactorAuthentication } from "@/features/auth/hooks";
+import { useGetEnabled2FAOptions } from "@/features/auth/hooks/2fa/useGetEnabled2FAOptions.ts";
+import { useUpgradeSession } from "@/features/auth/hooks/session/useUpgradeSession.ts";
+import { useUpgradeSessionEvents } from "@/features/auth/hooks/session/useUpgradeSessionEvents.ts";
+import { AccessScope } from "@/features/auth/types/Identity";
+import { TwoFactorAuthenticationMethod } from "@/features/auth/types/TwoFactorAuthentication";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
-const TWO_FACTOR_AUTH_OTP_LENGTH = 6;
-const RESEND_DELAY = 60;
+const promptComponentsMap = {
+    app: AppTwoFactorAuthenticationPrompt,
+    email: EmailTwoFactorAuthenticationPrompt,
+} as const;
 
-export const TwoFactorAuthenticationModal = () => {
+type TwoFactorAuthenticationModalProps = {
+    scopesToActivate: AccessScope[];
+    onClose: () => void;
+    method: TwoFactorAuthenticationMethod | null;
+    onMethodSelected: (method: TwoFactorAuthenticationMethod | null) => void;
+};
+
+export const TwoFactorAuthenticationModal = ({ scopesToActivate, method, onMethodSelected }: TwoFactorAuthenticationModalProps) => {
     const t = useTranslate();
     const [code, setCode] = useState<string>("");
-    const [resendTimer, setResendTimer] = useState<number>(0);
 
-    const { isAuthorizationInProgress, cancelAuthorizationProcess } = useTwoFactorAuthentication();
+    const { data: options } = useGetEnabled2FAOptions();
+    const availableMethods = (options ?? []).map(({ method }) => method);
 
-    const handleResendCode = async () => {
-        // TODO: Request code from backend
-        setResendTimer(RESEND_DELAY);
+    const { cancelAuthenticationProcess, isAuthenticationInProgress } = useTwoFactorAuthentication();
+    const { mutateAsync: upgradeSession, isPending: isUpgradingSession } = useUpgradeSession();
+    const { onSessionUpgradeSuccess, onSessionUpgradeError } = useUpgradeSessionEvents();
+
+    const clearSelectedMethod = () => {
+        onMethodSelected(null);
+        clearCode();
     };
 
-    useEffect(() => {
-        if (resendTimer > 0) {
-            const timer = setInterval(() => {
-                setResendTimer((prevTimer) => prevTimer - 1);
-            }, 1000);
-
-            return () => clearInterval(timer);
-        }
-    }, [resendTimer]);
-
-    const formatTime = (seconds: number) => {
-        if (seconds <= 0) {
-            return t("authorization.2fa.modal.resendButton.label");
-        }
-
-        return `${t("authorization.2fa.modal.resendButton.label")} (${seconds}s)`;
+    const clearCode = () => {
+        setCode("");
     };
+
+    const handleSessionUpgrade = async () => {
+        if (!method || !code) return;
+        try {
+            await upgradeSession({ code, method, scopes: scopesToActivate });
+            clearCode();
+            onSessionUpgradeSuccess();
+            cancelAuthenticationProcess();
+        } catch (error) {
+            onSessionUpgradeError(error);
+        }
+    };
+
+    const TwoFactorAuthenticationPromptComponent = method ? promptComponentsMap[method] : null;
 
     return (
-        <Modal isOpen={isAuthorizationInProgress}>
-            <ModalHeader onClose={cancelAuthorizationProcess}>{t("authorization.2fa.modal.header")}</ModalHeader>
+        <Modal isOpen={isAuthenticationInProgress}>
+            <ModalHeader onClose={cancelAuthenticationProcess}>{t("authentication.2fa.prompt.modal.header")}</ModalHeader>
 
             <ModalBody>
-                {t("authorization.2fa.modal.description")}
-
-                <CodeInput
-                    className={styles.codeInput}
-                    label={t("authorization.2fa.modal.codeInput.label")}
-                    onChange={setCode}
-                    value={code}
-                    length={TWO_FACTOR_AUTH_OTP_LENGTH}
-                />
+                {!TwoFactorAuthenticationPromptComponent ? (
+                    <TwoFactorAuthenticationMethodSelection onMethodSelected={onMethodSelected} availableMethods={availableMethods} />
+                ) : (
+                    <TwoFactorAuthenticationPromptComponent>
+                        <CodeInput
+                            value={code}
+                            onChange={setCode}
+                            length={TWO_FACTOR_AUTH_CODE_LENGTH}
+                            label={t("authentication.2fa.prompt.modal.codeInput.label")}
+                            className={styles.codeInput}
+                        />
+                    </TwoFactorAuthenticationPromptComponent>
+                )}
             </ModalBody>
 
             <ModalFooter>
-                {/* TODO: Display only if email 2FA is enabled */}
-                <Button className={styles.sendViaEmailButton} isDisabled={resendTimer > 0} onPress={handleResendCode}>
-                    {formatTime(resendTimer)}
+                {!!method && (
+                    <Button
+                        size="1"
+                        className={styles.backButton}
+                        leftDecorator={<Icon slot={ArrowLeft} size="1" />}
+                        onPress={clearSelectedMethod}
+                        variant="subtle"
+                    >
+                        {t("authentication.2fa.prompt.modal.backButton.label")}
+                    </Button>
+                )}
+
+                <Button variant="secondary" onPress={cancelAuthenticationProcess}>
+                    {t("authentication.2fa.prompt.modal.cancelButton.label")}
                 </Button>
 
-                <Button variant="secondary" onPress={cancelAuthorizationProcess}>
-                    {t("authorization.2fa.modal.cancelButton.label")}
-                </Button>
-                <Button variant="confirm" isDisabled={code.length !== TWO_FACTOR_AUTH_OTP_LENGTH}>
-                    {t("authorization.2fa.modal.submitButton.label")}
+                <Button
+                    variant="confirm"
+                    isDisabled={code.length !== TWO_FACTOR_AUTH_CODE_LENGTH || isUpgradingSession}
+                    onPress={handleSessionUpgrade}
+                >
+                    {t("authentication.2fa.prompt.modal.submitButton.label")}
                 </Button>
             </ModalFooter>
         </Modal>

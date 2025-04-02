@@ -13,8 +13,8 @@ type AccessGuardProps = PropsWithChildren<{
 }>;
 
 export const AccessGuard = ({ children, requiredScopes, redirectUnauthorizedTo }: AccessGuardProps) => {
-    const { validate } = useAccessValidation();
-    const { hasAccess } = validate(requiredScopes);
+    const { validateAccess } = useAccessValidation();
+    const { hasAccess } = validateAccess(requiredScopes);
     const router = useRouter();
 
     useEffect(() => {

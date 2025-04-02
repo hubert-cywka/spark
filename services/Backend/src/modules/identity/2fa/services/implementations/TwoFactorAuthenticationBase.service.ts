@@ -14,31 +14,12 @@ import type { ITwoFactorAuthenticationService } from "@/modules/identity/2fa/ser
 import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 import { type User } from "@/types/User";
 
-const DEFAULT_VERIFICATION_WINDOW = 1;
+const DEFAULT_VERIFICATION_WINDOW = 3;
 
 export abstract class TwoFactorAuthenticationBaseService implements ITwoFactorAuthenticationService {
     protected readonly logger = new Logger(TwoFactorAuthenticationBaseService.name);
 
     protected constructor(private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>) {}
-
-    public async verifyCode(user: User, code: string): Promise<boolean> {
-        return await this.txHost.withTransaction(async () => {
-            const method = await this.findMethodByAccountId(user.id);
-
-            if (!method?.enabledAt) {
-                this.logger.warn({ accountId: user.id, method: this.get2FAMethod() }, "2FA method not found.");
-                throw new TwoFactorAuthMethodNotFoundError();
-            }
-
-            const otpProvider = this.createOtpProvider(user, method.secret);
-            const delta = otpProvider.validate({
-                token: code,
-                window: DEFAULT_VERIFICATION_WINDOW,
-            });
-
-            return !!delta;
-        });
-    }
 
     public async issueCode(user: User): Promise<void> {
         if (!this.canIssueCode()) {
@@ -78,6 +59,8 @@ export abstract class TwoFactorAuthenticationBaseService implements ITwoFactorAu
             }
 
             const otpProvider = this.createOtpProvider(user, secret);
+            await this.onMethodCreated(user, otpProvider);
+
             return otpProvider.toString();
         });
     }
@@ -123,7 +106,7 @@ export abstract class TwoFactorAuthenticationBaseService implements ITwoFactorAu
                 throw new TwoFactorAuthMethodAlreadyEnabledError();
             }
 
-            const verificationResult = await this.verifyCode(user, code);
+            const verificationResult = this.verifyCodeSync(user, code, method.secret);
 
             if (!verificationResult) {
                 this.logger.warn({ accountId: user.id, method: this.get2FAMethod() }, "Invalid TOTP.");
@@ -135,6 +118,29 @@ export abstract class TwoFactorAuthenticationBaseService implements ITwoFactorAu
 
             return true;
         });
+    }
+
+    public async verifyCode(user: User, code: string): Promise<boolean> {
+        return await this.txHost.withTransaction(async () => {
+            const method = await this.findMethodByAccountId(user.id);
+
+            if (!method?.enabledAt) {
+                this.logger.warn({ accountId: user.id, method: this.get2FAMethod() }, "2FA method not found.");
+                throw new TwoFactorAuthMethodNotFoundError();
+            }
+
+            return this.verifyCodeSync(user, code, method.secret);
+        });
+    }
+
+    private verifyCodeSync(user: User, code: string, secret: string): boolean {
+        const otpProvider = this.createOtpProvider(user, secret);
+        const delta = otpProvider.validate({
+            token: code,
+            window: DEFAULT_VERIFICATION_WINDOW,
+        });
+
+        return delta !== null;
     }
 
     private async createNew2FAMethod(accountId: string) {
@@ -176,7 +182,9 @@ export abstract class TwoFactorAuthenticationBaseService implements ITwoFactorAu
         return this.txHost.tx.getRepository(TwoFactorAuthenticationOptionEntity);
     }
 
-    protected abstract onCodeIssued(user: User, code: string): Promise<void>;
+    protected onCodeIssued(user: User, code: string): Promise<void> | void {}
+    protected onMethodCreated(user: User, provider: TOTP): Promise<void> | void {}
+
     protected abstract canIssueCode(): boolean;
     protected abstract get2FAMethod(): TwoFactorAuthenticationMethod;
     protected abstract getTOTPTimeToLive(): number;

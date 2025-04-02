@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { TOTP } from "otpauth";
 
 import { TwoFactorAuthenticationBaseService } from "@/modules/identity/2fa/services/implementations/TwoFactorAuthenticationBase.service";
 import { type ITwoFactorAuthenticationService } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthentication.service";
@@ -34,11 +35,20 @@ export class TwoFactorAuthenticationEmailService extends TwoFactorAuthentication
         });
     }
 
+    protected async onMethodCreated(user: User, provider: TOTP): Promise<void> {
+        const code = provider.generate();
+
+        await this.publisher.onEmail2FACodeIssued(user.id, {
+            email: user.email,
+            code,
+        });
+    }
+
     protected get2FAMethod(): TwoFactorAuthenticationMethod {
         return TwoFactorAuthenticationMethod.EMAIL;
     }
 
     protected getTOTPTimeToLive(): number {
-        return 60 * 3;
+        return 60;
     }
 }
