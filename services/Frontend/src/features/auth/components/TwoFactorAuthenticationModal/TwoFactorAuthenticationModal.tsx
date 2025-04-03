@@ -56,11 +56,14 @@ export const TwoFactorAuthenticationModal = ({ scopesToActivate, method, onMetho
     };
 
     const handleSessionUpgrade = async () => {
-        if (!method || !code) return;
+        if (!method || code.length !== TWO_FACTOR_AUTH_CODE_LENGTH) {
+            return;
+        }
+
         try {
             await upgradeSession({ code, method, scopes: scopesToActivate });
-            clearCode();
             onSessionUpgradeSuccess();
+            clearCode();
             cancelAuthenticationProcess();
         } catch (error) {
             onSessionUpgradeError(error);
@@ -81,6 +84,7 @@ export const TwoFactorAuthenticationModal = ({ scopesToActivate, method, onMetho
                         <CodeInput
                             value={code}
                             onChange={setCode}
+                            onSubmit={handleSessionUpgrade}
                             length={TWO_FACTOR_AUTH_CODE_LENGTH}
                             label={t("authentication.2fa.prompt.modal.codeInput.label")}
                             className={styles.codeInput}

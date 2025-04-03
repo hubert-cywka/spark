@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { HttpStatusCode } from "axios";
 
 import { ErrorsMap, useTranslateApiError } from "@/hooks/useTranslateApiError.ts";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
@@ -8,13 +9,6 @@ import { showToast } from "@/lib/notifications/showToast.tsx";
 export const useDisable2FAMethodEvents = () => {
     const t = useTranslate();
     const getErrorMessage = useTranslateApiError();
-
-    const onDisable2FAMethodSuccess = useCallback(() => {
-        showToast().success({
-            message: t("authentication.2fa.disable.notifications.success.body"),
-            title: t("authentication.2fa.disable.notifications.success.title"),
-        });
-    }, [t]);
 
     const onDisable2FAMethodError = useCallback(
         (err: unknown) => {
@@ -27,8 +21,10 @@ export const useDisable2FAMethodEvents = () => {
         [getErrorMessage, t]
     );
 
-    return { onDisable2FAMethodError, onDisable2FAMethodSuccess };
+    return { onDisable2FAMethodError };
 };
 
-// TODO
-const errorsMap: ErrorsMap = {};
+const errorsMap: ErrorsMap = {
+    [HttpStatusCode.NotFound]: "api.2fa.confirm.errors.notFound",
+    [HttpStatusCode.Conflict]: "api.2fa.confirm.errors.conflict",
+};

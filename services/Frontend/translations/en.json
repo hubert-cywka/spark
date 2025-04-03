@@ -108,6 +108,18 @@
             }
         },
         "2fa": {
+            "disable": {
+                "notFound": "2FA method does not found, try again later.",
+                "conflict": "At least one 2FA method must be enabled."
+            },
+            "enable": {
+                "conflict": "2FA method already enabled."
+            },
+            "confirm": {
+                "notFound": "2FA method does not found, try again later.",
+                "conflict": "2FA method already enabled.",
+                "forbidden": "Invalid or expired code"
+            },
             "requestCode": {
                 "email": {
                     "notFound": "Couldn't find eligible 2FA method."
@@ -707,7 +719,8 @@
                             "description": "Request code using button below and after a while you will receive an email with the code."
                         },
                         "app": {
-                            "description": "Request code using button below and after a while you will receive an email with the code."
+                            "description": "Request code using button below and after a while you will receive an email with the code.",
+                            "warning": "Until you enter valid confirmation code, each time we will generate new, unique QR code."
                         }
                     }
                 }

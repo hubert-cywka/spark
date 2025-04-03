@@ -16,10 +16,21 @@ type CodeInputProps = {
     length?: number;
     value: string;
     onChange: (value: string) => void;
+    onSubmit?: () => void;
     className?: string;
 };
 
-export const CodeInput = ({ value, label, required, length = DEFAULT_LENGTH, onChange, error, className, ...props }: CodeInputProps) => {
+export const CodeInput = ({
+    value,
+    label,
+    required,
+    length = DEFAULT_LENGTH,
+    onChange,
+    onSubmit,
+    error,
+    className,
+    ...props
+}: CodeInputProps) => {
     const inputRefs = useRef<Array<HTMLInputElement | null>>(Array(length).fill(null));
 
     const handleInputChange = (index: number, newValue: string) => {
@@ -52,6 +63,10 @@ export const CodeInput = ({ value, label, required, length = DEFAULT_LENGTH, onC
 
         if (event.key === "Backspace" && !event.currentTarget.value && index > 0 && previousInput) {
             previousInput.focus();
+        }
+
+        if (event.key === "Enter") {
+            onSubmit?.();
         }
     };
 

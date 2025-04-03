@@ -124,7 +124,14 @@ export class TwoFactorAuthenticationController {
         try {
             await twoFactorAuthService.confirmMethod(user, body.code);
         } catch (err) {
-            whenError(err).is(EntityNotFoundError).throw(new NotFoundException()).elseRethrow();
+            whenError(err)
+                .is(EntityNotFoundError)
+                .throw(new NotFoundException())
+                .is(EntityConflictError)
+                .throw(new ConflictException())
+                .is(ForbiddenError)
+                .throw(new ForbiddenException())
+                .elseRethrow();
         }
     }
 

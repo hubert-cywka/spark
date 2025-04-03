@@ -2,10 +2,9 @@ import { PropsWithChildren } from "react";
 
 import styles from "./styles/TwoFactorAuthenticationPrompt.module.scss";
 
-import { Button } from "@/components/Button";
+import { ButtonWithThrottle } from "@/components/ButtonWithThrottle";
 import { useRequest2FACodeViaEmail } from "@/features/auth/hooks/2fa/useRequest2FACodeViaEmail.ts";
 import { useRequest2FACodeViaEmailEvents } from "@/features/auth/hooks/2fa/useRequest2FACodeViaEmailEvents.ts";
-import { useCountdown } from "@/hooks/useCountdown.ts";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
 const RESEND_DELAY = 60;
@@ -17,12 +16,10 @@ export const EmailTwoFactorAuthenticationPrompt = ({ children }: TwoFactorAuthen
 
     const { mutateAsync: request2FACodeViaEmail, isPending } = useRequest2FACodeViaEmail();
     const { onRequestError, onRequestSuccess } = useRequest2FACodeViaEmailEvents();
-    const [resendTimer, setResendTimer] = useCountdown();
 
     const handleResendCode = async () => {
         try {
             await request2FACodeViaEmail();
-            setResendTimer(RESEND_DELAY);
             onRequestSuccess();
         } catch (error) {
             onRequestError(error);
@@ -47,9 +44,13 @@ export const EmailTwoFactorAuthenticationPrompt = ({ children }: TwoFactorAuthen
             <div className={styles.inputWrapper}>
                 {children}
 
-                <Button variant="link" isDisabled={isPending || resendTimer > 0} onPress={handleResendCode}>
-                    {formatResendButtonLabel(resendTimer)}
-                </Button>
+                <ButtonWithThrottle
+                    variant="link"
+                    throttle={RESEND_DELAY}
+                    label={formatResendButtonLabel}
+                    onPress={handleResendCode}
+                    isDisabled={isPending}
+                />
             </div>
         </div>
     );

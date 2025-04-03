@@ -5,11 +5,7 @@ import { useState } from "react";
 import styles from "./styles/TwoFactorAuthenticationConfiguration.module.scss";
 
 import { TwoFactorAuthenticationOption } from "@/features/auth/components/TwoFactorAuthenticationConfiguration/components/TwoFactorAuthenticationOption";
-import { TwoFactorAuthenticationEnableModal } from "@/features/auth/components/TwoFactorAuthenticationEnableModal/TwoFactorAuthenticationEnableModal.tsx";
-import {
-    AppTwoFactorAuthenticationEnablePrompt,
-    EmailTwoFactorAuthenticationEnablePrompt,
-} from "@/features/auth/components/TwoFactorAuthenticationEnablePrompt";
+import { TwoFactorAuthenticationEnableModal } from "@/features/auth/components/TwoFactorAuthenticationEnableModal";
 import { useAccessValidation } from "@/features/auth/hooks";
 import { useDisable2FAMethod } from "@/features/auth/hooks/2fa/useDisable2FAMethod.ts";
 import { useDisable2FAMethodEvents } from "@/features/auth/hooks/2fa/useDisable2FAMethodEvents.ts";
@@ -26,7 +22,7 @@ export const TwoFactorAuthenticationConfiguration = () => {
     const { data: enabled2FAOptions } = useGetEnabled2FAOptions();
 
     const { mutateAsync: enableAuthenticatorApp } = useEnableAuthenticatorAppMethod();
-    const { mutateAsync: enableEmail } = useEnableEmailMethod();
+    const { mutateAsync: enableEmail, isPending } = useEnableEmailMethod();
     const { mutateAsync: disable2FA } = useDisable2FAMethod();
     const { ensureAccess } = useAccessValidation();
 
@@ -34,7 +30,7 @@ export const TwoFactorAuthenticationConfiguration = () => {
     const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
 
     const { onEnable2FAMethodError } = useEnable2FAMethodEvents();
-    const { onDisable2FAMethodSuccess, onDisable2FAMethodError } = useDisable2FAMethodEvents();
+    const { onDisable2FAMethodError } = useDisable2FAMethodEvents();
 
     const closeModal = () => {
         setMethodToEnable(null);
@@ -59,15 +55,17 @@ export const TwoFactorAuthenticationConfiguration = () => {
     };
 
     const enable2FAMethod = async (method: TwoFactorAuthenticationMethod) => {
-        if (!ensureAccess(["write:2fa"])) return;
+        if (!ensureAccess(["write:2fa"])) {
+            return;
+        }
+
+        let qrCodeUrl = "";
 
         try {
             switch (method) {
                 case "app":
-                    {
-                        const qrUrl = await enableAuthenticatorApp();
-                        openAuthenticatorAppModal(qrUrl);
-                    }
+                    qrCodeUrl = await enableAuthenticatorApp();
+                    openAuthenticatorAppModal(qrCodeUrl);
                     break;
                 case "email":
                     await enableEmail();
@@ -80,19 +78,20 @@ export const TwoFactorAuthenticationConfiguration = () => {
     };
 
     const disable2FAMethodIfAllowed = async (method: TwoFactorAuthenticationMethod) => {
-        if (!ensureAccess(["delete:2fa"])) return;
-
         if (!enabled2FAOptions || enabled2FAOptions.length <= 1) {
             showToast().danger({
-                title: t("authentication.2fa.disable.notifications.error.title"),
-                message: t("authentication.2fa.disable.notifications.error.body"),
+                title: t("authentication.2fa.disable.notifications.2faRequired.title"),
+                message: t("authentication.2fa.disable.notifications.2faRequired.body"),
             });
+            return;
+        }
+
+        if (!ensureAccess(["delete:2fa"])) {
             return;
         }
 
         try {
             await disable2FA(method);
-            onDisable2FAMethodSuccess();
         } catch (error) {
             onDisable2FAMethodError(error);
         }
@@ -100,11 +99,6 @@ export const TwoFactorAuthenticationConfiguration = () => {
 
     const isAppEnabled = !!enabled2FAOptions?.find((opt) => opt.method === "app");
     const isEmailEnabled = !!enabled2FAOptions?.find((opt) => opt.method === "email");
-
-    const methodSteps = {
-        app: <AppTwoFactorAuthenticationEnablePrompt url={qrCodeUrl ?? ""} onEnabled={closeModal} />,
-        email: <EmailTwoFactorAuthenticationEnablePrompt onEnabled={closeModal} />,
-    };
 
     return (
         <div className={styles.container}>
@@ -128,9 +122,16 @@ export const TwoFactorAuthenticationConfiguration = () => {
                 />
             </ul>
 
-            <TwoFactorAuthenticationEnableModal isOpen={!!methodToEnable} onClose={closeModal}>
-                {methodToEnable && methodSteps[methodToEnable]}
-            </TwoFactorAuthenticationEnableModal>
+            {methodToEnable && (
+                <TwoFactorAuthenticationEnableModal
+                    isOpen={true}
+                    onClose={closeModal}
+                    method={methodToEnable}
+                    url={methodToEnable === "app" ? qrCodeUrl ?? "" : undefined}
+                    canResendCode={methodToEnable === "email" ? !isPending : undefined}
+                    onResendCode={methodToEnable === "email" ? () => enable2FAMethod("email") : undefined}
+                />
+            )}
         </div>
     );
 };

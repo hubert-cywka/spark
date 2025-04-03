@@ -187,5 +187,7 @@ export abstract class TwoFactorAuthenticationBaseService implements ITwoFactorAu
 
     protected abstract canIssueCode(): boolean;
     protected abstract get2FAMethod(): TwoFactorAuthenticationMethod;
+
+    // TODO: Store TTL in database
     protected abstract getTOTPTimeToLive(): number;
 }

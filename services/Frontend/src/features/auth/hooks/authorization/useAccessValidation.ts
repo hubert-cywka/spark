@@ -40,11 +40,14 @@ export const useAccessValidation = () => {
         const { inactiveScopes, canGainAccess, hasAccess } = validateAccess(requiredScopes);
 
         if (!hasAccess && !canGainAccess) {
-            onNoAccess
-                ? onNoAccess()
-                : showToast().danger({
-                      title: t("authentication.upgradeSession.notifications.forbidden.title"),
-                  });
+            if (onNoAccess) {
+                onNoAccess();
+            } else {
+                showToast().danger({
+                    title: t("authentication.upgradeSession.notifications.forbidden.title"),
+                });
+            }
+
             return false;
         }
 

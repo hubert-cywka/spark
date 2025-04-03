@@ -109,7 +109,7 @@ export class AuthenticationService implements IAuthenticationService {
         return this.refreshTokenService.invalidate(refreshToken);
     }
 
-    // TODO: Remember to invalidate refresh token before issuing new one
+    // TODO: Invalidate refresh token before issuing new one
     public async upgradeAccessToken(accessToken: string, scopes: AccessScope[]): Promise<AuthenticationResult> {
         const payload: AccessTokenPayload | null = this.jwtService.decode(accessToken);
 

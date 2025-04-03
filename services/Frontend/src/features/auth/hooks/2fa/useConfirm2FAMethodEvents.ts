@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { HttpStatusCode } from "axios";
 
 import { ErrorsMap, useTranslateApiError } from "@/hooks/useTranslateApiError.ts";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
@@ -29,5 +30,8 @@ export const useConfirm2FAMethodEvents = () => {
     return { onConfirm2FAMethodError, onConfirm2FAMethodSuccess };
 };
 
-// TODO
-const errorsMap: ErrorsMap = {};
+const errorsMap: ErrorsMap = {
+    [HttpStatusCode.NotFound]: "api.2fa.confirm.errors.notFound",
+    [HttpStatusCode.Conflict]: "api.2fa.confirm.errors.conflict",
+    [HttpStatusCode.Forbidden]: "api.2fa.confirm.errors.forbidden",
+};

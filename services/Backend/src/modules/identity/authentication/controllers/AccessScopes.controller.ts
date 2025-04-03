@@ -30,7 +30,6 @@ export class AccessScopesController {
         private readonly authService: IAuthenticationService
     ) {}
 
-    // TODO
     @Post("activate")
     @UseGuards(AccessGuard)
     async activateAccessScopes(@Body() dto: ActivateAccessScopesDto, @AuthenticatedUserContext() user: User, @Req() request: Request) {
