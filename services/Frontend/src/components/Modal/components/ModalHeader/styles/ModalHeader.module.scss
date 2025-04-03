@@ -4,8 +4,9 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: tokens.$spacing-500;
+    gap: tokens.$spacing-600;
 
     .header {
-        font: tokens.$typography-title-300;
+        font: tokens.$typography-title-200;
     }
 }

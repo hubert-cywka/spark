@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { ButtonProps as BaseButtonProps } from "react-aria-components";
 
-export type ButtonVariant = "primary" | "secondary" | "confirm" | "danger" | "subtle";
+export type ButtonVariant = "primary" | "secondary" | "confirm" | "danger" | "subtle" | "link";
 export type ButtonSize = "1" | "2" | "3";
 
 export interface ButtonProps extends BaseButtonProps {

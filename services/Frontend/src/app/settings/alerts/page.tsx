@@ -1,7 +1,7 @@
-import styles from "./styles/AlertsPage.module.scss";
 import "server-only";
 
 import { AppRoute } from "@/app/appRoute";
+import { Section, SectionDescription, SectionTitle } from "@/app/settings/components/Section";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Container } from "@/components/Container";
 import { AlertsList } from "@/features/alerts/components/AlertsList/AlertsList";
@@ -25,16 +25,16 @@ function Page() {
                     { label: t("settings.navigation.alerts.label") },
                 ]}
             />
-            <div className={styles.section}>
-                <h2 className={styles.header}>{t("alerts.reminders.header")}</h2>
-                <p className={styles.description}>{t("alerts.reminders.description")}</p>
+            <Section>
+                <SectionTitle>{t("alerts.reminders.header")}</SectionTitle>
+                <SectionDescription>{t("alerts.reminders.description")}</SectionDescription>
 
                 <AlertsList
                     maxAlertsAllowed={getLimitOfReminders()}
                     onAddAlertRender={AddDefaultReminderButton}
                     onAlertRender={ReminderCard}
                 />
-            </div>
+            </Section>
         </Container>
     );
 }

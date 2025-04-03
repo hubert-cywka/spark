@@ -3,4 +3,10 @@
 .container {
     max-width: 500px;
     margin-bottom: tokens.$spacing-500;
+    font: tokens.$typography-body-100;
+    color: tokens.$color-neutral-text-200;
+    
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$spacing-500;
 }

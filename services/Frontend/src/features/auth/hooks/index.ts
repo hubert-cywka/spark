@@ -1,6 +1,8 @@
+export { useTwoFactorAuthentication } from "./2fa/useTwoFactorAuthentication.ts";
 export { useActivateAccount } from "./account/useActivateAccount";
 export { useRequestAccountActivationToken } from "./account/useRequestAccountActivationToken";
 export { useRequestAccountActivationTokenEvents } from "./account/useRequestAccountActivationTokenEvents";
+export { useAccessValidation } from "./authorization/useAccessValidation";
 export { useLoginEvents } from "./login/useLoginEvents";
 export { useLoginWithCredentials } from "./login/useLoginWithCredentials";
 export { useLogout } from "./logout/useLogout";
@@ -18,5 +20,4 @@ export { useRegisterWithCredentials } from "./register/useRegisterWithCredential
 export { useRegisterWithCredentialsEvents } from "./register/useRegisterWithCredentialsEvents";
 export { useAuthSession } from "./session/useAuthSession";
 export { useGetAuthSessionFromQueryParams } from "./session/useGetAuthSessionFromQueryParams";
-export { useAccessValidation } from "./useAccessValidation";
 export { useCommonAuthenticationRequirements } from "./useCommonAuthenticationRequirements";

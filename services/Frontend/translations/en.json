@@ -4,7 +4,8 @@
             "errors": {
                 "tooManyRequests": "Too many requests. Please try again in a moment.",
                 "internalServerError": "Something went wrong. Please report the issue and try again later.",
-                "serviceUnavailable": "App is temporarily unavailable. Please try again later."
+                "serviceUnavailable": "App is temporarily unavailable. Please try again later.",
+                "forbidden": "You don't have permissions to access this resource."
             }
         },
         "alerts": {
@@ -106,7 +107,32 @@
                 }
             }
         },
+        "2fa": {
+            "disable": {
+                "notFound": "2FA method does not found, try again later.",
+                "conflict": "At least one 2FA method must be enabled."
+            },
+            "enable": {
+                "conflict": "2FA method already enabled."
+            },
+            "confirm": {
+                "notFound": "2FA method does not found, try again later.",
+                "conflict": "2FA method already enabled.",
+                "forbidden": "Invalid or expired code"
+            },
+            "requestCode": {
+                "email": {
+                    "notFound": "Couldn't find eligible 2FA method."
+                }
+            }
+        },
         "authentication": {
+            "upgradeSession": {
+                "errors": {
+                    "unauthorized": "This 2FA method is not enabled.",
+                    "forbidden": "Code invalid or has expired."
+                }
+            },
             "refresh": {
                 "errors": {
                     "unauthorized": "We couldn't re-authenticate you."
@@ -434,6 +460,36 @@
             "profile": {
                 "label": "Profile"
             }
+        },
+        "profile": {
+            "accountTermination": {
+                "header": "Account termination",
+                "description": "If you want to close your account and remove your data, press the button below. You will be prompted to authorize the request, and after that, you'll be logged out. This action is irreversible."
+            },
+            "2fa": {
+                "header": "Two-factor authentication",
+                "description": "Two-factor authentication is required and enabled by default; codes are sent to your email you've provided during registration. If you wish, you can enable another 2FA option, such as authenticator app (e.g. Google Authenticator). At least one 2FA option needs to be enabled; if you wish you can enable all options."
+            }
+        }
+    },
+    "user": {
+        "account": {
+            "termination": {
+                "button": {
+                    "label": "Terminate my account"
+                },
+                "checkbox": {
+                    "label": "I am aware of the consequences of this action."
+                },
+                "notifications": {
+                    "success": {
+                        "title": "Account terminated"
+                    },
+                    "error": {
+                        "title": "Couldn't terminate account"
+                    }
+                }
+            }
         }
     },
     "alerts": {
@@ -589,6 +645,131 @@
         }
     },
     "authentication": {
+        "upgradeSession": {
+            "notifications": {
+                "forbidden": {
+                    "title": "You are not allowed to access this resource."
+                },
+                "error": {
+                    "title": "Failed to upgrade session"
+                },
+                "success": {
+                    "title": "Access granted",
+                    "body": "You are now using upgraded session."
+                }
+            }
+        },
+        "2fa": {
+            "requestCode": {
+                "email": {
+                    "notifications": {
+                        "error": {
+                            "title": "Failed to request code"
+                        },
+                        "success": {
+                            "title": "Code requested",
+                            "body": "Please check your email"
+                        }
+                    }
+                }
+            },
+            "confirm": {
+                "notifications": {
+                    "success": {
+                        "title": "2FA method enabled"
+                    },
+                    "error": {
+                        "title": "Can't disable 2FA"
+                    }
+                }
+            },
+            "disable": {
+                "notifications": {
+                    "2faRequired": {
+                        "title": "Can't disable 2FA",
+                        "body": "At least 1 method must be enabled."
+                    },
+                    "error": {
+                        "title": "Can't disable 2FA"
+                    }
+                }
+            },
+            "enable": {
+                "notifications": {
+                    "errors": {
+                        "title": "Can't enable 2FA method"
+                    }
+                },
+                "modal": {
+                    "title": "Enable 2FA",
+                    "codeInput": {
+                        "label": "6-digit code:"
+                    },
+                    "submitButton": {
+                        "label": "Submit"
+                    },
+                    "cancelButton": {
+                        "label": "Cancel"
+                    },
+                    "resendButton": {
+                        "label": "Request code"
+                    },
+                    "methods": {
+                        "email": {
+                            "description": "Request code using button below and after a while you will receive an email with the code."
+                        },
+                        "app": {
+                            "description": "Request code using button below and after a while you will receive an email with the code.",
+                            "warning": "Until you enter valid confirmation code, each time we will generate new, unique QR code."
+                        }
+                    }
+                }
+            },
+            "prompt": {
+                "modal": {
+                    "header": "Two-factor authentication",
+                    "methods": {
+                        "email": {
+                            "label": "Email",
+                            "description": "Request code using button below and after a while you will receive an email with the code."
+                        },
+                        "app": {
+                            "label": "Authenticator app",
+                            "description": "Request code using button below and after a while you will receive an email with the code."
+                        },
+                        "selection": {
+                            "description": "You need to perform 2FA in order to access this resource. Upon successful authentication, you'll gain required permissions for limited time."
+                        }
+                    },
+                    "codeInput": {
+                        "label": "6-digit code:"
+                    },
+                    "submitButton": {
+                        "label": "Submit"
+                    },
+                    "cancelButton": {
+                        "label": "Cancel"
+                    },
+                    "resendButton": {
+                        "label": "Request code"
+                    },
+                    "backButton": {
+                        "label": "Select another 2FA method"
+                    }
+                }
+            },
+            "configuration": {
+                "optionsHeader": "Available 2FA options:",
+                "options": {
+                    "email": {
+                        "label": "Email"
+                    },
+                    "authenticator": {
+                        "label": "Authenticator app"
+                    }
+                }
+            }
+        },
         "oidc": {
             "divider": {
                 "label": "OR"

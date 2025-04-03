@@ -4,7 +4,7 @@ import { PropsWithChildren, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { AppRoute } from "@/app/appRoute";
-import { useAccessValidation } from "@/features/auth/hooks/useAccessValidation";
+import { useAccessValidation } from "@/features/auth/hooks";
 import { AccessScope } from "@/features/auth/types/Identity";
 
 type AccessGuardProps = PropsWithChildren<{
@@ -13,19 +13,19 @@ type AccessGuardProps = PropsWithChildren<{
 }>;
 
 export const AccessGuard = ({ children, requiredScopes, redirectUnauthorizedTo }: AccessGuardProps) => {
-    const { validate } = useAccessValidation();
-    const isAllowed = validate(requiredScopes);
+    const { validateAccess } = useAccessValidation();
+    const { hasAccess } = validateAccess(requiredScopes);
     const router = useRouter();
 
     useEffect(() => {
-        if (!redirectUnauthorizedTo || isAllowed) {
+        if (!redirectUnauthorizedTo || hasAccess) {
             return;
         }
 
         router.replace(redirectUnauthorizedTo);
-    }, [isAllowed, redirectUnauthorizedTo, router]);
+    }, [hasAccess, redirectUnauthorizedTo, router]);
 
-    if (!isAllowed) {
+    if (!hasAccess) {
         return null;
     }
 

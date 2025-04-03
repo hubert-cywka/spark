@@ -1,0 +1,12 @@
+@use "src/styles/tokens";
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$spacing-400;
+    margin-top: tokens.$spacing-600;
+    
+    .button {
+        width: fit-content;
+    }
+}

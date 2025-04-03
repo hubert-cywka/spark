@@ -1,0 +1,20 @@
+@use "src/styles/tokens";
+
+.section {
+    margin-top: tokens.$spacing-600;
+    max-width: tokens.$breakpoint-sm;
+
+    .title {
+        font: tokens.$typography-title-100;
+    }
+
+    .description {
+        margin-bottom: tokens.$spacing-500;
+        margin-top: tokens.$spacing-200;
+
+        text-align: justify;
+        font: tokens.$typography-body-100;
+        color: tokens.$color-neutral-text-200;
+    }
+}
+

@@ -1,0 +1,20 @@
+@use "src/styles/tokens";
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$spacing-600;
+    align-items: center;
+
+    .inputWrapper {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$spacing-400;
+        align-items: center;
+        margin-bottom: tokens.$spacing-300;
+    }
+    
+    .warning {
+        margin-block: tokens.$spacing-400;
+    }
+}

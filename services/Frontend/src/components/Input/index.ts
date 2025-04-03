@@ -1,3 +1,4 @@
+export { CodeInput } from "./CodeInput";
 export { DateInput } from "./DateInput";
 export { DateRangePicker } from "./DateRangePicker";
 export { Field } from "./Field";

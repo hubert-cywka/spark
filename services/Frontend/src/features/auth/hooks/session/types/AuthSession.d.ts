@@ -1,15 +1,15 @@
-import { AccessScope, Identity } from "@/features/auth/types/Identity";
+import { AccessScopes, Identity } from "@/features/auth/types/Identity";
 
 export type AuthSession = {
     identity: Identity;
     accessToken: string;
-    scopes: AccessScope[];
+    scopes: AccessScopes;
 };
 
 export type AuthState = (AuthenticatedUserAuthState | UnauthenticatedUserAuthState) & BaseAuthState;
 
 type BaseAuthState = {
-    scopes: AccessScope[];
+    scopes: AccessScopes;
     storeSession: (session: AuthSession) => void;
     endSession: () => void;
 };

@@ -5,6 +5,11 @@ export type AuthenticationResponseDto = Readonly<{
         email: string;
         id: string;
     }>;
-    accessScopes: AccessScope[];
+    accessScopes: AccessScopesDto;
     accessToken: string;
 }>;
+
+type AccessScopesDto = {
+    inactive: AccessScope[];
+    active: AccessScope[];
+};

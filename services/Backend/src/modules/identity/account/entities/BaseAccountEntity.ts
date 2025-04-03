@@ -9,6 +9,7 @@ import {
     UpdateDateColumn,
 } from "typeorm";
 
+import { TwoFactorAuthenticationOptionEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationOption.entity";
 import { SingleUseTokenEntity } from "@/modules/identity/account/entities/SingleUseTokenEntity";
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
 
@@ -47,4 +48,7 @@ export class BaseAccountEntity {
 
     @OneToMany((type) => SingleUseTokenEntity, (token) => token.owner)
     singleUseTokens!: Relation<SingleUseTokenEntity>[];
+
+    @OneToMany((type) => TwoFactorAuthenticationOptionEntity, (option) => option.owner)
+    twoFactorAuthOptions!: Relation<TwoFactorAuthenticationOptionEntity>[];
 }

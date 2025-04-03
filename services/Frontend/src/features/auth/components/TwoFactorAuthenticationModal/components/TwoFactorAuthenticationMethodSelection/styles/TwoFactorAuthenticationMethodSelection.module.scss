@@ -1,0 +1,13 @@
+@use "src/styles/tokens";
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$spacing-600;
+    
+    .list {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$spacing-300;
+    }
+}

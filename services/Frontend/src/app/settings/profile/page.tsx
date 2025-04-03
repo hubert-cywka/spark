@@ -1,10 +1,14 @@
+import styles from "./styles/ProfilePage.module.scss";
 import "server-only";
 
 import { AppRoute } from "@/app/appRoute";
+import { Section, SectionDescription, SectionTitle } from "@/app/settings/components/Section";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Container } from "@/components/Container";
+import { TwoFactorAuthenticationConfiguration } from "@/features/auth/components/TwoFactorAuthenticationConfiguration";
 import { onlyAsAuthenticated } from "@/features/auth/hoc/withAuthorization";
 import { withSessionRestore } from "@/features/auth/hoc/withSessionRestore";
+import { AccountTerminationForm } from "@/features/user/components/AccountTerminationForm";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 function Page() {
@@ -21,7 +25,18 @@ function Page() {
                     { label: t("settings.navigation.profile.label") },
                 ]}
             />
-            Profile
+
+            <Section>
+                <SectionTitle>{t("settings.profile.2fa.header")}</SectionTitle>
+                <SectionDescription>{t("settings.profile.2fa.description")}</SectionDescription>
+                <TwoFactorAuthenticationConfiguration />
+            </Section>
+
+            <Section>
+                <SectionTitle className={styles.danger}>{t("settings.profile.accountTermination.header")}</SectionTitle>
+                <SectionDescription>{t("settings.profile.accountTermination.description")}</SectionDescription>
+                <AccountTerminationForm />
+            </Section>
         </Container>
     );
 }

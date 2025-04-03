@@ -62,6 +62,10 @@ async function bootstrap() {
                         name: "alert",
                         subjects: [IntegrationEventTopics.alert.all],
                     },
+                    {
+                        name: "2fa",
+                        subjects: [IntegrationEventTopics.twoFactorAuth.all],
+                    },
                 ],
             }),
         })

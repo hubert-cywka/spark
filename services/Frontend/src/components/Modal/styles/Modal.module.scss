@@ -2,6 +2,8 @@
 
 .overlay {
     background: tokens.$color-neutral-background-alpha-300;
+    backdrop-filter: blur(2px);
+    
     position: fixed;
     top: 0;
     left: 0;

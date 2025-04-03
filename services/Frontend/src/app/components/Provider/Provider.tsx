@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 
 import { AuthSessionProvider } from "@/features/auth/components/AuthStateProvider/AuthSessionProvider";
+import { TwoFactorAuthenticationProvider } from "@/features/auth/components/TwoFactorAuthenticationProvider";
 
 type ProviderProps = PropsWithChildren;
 
@@ -29,7 +30,9 @@ export const Provider = ({ children }: ProviderProps) => {
         <SkeletonTheme baseColor={SKELETON_BASE_COLOR} highlightColor={SKELETON_HIGHLIGHT_COLOR}>
             <QueryClientProvider client={queryClient}>
                 <Toaster position="top-right" />
-                <AuthSessionProvider>{children}</AuthSessionProvider>
+                <AuthSessionProvider>
+                    <TwoFactorAuthenticationProvider>{children}</TwoFactorAuthenticationProvider>
+                </AuthSessionProvider>
             </QueryClientProvider>
         </SkeletonTheme>
     );

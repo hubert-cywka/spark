@@ -4,6 +4,11 @@ export type Identity = {
 };
 
 type Action = "read" | "write" | "delete";
-type Resource = "daily" | "entry" | "goal" | "account" | "alert";
+type Resource = "daily" | "entry" | "goal" | "account" | "alert" | "2fa";
 
 export type AccessScope = `${Action}:${Resource}` | "browse_as_authenticated" | "browse_as_unauthenticated";
+
+export type AccessScopes = {
+    active: AccessScope[];
+    inactive: AccessScope[];
+};

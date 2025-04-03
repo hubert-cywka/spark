@@ -16,7 +16,7 @@ export class AccountPublisherService implements IAccountPublisherService {
         private readonly outbox: IEventOutbox
     ) {}
 
-    public async onAccountActivated(email: string, tenantId: string) {
+    public async onAccountActivated(tenantId: string, email: string) {
         await this.outbox.enqueue(new AccountActivatedEvent(tenantId, { email, id: tenantId }));
     }
 
@@ -38,7 +38,7 @@ export class AccountPublisherService implements IAccountPublisherService {
         );
     }
 
-    public async onPasswordUpdated(email: string, tenantId: string) {
+    public async onPasswordUpdated(tenantId: string, email: string) {
         await this.outbox.enqueue(
             new AccountPasswordUpdatedEvent(tenantId, {
                 email,

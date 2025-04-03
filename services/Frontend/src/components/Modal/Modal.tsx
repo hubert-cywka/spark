@@ -6,7 +6,7 @@ import { Dialog, DialogTrigger, Modal as BaseModal, ModalOverlay } from "react-a
 import styles from "./styles/Modal.module.scss";
 
 type ModalProps = PropsWithChildren<{
-    trigger: ReactNode;
+    trigger?: ReactNode;
     isOpen?: boolean;
     onOpenChange?: (newValue: boolean) => unknown;
 }>;
