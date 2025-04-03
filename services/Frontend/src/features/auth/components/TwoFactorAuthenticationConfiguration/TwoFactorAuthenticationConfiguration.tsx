@@ -4,57 +4,57 @@ import { useState } from "react";
 
 import styles from "./styles/TwoFactorAuthenticationConfiguration.module.scss";
 
-import { TwoFactorAuthenticationOption } from "@/features/auth/components/TwoFactorAuthenticationConfiguration/components/TwoFactorAuthenticationOption";
-import { TwoFactorAuthenticationEnableModal } from "@/features/auth/components/TwoFactorAuthenticationEnableModal";
+import { TwoFactorAuthenticationIntegrationItem } from "@/features/auth/components/TwoFactorAuthenticationConfiguration/components/TwoFactorAuthenticationIntegrationItem";
+import { TwoFactorAuthenticationEnableIntegrationModal } from "@/features/auth/components/TwoFactorAuthenticationEnableModal";
 import { useAccessValidation } from "@/features/auth/hooks";
+import { useDisable2FAIntegrationEvents } from "@/features/auth/hooks/2fa/useDisable2FAIntegrationEvents.ts";
 import { useDisable2FAMethod } from "@/features/auth/hooks/2fa/useDisable2FAMethod.ts";
-import { useDisable2FAMethodEvents } from "@/features/auth/hooks/2fa/useDisable2FAMethodEvents.ts";
-import { useEnable2FAMethodEvents } from "@/features/auth/hooks/2fa/useEnable2FAMethodEvents.ts";
-import { useEnableAuthenticatorAppMethod } from "@/features/auth/hooks/2fa/useEnableAuthenticatorAppMethod.ts";
-import { useEnableEmailMethod } from "@/features/auth/hooks/2fa/useEnableEmailMethod.ts";
-import { useGetEnabled2FAOptions } from "@/features/auth/hooks/2fa/useGetEnabled2FAOptions.ts";
+import { useEnable2FAIntegrationEvents } from "@/features/auth/hooks/2fa/useEnable2FAIntegrationEvents.ts";
+import { useEnableApp2FAIntegration } from "@/features/auth/hooks/2fa/useEnableApp2FAIntegration.ts";
+import { useEnableEmail2FAIntegration } from "@/features/auth/hooks/2fa/useEnableEmail2FAIntegration.ts";
+import { useGetActive2FAIntegrations } from "@/features/auth/hooks/2fa/useGetActive2FAIntegrations.ts";
 import { TwoFactorAuthenticationMethod } from "@/features/auth/types/TwoFactorAuthentication";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 import { showToast } from "@/lib/notifications/showToast.tsx";
 
 export const TwoFactorAuthenticationConfiguration = () => {
     const t = useTranslate();
-    const { data: enabled2FAOptions } = useGetEnabled2FAOptions();
+    const { data: active2FAIntegrations } = useGetActive2FAIntegrations();
 
-    const { mutateAsync: enableAuthenticatorApp } = useEnableAuthenticatorAppMethod();
-    const { mutateAsync: enableEmail, isPending } = useEnableEmailMethod();
+    const { mutateAsync: enableAuthenticatorApp } = useEnableApp2FAIntegration();
+    const { mutateAsync: enableEmail, isPending } = useEnableEmail2FAIntegration();
     const { mutateAsync: disable2FA } = useDisable2FAMethod();
     const { ensureAccess } = useAccessValidation();
 
-    const [methodToEnable, setMethodToEnable] = useState<TwoFactorAuthenticationMethod | null>(null);
+    const [integrationMethod, setIntegrationMethod] = useState<TwoFactorAuthenticationMethod | null>(null);
     const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
 
-    const { onEnable2FAMethodError } = useEnable2FAMethodEvents();
-    const { onDisable2FAMethodError } = useDisable2FAMethodEvents();
+    const { onEnable2FAIntegrationError } = useEnable2FAIntegrationEvents();
+    const { onDisable2FAIntegrationError } = useDisable2FAIntegrationEvents();
 
     const closeModal = () => {
-        setMethodToEnable(null);
+        setIntegrationMethod(null);
         setQrCodeUrl(null);
     };
 
     const openAuthenticatorAppModal = (url: string) => {
-        setMethodToEnable("app");
+        setIntegrationMethod("app");
         setQrCodeUrl(url);
     };
 
     const openEmailModal = () => {
-        setMethodToEnable("email");
+        setIntegrationMethod("email");
     };
 
-    const handle2FAOptionStateChange = async (method: TwoFactorAuthenticationMethod, isEnabled: boolean) => {
+    const handle2FAIntegrationStateChange = async (method: TwoFactorAuthenticationMethod, isEnabled: boolean) => {
         if (isEnabled) {
-            await enable2FAMethod(method);
+            await enable2FAIntegration(method);
         } else {
-            await disable2FAMethodIfAllowed(method);
+            await disable2FAIntegrationIfAllowed(method);
         }
     };
 
-    const enable2FAMethod = async (method: TwoFactorAuthenticationMethod) => {
+    const enable2FAIntegration = async (method: TwoFactorAuthenticationMethod) => {
         if (!ensureAccess(["write:2fa"])) {
             return;
         }
@@ -73,12 +73,12 @@ export const TwoFactorAuthenticationConfiguration = () => {
                     break;
             }
         } catch (error) {
-            onEnable2FAMethodError(error);
+            onEnable2FAIntegrationError(error);
         }
     };
 
-    const disable2FAMethodIfAllowed = async (method: TwoFactorAuthenticationMethod) => {
-        if (!enabled2FAOptions || enabled2FAOptions.length <= 1) {
+    const disable2FAIntegrationIfAllowed = async (method: TwoFactorAuthenticationMethod) => {
+        if (!active2FAIntegrations || active2FAIntegrations.length <= 1) {
             showToast().danger({
                 title: t("authentication.2fa.disable.notifications.2faRequired.title"),
                 message: t("authentication.2fa.disable.notifications.2faRequired.body"),
@@ -93,43 +93,43 @@ export const TwoFactorAuthenticationConfiguration = () => {
         try {
             await disable2FA(method);
         } catch (error) {
-            onDisable2FAMethodError(error);
+            onDisable2FAIntegrationError(error);
         }
     };
 
-    const isAppEnabled = !!enabled2FAOptions?.find((opt) => opt.method === "app");
-    const isEmailEnabled = !!enabled2FAOptions?.find((opt) => opt.method === "email");
+    const isAppEnabled = !!active2FAIntegrations?.find((integration) => integration.method === "app");
+    const isEmailEnabled = !!active2FAIntegrations?.find((integration) => integration.method === "email");
 
     return (
         <div className={styles.container}>
             <h3 className={styles.optionsHeader}>{t("authentication.2fa.configuration.optionsHeader")}</h3>
 
             <ul className={styles.options}>
-                <TwoFactorAuthenticationOption
+                <TwoFactorAuthenticationIntegrationItem
                     key="app"
                     method="app"
                     label={t("authentication.2fa.configuration.options.authenticator.label")}
                     isEnabled={isAppEnabled}
-                    onChange={handle2FAOptionStateChange}
+                    onChange={handle2FAIntegrationStateChange}
                 />
 
-                <TwoFactorAuthenticationOption
+                <TwoFactorAuthenticationIntegrationItem
                     key="email"
                     method="email"
                     label={t("authentication.2fa.configuration.options.email.label")}
                     isEnabled={isEmailEnabled}
-                    onChange={handle2FAOptionStateChange}
+                    onChange={handle2FAIntegrationStateChange}
                 />
             </ul>
 
-            {methodToEnable && (
-                <TwoFactorAuthenticationEnableModal
+            {integrationMethod && (
+                <TwoFactorAuthenticationEnableIntegrationModal
                     isOpen={true}
                     onClose={closeModal}
-                    method={methodToEnable}
-                    url={methodToEnable === "app" ? qrCodeUrl ?? "" : undefined}
-                    canResendCode={methodToEnable === "email" ? !isPending : undefined}
-                    onResendCode={methodToEnable === "email" ? () => enable2FAMethod("email") : undefined}
+                    method={integrationMethod}
+                    url={integrationMethod === "app" ? qrCodeUrl ?? "" : undefined}
+                    canResendCode={integrationMethod === "email" ? !isPending : undefined}
+                    onResendCode={integrationMethod === "email" ? () => enable2FAIntegration("email") : undefined}
                 />
             )}
         </div>

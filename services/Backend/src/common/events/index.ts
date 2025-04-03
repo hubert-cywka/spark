@@ -23,7 +23,7 @@ export {
     IntegrationEvent,
 };
 export { IntegrationEventTopics };
-export * from "./types/2fa/Email2FACodeIssuedEvent";
+export * from "./types/2fa/EmailIntegrationTOTPIssuedEvent";
 export * from "./types/account/AccountActivatedEvent";
 export * from "./types/account/AccountActivationTokenRequestedEvent";
 export * from "./types/account/AccountPasswordUpdatedEvent";

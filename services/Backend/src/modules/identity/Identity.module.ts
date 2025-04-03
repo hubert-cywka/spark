@@ -5,7 +5,7 @@ import { DatabaseModule } from "@/common/database/Database.module";
 import { IInboxEventHandler, InboxEventHandlersToken } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
-import { TwoFactorAuthenticationOptionEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationOption.entity";
+import { TwoFactorAuthenticationIntegrationEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationIntegration.entity";
 import { AccountActivatedEventHandler } from "@/modules/identity/2fa/events/AccountActivatedEvent.handler";
 import { TwoFactorAuthenticationModule } from "@/modules/identity/2fa/TwoFactorAuthentication.module";
 import { AccountModule } from "@/modules/identity/account/Account.module";
@@ -25,7 +25,7 @@ import { InitializeIdentityModule1735737549567 } from "@/modules/identity/infras
 import { AddTenantIdToOutboxAndInbox1743101746907 } from "@/modules/identity/infrastructure/database/migrations/1743101746907-addTenantIdToOutboxAndInbox";
 import { DeleteOnCascade1743158756974 } from "@/modules/identity/infrastructure/database/migrations/1743158756974-deleteOnCascade";
 import { AddOptionToSuspendAccounts1743167408668 } from "@/modules/identity/infrastructure/database/migrations/1743167408668-addOptionToSuspendAccounts";
-import { Introduce2FA1743366087775 } from "@/modules/identity/infrastructure/database/migrations/1743366087775-introduce2FA";
+import { AddTTLFor2FAIntegrations1743713719361 } from "@/modules/identity/infrastructure/database/migrations/1743713719361-addTTLFor2FAIntegrations";
 import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.module";
 
 @Module({
@@ -53,7 +53,7 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
                 FederatedAccountEntity,
                 OutboxEventEntity,
                 InboxEventEntity,
-                TwoFactorAuthenticationOptionEntity,
+                TwoFactorAuthenticationIntegrationEntity,
             ],
             {
                 useFactory: (configService: ConfigService) => ({
@@ -67,7 +67,7 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
                         AddTenantIdToOutboxAndInbox1743101746907,
                         DeleteOnCascade1743158756974,
                         AddOptionToSuspendAccounts1743167408668,
-                        Introduce2FA1743366087775,
+                        AddTTLFor2FAIntegrations1743713719361,
                     ],
                 }),
                 inject: [ConfigService],

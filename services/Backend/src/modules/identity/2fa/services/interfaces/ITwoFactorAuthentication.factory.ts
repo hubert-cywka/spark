@@ -1,8 +1,8 @@
-import { type ITwoFactorAuthenticationService } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthentication.service";
+import { type ITwoFactorAuthenticationIntegrationService } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationIntegration.service";
 import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 
 export const TwoFactorAuthenticationFactoryToken = Symbol("TwoFactorAuthenticationFactory");
 
 export interface ITwoFactorAuthenticationFactory {
-    create: (method: TwoFactorAuthenticationMethod) => ITwoFactorAuthenticationService;
+    createIntegrationService: (method: TwoFactorAuthenticationMethod) => ITwoFactorAuthenticationIntegrationService;
 }

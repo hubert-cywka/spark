@@ -39,8 +39,8 @@ export class AccessScopesController {
             throw new ForbiddenException();
         }
 
-        const twoFactorAuthService = this.twoFactorAuthFactory.create(dto.method);
-        const validationResult = await twoFactorAuthService.verifyCode(user, dto.code);
+        const twoFactorAuthService = this.twoFactorAuthFactory.createIntegrationService(dto.method);
+        const validationResult = await twoFactorAuthService.validateTOTP(user, dto.code);
 
         if (!validationResult) {
             throw new ForbiddenException();

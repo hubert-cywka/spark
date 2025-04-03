@@ -4,7 +4,7 @@ import { DataSource } from "typeorm";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { AppConfig } from "@/config/configuration";
-import { TwoFactorAuthenticationOptionEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationOption.entity";
+import { TwoFactorAuthenticationIntegrationEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationIntegration.entity";
 import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccountEntity";
 import { FederatedAccountEntity } from "@/modules/identity/account/entities/FederatedAccountEntity";
 import { ManagedAccountEntity } from "@/modules/identity/account/entities/ManagedAccountEntity";
@@ -33,7 +33,7 @@ export const dataSource = new DataSource({
         FederatedAccountEntity,
         ManagedAccountEntity,
         BaseAccountEntity,
-        TwoFactorAuthenticationOptionEntity,
+        TwoFactorAuthenticationIntegrationEntity,
     ],
     migrations: [],
 });

@@ -35,7 +35,7 @@ export const CreateAccountWithOIDCForm = () => {
                 onRegisterError(err);
             }
         },
-        [onRegisterError, onRegisterSuccess, register]
+        [onRegisterError, onRegisterSuccess, requestRegistration]
     );
 
     return (

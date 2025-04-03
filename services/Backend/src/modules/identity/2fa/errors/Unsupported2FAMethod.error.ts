@@ -1,7 +1,0 @@
-import { BadRequestException } from "@nestjs/common";
-
-export class Unsupported2FAMethodError extends BadRequestException {
-    constructor(method: string) {
-        super(`2FA method: '${method}' is not supported.`);
-    }
-}

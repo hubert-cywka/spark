@@ -1,0 +1,51 @@
+import { Inject, Logger } from "@nestjs/common";
+import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
+import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { Secret } from "otpauth";
+import { IsNull, Not, Repository } from "typeorm";
+
+import { TwoFactorAuthenticationIntegrationEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationIntegration.entity";
+import {
+    type ITwoFactorAuthenticationIntegrationMapper,
+    TwoFactorAuthenticationIntegrationMapperToken,
+} from "@/modules/identity/2fa/mappers/ITwoFactorAuthenticationIntegration.mapper";
+import { type ITwoFactorAuthenticationIntegrationsProviderService } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationIntegrationsProvider.service";
+import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
+import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
+
+export class TwoFactorAuthenticationIntegrationsProviderService implements ITwoFactorAuthenticationIntegrationsProviderService {
+    private readonly logger = new Logger(TwoFactorAuthenticationIntegrationsProviderService.name);
+
+    public constructor(
+        @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
+        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        @Inject(TwoFactorAuthenticationIntegrationMapperToken)
+        private readonly mapper: ITwoFactorAuthenticationIntegrationMapper
+    ) {}
+
+    public async findActiveIntegrations(accountId: string) {
+        const result = await this.getRepository().find({
+            where: { owner: { id: accountId }, enabledAt: Not(IsNull()) },
+        });
+
+        return this.mapper.fromEntityToModelBulk(result);
+    }
+
+    // TODO: Is this the correct place for this?
+    public async enableDefaultIntegrations(accountId: string): Promise<void> {
+        const repository = this.getRepository();
+        const secret = new Secret().base32;
+        await repository.save({
+            owner: { id: accountId },
+            method: TwoFactorAuthenticationMethod.EMAIL,
+            enabledAt: new Date(),
+            secret,
+        });
+
+        this.logger.log({ accountId }, "Enabled default 2FA integrations.");
+    }
+
+    private getRepository(): Repository<TwoFactorAuthenticationIntegrationEntity> {
+        return this.txHost.tx.getRepository(TwoFactorAuthenticationIntegrationEntity);
+    }
+}

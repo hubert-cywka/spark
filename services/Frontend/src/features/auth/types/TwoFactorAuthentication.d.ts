@@ -1,6 +1,6 @@
 export type TwoFactorAuthenticationMethod = "email" | "app";
 
-export type TwoFactorAuthenticationOption = {
+export type TwoFactorAuthenticationIntegration = {
     method: TwoFactorAuthenticationMethod;
     enabledAt: Date;
 };

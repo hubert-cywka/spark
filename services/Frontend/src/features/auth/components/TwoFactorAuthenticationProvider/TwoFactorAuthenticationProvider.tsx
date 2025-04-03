@@ -1,6 +1,6 @@
 import { PropsWithChildren, useCallback, useMemo, useState } from "react";
 
-import { TwoFactorAuthenticationModal } from "@/features/auth/components/TwoFactorAuthenticationModal";
+import { TwoFactorAuthenticationRequiredModal } from "@/features/auth/components/TwoFactorAuthenticationModal";
 import { TwoFactorAuthenticationContext } from "@/features/auth/context";
 import { AccessScope } from "@/features/auth/types/Identity";
 import { TwoFactorAuthenticationMethod } from "@/features/auth/types/TwoFactorAuthentication";
@@ -36,7 +36,7 @@ export const TwoFactorAuthenticationProvider = ({ children }: PropsWithChildren)
 
     return (
         <TwoFactorAuthenticationContext value={contextValue}>
-            <TwoFactorAuthenticationModal
+            <TwoFactorAuthenticationRequiredModal
                 scopesToActivate={scopesToActivate}
                 onClose={onClose}
                 method={method}
