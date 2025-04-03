@@ -3,7 +3,6 @@ export { useActivateAccount } from "./account/useActivateAccount";
 export { useRequestAccountActivationToken } from "./account/useRequestAccountActivationToken";
 export { useRequestAccountActivationTokenEvents } from "./account/useRequestAccountActivationTokenEvents";
 export { useAccessValidation } from "./authorization/useAccessValidation";
-export { useActivateAccessScopes } from "./authorization/useActivateAccessScopes";
 export { useLoginEvents } from "./login/useLoginEvents";
 export { useLoginWithCredentials } from "./login/useLoginWithCredentials";
 export { useLogout } from "./logout/useLogout";
