@@ -14,7 +14,7 @@ export class IdentitySubscriber extends BaseEventSubscriber {
 
     @EventPattern([
         IntegrationEventTopics.account.password.updated,
-        IntegrationEventTopics.account.registration.completed,
+        IntegrationEventTopics.account.activation.completed,
         IntegrationEventTopics.account.removal.completed,
         IntegrationEventTopics.account.removal.requested,
         IntegrationEventTopics.account.suspended,
