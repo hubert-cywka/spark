@@ -5,5 +5,5 @@ export const TwoFactorAuthenticationEmailIntegrationPublisherServiceToken = Symb
 );
 
 export interface ITwoFactorAuthenticationEmailIntegrationPublisherService {
-    onEmailIntegrationTOTPIssued(tenantId: string, payload: EmailIntegrationTOTPIssuedEventPayload): Promise<void>;
+    onTOTPIssued(tenantId: string, payload: EmailIntegrationTOTPIssuedEventPayload): Promise<void>;
 }

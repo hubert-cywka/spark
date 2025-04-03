@@ -12,7 +12,7 @@ export class TwoFactorAuthenticationEmailIntegrationPublisherService implements 
         private readonly outbox: IEventOutbox
     ) {}
 
-    public async onEmailIntegrationTOTPIssued(tenantId: string, payload: EmailIntegrationTOTPIssuedEventPayload): Promise<void> {
+    public async onTOTPIssued(tenantId: string, payload: EmailIntegrationTOTPIssuedEventPayload): Promise<void> {
         await this.outbox.enqueue(new EmailIntegrationTOTPIssuedEvent(tenantId, payload));
     }
 }
