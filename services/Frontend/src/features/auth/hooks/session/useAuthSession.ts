@@ -2,7 +2,6 @@ import { create } from "zustand";
 
 import { AuthState } from "@/features/auth/hooks/session/types/AuthSession";
 
-// TODO: Scopes below are mocks, remove them later
 export const useAuthSession = create<AuthState>((set) => ({
     _type: "unauthenticated",
     scopes: {

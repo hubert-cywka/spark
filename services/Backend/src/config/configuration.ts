@@ -105,6 +105,9 @@ export const AppConfig = () => ({
                 limit: parseInt(process.env.AUTH_THROTTLE_LIMIT ?? ""),
             },
             oidc: {
+                cookie: {
+                    expirationTimeInSeconds: parseInt(process.env.OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS ?? ""),
+                },
                 google: {
                     clientId: process.env.GOOGLE_CLIENT_ID,
                     clientSecret: process.env.GOOGLE_CLIENT_SECRET,

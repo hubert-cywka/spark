@@ -19,12 +19,15 @@ type DateRangePickerProps = {
     label: ReactNode;
     value: ISODateStringRange | null;
     onChange?: (value: ISODateStringRange) => void;
+    calendarProps?: {
+        shownMonths?: number;
+    };
     size?: InputSize;
     required?: boolean;
     error?: string;
 };
 
-export const DateRangePicker = ({ size = "2", label, value, error, onChange, required }: DateRangePickerProps) => {
+export const DateRangePicker = ({ size = "2", label, value, error, onChange, required, calendarProps }: DateRangePickerProps) => {
     const onChangeInternal = (value: { start: DateValue; end: DateValue } | null) => {
         if (!value) {
             return;
@@ -58,8 +61,7 @@ export const DateRangePicker = ({ size = "2", label, value, error, onChange, req
                 </div>
 
                 <Popover trigger={<IconButton size={size} iconSlot={CalendarIcon} />}>
-                    {/* TODO: shownMonths */}
-                    <Calendar value={value} />
+                    <Calendar value={value} shownMonths={calendarProps?.shownMonths} />
                 </Popover>
             </div>
 
