@@ -8,7 +8,7 @@ export const useDisable2FAMethod = () => {
     const { invalidate } = useQueryCache();
 
     return useMutation({
-        mutationFn: TwoFactorAuthenticationService.disableMethod,
+        mutationFn: TwoFactorAuthenticationService.disableIntegration,
         onSuccess: () => {
             void invalidate(TwoFactorAuthenticationQueryKeyFactory.createForAll());
         },

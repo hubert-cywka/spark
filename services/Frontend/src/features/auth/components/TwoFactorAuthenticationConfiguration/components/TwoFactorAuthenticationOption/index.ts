@@ -1,1 +1,0 @@
-export { TwoFactorAuthenticationOption } from "./TwoFactorAuthenticationOption";

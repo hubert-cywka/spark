@@ -86,6 +86,10 @@ resource "kubernetes_deployment" "backend" {
                         value = var.JWT_SIGNING_SECRET
                     }
                     env {
+                        name = "OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS"
+                        value = var.OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS
+                    }
+                    env {
                         name  = "JWT_EXPIRATION_TIME_IN_SECONDS"
                         value = var.JWT_EXPIRATION_TIME_IN_SECONDS
                     }

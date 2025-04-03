@@ -66,6 +66,10 @@ variable "JWT_SIGNING_SECRET" {
     type        = string
 }
 
+variable "OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS" {
+    type        = number
+}
+
 variable "JWT_EXPIRATION_TIME_IN_SECONDS" {
     type        = number
 }

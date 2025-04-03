@@ -33,7 +33,6 @@ import { type AccessTokenPayload, type AuthenticationResult } from "@/modules/id
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
-// TODO: Consider using Keycloak (or other auth provider)
 @Injectable()
 export class AuthenticationService implements IAuthenticationService {
     private readonly logger = new Logger(AuthenticationService.name);

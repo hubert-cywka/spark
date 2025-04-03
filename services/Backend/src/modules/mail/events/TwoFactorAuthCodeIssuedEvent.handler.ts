@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { whenError } from "@/common/errors/whenError";
-import { Email2FACodeIssuedEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import { EmailIntegrationTOTPIssuedEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 import { EmailDeliveryError } from "@/modules/mail/errors/EmailDelivery.error";
 import { type IMailerService, MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
 import { TwoFactorAuthCodeIssuedEmail } from "@/modules/mail/templates/TwoFactorAuthCodeIssuedEmail";
@@ -15,7 +15,7 @@ export class TwoFactorAuthCodeIssuedEventHandler implements IInboxEventHandler {
     }
 
     public async handle(event: IntegrationEvent): Promise<void> {
-        const payload = event.getPayload() as Email2FACodeIssuedEventPayload;
+        const payload = event.getPayload() as EmailIntegrationTOTPIssuedEventPayload;
         try {
             await this.mailer.send(payload.email, new TwoFactorAuthCodeIssuedEmail(payload.code));
         } catch (e) {

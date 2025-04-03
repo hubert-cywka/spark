@@ -23,17 +23,17 @@ import { AccessGuard } from "@/common/guards/Access.guard";
 import { EnableApp2FADto } from "@/modules/identity/2fa/dto/EnableApp2FA.dto";
 import { Verify2FACodeDto } from "@/modules/identity/2fa/dto/Verify2FACode.dto";
 import {
-    type ITwoFactorAuthenticationOptionMapper,
-    TwoFactorAuthenticationOptionMapperToken,
-} from "@/modules/identity/2fa/mappers/ITwoFactorAuthenticationOption.mapper";
+    type ITwoFactorAuthenticationIntegrationMapper,
+    TwoFactorAuthenticationIntegrationMapperToken,
+} from "@/modules/identity/2fa/mappers/ITwoFactorAuthenticationIntegration.mapper";
 import {
     type ITwoFactorAuthenticationFactory,
     TwoFactorAuthenticationFactoryToken,
 } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthentication.factory";
 import {
-    type ITwoFactorAuthenticationMethodsProviderService,
+    type ITwoFactorAuthenticationIntegrationsProviderService,
     TwoFactorAuthenticationMethodsProviderServiceToken,
-} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationMethodsProvider.service";
+} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationIntegrationsProvider.service";
 import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 import { type User } from "@/types/User";
 
@@ -44,15 +44,15 @@ export class TwoFactorAuthenticationController {
         @Inject(TwoFactorAuthenticationFactoryToken)
         private readonly twoFactorAuthFactory: ITwoFactorAuthenticationFactory,
         @Inject(TwoFactorAuthenticationMethodsProviderServiceToken)
-        private readonly methodsProvider: ITwoFactorAuthenticationMethodsProviderService,
-        @Inject(TwoFactorAuthenticationOptionMapperToken)
-        private readonly mapper: ITwoFactorAuthenticationOptionMapper
+        private readonly integrationsProvider: ITwoFactorAuthenticationIntegrationsProviderService,
+        @Inject(TwoFactorAuthenticationIntegrationMapperToken)
+        private readonly mapper: ITwoFactorAuthenticationIntegrationMapper
     ) {}
 
     @Get("method")
     @UseGuards(AccessGuard)
     async getMethods(@AuthenticatedUserContext() user: User) {
-        const methods = await this.methodsProvider.findEnabledMethods(user.id);
+        const methods = await this.integrationsProvider.findActiveIntegrations(user.id);
         return this.mapper.fromModelToDtoBulk(methods);
     }
 
@@ -63,10 +63,10 @@ export class TwoFactorAuthenticationController {
         method: TwoFactorAuthenticationMethod,
         @AuthenticatedUserContext() user: User
     ) {
-        const twoFactorAuthService = this.twoFactorAuthFactory.create(method);
+        const twoFactorAuthService = this.twoFactorAuthFactory.createIntegrationService(method);
 
         try {
-            await twoFactorAuthService.issueCode(user);
+            await twoFactorAuthService.issueTOTP(user);
         } catch (err) {
             whenError(err)
                 .is(EntityConflictError)
@@ -83,10 +83,10 @@ export class TwoFactorAuthenticationController {
     @UseGuards(AccessGuard)
     @AccessScopes("write:2fa")
     async enableApp2FA(@AuthenticatedUserContext() user: User) {
-        const twoFactorAuthService = this.twoFactorAuthFactory.create(TwoFactorAuthenticationMethod.AUTHENTICATOR);
+        const twoFactorAuthService = this.twoFactorAuthFactory.createIntegrationService(TwoFactorAuthenticationMethod.AUTHENTICATOR);
 
         try {
-            const result = await twoFactorAuthService.createMethod(user);
+            const result = await twoFactorAuthService.createMethodIntegration(user);
             return plainToClass(EnableApp2FADto, { url: result });
         } catch (err) {
             whenError(err).is(EntityConflictError).throw(new ConflictException()).elseRethrow();
@@ -101,10 +101,10 @@ export class TwoFactorAuthenticationController {
         method: TwoFactorAuthenticationMethod,
         @AuthenticatedUserContext() user: User
     ) {
-        const twoFactorAuthService = this.twoFactorAuthFactory.create(method);
+        const twoFactorAuthService = this.twoFactorAuthFactory.createIntegrationService(method);
 
         try {
-            await twoFactorAuthService.createMethod(user);
+            await twoFactorAuthService.createMethodIntegration(user);
         } catch (err) {
             whenError(err).is(EntityConflictError).throw(new ConflictException()).elseRethrow();
         }
@@ -119,10 +119,10 @@ export class TwoFactorAuthenticationController {
         @Body() body: Verify2FACodeDto,
         @AuthenticatedUserContext() user: User
     ) {
-        const twoFactorAuthService = this.twoFactorAuthFactory.create(method);
+        const twoFactorAuthService = this.twoFactorAuthFactory.createIntegrationService(method);
 
         try {
-            await twoFactorAuthService.confirmMethod(user, body.code);
+            await twoFactorAuthService.confirmMethodIntegration(user, body.code);
         } catch (err) {
             whenError(err)
                 .is(EntityNotFoundError)
@@ -143,10 +143,10 @@ export class TwoFactorAuthenticationController {
         method: TwoFactorAuthenticationMethod,
         @AuthenticatedUserContext() user: User
     ) {
-        const twoFactorAuthService = this.twoFactorAuthFactory.create(method);
+        const twoFactorAuthService = this.twoFactorAuthFactory.createIntegrationService(method);
 
         try {
-            await twoFactorAuthService.deleteMethod(user);
+            await twoFactorAuthService.deleteMethodIntegration(user);
         } catch (err) {
             whenError(err)
                 .is(EntityConflictError)

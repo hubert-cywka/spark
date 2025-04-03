@@ -109,27 +109,27 @@
         },
         "2fa": {
             "disable": {
-                "notFound": "2FA method does not found, try again later.",
-                "conflict": "At least one 2FA method must be enabled."
+                "notFound": "2FA integration does not found, try again later.",
+                "conflict": "At least one 2FA integration must be enabled."
             },
             "enable": {
-                "conflict": "2FA method already enabled."
+                "conflict": "2FA integration already enabled."
             },
             "confirm": {
-                "notFound": "2FA method does not found, try again later.",
-                "conflict": "2FA method already enabled.",
+                "notFound": "2FA integration does not found, try again later.",
+                "conflict": "2FA integration already enabled.",
                 "forbidden": "Invalid or expired code"
             },
             "requestCode": {
                 "email": {
-                    "notFound": "Couldn't find eligible 2FA method."
+                    "notFound": "Couldn't find eligible 2FA integration."
                 }
             }
         },
         "authentication": {
             "upgradeSession": {
                 "errors": {
-                    "unauthorized": "This 2FA method is not enabled.",
+                    "unauthorized": "This 2FA integration is not enabled.",
                     "forbidden": "Code invalid or has expired."
                 }
             },
@@ -676,10 +676,10 @@
             "confirm": {
                 "notifications": {
                     "success": {
-                        "title": "2FA method enabled"
+                        "title": "2FA integration enabled"
                     },
                     "error": {
-                        "title": "Can't disable 2FA"
+                        "title": "Can't disable 2FA integration"
                     }
                 }
             },

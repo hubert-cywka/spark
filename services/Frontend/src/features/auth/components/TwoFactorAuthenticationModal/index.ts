@@ -1,1 +1,1 @@
-export { TwoFactorAuthenticationModal } from "./TwoFactorAuthenticationModal.tsx";
+export { TwoFactorAuthenticationRequiredModal } from "./TwoFactorAuthenticationRequiredModal.tsx";

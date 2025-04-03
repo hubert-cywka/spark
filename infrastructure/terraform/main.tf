@@ -33,6 +33,7 @@ resource "kubernetes_config_map" "app_config" {
 
         BACKEND_PORT                                        = var.BACKEND_PORT
         JWT_SIGNING_SECRET                                  = var.JWT_SIGNING_SECRET
+        OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS              = var.OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS
         JWT_EXPIRATION_TIME_IN_SECONDS                      = var.JWT_EXPIRATION_TIME_IN_SECONDS
         REFRESH_TOKEN_SIGNING_SECRET                        = var.REFRESH_TOKEN_SIGNING_SECRET
         REFRESH_TOKEN_EXPIRATION_TIME_IN_SECONDS            = var.REFRESH_TOKEN_EXPIRATION_TIME_IN_SECONDS

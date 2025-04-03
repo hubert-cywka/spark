@@ -52,6 +52,7 @@ import { type ExternalIdentity } from "@/modules/identity/authentication/types/O
 @Controller("open-id-connect")
 export class OpenIDConnectController {
     private readonly refreshTokenCookieMaxAge: number;
+    private readonly oidcCookieMaxAge: number;
 
     public constructor(
         @Inject(DomainVerifierServiceToken)
@@ -67,6 +68,7 @@ export class OpenIDConnectController {
         configService: ConfigService
     ) {
         this.refreshTokenCookieMaxAge = configService.getOrThrow<number>("modules.identity.refreshToken.expirationTimeInSeconds") * 1000;
+        this.oidcCookieMaxAge = configService.getOrThrow<number>("modules.identity.oidc.cookie.expirationTimeInSeconds") * 1000;
     }
 
     @HttpCode(HttpStatus.OK)
@@ -190,7 +192,7 @@ export class OpenIDConnectController {
             partitioned: true,
             httpOnly: true,
             secure: true,
-            maxAge: 60 * 5 * 1000, // TODO: Make it configurable
+            maxAge: this.oidcCookieMaxAge,
             sameSite: "lax",
             path: "/",
         };
@@ -201,7 +203,7 @@ export class OpenIDConnectController {
             partitioned: true,
             httpOnly: true,
             secure: true,
-            maxAge: 60 * 10 * 1000, // TODO: Make it configurable
+            maxAge: this.oidcCookieMaxAge,
             sameSite: "strict",
             path: "/api/open-id-connect/register",
             signed: true,
