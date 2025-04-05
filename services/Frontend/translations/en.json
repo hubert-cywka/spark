@@ -339,7 +339,7 @@
             "totalEntriesAmount": {
                 "title": "All entries"
             },
-            "accumulatedEntries": {
+            "entriesAccumulatedByDays": {
                 "xLabel": "Day",
                 "yLabel": "Entries",
                 "title": "Total number of entries",

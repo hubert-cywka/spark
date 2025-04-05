@@ -1,5 +1,3 @@
-import { getDateRange, getPresetFromDateRange } from "./utils/getDateRange";
-
 import styles from "./styles/InsightsDasbhoardFilters.module.scss";
 
 import { DateRangePicker } from "@/components/Input";
@@ -8,6 +6,7 @@ import { ToggleButtonGroup } from "@/components/ToggleButtonGroup";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 import { DateRangePreset } from "@/types/DateRangePreset";
 import { ISODateStringRange } from "@/types/ISODateString";
+import { getDateRange, getPresetFromDateRange } from "@/utils/getDateRange.ts";
 
 type InsightsDashboardFiltersProps = {
     onDateRangeChange: (value: ISODateStringRange) => void;
