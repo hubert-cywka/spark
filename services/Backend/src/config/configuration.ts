@@ -1,4 +1,5 @@
 export const AppConfig = () => ({
+    appName: process.env.APP_NAME,
     port: parseInt(process.env.PORT ?? ""),
 
     throttle: {

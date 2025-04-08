@@ -1,3 +1,7 @@
+variable "APP_NAME" {
+    type        = string
+}
+ 
 variable "RATE_LIMITING_BASE_TTL" {
     type        = number
 }

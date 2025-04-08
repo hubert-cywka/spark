@@ -15,6 +15,8 @@ resource "kubernetes_config_map" "app_config" {
     }
 
     data = {
+        APP_NAME                                            = var.APP_NAME
+    
         RATE_LIMITING_BASE_LIMIT                            = var.RATE_LIMITING_BASE_LIMIT
         RATE_LIMITING_BASE_TTL                              = var.RATE_LIMITING_BASE_TTL
 

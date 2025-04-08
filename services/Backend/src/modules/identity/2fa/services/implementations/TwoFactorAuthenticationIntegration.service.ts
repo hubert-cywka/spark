@@ -1,4 +1,5 @@
 import { Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import { Secret, TOTP } from "otpauth";
@@ -18,8 +19,14 @@ const DEFAULT_VERIFICATION_WINDOW = 3;
 
 export abstract class TwoFactorAuthenticationIntegrationService implements ITwoFactorAuthenticationIntegrationService {
     protected readonly logger = new Logger(TwoFactorAuthenticationIntegrationService.name);
+    private readonly appName: string;
 
-    protected constructor(private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>) {}
+    protected constructor(
+        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        configService: ConfigService
+    ) {
+        this.appName = configService.getOrThrow<string>("appName");
+    }
 
     public async issueTOTP(user: User): Promise<void> {
         if (!this.canIssueCode()) {
@@ -177,8 +184,7 @@ export abstract class TwoFactorAuthenticationIntegrationService implements ITwoF
 
     private createOtpProvider(user: User, secret: string, totpTTL: number) {
         return new TOTP({
-            // TODO: Get app name
-            issuer: "Codename",
+            issuer: this.appName,
             label: `${user.email} (${user.id})`,
             secret,
             period: totpTTL,

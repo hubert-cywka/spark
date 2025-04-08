@@ -1,8 +1,7 @@
 "use client";
 
-import { ReactNode } from "react";
-import { DateField, DateValue, FieldError, Label } from "react-aria-components";
-import { Control, FieldValues, Path, useController } from "react-hook-form";
+import React, { ChangeEventHandler, forwardRef, ReactNode } from "react";
+import { DateField, DateFieldProps as RacDateFieldProps, DateValue, FieldError, Label } from "react-aria-components";
 import { fromDate } from "@internationalized/date";
 
 import { InputSize } from "./types/Input";
@@ -11,66 +10,92 @@ import sharedStyles from "./styles/Input.module.scss";
 
 import { SegmentedDateInputSlot } from "@/components/Input/SegmentedDateInputSlot";
 
-type DateInputProps<T extends FieldValues> = {
-    name: Path<T>;
-    control: Control<T>; // TODO: Do not use 'control' prop
+type DateInputProps = {
+    value?: Date | null | undefined;
+    defaultValue?: Date | null | undefined;
+    onChange: (value: Date | undefined) => void;
+    onBlur?: ChangeEventHandler;
+    name: string;
     label: ReactNode;
     size?: InputSize;
     required?: boolean;
-    defaultValue?: Date;
+    error?: ReactNode;
+    minValue?: Date;
+    maxValue?: Date;
+    placeholderValue?: Date;
+} & Omit<
+    RacDateFieldProps<DateValue>,
+    "value" | "onChange" | "onBlur" | "name" | "children" | "minValue" | "maxValue" | "placeholderValue" | "defaultValue" | "isRequired"
+>;
+
+const convertToDateValue = (value: Date | undefined | null): DateValue | undefined => {
+    if (value instanceof Date && !isNaN(value.getTime())) {
+        return fromDate(value, "UTC");
+    }
+    return undefined;
 };
 
-export const DateInput = <T extends FieldValues>({
-    defaultValue,
-    label,
-    required,
-    name,
-    control,
-    size = "2",
-    ...props
-}: DateInputProps<T>) => {
-    const {
-        field,
-        fieldState: { invalid, error },
-    } = useController({
-        name,
-        control,
-        rules: { required },
-    });
+export const DateInput = forwardRef<HTMLDivElement, DateInputProps>(
+    (
+        {
+            value,
+            defaultValue,
+            onChange,
+            onBlur,
+            name,
+            label,
+            required,
+            isInvalid,
+            error,
+            size = "2",
+            minValue,
+            maxValue,
+            placeholderValue,
+            ...props
+        },
+        ref
+    ) => {
+        const internalDateValue = convertToDateValue(value);
+        const internalDefaultDateValue = convertToDateValue(defaultValue);
+        const internalMinValue = convertToDateValue(minValue);
+        const internalMaxValue = convertToDateValue(maxValue);
+        const internalPlaceholderValue = convertToDateValue(placeholderValue);
 
-    const onChange = (value: DateValue | null) => {
-        field.onChange(value?.toDate("UTC"));
-    };
+        const handleChange = (newValue: DateValue | null) => {
+            onChange(newValue ? newValue.toDate("UTC") : undefined);
+        };
 
-    return (
-        <DateField
-            {...props}
-            className={sharedStyles.controller}
-            onChange={onChange}
-            value={convertValue(field.value)}
-            defaultValue={convertValue(defaultValue)}
-            onBlur={field.onBlur}
-            name={field.name}
-            ref={field.ref}
-            isRequired={required}
-            isInvalid={invalid}
-            granularity="day"
-            shouldForceLeadingZeros
-            validationBehavior="aria"
-            hideTimeZone
-        >
-            <Label className={sharedStyles.label}>
-                {label}
-                {required && <span className={sharedStyles.highlight}> *</span>}
-            </Label>
+        return (
+            <DateField
+                {...props}
+                ref={ref}
+                className={sharedStyles.controller}
+                value={internalDateValue}
+                defaultValue={internalDefaultDateValue}
+                minValue={internalMinValue}
+                maxValue={internalMaxValue}
+                placeholderValue={internalPlaceholderValue}
+                onChange={handleChange}
+                onBlur={onBlur}
+                name={name}
+                isRequired={required}
+                isInvalid={isInvalid}
+                granularity="day"
+                shouldForceLeadingZeros
+                validationBehavior="aria"
+                hideTimeZone
+            >
+                <Label className={sharedStyles.label}>
+                    {label}
+                    {required && <span className={sharedStyles.highlight}> *</span>}
+                </Label>
 
-            <SegmentedDateInputSlot className={sharedStyles.input} size={size} />
+                <SegmentedDateInputSlot className={sharedStyles.input} size={size} />
 
-            {error && <FieldError className={sharedStyles.error}>{error.message}</FieldError>}
-        </DateField>
-    );
-};
+                {isInvalid && error && <FieldError className={sharedStyles.error}>{error}</FieldError>}
+            </DateField>
+        );
+    }
+);
 
-const convertValue = (value: Date | undefined) => {
-    return value ? fromDate(value, "UTC") : undefined;
-};
+DateInput.displayName = "DateInput";
