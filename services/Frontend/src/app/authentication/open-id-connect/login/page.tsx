@@ -8,11 +8,11 @@ import { onlyAsUnauthenticated } from "@/features/auth/hoc/withAuthorization";
 
 function Page() {
     return (
-        <div className={styles.container}>
+        <main className={styles.container}>
             <Suspense>
                 <OpenIDConnectFlowHandler />
             </Suspense>
-        </div>
+        </main>
     );
 }
 

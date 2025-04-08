@@ -9,9 +9,9 @@ type ModalHeaderProps = PropsWithChildren<{ onClose: () => void }>;
 
 export const ModalHeader = ({ children, onClose }: ModalHeaderProps) => {
     return (
-        <div className={styles.container}>
-            <h1 className={styles.header}>{children}</h1>
+        <header className={styles.container}>
+            <h2 className={styles.header}>{children}</h2>
             <IconButton variant="subtle" size="1" onPress={onClose} iconSlot={X} />
-        </div>
+        </header>
     );
 };

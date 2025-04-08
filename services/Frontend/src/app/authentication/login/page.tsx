@@ -15,8 +15,8 @@ function Page() {
     const t = useTranslate();
 
     return (
-        <div className={styles.container}>
-            <Card>
+        <main className={styles.container}>
+            <Card as="section">
                 <h1 className={styles.header}>{t("authentication.login.form.header")}</h1>
                 <p className={styles.caption}>
                     {t("authentication.login.form.noAccount.caption")}{" "}
@@ -37,7 +37,7 @@ function Page() {
                     <GoogleOIDCButton />
                 </div>
             </Card>
-        </div>
+        </main>
     );
 }
 

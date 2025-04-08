@@ -16,18 +16,18 @@ function Page() {
     const t = useTranslate();
 
     return (
-        <div className={styles.container}>
+        <main className={styles.container}>
             <Suspense>
                 <AccountActivationHandler />
             </Suspense>
-            <Card>
+            <Card as="section">
                 <h1 className={styles.header}>{t("authentication.accountActivation.form.header")}</h1>
                 <p className={styles.caption}>{t("authentication.accountActivation.form.caption")}</p>
                 <p className={styles.caption}>{t("authentication.accountActivation.form.warning")}</p>
                 <Anchor href={AppRoute.LOGIN}>{t("authentication.accountActivation.form.loginLink")}</Anchor>
                 <RequestActivationLinkForm />
             </Card>
-        </div>
+        </main>
     );
 }
 

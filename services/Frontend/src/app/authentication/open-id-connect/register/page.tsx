@@ -10,13 +10,13 @@ function Page() {
     const t = useTranslate();
 
     return (
-        <div className={styles.container}>
-            <Card>
+        <main className={styles.container}>
+            <Card as="section">
                 <h1 className={styles.header}>{t("authentication.oidc.register.form.header")}</h1>
                 <p className={styles.caption}>{t("authentication.oidc.register.form.description")}</p>
                 <CreateAccountWithOIDCForm />
             </Card>
-        </div>
+        </main>
     );
 }
 

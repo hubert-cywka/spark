@@ -24,7 +24,7 @@ export const SidePanel = () => {
     const isDesktop = useMediaQuery("(min-width: 768px)");
 
     return (
-        <div
+        <aside
             className={clsx(styles.container, {
                 [styles.collapsed]: isCollapsed,
             })}
@@ -40,15 +40,18 @@ export const SidePanel = () => {
                     />
                 </div>
 
-                <Logo className={styles.logo} />
+                <header>
+                    <Logo className={styles.logo} />
+                </header>
+
                 <Navigation isDisabled={isCollapsed && !isDesktop} />
 
-                <div className={styles.footer}>
+                <footer className={styles.footer}>
                     <AccessGuard requiredScopes={["browse_as_authenticated"]}>
                         <LogoutButton />
                     </AccessGuard>
-                </div>
+                </footer>
             </div>
-        </div>
+        </aside>
     );
 };

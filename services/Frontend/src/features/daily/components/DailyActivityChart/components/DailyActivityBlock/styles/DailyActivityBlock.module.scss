@@ -1,0 +1,16 @@
+@use "src/styles/tokens";
+
+.activityBlock {
+    outline-offset: 2px;
+    border-radius: tokens.$radius-100;
+
+    &:hover,
+    &:focus {
+        outline: 2px solid tokens.$color-neutral-solid-300;
+    }
+}
+
+.focusedBlock {
+    outline: 2px solid tokens.$color-accent-solid-200;
+    outline-offset: 2px;
+}

@@ -54,14 +54,14 @@ export const AddGoalForm = ({ onSubmit, onReset, isLoading, initialValue }: AddG
                 defaultValue={initialValue?.deadline}
             />
 
-            <div className={styles.buttons}>
+            <footer className={styles.buttons}>
                 <Button type="reset" variant="secondary">
                     {t("goals.create.form.buttons.cancel.label")}
                 </Button>
                 <Button type="submit" variant="confirm" isLoading={isLoading}>
                     {t("goals.create.form.buttons.save.label")}
                 </Button>
-            </div>
+            </footer>
         </form>
     );
 };

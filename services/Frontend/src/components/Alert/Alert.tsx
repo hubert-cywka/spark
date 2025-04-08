@@ -20,7 +20,7 @@ export const Alert = ({ children, variant }: AlertProps) => {
     }, [variant]);
 
     return (
-        <div data-variant={variant} className={styles.container}>
+        <div data-variant={variant} className={styles.container} role="alert">
             <div className={styles.iconWrapper}>
                 <Icon />
             </div>

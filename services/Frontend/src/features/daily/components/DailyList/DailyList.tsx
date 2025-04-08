@@ -152,7 +152,7 @@ export const DailyList = () => {
             />
 
             {dailies.map((daily) => (
-                <div className={styles.day} key={daily.id} data-daily-date={daily.date}>
+                <section className={styles.day} key={daily.id} data-daily-date={daily.date}>
                     <DayHeader daily={daily} onUpdateDate={onUpdateDailyDate} />
                     <ul className={styles.entries}>
                         {entriesGroups[daily.id]?.map((entry, index) => (
@@ -180,7 +180,7 @@ export const DailyList = () => {
                             />
                         )}
                     </ul>
-                </div>
+                </section>
             ))}
 
             <ItemLoader shouldLoadNext={hasNextPage} onLoadNext={fetchNextPage} isLoaderVisible={isFetching && dayjs().isAfter(startDate)}>

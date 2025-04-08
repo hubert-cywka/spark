@@ -24,11 +24,11 @@ export const GoalEntriesList = ({ entries, goalId, children }: GoalEntriesListPr
     });
 
     return (
-        <div className={styles.container}>
-            <div className={styles.headerWrapper}>
+        <section className={styles.container}>
+            <header className={styles.headerWrapper}>
                 <h2 className={styles.header}>{t("goal.entries.header")}</h2>
                 {children}
-            </div>
+            </header>
             {!entries.length && t("goal.entries.noResults")}
 
             <ul className={styles.entries}>
@@ -47,6 +47,6 @@ export const GoalEntriesList = ({ entries, goalId, children }: GoalEntriesListPr
                     />
                 ))}
             </ul>
-        </div>
+        </section>
     );
 };

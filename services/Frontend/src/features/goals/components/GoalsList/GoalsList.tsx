@@ -21,7 +21,7 @@ export const GoalsList = ({ goals, header, selectedGoalId, onSelectGoal }: Goals
     const t = useTranslate();
 
     return (
-        <div>
+        <section>
             <h1 className={styles.header}>{header}</h1>
             {!goals.length && <p className={styles.noResults}>{t("goals.list.section.noResults")}</p>}
 
@@ -38,6 +38,6 @@ export const GoalsList = ({ goals, header, selectedGoalId, onSelectGoal }: Goals
                     </li>
                 ))}
             </ul>
-        </div>
+        </section>
     );
 };

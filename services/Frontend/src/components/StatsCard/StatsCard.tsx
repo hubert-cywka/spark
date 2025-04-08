@@ -13,7 +13,7 @@ type StatsCardProps = {
 
 export const StatsCard = ({ title, value, className }: StatsCardProps) => {
     return (
-        <Card variant="translucent" className={classNames(styles.container, className)}>
+        <Card as="article" variant="translucent" className={classNames(styles.container, className)}>
             <p className={styles.title}>{title}</p>
             <Counter value={value} />
         </Card>

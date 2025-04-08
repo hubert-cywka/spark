@@ -167,6 +167,7 @@
         }
     },
     "common": {
+        "loading": "Loading...",
         "day": {
             "monday": "Monday",
             "tuesday": "Tuesday",
@@ -339,7 +340,7 @@
             "totalEntriesAmount": {
                 "title": "All entries"
             },
-            "accumulatedEntries": {
+            "entriesAccumulatedByDays": {
                 "xLabel": "Day",
                 "yLabel": "Entries",
                 "title": "Total number of entries",

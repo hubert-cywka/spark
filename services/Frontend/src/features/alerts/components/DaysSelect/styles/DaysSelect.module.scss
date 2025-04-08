@@ -4,6 +4,10 @@
     display: flex;
     gap: tokens.$spacing-200;
 
+    margin-top: tokens.$spacing-300;
+    list-style: none;
+    padding: 0;
+
     .dayButton {
         border-radius: tokens.$radius-500;
         height: 2rem;

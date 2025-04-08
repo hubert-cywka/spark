@@ -13,7 +13,7 @@ import { DaysSelect } from "@/features/alerts/components/DaysSelect/DaysSelect";
 
 export const ReminderCard = ({ alert, onUpdateStatus, onUpdateTime, onUpdateDays, onDelete }: AlertRenderProps) => {
     return (
-        <Card key={alert.id} className={styles.container} variant="translucent">
+        <Card as="article" key={alert.id} className={styles.container} variant="translucent">
             <div className={styles.wrapper}>
                 <Toggle isSelected={alert.enabled} onChange={onUpdateStatus} size="3" />
                 <AlertTimeInput value={alert.time} onChange={onUpdateTime} />

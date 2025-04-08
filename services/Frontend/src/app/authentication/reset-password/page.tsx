@@ -18,8 +18,8 @@ async function Page({ searchParams }: ResetPasswordPageProps) {
     const t = await getTranslationsAsync();
 
     return (
-        <div className={styles.container}>
-            <Card>
+        <main className={styles.container}>
+            <Card as="section">
                 {typeof token === "string" ? (
                     <>
                         <h1 className={styles.header}>{t("authentication.passwordReset.form.header")}</h1>
@@ -41,7 +41,7 @@ async function Page({ searchParams }: ResetPasswordPageProps) {
                     </>
                 )}
             </Card>
-        </div>
+        </main>
     );
 }
 

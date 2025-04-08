@@ -41,6 +41,7 @@ export const GoalCard = ({ goal, isSelected, onSelection }: GoalCardProps) => {
 
     return (
         <Card
+            as="article"
             onFocus={handleFocus}
             onBlur={handleBlur}
             tabIndex={onSelection ? 0 : undefined}

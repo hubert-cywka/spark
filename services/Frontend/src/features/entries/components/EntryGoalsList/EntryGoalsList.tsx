@@ -31,24 +31,22 @@ export const EntryGoalsList = ({ entryId }: EntryGoalsListProps) => {
     };
 
     return (
-        <div className={styles.container}>
-            <div>
-                <div className={styles.headerWrapper}>
-                    <p className={styles.header}>{t("entries.goals.list.linked.header")}</p>
-                    <LinkGoalsPopover entryId={entryId} />
-                </div>
-                {!linkedGoals.length && <p className={styles.caption}>{t("entries.goals.list.linked.noResultsCaption")}</p>}
+        <section className={styles.container}>
+            <header className={styles.headerWrapper}>
+                <h3 className={styles.header}>{t("entries.goals.list.linked.header")}</h3>
+                <LinkGoalsPopover entryId={entryId} />
+            </header>
+            {!linkedGoals.length && <p className={styles.caption}>{t("entries.goals.list.linked.noResultsCaption")}</p>}
 
-                <ul className={styles.list}>
-                    {linkedGoals.map((goal) => (
-                        <GoalLinkItem onClick={() => onUnlink(goal.id)} name={goal.name} linked key={goal.id} />
-                    ))}
-                </ul>
+            <ul className={styles.list}>
+                {linkedGoals.map((goal) => (
+                    <GoalLinkItem onClick={() => onUnlink(goal.id)} name={goal.name} linked key={goal.id} />
+                ))}
+            </ul>
 
-                <ItemLoader shouldLoadNext={hasNextPage} onLoadNext={fetchNextPage} isLoaderVisible={isFetching}>
-                    <Spinner size="1" />
-                </ItemLoader>
-            </div>
-        </div>
+            <ItemLoader shouldLoadNext={hasNextPage} onLoadNext={fetchNextPage} isLoaderVisible={isFetching}>
+                <Spinner size="1" />
+            </ItemLoader>
+        </section>
     );
 };
