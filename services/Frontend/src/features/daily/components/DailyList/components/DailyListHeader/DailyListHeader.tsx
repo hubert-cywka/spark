@@ -30,7 +30,7 @@ export const DailyListHeader = ({
     const isCurrentYearAndMonth = now.getMonth() === timeframeStart.getMonth() && now.getFullYear() === timeframeStart.getFullYear();
 
     return (
-        <div className={styles.headerWrapper}>
+        <header className={styles.headerWrapper}>
             <div className={styles.dateRangeFilters}>
                 <div className={styles.buttons}>
                     <IconButton onPress={onCreateNewDaily} variant="confirm" iconSlot={Plus} />
@@ -61,6 +61,6 @@ export const DailyListHeader = ({
             </div>
 
             {children}
-        </div>
+        </header>
     );
 };
