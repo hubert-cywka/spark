@@ -4,7 +4,7 @@ import styles from "./styles/Divider.module.scss";
 
 export const Divider = ({ children }: PropsWithChildren) => {
     return (
-        <div className={styles.dividerWrapper}>
+        <div className={styles.dividerWrapper} role="separator">
             <div className={styles.line} />
 
             {children && (

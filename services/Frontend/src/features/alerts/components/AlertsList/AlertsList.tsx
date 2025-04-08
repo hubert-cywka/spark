@@ -56,7 +56,7 @@ export const AlertsList = ({ maxAlertsAllowed, onAlertRender, onAddAlertRender }
     };
 
     return (
-        <div className={styles.container}>
+        <ul className={styles.container}>
             {data?.map((alert) =>
                 onAlertRender({
                     alert,
@@ -70,6 +70,6 @@ export const AlertsList = ({ maxAlertsAllowed, onAlertRender, onAddAlertRender }
             {onAddAlertRender?.({
                 isDisabled: isLoading || numberOfAlerts >= maxAlertsAllowed,
             })}
-        </div>
+        </ul>
     );
 };

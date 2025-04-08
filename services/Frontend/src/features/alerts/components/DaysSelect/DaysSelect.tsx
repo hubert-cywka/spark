@@ -24,7 +24,7 @@ export const DaysSelect = ({ selected, onChange }: DaysSelectProps) => {
     };
 
     return (
-        <div className={styles.container}>
+        <ul className={styles.container}>
             {ALL_WEEKDAYS.map((day) => (
                 <Tooltip label={translateWeekday(day)} key={day}>
                     <Button
@@ -37,6 +37,6 @@ export const DaysSelect = ({ selected, onChange }: DaysSelectProps) => {
                     </Button>
                 </Tooltip>
             ))}
-        </div>
+        </ul>
     );
 };

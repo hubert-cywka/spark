@@ -46,12 +46,15 @@ export const LinkGoalsPopover = ({ entryId }: LinkGoalsPopoverProps) => {
 
     return (
         <Popover offset={15} trigger={<IconButton size="1" variant="confirm" iconSlot={Plus} />}>
-            <div className={styles.container}>
-                <Field label={t("entries.goals.list.unlinked.search")} size="1" value={search} onChange={setSearch} autoFocus />
+            <section className={styles.container} aria-busy={areUnlinkedGoalsLoading}>
+                <search>
+                    <Field label={t("entries.goals.list.unlinked.search")} size="1" value={search} onChange={setSearch} autoFocus />
+                </search>
+
                 {areUnlinkedGoalsLoading && <Spinner className={styles.spinner} />}
 
                 <div>
-                    <p className={styles.header}>{t("entries.goals.list.unlinked.header")}</p>
+                    <h3 className={styles.header}>{t("entries.goals.list.unlinked.header")}</h3>
                     {!unlinkedGoals.length && <p className={styles.caption}>{t("entries.goals.list.unlinked.noResultsCaption")}</p>}
 
                     <ul className={styles.list}>
@@ -60,7 +63,7 @@ export const LinkGoalsPopover = ({ entryId }: LinkGoalsPopoverProps) => {
                         ))}
                     </ul>
                 </div>
-            </div>
+            </section>
         </Popover>
     );
 };

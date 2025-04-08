@@ -5,5 +5,5 @@ import styles from "./styles/ModalFooter.module.scss";
 type ModalFooterProps = PropsWithChildren;
 
 export const ModalFooter = ({ children }: ModalFooterProps) => {
-    return <div className={styles.container}>{children}</div>;
+    return <footer className={styles.container}>{children}</footer>;
 };

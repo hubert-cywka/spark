@@ -1,11 +1,14 @@
-import { HTMLAttributes, PropsWithChildren } from "react";
+import { type ComponentPropsWithoutRef, type ElementType } from "react";
 
 export type CardSize = "1" | "2" | "3";
-
 export type CardVariant = "solid" | "semi-translucent" | "translucent";
 
-export type CardProps = HTMLAttributes<HTMLDivElement> &
-    PropsWithChildren<{
-        size?: CardSize;
-        variant?: CardVariant;
-    }>;
+type CardOwnProps = {
+    size?: CardSize;
+    variant?: CardVariant;
+};
+
+export type CardProps<T extends ElementType = "div"> = CardOwnProps &
+    Omit<ComponentPropsWithoutRef<T>, keyof CardOwnProps | "as"> & {
+        as?: ElementType;
+    };

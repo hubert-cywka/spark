@@ -167,6 +167,7 @@
         }
     },
     "common": {
+        "loading": "Loading...",
         "day": {
             "monday": "Monday",
             "tuesday": "Tuesday",

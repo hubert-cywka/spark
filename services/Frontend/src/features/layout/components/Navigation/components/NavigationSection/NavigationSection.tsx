@@ -6,9 +6,9 @@ type NavigationSectionProps = PropsWithChildren<{ label: string }>;
 
 export const NavigationSection = ({ children, label }: NavigationSectionProps) => {
     return (
-        <div className={styles.navigationSection}>
+        <section className={styles.navigationSection}>
             <p className={styles.label}>{label}</p>
             <ul className={styles.navigationItems}>{children}</ul>
-        </div>
+        </section>
     );
 };

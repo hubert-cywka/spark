@@ -18,9 +18,9 @@ function Page() {
             <div className={styles.dashboardWrapper}>
                 <GoalsDashboard />
 
-                <div className={styles.sidePanel}>
+                <aside className={styles.sidePanel}>
                     <AddGoalPanel />
-                </div>
+                </aside>
             </div>
         </Container>
     );

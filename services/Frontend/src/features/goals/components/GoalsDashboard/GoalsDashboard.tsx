@@ -41,14 +41,16 @@ export const GoalsDashboard = () => {
     useKeyboardShortcut({ callback: clearSelection, keys: ["Escape"] });
 
     return (
-        <div className={styles.container}>
-            <Field
-                value={search}
-                onChange={setSearch}
-                className={styles.searchBar}
-                placeholder={t("goals.list.search.placeholder")}
-                size="3"
-            />
+        <main className={styles.container}>
+            <search>
+                <Field
+                    value={search}
+                    onChange={setSearch}
+                    className={styles.searchBar}
+                    placeholder={t("goals.list.search.placeholder")}
+                    size="3"
+                />
+            </search>
 
             <GoalsList
                 header={t("goals.list.section.accomplished.header", {
@@ -73,6 +75,6 @@ export const GoalsDashboard = () => {
             </ItemLoader>
 
             {selectedGoal && <GoalsManagementFloatingBar selectedGoal={selectedGoal} onClose={clearSelection} />}
-        </div>
+        </main>
     );
 };

@@ -11,7 +11,7 @@ export const Toast = ({ onClose, title, message, variant = "info" }: ToastProps)
     const t = useTranslate();
 
     return (
-        <div data-variant={variant} className={styles.container}>
+        <div data-variant={variant} className={styles.container} role={variant === "danger" ? "alert" : "status"}>
             <div>
                 <p className={styles.title}>{title}</p>
                 {message && <p className={styles.message}>{message}</p>}

@@ -13,7 +13,7 @@ function Page() {
     const t = useTranslate();
 
     return (
-        <div className={styles.container}>
+        <main className={styles.container}>
             <Card>
                 <h1 className={styles.header}>{t("authentication.registration.form.header")}</h1>
                 <p className={styles.caption}>
@@ -22,7 +22,7 @@ function Page() {
                 </p>
                 <RegisterForm />
             </Card>
-        </div>
+        </main>
     );
 }
 

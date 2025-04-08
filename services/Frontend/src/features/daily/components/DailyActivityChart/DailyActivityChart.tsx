@@ -39,6 +39,7 @@ export const DailyActivityChart = ({ activity, onSelectDay, isLoading }: DailyAc
 
     return (
         <Card
+            as="article"
             tabIndex={0}
             variant="semi-translucent"
             className={styles.container}
