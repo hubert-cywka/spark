@@ -1,7 +1,6 @@
 @use "src/styles/tokens";
 
 .section {
-    margin-top: tokens.$spacing-600;
     max-width: tokens.$breakpoint-sm;
 
     .title {
@@ -16,5 +15,10 @@
         font: tokens.$typography-body-100;
         color: tokens.$color-neutral-text-200;
     }
+}
+
+.separator {
+    padding-block: tokens.$spacing-300;
+    opacity: 0.5;
 }
 

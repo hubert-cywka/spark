@@ -3,5 +3,10 @@
 .container {
     display: flex;
     flex-direction: column;
-    gap: tokens.$spacing-700;
+    
+    .wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$spacing-700;
+    }
 }
