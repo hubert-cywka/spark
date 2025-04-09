@@ -21,7 +21,6 @@ const MAX_TARGET_VALUE = 100;
 export const AddGoalForm = ({ onSubmit, onReset, isLoading, initialValue }: AddGoalFormProps) => {
     const t = useTranslate();
     const {
-        control,
         register,
         handleSubmit,
         formState: { errors },
@@ -49,9 +48,8 @@ export const AddGoalForm = ({ onSubmit, onReset, isLoading, initialValue }: AddG
 
             <DateInput
                 label={t("goals.create.form.fields.deadline.label")}
-                control={control}
-                name="deadline"
                 defaultValue={initialValue?.deadline}
+                {...register("deadline")}
             />
 
             <footer className={styles.buttons}>

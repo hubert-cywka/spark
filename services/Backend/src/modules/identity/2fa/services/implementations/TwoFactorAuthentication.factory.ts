@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 
@@ -22,15 +23,16 @@ export class TwoFactorAuthenticationFactory implements ITwoFactorAuthenticationF
         @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
         @Inject(TwoFactorAuthenticationEmailIntegrationPublisherServiceToken)
-        private readonly publisher: ITwoFactorAuthenticationEmailIntegrationPublisherService
+        private readonly publisher: ITwoFactorAuthenticationEmailIntegrationPublisherService,
+        private readonly configService: ConfigService
     ) {}
 
     public createIntegrationService(method: TwoFactorAuthenticationMethod): ITwoFactorAuthenticationIntegrationService {
         switch (method) {
             case TwoFactorAuthenticationMethod.AUTHENTICATOR:
-                return new TwoFactorAuthenticationAppIntegrationService(this.txHost);
+                return new TwoFactorAuthenticationAppIntegrationService(this.txHost, this.configService);
             case TwoFactorAuthenticationMethod.EMAIL:
-                return new TwoFactorAuthenticationEmailIntegrationService(this.txHost, this.publisher);
+                return new TwoFactorAuthenticationEmailIntegrationService(this.txHost, this.publisher, this.configService);
             default:
                 this.logger.error({ method }, "Unsupported 2FA method.");
                 throw new IntegrationMethodNotSupportedError(method);

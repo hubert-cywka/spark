@@ -17,7 +17,6 @@ import { JournalModule } from "@/modules/journal/Journal.module";
 import { MailModule } from "@/modules/mail/Mail.module";
 import { UsersModule } from "@/modules/users/Users.module";
 
-// TODO: Do we need additional protection against CSRF? Are SameSite=Strict cookies + in-memory access tokens good enough?
 @Module({
     imports: [
         LoggerModule.forRoot({ pinoHttp: loggerOptions }),

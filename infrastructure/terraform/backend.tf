@@ -191,6 +191,11 @@ resource "kubernetes_deployment" "backend" {
                         name = "RATE_LIMITING_BASE_TTL"
                         value = var.RATE_LIMITING_BASE_TTL
                     }
+                    
+                    env {
+                        name = "APP_NAME"
+                        value = var.APP_NAME
+                    }
                 }
             }
         }

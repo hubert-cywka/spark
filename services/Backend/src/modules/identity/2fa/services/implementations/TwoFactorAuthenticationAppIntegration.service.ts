@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 
@@ -14,9 +15,10 @@ export class TwoFactorAuthenticationAppIntegrationService
 {
     constructor(
         @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
-        txHost: TransactionHost<TransactionalAdapterTypeOrm>
+        txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        configService: ConfigService
     ) {
-        super(txHost);
+        super(txHost, configService);
     }
 
     protected canIssueCode(): boolean {
