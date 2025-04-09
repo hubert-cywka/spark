@@ -80,6 +80,10 @@ export class DailyInsightsService implements IDailyInsightsService {
             .map((entry) => ({ date: dayjs(entry.date) }))
             .reverse();
 
+        if (isCurrent && (!entries.length || !entries[0].date.isSame(dayjs(), "day"))) {
+            return 0;
+        }
+
         for (const entry of entries) {
             if (!previousDate) {
                 previousDate = entry.date;
