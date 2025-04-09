@@ -453,6 +453,16 @@
         }
     },
     "settings": {
+        "pages": {
+            "alerts": {
+                "label": "Alerts",
+                "description": "Configure alerts, change their scheduled time, disable them, delete completely, or add new ones."
+            },
+            "profile": {
+                "label": "Profile",
+                "description": "Manage your profile - configure two-factor authentication, update profile details or close your account."
+            }
+        },
         "navigation": {
             "label": "Settings",
             "alerts": {

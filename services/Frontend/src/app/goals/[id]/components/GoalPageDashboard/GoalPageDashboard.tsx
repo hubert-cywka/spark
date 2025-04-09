@@ -39,11 +39,14 @@ export const GoalPageDashboard = ({ goalId }: EntriesProps) => {
     return (
         <main className={styles.container}>
             <GoalPageHeader goalName={goal.name} />
-            <GoalCard goal={goal} />
 
-            <GoalEntriesList entries={entries} goalId={goalId}>
-                <EntryFiltersGroup size="1" onFiltersChange={setFilters} />
-            </GoalEntriesList>
+            <div className={styles.wrapper}>
+                <GoalCard goal={goal} />
+
+                <GoalEntriesList entries={entries} goalId={goalId}>
+                    <EntryFiltersGroup size="1" onFiltersChange={setFilters} />
+                </GoalEntriesList>
+            </div>
         </main>
     );
 };

@@ -3,6 +3,7 @@ import "server-only";
 
 import { AppRoute } from "@/app/appRoute";
 import { Section, SectionDescription, SectionTitle } from "@/app/settings/components/Section";
+import { SectionSeparator } from "@/app/settings/components/Section/Section.tsx";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Container } from "@/components/Container";
 import { TwoFactorAuthenticationConfiguration } from "@/features/auth/components/TwoFactorAuthenticationConfiguration";
@@ -31,6 +32,8 @@ function Page() {
                 <SectionDescription>{t("settings.profile.2fa.description")}</SectionDescription>
                 <TwoFactorAuthenticationConfiguration />
             </Section>
+
+            <SectionSeparator />
 
             <Section>
                 <SectionTitle className={styles.danger}>{t("settings.profile.accountTermination.header")}</SectionTitle>

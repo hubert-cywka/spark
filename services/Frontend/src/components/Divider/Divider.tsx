@@ -1,10 +1,15 @@
 import { PropsWithChildren } from "react";
+import classNames from "clsx";
 
 import styles from "./styles/Divider.module.scss";
 
-export const Divider = ({ children }: PropsWithChildren) => {
+type DividerProps = PropsWithChildren<{
+    className?: string;
+}>;
+
+export const Divider = ({ children, className }: DividerProps) => {
     return (
-        <div className={styles.dividerWrapper} role="separator">
+        <div className={classNames(styles.dividerWrapper, className)} role="separator">
             <div className={styles.line} />
 
             {children && (
