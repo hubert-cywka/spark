@@ -59,21 +59,25 @@ export const InsightsDashboard = () => {
                     <StatsCard
                         className={styles.xs}
                         title={t("insights.charts.meanActivityPerDay.title")}
+                        description={t("insights.charts.meanActivityPerDay.description")}
                         value={dailyMetrics.meanActivityPerDay}
                     />
                     <StatsCard
                         className={styles.xs}
                         title={t("insights.charts.totalActiveDays.title")}
+                        description={t("insights.charts.totalActiveDays.description")}
                         value={dailyMetrics.totalActiveDays}
                     />
                     <StatsCard
                         className={styles.xs}
                         title={t("insights.charts.currentStreak.title")}
+                        description={t("insights.charts.currentStreak.description")}
                         value={dailyMetrics.currentActivityStreak}
                     />
                     <StatsCard
                         className={styles.xs}
                         title={t("insights.charts.longestStreak.title")}
+                        description={t("insights.charts.longestStreak.description")}
                         value={dailyMetrics.longestActivityStreak}
                     />
                 </div>
@@ -111,21 +115,25 @@ export const InsightsDashboard = () => {
                     <StatsCard
                         className={styles.xs}
                         title={t("insights.charts.pendingEntriesAmount.title")}
+                        description={t("insights.charts.pendingEntriesAmount.description")}
                         value={entryMetrics.pendingEntriesAmount}
                     />
                     <StatsCard
                         className={styles.xs}
                         title={t("insights.charts.completedEntriesAmount.title")}
+                        description={t("insights.charts.completedEntriesAmount.description")}
                         value={entryMetrics.completedEntriesAmount}
                     />
                     <StatsCard
                         className={styles.xs}
                         title={t("insights.charts.featuredEntriesAmount.title")}
+                        description={t("insights.charts.featuredEntriesAmount.description")}
                         value={entryMetrics.featuredEntriesAmount}
                     />
                     <StatsCard
                         className={styles.xs}
                         title={t("insights.charts.totalEntriesAmount.title")}
+                        description={t("insights.charts.totalEntriesAmount.description")}
                         value={entryMetrics.totalEntriesAmount}
                     />
                 </div>
