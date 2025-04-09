@@ -329,16 +329,36 @@
                 "title": "Completed entries ratio"
             },
             "pendingEntriesAmount": {
-                "title": "Pending entries"
+                "title": "Pending entries",
+                "description": "Number of entries that are yet to be completed."
             },
             "completedEntriesAmount": {
-                "title": "Completed entries"
+                "title": "Completed entries",
+                "description": "Number of entries you have marked as completed."
             },
             "featuredEntriesAmount": {
-                "title": "Featured entries"
+                "title": "Featured entries",
+                "description": "Number of entries you have marked as important."
             },
             "totalEntriesAmount": {
-                "title": "All entries"
+                "title": "All entries",
+                "description": "Total number of entries you have created."
+            },
+            "longestStreak": {
+                "title": "Longest streak",
+                "description": "Highest number of consecutive days with at least one entry."
+            },
+            "currentStreak": {
+                "title": "Current streak",
+                "description": "Number of consecutive days with at least one entry (ongoing)."
+            },
+            "meanActivityPerDay": {
+                "title": "Mean activity",
+                "description": "Average number of entries logged per day."
+            },
+            "totalActiveDays": {
+                "title": "Active days",
+                "description": "Total number of days with at least one entry."
             },
             "entriesAccumulatedByDays": {
                 "xLabel": "Day",
@@ -357,18 +377,6 @@
                 "label": "Entries",
                 "xLabel": "Day of week",
                 "yLabel": "Entries"
-            },
-            "longestStreak": {
-                "title": "Longest streak of active days"
-            },
-            "currentStreak": {
-                "title": "Current streak of active days"
-            },
-            "meanActivityPerDay": {
-                "title": "Mean logged entries per day"
-            },
-            "totalActiveDays": {
-                "title": "Total active days"
             },
             "dailyActivityHistogram": {
                 "xLabel": "Entries per day",
