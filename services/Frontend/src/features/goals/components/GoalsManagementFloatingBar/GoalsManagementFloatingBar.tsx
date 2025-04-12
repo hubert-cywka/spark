@@ -6,8 +6,8 @@ import styles from "./styles/GoalsManagementFloatingBar.module.scss";
 
 import { IconButton } from "@/components/IconButton";
 import { EditGoalModal } from "@/features/goals/components/EditGoalModal/EditGoalModal";
-import { useDeleteGoal } from "@/features/goals/hooks/delete/useDeleteGoal";
-import { useDeleteGoalEvents } from "@/features/goals/hooks/delete/useDeleteGoalEvents";
+import { useDeleteGoal } from "@/features/goals/hooks/useDeleteGoal";
+import { useDeleteGoalEvents } from "@/features/goals/hooks/useDeleteGoalEvents";
 import { Goal } from "@/features/goals/types/Goal";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 

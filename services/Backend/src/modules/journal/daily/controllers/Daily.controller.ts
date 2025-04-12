@@ -51,6 +51,7 @@ export class DailyController {
         return this.dailyMapper.fromModelToDtoPage(result);
     }
 
+    // TODO: Unify 'metrics' and 'insights'
     @Get("insights")
     @UseGuards(AccessGuard)
     @AccessScopes("read:daily")

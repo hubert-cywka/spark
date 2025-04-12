@@ -17,6 +17,7 @@ export class DailyInsightsService {
             longestActivityStreak: dto.longestActivityStreak,
             meanActivityPerDay: dto.meanActivityPerDay,
             totalActiveDays: dto.totalActiveDays,
+            activeDayRate: dto.activeDayRate,
         };
     }
 

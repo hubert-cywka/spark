@@ -6,8 +6,8 @@ import { Modal, ModalHeader } from "@/components/Modal";
 import { ModalTrigger } from "@/components/Modal/types/Modal";
 import { AddGoalForm } from "@/features/goals/components/AddGoalForm";
 import { AddGoalFormInputs } from "@/features/goals/components/AddGoalForm/hooks/useAddGoalForm";
-import { useUpdateGoal } from "@/features/goals/hooks/update/useUpdateGoal";
-import { useUpdateGoalEvents } from "@/features/goals/hooks/update/useUpdateGoalEvents";
+import { useUpdateGoal } from "@/features/goals/hooks/useUpdateGoal";
+import { useUpdateGoalEvents } from "@/features/goals/hooks/useUpdateGoalEvents";
 import { Goal } from "@/features/goals/types/Goal";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 

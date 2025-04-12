@@ -23,6 +23,7 @@ type CartesianChartPropsWithChildren = CartesianChartProps<{
 export const CartesianChart = ({
     title,
     data,
+    description,
     keyLabel,
     height = DEFAULT_HEIGHT,
     minTickGap = DEFAULT_TICKS_GAP,
@@ -35,7 +36,7 @@ export const CartesianChart = ({
     yLabel,
 }: CartesianChartPropsWithChildren) => {
     return (
-        <ChartContainer height={height} title={title}>
+        <ChartContainer height={height} title={title} description={description}>
             <ResponsiveContainer>
                 <ComposedChart data={data} margin={{ bottom: xLabel ? X_AXIS_LABEL_OFFSET : 0 }}>
                     <defs>

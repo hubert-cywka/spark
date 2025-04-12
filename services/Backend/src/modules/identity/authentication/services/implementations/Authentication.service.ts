@@ -43,9 +43,9 @@ export class AuthenticationService implements IAuthenticationService {
         configService: ConfigService,
         private jwtService: JwtService,
         @Inject(ManagedAccountServiceToken)
-        private accountService: IManagedAccountService,
+        private managedAccountService: IManagedAccountService,
         @Inject(FederatedAccountServiceToken)
-        private externalAccountService: IFederatedAccountService,
+        private federatedAccountService: IFederatedAccountService,
         @Inject(RefreshTokenServiceToken)
         private refreshTokenService: IRefreshTokenService,
         @Inject(AuthPublisherServiceToken)
@@ -58,33 +58,34 @@ export class AuthenticationService implements IAuthenticationService {
     }
 
     public async loginWithCredentials(email: string, password: string): Promise<AuthenticationResult> {
-        const account = await this.accountService.findActivatedByCredentials(email, password);
+        const account = await this.managedAccountService.findActivatedByCredentials(email, password);
         return await this.createAuthenticationResult(account, this.scopesService.getByAccountId(account.id));
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
     public async registerWithCredentials({ email, password, lastName, firstName }: RegisterWithCredentialsDto): Promise<void> {
-        const account = await this.accountService.createAccountWithCredentials(email, password);
+        const account = await this.managedAccountService.createAccountWithCredentials(email, password);
+
         await this.publisher.onAccountRegistered(account.id, {
             account: {
                 firstName,
                 lastName,
                 email,
                 id: account.id,
-                isActivated: false,
             },
         });
-        await this.accountService.requestActivation(email);
+
+        await this.managedAccountService.requestActivation(email);
     }
 
     public async loginWithExternalIdentity(identity: ExternalIdentity): Promise<AuthenticationResult> {
-        const account = await this.externalAccountService.findByExternalIdentity(identity);
+        const account = await this.federatedAccountService.findByExternalIdentity(identity);
         return await this.createAuthenticationResult(account, this.scopesService.getByAccountId(account.id));
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
     public async registerWithExternalIdentity(identity: ExternalIdentity): Promise<AuthenticationResult> {
-        const account = await this.externalAccountService.createAccountWithExternalIdentity(identity);
+        const account = await this.federatedAccountService.createAccountWithExternalIdentity(identity);
         const { firstName, lastName, email } = identity;
 
         await this.publisher.onAccountRegistered(account.id, {
@@ -93,9 +94,10 @@ export class AuthenticationService implements IAuthenticationService {
                 lastName,
                 email,
                 id: account.id,
-                isActivated: true,
             },
         });
+
+        await this.federatedAccountService.activateByInternalId(account.id);
         return await this.createAuthenticationResult(account, this.scopesService.getByAccountId(account.id));
     }
 

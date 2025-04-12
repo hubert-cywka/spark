@@ -14,6 +14,9 @@ export class DailyInsightsDto {
     totalActiveDays!: number;
 
     @IsNumber()
+    activeDayRate!: number;
+
+    @IsNumber()
     meanActivityPerDay!: number;
 
     @IsNumber()

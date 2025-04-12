@@ -10,7 +10,7 @@ import { LoadingOverlay } from "@/components/LoadingOverlay/LoadingOverlay";
 import { EntryFiltersGroup } from "@/features/entries/components/EntryFiltersGroup";
 import { useEntries } from "@/features/entries/hooks";
 import { GoalCard } from "@/features/goals/components/GoalCard";
-import { useGoal } from "@/features/goals/hooks/useGoals/useGoal";
+import { useGoal } from "@/features/goals/hooks/useGoal";
 
 type EntriesProps = {
     goalId: string;

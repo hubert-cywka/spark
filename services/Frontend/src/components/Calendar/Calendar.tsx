@@ -32,7 +32,6 @@ export const Calendar = ({ minDate, maxDate, value, onChange, shownMonths = 1, s
     return (
         <RangeCalendar
             className={styles.container}
-            aria-label="Appointment date"
             minValue={minValue}
             maxValue={maxValue}
             value={internalValue}

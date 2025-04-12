@@ -7,6 +7,7 @@ export type DailyInsights = {
     };
     activityHistory: DailyActivityDto[];
     totalActiveDays: number;
+    activeDayRate: number;
     meanActivityPerDay: number;
     currentActivityStreak: number;
     longestActivityStreak: number;

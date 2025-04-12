@@ -1,0 +1,12 @@
+@use "src/styles/tokens";
+
+.valueContainer {
+    text-align: center;
+    font-size: tokens.$font-size-1100;
+    font-weight: tokens.$font-weight-300;
+
+    position: absolute;
+    left: 50%;
+    bottom: tokens.$spacing-400;
+    transform: translateX(-50%);
+}

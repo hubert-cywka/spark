@@ -168,6 +168,9 @@
     },
     "common": {
         "loading": "Loading...",
+        "valueUnavailable": {
+            "label": "N/A"
+        },
         "day": {
             "monday": "Monday",
             "tuesday": "Tuesday",
@@ -317,16 +320,65 @@
                 "thisMonth": "This month"
             }
         },
+        "separators": {
+            "summary": "Summary",
+            "activity": "Activity",
+            "entries": "Entries",
+            "habits": "Habits"
+        },
+        "summary": {
+            "notEnoughData": {
+                "header": "Not enough data",
+                "caption": "For most basic metrics we require at least few logged entries to provide any meaningful insights. The more entries you log, the more insights will appear here."
+            },
+            "caption": "The more data you collect, the more meaningful insights will appear here. Keep logging your entries, and we will deliver!",
+            "sections": {
+                "positive": {
+                    "header": "Keep up good work"
+                },
+                "negative": {
+                    "header": "Room for improvement"
+                }
+            },
+            "score": {
+                "title": "Score",
+                "description": "Based on metrics gathered from your activity."
+            },
+            "insights": {
+                "completedEntriesRatio": {
+                    "veryLow": "Remember to mark your entries as completed, it's nice to start new things, but it's even better to finish them!",
+                    "low": "Completed entries ratio is still too low. Focus on completing them before starting something new!",
+                    "ok": "You have good ratio of completed entries.",
+                    "optimal": "You usually complete all your entries."
+                },
+                "featuredEntriesRatio": {
+                    "tooLow": "Remember to feature your entries, it will be easier to focus on most important parts of your work!",
+                    "subOptimal": "It's a good start, but you can feature your entries a bit more often.",
+                    "optimal": "Featured entries ratio is perfectly balanced.",
+                    "aboveOptimal": "You feature a bit too many entries. Try to focus on the most important stuff.",
+                    "tooHigh": "You feature definitely too many entries. If everything is important, nothing is."
+                },
+                "currentStreak": {
+                    "none": "You have not logged any entry for today.",
+                    "short": "You have logged at least one entry for today. Everyone needs to start from somewhere!",
+                    "subOptimal": "You have an active streak of few days with at least one logged entry, can you keep up the tempo?",
+                    "optimal": "You have a long active streak of days with at least one logged entry, keep going!"
+                }
+            }
+        },
         "charts": {
             "featuredEntriesRatio": {
-                "featuredLabel": "Featured",
-                "otherLabel": "Not featured",
-                "title": "Featured entries ratio"
+                "title": "Featured entries",
+                "description": "How many entries have been featured, expressed in percentage."
+
             },
             "completedEntriesRatio": {
-                "completedLabel": "Completed",
-                "pendingLabel": "Pending",
-                "title": "Completed entries ratio"
+                "title": "Completed entries",
+                "description": "How many entries have been completed, expressed in percentage."
+            },
+            "activeDayRate": {
+                "title": "Active day rate",
+                "description": "How many days have at least one logged entry, expressed in percentage."
             },
             "pendingEntriesAmount": {
                 "title": "Pending entries",
@@ -361,28 +413,32 @@
                 "description": "Total number of days with at least one entry."
             },
             "entriesAccumulatedByDays": {
-                "xLabel": "Day",
-                "yLabel": "Entries",
-                "title": "Total number of entries",
-                "label": "Entries"
+                "xLabel": "Assigned day",
+                "yLabel": "Cumulative entries",
+                "title": "Cumulative entries by assigned day",
+                "label": "Entries",
+                "description": "Tracks the cumulative number of entries based on the day they are assigned to."
             },
             "entryLoggingDistributionGranular": {
-                "title": "Entry logging distribution",
-                "label": "Entries",
-                "xLabel": "Time period",
-                "yLabel": "Entries"
+                "title": "Entry creation time distribution",
+                "label": "Entries created",
+                "xLabel": "Time period of creation",
+                "yLabel": "Number of entries created",
+                "description": "Shows at what times new entries are typically created."
             },
             "entriesLoggedForDay": {
-                "title": "Entries logged for day of week",
-                "label": "Entries",
-                "xLabel": "Day of week",
-                "yLabel": "Entries"
+                "title": "Entries assigned by day of week",
+                "label": "Entries assigned",
+                "xLabel": "Day of week (assigned)",
+                "yLabel": "Number of entries assigned",
+                "description": "Shows the distribution of entries based on the day of the week they are assigned to."
             },
             "dailyActivityHistogram": {
-                "xLabel": "Entries per day",
+                "xLabel": "Entries assigned per day",
                 "yLabel": "Number of days",
-                "title": "Daily activity histogram",
-                "label": "Entries"
+                "title": "Daily assignment activity histogram",
+                "label": "Days",
+                "description": "See how many days had a specific number of entries assigned to them."
             }
         }
     },

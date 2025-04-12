@@ -1,8 +1,9 @@
 export type ChartData = { key: string; value: number }[];
 
-export type ChartProps<T> = {
-    data: ChartData;
-    title?: string;
+export type ChartProps<T, TData = ChartData> = {
+    data: TData;
+    title: string;
+    description?: string;
     chartColor?: `#${string}`;
     chartOpacityStart?: number;
     chartOpacityStop?: number;

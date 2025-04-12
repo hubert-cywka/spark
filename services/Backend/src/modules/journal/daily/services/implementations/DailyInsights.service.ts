@@ -20,7 +20,6 @@ export class DailyInsightsService implements IDailyInsightsService {
 
     public async findByDateRange(authorId: string, from: string, to: string): Promise<DailyInsights> {
         const activityHistory = await this.getActivityHistoryByDateRange(authorId, from, to);
-
         return {
             dailyRange: {
                 from,
@@ -28,6 +27,7 @@ export class DailyInsightsService implements IDailyInsightsService {
             },
             activityHistory,
             totalActiveDays: DailyInsightsService.findTotalActiveDays(activityHistory),
+            activeDayRate: DailyInsightsService.findActiveDayRate(activityHistory),
             meanActivityPerDay: DailyInsightsService.findMeanActivityPerDay(activityHistory),
             currentActivityStreak: DailyInsightsService.findActivityStreak(activityHistory, { isCurrent: true }),
             longestActivityStreak: DailyInsightsService.findActivityStreak(activityHistory, { isCurrent: false }),
@@ -111,6 +111,10 @@ export class DailyInsightsService implements IDailyInsightsService {
 
     private static findTotalActiveDays(activityHistory: DailyActivity[]) {
         return activityHistory.filter(({ entriesCount }) => entriesCount).length;
+    }
+
+    private static findActiveDayRate(activityHistory: DailyActivity[]) {
+        return (DailyInsightsService.findTotalActiveDays(activityHistory) / activityHistory.length) * 100;
     }
 
     private static findMeanActivityPerDay(activityHistory: DailyActivity[]) {
