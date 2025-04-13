@@ -2,7 +2,7 @@ import { type ExecutionContext, createParamDecorator } from "@nestjs/common";
 
 export const Timezone = createParamDecorator(async (_: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    const tz = request.headers["x-user-timezone"] || "UTC";
+    const tz = request.headers["x-timezone"] || "UTC";
     return validateTimeZone(tz);
 });
 

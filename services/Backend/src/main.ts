@@ -6,12 +6,18 @@ import type { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { NatsJetStreamServer } from "@nestjs-plugins/nestjs-nats-jetstream-transport";
 import cookieParser from "cookie-parser";
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone.js";
+import utc from "dayjs/plugin/utc.js";
 import { Logger } from "nestjs-pino";
 
 import { AppModule } from "@/App.module";
 import { IntegrationEventTopics } from "@/common/events";
 import { AppConfig } from "@/config/configuration";
 import { logger } from "@/lib/logger";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 process.on("uncaughtException", (error) => {
     logger.fatal({ error }, "Uncaught exception.");

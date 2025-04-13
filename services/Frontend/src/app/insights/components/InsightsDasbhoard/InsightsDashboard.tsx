@@ -37,7 +37,7 @@ export const InsightsDashboard = () => {
     const [dateRange, setDateRange] = useState<{
         from: ISODateString;
         to: ISODateString;
-    }>(getDateRange(DateRangePreset.THIS_MONTH));
+    }>(getDateRange(DateRangePreset.PAST_MONTH));
 
     const dailyMetrics = useProcessedDailyMetrics({ dateRange });
     const entryMetrics = useProcessedEntryMetrics({ dateRange });
@@ -52,7 +52,7 @@ export const InsightsDashboard = () => {
             totalEntriesAmount: entryMetrics?.totalEntriesAmount ?? 0,
             featuredEntriesRatio: entryMetrics?.featuredEntriesRatio ?? 0,
             completedEntriesRatio: entryMetrics?.completedEntriesRatio ?? 0,
-            currentDailyStreak: dailyMetrics?.currentActivityStreak ?? 0,
+            currentDailyStreak: dailyMetrics ? dailyMetrics.currentActivityStreak : null,
         },
     });
 

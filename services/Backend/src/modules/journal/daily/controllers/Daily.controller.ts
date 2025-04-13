@@ -16,6 +16,7 @@ import { plainToClass } from "class-transformer";
 
 import { AccessScopes } from "@/common/decorators/AccessScope.decorator";
 import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
+import { Timezone } from "@/common/decorators/Timezone.decorator";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
 import { AccessGuard } from "@/common/guards/Access.guard";
@@ -55,8 +56,12 @@ export class DailyController {
     @Get("insights")
     @UseGuards(AccessGuard)
     @AccessScopes("read:daily")
-    public async getDailyActivity(@Query() { from, to }: FindDailyInsightsDto, @AuthenticatedUserContext() author: User) {
-        const result = await this.insightsService.findByDateRange(author.id, from, to);
+    public async getDailyActivity(
+        @Query() { from, to }: FindDailyInsightsDto,
+        @AuthenticatedUserContext() author: User,
+        @Timezone() timezone: string
+    ) {
+        const result = await this.insightsService.findByDateRange(author.id, { from, to }, timezone);
         return plainToClass(DailyInsightsDto, result);
     }
 

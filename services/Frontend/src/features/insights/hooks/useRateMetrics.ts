@@ -22,8 +22,11 @@ export const useRateMetrics = ({ data, enabled = true }: UseRateMetricsOptions) 
     const strategies: ThresholdBasedRatingStrategy[] = [
         new CompletedEntriesRatingStrategy(data.completedEntriesRatio, data.totalEntriesAmount),
         new FeaturedEntriesRatingStrategy(data.featuredEntriesRatio, data.totalEntriesAmount),
-        new CurrentStreakRatingStrategy(data.currentDailyStreak, data.totalEntriesAmount),
     ];
+
+    if (data.currentDailyStreak !== null) {
+        strategies.push(new CurrentStreakRatingStrategy(data.currentDailyStreak, data.totalEntriesAmount));
+    }
 
     const insights = strategies.map((strategy) => strategy.rate());
 

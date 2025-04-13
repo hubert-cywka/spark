@@ -17,6 +17,6 @@ export type DailyInsights = {
     totalActiveDays: number;
     activeDayRate: number;
     meanActivityPerDay: number;
-    currentActivityStreak: number;
+    currentActivityStreak: number | null;
     longestActivityStreak: number;
 };
