@@ -6,10 +6,12 @@ import { AccountRemovedEventHandler } from "@/modules/identity/account/events/Ac
 import { AccountMapper } from "@/modules/identity/account/mappers/Account.mapper";
 import { AccountMapperToken } from "@/modules/identity/account/mappers/IAccount.mapper";
 import { AccountPublisherService } from "@/modules/identity/account/services/implementations/AccountPublisher.service";
+import { AccountRemovalService } from "@/modules/identity/account/services/implementations/AccountRemoval.service";
 import { FederatedAccountService } from "@/modules/identity/account/services/implementations/FederatedAccount.service";
 import { ManagedAccountService } from "@/modules/identity/account/services/implementations/ManagedAccount.service";
 import { SingleUseTokenService } from "@/modules/identity/account/services/implementations/SingleUseToken.service";
 import { AccountPublisherServiceToken } from "@/modules/identity/account/services/interfaces/IAccountPublisher.service";
+import { AccountRemovalServiceToken } from "@/modules/identity/account/services/interfaces/IAccountRemoval.service";
 import { FederatedAccountServiceToken } from "@/modules/identity/account/services/interfaces/IFederatedAccount.service";
 import { ManagedAccountServiceToken } from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
 import { SingleUseTokenServiceToken } from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
@@ -37,6 +39,10 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
         {
             provide: AccountPublisherServiceToken,
             useClass: AccountPublisherService,
+        },
+        {
+            provide: AccountRemovalServiceToken,
+            useClass: AccountRemovalService,
         },
         AccountRemovedEventHandler,
         AccountRemovalRequestedEventHandler,

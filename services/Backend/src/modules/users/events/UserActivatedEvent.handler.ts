@@ -16,7 +16,7 @@ export class UserActivatedEventHandler implements IInboxEventHandler {
     public async handle(event: IntegrationEvent): Promise<void> {
         const payload = event.getPayload() as AccountActivatedEventPayload;
         try {
-            await this.usersService.activate(payload.id);
+            await this.usersService.activateOneById(payload.id);
         } catch (e) {
             whenError(e).is(EntityConflictError).throwRpcException("User already activated.").elseRethrow();
         }
