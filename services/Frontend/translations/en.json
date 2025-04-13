@@ -367,6 +367,11 @@
             }
         },
         "charts": {
+            "common": {
+                "details": {
+                    "tooltipTriggerLabel": "More information about '{title}' chart."
+                }
+            },
             "featuredEntriesRatio": {
                 "title": "Featured entries",
                 "description": "How many entries have been featured, expressed in percentage."

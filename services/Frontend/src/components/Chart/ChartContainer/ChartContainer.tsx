@@ -6,8 +6,9 @@ import { HelpCircleIcon } from "lucide-react";
 
 import commonStyles from "@/components/Chart/styles/Chart.module.scss";
 
-import { Icon } from "@/components/Icon";
-import { Tooltip, TooltipChildrenWrapper } from "@/components/Tooltip";
+import { IconButton } from "@/components/IconButton";
+import { Tooltip } from "@/components/Tooltip";
+import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
 type ChartContainerProps = PropsWithChildren<{
     height: number;
@@ -16,6 +17,8 @@ type ChartContainerProps = PropsWithChildren<{
 }>;
 
 export const ChartContainer = ({ children, height, title, description }: ChartContainerProps) => {
+    const t = useTranslate();
+
     return (
         <div className={classNames(commonStyles.container)} style={{ height }}>
             <header className={commonStyles.header}>
@@ -23,11 +26,11 @@ export const ChartContainer = ({ children, height, title, description }: ChartCo
 
                 {description && (
                     <Tooltip label={description}>
-                        <TooltipChildrenWrapper>
-                            <span>
-                                <Icon slot={HelpCircleIcon} />
-                            </span>
-                        </TooltipChildrenWrapper>
+                        <IconButton
+                            variant="subtle"
+                            iconSlot={HelpCircleIcon}
+                            aria-label={t("insights.charts.common.details.tooltipTriggerLabel", { title })}
+                        />
                     </Tooltip>
                 )}
             </header>

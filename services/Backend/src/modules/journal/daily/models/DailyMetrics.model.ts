@@ -1,10 +1,8 @@
 import { DailyActivityDto } from "@/modules/journal/daily/dto/DailyActivity.dto";
+import { type ISODateStringRange } from "@/types/Date";
 
-export type DailyInsights = {
-    dailyRange: {
-        from: string;
-        to: string;
-    };
+export type DailyMetrics = {
+    dailyRange: ISODateStringRange;
     activityHistory: DailyActivityDto[];
     totalActiveDays: number;
     activeDayRate: number;

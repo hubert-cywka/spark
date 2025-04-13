@@ -1,4 +1,4 @@
-import { useDailyInsights } from "@/features/daily/hooks/useDailyInsights.ts";
+import { useDailyMetrics } from "@/features/daily/hooks/useDailyMetrics.ts";
 import { accumulateEntries, calculateHistogram, distributeEntriesByDayOfWeek } from "@/features/daily/utils/chartUtils.ts";
 import { useTranslateWeekday } from "@/hooks/useTranslateWeekday.ts";
 import { ISODateStringRange } from "@/types/ISODateString";
@@ -9,17 +9,17 @@ type UseDailyMetricsOptions = {
 
 export const useProcessedDailyMetrics = ({ dateRange }: UseDailyMetricsOptions) => {
     const translateWeekday = useTranslateWeekday();
-    const { data: dailyInsights } = useDailyInsights(dateRange);
+    const { data: dailyMetrics } = useDailyMetrics(dateRange);
 
-    if (!dailyInsights) {
+    if (!dailyMetrics) {
         return null;
     }
 
-    const dailyActivityHistogram = dailyInsights ? calculateHistogram(dailyInsights.activityHistory) : null;
-    const entriesAccumulatedByDays = dailyInsights ? accumulateEntries(dailyInsights.activityHistory) : null;
+    const dailyActivityHistogram = dailyMetrics ? calculateHistogram(dailyMetrics.activityHistory) : null;
+    const entriesAccumulatedByDays = dailyMetrics ? accumulateEntries(dailyMetrics.activityHistory) : null;
 
-    const entriesLoggedForDay = dailyInsights
-        ? distributeEntriesByDayOfWeek(dailyInsights.activityHistory).map(({ key, ...rest }) => {
+    const entriesLoggedForDay = dailyMetrics
+        ? distributeEntriesByDayOfWeek(dailyMetrics.activityHistory).map(({ key, ...rest }) => {
               return { ...rest, key: translateWeekday(key) };
           })
         : null;
@@ -28,6 +28,6 @@ export const useProcessedDailyMetrics = ({ dateRange }: UseDailyMetricsOptions) 
         entriesLoggedForDay,
         entriesAccumulatedByDays,
         dailyActivityHistogram,
-        ...dailyInsights,
+        ...dailyMetrics,
     };
 };

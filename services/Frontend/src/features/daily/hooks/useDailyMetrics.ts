@@ -4,19 +4,19 @@ import { DailyInsightsService } from "@/features/daily/api/dailyInsightsService.
 import { DailyInsightsQueryKeyFactory } from "@/features/daily/utils/dailyInsightsQueryKeyFactory.ts";
 import { ISODateString } from "@/types/ISODateString";
 
-type UseDailyInsightsOptions = {
+type UseDailyMetricsOptions = {
     from: ISODateString;
     to: ISODateString;
     enabled?: boolean;
 };
 
-export const useDailyInsights = ({ from, to, enabled }: UseDailyInsightsOptions) => {
-    const queryKey = DailyInsightsQueryKeyFactory.createForDateRange(from, to);
+export const useDailyMetrics = ({ from, to, enabled }: UseDailyMetricsOptions) => {
+    const queryKey = DailyInsightsQueryKeyFactory.createForMetrics(from, to);
 
     return {
         ...useQuery({
             queryKey,
-            queryFn: async () => await DailyInsightsService.getInsights(from, to),
+            queryFn: async () => await DailyInsightsService.getMetrics(from, to),
             staleTime: 0, // TODO: Can this be optimized?
         }),
         queryKey,

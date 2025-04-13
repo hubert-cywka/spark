@@ -8,11 +8,11 @@ import { isOutsideDateRange } from "@/common/utils/dateUtils";
 import { mean } from "@/common/utils/mathUtils";
 import { DailyEntity } from "@/modules/journal/daily/entities/Daily.entity";
 import { type DailyActivity } from "@/modules/journal/daily/models/DailyActivity.model";
-import { DailyInsights } from "@/modules/journal/daily/models/DailyInsights.model";
+import { DailyMetrics } from "@/modules/journal/daily/models/DailyMetrics.model";
 import { type IDailyInsightsService } from "@/modules/journal/daily/services/interfaces/IDailyInsights.service";
 import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
 import { getFormattedDailyDate } from "@/modules/journal/shared/utils/getFormattedDailyDate";
-import { ISODateStringRange } from "@/types/Date";
+import { type ISODateStringRange } from "@/types/Date";
 
 @Injectable()
 export class DailyInsightsService implements IDailyInsightsService {
@@ -21,7 +21,7 @@ export class DailyInsightsService implements IDailyInsightsService {
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
     ) {}
 
-    public async findByDateRange(authorId: string, dateRange: ISODateStringRange, timezone: string = "UTC"): Promise<DailyInsights> {
+    public async findMetricsByDateRange(authorId: string, dateRange: ISODateStringRange, timezone: string = "UTC"): Promise<DailyMetrics> {
         const activityHistory = await this.getActivityHistoryByDateRange(authorId, dateRange);
 
         const currentActivityStreak = !isOutsideDateRange(dateRange, timezone)

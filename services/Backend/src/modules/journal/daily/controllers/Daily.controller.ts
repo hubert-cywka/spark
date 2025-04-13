@@ -22,9 +22,9 @@ import { whenError } from "@/common/errors/whenError";
 import { AccessGuard } from "@/common/guards/Access.guard";
 import { PageOptionsDto } from "@/common/pagination/dto/PageOptions.dto";
 import { CreateDailyDto } from "@/modules/journal/daily/dto/CreateDaily.dto";
-import { DailyInsightsDto } from "@/modules/journal/daily/dto/DailyInsights.dto";
+import { DailyMetricsDto } from "@/modules/journal/daily/dto/DailyMetrics.dto";
 import { FindDailyFiltersDto } from "@/modules/journal/daily/dto/FindDailyFilters.dto";
-import { FindDailyInsightsDto } from "@/modules/journal/daily/dto/FindDailyInsights.dto";
+import { FindDailyMetricsDto } from "@/modules/journal/daily/dto/FindDailyMetrics.dto";
 import { UpdateDailyDateDto } from "@/modules/journal/daily/dto/UpdateDailyDate.dto";
 import { type IDailyMapper, DailyMapperToken } from "@/modules/journal/daily/mappers/IDaily.mapper";
 import { type IDailyService, DailyServiceToken } from "@/modules/journal/daily/services/interfaces/IDaily.service";
@@ -52,17 +52,16 @@ export class DailyController {
         return this.dailyMapper.fromModelToDtoPage(result);
     }
 
-    // TODO: Unify 'metrics' and 'insights'
-    @Get("insights")
+    @Get("metrics")
     @UseGuards(AccessGuard)
     @AccessScopes("read:daily")
     public async getDailyActivity(
-        @Query() { from, to }: FindDailyInsightsDto,
+        @Query() { from, to }: FindDailyMetricsDto,
         @AuthenticatedUserContext() author: User,
         @Timezone() timezone: string
     ) {
-        const result = await this.insightsService.findByDateRange(author.id, { from, to }, timezone);
-        return plainToClass(DailyInsightsDto, result);
+        const result = await this.insightsService.findMetricsByDateRange(author.id, { from, to }, timezone);
+        return plainToClass(DailyMetricsDto, result);
     }
 
     @Get(":id")

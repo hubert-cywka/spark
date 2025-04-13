@@ -4,7 +4,7 @@ import { IsNullable } from "@/lib/validation";
 import { DailyActivityDto } from "@/modules/journal/daily/dto/DailyActivity.dto";
 import { DailyRangeDto } from "@/modules/journal/shared/dto/DailyRange.dto";
 
-export class DailyInsightsDto {
+export class DailyMetricsDto {
     @IsObject()
     dateRange!: DailyRangeDto;
 

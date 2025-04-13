@@ -1,7 +1,7 @@
 import { IsDateString } from "class-validator";
 
 import { IsDateOnly } from "@/lib/validation";
-import { ISODateString } from "@/types/Date";
+import { type ISODateString } from "@/types/Date";
 
 export class UpdateDailyDateDto {
     @IsDateOnly()

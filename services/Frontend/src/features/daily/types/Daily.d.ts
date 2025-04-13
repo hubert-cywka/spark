@@ -8,7 +8,7 @@ export type DailyActivity = {
     entriesCount: number;
 };
 
-export type DailyInsights = {
+export type DailyMetrics = {
     dailyRange: {
         from: string;
         to: string;

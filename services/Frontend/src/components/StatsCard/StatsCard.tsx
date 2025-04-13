@@ -7,9 +7,9 @@ import { Counter } from "@/components/Counter/Counter";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
 type StatsCardProps = {
+    value: number | null;
     title: string;
     description: string;
-    value: number | null;
     className?: string;
 };
 

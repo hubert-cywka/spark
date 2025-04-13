@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 
-import { ISODateStringRange } from "@/types/Date";
+import { type ISODateStringRange } from "@/types/Date";
 
 export const isOutsideDateRange = (dateRange: ISODateStringRange, timezone: string = "UTC") => {
     const nowTimezoneAdjusted = dayjs().tz(timezone);
