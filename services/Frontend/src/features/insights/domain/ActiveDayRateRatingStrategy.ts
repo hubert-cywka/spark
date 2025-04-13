@@ -1,23 +1,15 @@
 import { BaseThresholdRatingStrategy } from "@/features/insights/domain/BaseThresholdRatingStrategy.ts";
 import { Threshold } from "@/features/insights/domain/ThresholdBasedMetricRatingStrategy.ts";
 
-export class CompletedEntriesRatingStrategy extends BaseThresholdRatingStrategy {
-    protected readonly key = "completed_entries_ratio";
-    private readonly minSignificantEntries = 10;
+export class ActiveDayRateRatingStrategy extends BaseThresholdRatingStrategy {
+    protected readonly key = "active_day_rate";
 
-    public constructor(
-        private readonly completedEntriesRatio: number,
-        private readonly totalEntriesAmount: number
-    ) {
+    public constructor(private readonly activityRate: number) {
         super();
     }
 
     public rate() {
-        if (this.minSignificantEntries > this.totalEntriesAmount) {
-            return null;
-        }
-
-        return this.rateSingleMetric(this.completedEntriesRatio);
+        return this.rateSingleMetric(this.activityRate);
     }
 
     public getHighestPossibleScore(): number {
@@ -28,25 +20,25 @@ export class CompletedEntriesRatingStrategy extends BaseThresholdRatingStrategy 
         return -10;
     }
 
-    protected thresholds: Threshold[] = [
+    protected readonly thresholds: Threshold[] = [
         {
-            limit: 30,
+            limit: 15,
             score: {
                 value: this.calculateScore(0),
                 key: "too_low",
             },
         },
         {
-            limit: 70,
+            limit: 40,
             score: {
-                value: this.calculateScore(25),
+                value: this.calculateScore(33),
                 key: "slightly_too_low",
             },
         },
         {
-            limit: 90,
+            limit: 70,
             score: {
-                value: this.calculateScore(75),
+                value: this.calculateScore(66),
                 key: "slightly_below_optimal",
             },
         },

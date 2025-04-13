@@ -345,24 +345,31 @@
                 "description": "Based on metrics gathered from your activity."
             },
             "insights": {
-                "completedEntriesRatio": {
-                    "veryLow": "Remember to mark your entries as completed, it's nice to start new things, but it's even better to finish them!",
-                    "low": "Completed entries ratio is still too low. Focus on completing them before starting something new!",
-                    "ok": "You have good ratio of completed entries.",
-                    "optimal": "You usually complete all your entries."
+                "completed_entries_ratio": {
+                    "too_low": "Remember to mark your entries as completed. Starting new things is good, but finishing them is even better!",
+                    "slightly_too_low": "Your completed entries ratio is still quite low. Focus on completing entries before starting new ones!",
+                    "slightly_below_optimal": "You have a decent ratio of completed entries.",
+                    "optimal": "You complete most of your entries. Great job!"
                 },
-                "featuredEntriesRatio": {
-                    "tooLow": "Remember to feature your entries, it will be easier to focus on most important parts of your work!",
-                    "subOptimal": "It's a good start, but you can feature your entries a bit more often.",
-                    "optimal": "Featured entries ratio is perfectly balanced.",
-                    "aboveOptimal": "You feature a bit too many entries. Try to focus on the most important stuff.",
-                    "tooHigh": "You feature definitely too many entries. If everything is important, nothing is."
+                "featured_entries_ratio": {
+                    "too_low": "Remember to feature your entries; it will make it easier to focus on the most important parts of your work!",
+                    "slightly_too_low": "You've featured some entries, but you still don't use this feature often enough.",
+                    "slightly_below_optimal": "It's a good start, but you could feature your entries a bit more often.",
+                    "optimal": "Your featured entries ratio is perfectly balanced.",
+                    "slightly_too_high": "You feature a few too many entries. Try to focus on the most important priorities.",
+                    "too_high": "You're featuring too many entries. Remember, if everything is important, nothing is."
                 },
-                "currentStreak": {
-                    "none": "You have not logged any entry for today.",
-                    "short": "You have logged at least one entry for today. Everyone needs to start from somewhere!",
-                    "subOptimal": "You have an active streak of few days with at least one logged entry, can you keep up the tempo?",
-                    "optimal": "You have a long active streak of days with at least one logged entry, keep going!"
+                "current_streak": {
+                    "too_low": "You don't have an active streak right now. Log an entry today to start one!",
+                    "slightly_too_low": "You logged an entry today, starting a new streak! Keep it up tomorrow.",
+                    "slightly_below_optimal": "You have an active streak of a few days. Can you keep the streak going?",
+                    "optimal": "You have a long active streak going. Fantastic consistency!"
+                },
+                "active_day_rate": {
+                    "too_low": "You have entries assigned to only a few days in this period. Remember to add entries to each of your work day.",
+                    "slightly_too_low": "Your daily activity coverage is a bit low. Remember to add entries to each of your work day.",
+                    "slightly_below_optimal": "You're assigning entries consistently on many days. Keep it up!",
+                    "optimal": "You have entries assigned to most days, showing great consistency."
                 }
             }
         },

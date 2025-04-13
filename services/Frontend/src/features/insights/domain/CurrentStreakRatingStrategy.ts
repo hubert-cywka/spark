@@ -1,54 +1,53 @@
 import { BaseThresholdRatingStrategy } from "@/features/insights/domain/BaseThresholdRatingStrategy.ts";
 import { Threshold } from "@/features/insights/domain/ThresholdBasedMetricRatingStrategy.ts";
-import { Insight } from "@/features/insights/types/Insights";
-
-type BaseTranslationKey = "insights.summary.insights.currentStreak";
-type ScoreKey = "none" | "short" | "subOptimal" | "optimal";
-type DescriptionTranslationKey = `${BaseTranslationKey}.${ScoreKey}`;
 
 export class CurrentStreakRatingStrategy extends BaseThresholdRatingStrategy {
     protected readonly key = "current_streak";
-    protected readonly minSignificantEntries = 0;
 
-    public constructor(
-        private readonly currentDailyStreak: number,
-        private readonly totalEntriesAmount: number
-    ) {
+    public constructor(private readonly currentDailyStreak: number) {
         super();
     }
 
-    public rate(): Insight | null {
-        return this.rateSingleMetric(this.currentDailyStreak, this.totalEntriesAmount);
+    public rate() {
+        return this.rateSingleMetric(this.currentDailyStreak);
     }
 
     public getHighestPossibleScore(): number {
-        return -5;
+        return 10;
     }
 
     public getLowestPossibleScore(): number {
-        return -10;
+        return -5;
     }
 
-    protected readonly thresholds: Threshold<DescriptionTranslationKey>[] = [
+    protected readonly thresholds: Threshold[] = [
         {
             limit: 0,
-            score: this.getLowestPossibleScore(),
-            description: "insights.summary.insights.currentStreak.none",
+            score: {
+                value: this.calculateScore(0),
+                key: "too_low",
+            },
         },
         {
             limit: 1,
-            score: 3,
-            description: "insights.summary.insights.currentStreak.short",
+            score: {
+                value: this.calculateScore(50),
+                key: "slightly_too_low",
+            },
         },
         {
             limit: 3,
-            score: 5,
-            description: "insights.summary.insights.currentStreak.subOptimal",
+            score: {
+                value: this.calculateScore(75),
+                key: "slightly_below_optimal",
+            },
         },
         {
             limit: Infinity,
-            score: this.getHighestPossibleScore(),
-            description: "insights.summary.insights.currentStreak.optimal",
+            score: {
+                value: this.calculateScore(100),
+                key: "optimal",
+            },
         },
     ];
 }

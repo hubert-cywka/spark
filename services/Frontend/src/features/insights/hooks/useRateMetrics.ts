@@ -4,7 +4,8 @@ import {
     FeaturedEntriesRatingStrategy,
     ThresholdBasedRatingStrategy,
 } from "@/features/insights/domain";
-import { Insight, MetricsRatingData } from "@/features/insights/types/Insights";
+import { ActiveDayRateRatingStrategy } from "@/features/insights/domain/ActiveDayRateRatingStrategy.ts";
+import { Insight, MetricsRatingData, RawInsight } from "@/features/insights/types/Insights";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 import { normalize } from "@/utils/normalize.ts";
 
@@ -22,19 +23,21 @@ export const useRateMetrics = ({ data, enabled = true }: UseRateMetricsOptions) 
     const strategies: ThresholdBasedRatingStrategy[] = [
         new CompletedEntriesRatingStrategy(data.completedEntriesRatio, data.totalEntriesAmount),
         new FeaturedEntriesRatingStrategy(data.featuredEntriesRatio, data.totalEntriesAmount),
+        new ActiveDayRateRatingStrategy(data.activeDayRate),
     ];
 
     if (data.currentDailyStreak !== null) {
-        strategies.push(new CurrentStreakRatingStrategy(data.currentDailyStreak, data.totalEntriesAmount));
+        strategies.push(new CurrentStreakRatingStrategy(data.currentDailyStreak));
     }
 
     const insights = strategies.map((strategy) => strategy.rate());
 
-    const meaningfulInsights = insights
-        .filter((insight): insight is Insight => insight !== null)
+    const meaningfulInsights: Insight[] = insights
+        .filter((i) => isDefined<RawInsight>(i))
         .map((insight) => ({
-            ...insight,
-            description: t(insight.description),
+            key: insight?.key,
+            score: insight?.score.value,
+            description: t(`insights.summary.insights.${insight.key}.${insight.score.key}`),
         }));
 
     const minPossibleScore = BASE_SCORE + strategies.reduce((sum, strategy) => sum + strategy.getLowestPossibleScore(), 0);
@@ -50,4 +53,8 @@ export const useRateMetrics = ({ data, enabled = true }: UseRateMetricsOptions) 
         score: normalizedScore,
         ready: enabled,
     };
+};
+
+const isDefined = <T>(value: unknown): value is T => {
+    return !!value;
 };

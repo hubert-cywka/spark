@@ -1,14 +1,9 @@
 import { BaseThresholdRatingStrategy } from "@/features/insights/domain/BaseThresholdRatingStrategy.ts";
 import { Threshold } from "@/features/insights/domain/ThresholdBasedMetricRatingStrategy.ts";
-import { Insight } from "@/features/insights/types/Insights";
-
-type BaseTranslationKey = "insights.summary.insights.featuredEntriesRatio";
-type ScoreKey = "tooLow" | "subOptimal" | "optimal" | "aboveOptimal" | "tooHigh";
-type DescriptionTranslationKey = `${BaseTranslationKey}.${ScoreKey}`;
 
 export class FeaturedEntriesRatingStrategy extends BaseThresholdRatingStrategy {
     protected readonly key = "featured_entries_ratio";
-    protected readonly minSignificantEntries = 10;
+    private readonly minSignificantEntries = 10;
 
     public constructor(
         private readonly featuredEntriesRatio: number,
@@ -17,8 +12,12 @@ export class FeaturedEntriesRatingStrategy extends BaseThresholdRatingStrategy {
         super();
     }
 
-    public rate(): Insight | null {
-        return this.rateSingleMetric(this.featuredEntriesRatio, this.totalEntriesAmount);
+    public rate() {
+        if (this.minSignificantEntries > this.totalEntriesAmount) {
+            return null;
+        }
+
+        return this.rateSingleMetric(this.featuredEntriesRatio);
     }
 
     public getHighestPossibleScore(): number {
@@ -29,31 +28,48 @@ export class FeaturedEntriesRatingStrategy extends BaseThresholdRatingStrategy {
         return -10;
     }
 
-    protected readonly thresholds: Threshold<DescriptionTranslationKey>[] = [
+    protected readonly thresholds: Threshold[] = [
         {
             limit: 0,
-            score: this.getLowestPossibleScore(),
-            description: "insights.summary.insights.featuredEntriesRatio.tooLow",
+            score: {
+                value: this.calculateScore(0),
+                key: "too_low",
+            },
         },
         {
-            limit: 3,
-            score: 5,
-            description: "insights.summary.insights.featuredEntriesRatio.subOptimal",
+            limit: 2,
+            score: {
+                value: this.calculateScore(33),
+                key: "slightly_too_low",
+            },
+        },
+        {
+            limit: 5,
+            score: {
+                value: this.calculateScore(66),
+                key: "slightly_below_optimal",
+            },
         },
         {
             limit: 15,
-            score: this.getHighestPossibleScore(),
-            description: "insights.summary.insights.featuredEntriesRatio.optimal",
+            score: {
+                value: this.calculateScore(100),
+                key: "optimal",
+            },
         },
         {
             limit: 35,
-            score: -5,
-            description: "insights.summary.insights.featuredEntriesRatio.aboveOptimal",
+            score: {
+                value: this.calculateScore(33),
+                key: "slightly_too_high",
+            },
         },
         {
             limit: Infinity,
-            score: this.getLowestPossibleScore(),
-            description: "insights.summary.insights.featuredEntriesRatio.tooHigh",
+            score: {
+                value: this.calculateScore(0),
+                key: "too_high",
+            },
         },
     ];
 }

@@ -49,6 +49,7 @@ export const InsightsDashboard = () => {
     } = useRateMetrics({
         enabled: !!entryMetrics && !!dailyMetrics,
         data: {
+            activeDayRate: dailyMetrics?.activeDayRate ?? 0,
             totalEntriesAmount: entryMetrics?.totalEntriesAmount ?? 0,
             featuredEntriesRatio: entryMetrics?.featuredEntriesRatio ?? 0,
             completedEntriesRatio: entryMetrics?.completedEntriesRatio ?? 0,
