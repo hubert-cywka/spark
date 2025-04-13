@@ -1,10 +1,12 @@
+import { Color } from "@/types/Color";
+
 export type ChartData = { key: string; value: number }[];
 
 export type ChartProps<T, TData = ChartData> = {
     data: TData;
     title: string;
     description?: string;
-    chartColor?: `#${string}`;
+    chartColor?: Color;
     chartOpacityStart?: number;
     chartOpacityStop?: number;
 } & T;

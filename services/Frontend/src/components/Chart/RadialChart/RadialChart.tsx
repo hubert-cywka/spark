@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo } from "react";
 import { Cell, Pie, PieChart as BasePieChart, ResponsiveContainer } from "recharts";
 
 import styles from "./styles/RadialChart.module.scss";
@@ -9,6 +8,7 @@ import { ChartContainer } from "@/components/Chart/ChartContainer/ChartContainer
 import { ChartProps } from "@/components/Chart/types/Chart";
 import { getGlowFilter } from "@/components/Chart/utills/getGlowFilter.ts";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
+import { Color } from "@/types/Color";
 import { addOpacityToColor } from "@/utils/colorUtils.ts";
 
 const DEFAULT_WIDTH = 5;
@@ -29,7 +29,7 @@ type RadialChartProps = Omit<
             outerRadius?: number;
             width?: number;
             cornerRadius?: number;
-            activeColor?: string;
+            activeColor?: Color;
         },
         number | null
     >,
@@ -50,23 +50,19 @@ export const RadialChart = ({
     const innerRadius = outerRadius - width;
     const glowColor = addOpacityToColor(activeColor, DEFAULT_GLOW_OPACITY);
     const baseColor = addOpacityToColor(activeColor, DEFAULT_BASE_COLOR_OPACITY);
+    const chartHeight = outerRadius + EXTRA_SAFE_VERTICAL_SPACE;
 
     const isValueAvailable = data !== null;
     const clampedValue = isValueAvailable ? Math.min(100, Math.max(0, data)) : null;
 
-    const chartData = useMemo(
-        () => [
-            { name: "value", value: clampedValue, fill: activeColor },
-            {
-                name: "remainder",
-                value: 100 - (clampedValue ?? 0),
-                fill: baseColor,
-            },
-        ],
-        [clampedValue, activeColor, baseColor]
-    );
-
-    const chartHeight = outerRadius + EXTRA_SAFE_VERTICAL_SPACE;
+    const chartData = [
+        { name: "value", value: clampedValue, fill: activeColor },
+        {
+            name: "remainder",
+            value: 100 - (clampedValue ?? 0),
+            fill: baseColor,
+        },
+    ];
 
     return (
         <ChartContainer height={chartHeight} title={title} description={description}>
@@ -103,7 +99,7 @@ export const RadialChart = ({
             </ResponsiveContainer>
 
             <div className={styles.valueContainer}>
-                <div>{isValueAvailable ? `${clampedValue?.toFixed(0)}%` : t("common.valueUnavailable.label")}</div>
+                <p className={styles.value}>{isValueAvailable ? `${clampedValue?.toFixed(0)}%` : t("common.valueUnavailable.label")}</p>
             </div>
         </ChartContainer>
     );

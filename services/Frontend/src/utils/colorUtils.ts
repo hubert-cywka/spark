@@ -1,4 +1,13 @@
-export const addOpacityToColor = (color: string, opacity: number): string => {
+import { Color } from "@/types/Color";
+
+export const addOpacityToColor = (color: Color, opacity: number): Color => {
+    if (color.startsWith("#") && color.length === 4) {
+        const r = parseInt(color.slice(1, 2), 16);
+        const g = parseInt(color.slice(2, 3), 16);
+        const b = parseInt(color.slice(3, 4), 16);
+        return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    }
+
     if (color.startsWith("#") && color.length === 7) {
         const r = parseInt(color.slice(1, 3), 16);
         const g = parseInt(color.slice(3, 5), 16);
@@ -14,17 +23,17 @@ export const addOpacityToColor = (color: string, opacity: number): string => {
     }
 
     if (color.startsWith("rgb(")) {
-        return color.replace("rgb(", "rgba(").replace(")", `, ${opacity})`);
+        return color.replace("rgb(", "rgba(").replace(")", `, ${opacity})`) as Color;
     }
 
     if (color.startsWith("rgba(")) {
-        return color.replace(/[\d.]+\)$/g, `${opacity})`);
+        return color.replace(/[\d.]+\)$/g, `${opacity})`) as Color;
     }
 
     return color;
 };
 
-export const getColorFromPercentageBasedScore = (percent: number) => {
+export const getColorFromPercentageBasedScore = (percent: number): Color => {
     const clampedPercent = Math.max(0, Math.min(100, percent));
 
     let r, g, b;

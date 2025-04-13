@@ -16,8 +16,8 @@ type KeyInsightsSummaryProps = {
 export const KeyInsightsSummary = ({ insights, className }: KeyInsightsSummaryProps) => {
     const t = useTranslate();
 
-    const negativeInsights = insights?.filter((insight) => insight.score < 0);
-    const positiveInsights = insights?.filter((insight) => insight.score > 0);
+    const negativeInsights = insights.filter((insight) => insight.score < 0);
+    const positiveInsights = insights.filter((insight) => insight.score > 0);
 
     return (
         <Card as="article" variant="translucent" className={classNames(styles.summary, className)}>
@@ -28,7 +28,7 @@ export const KeyInsightsSummary = ({ insights, className }: KeyInsightsSummaryPr
                 </section>
             )}
 
-            {!!negativeInsights?.length && (
+            {!!negativeInsights.length && (
                 <section className={styles.section}>
                     <h3 className={classNames(styles.header, styles.negative)}>
                         {t("insights.summary.sections.negative.header")}
@@ -43,7 +43,7 @@ export const KeyInsightsSummary = ({ insights, className }: KeyInsightsSummaryPr
                 </section>
             )}
 
-            {!!positiveInsights?.length && (
+            {!!positiveInsights.length && (
                 <section className={styles.section}>
                     <h3 className={classNames(styles.header, styles.positive)}>
                         {t("insights.summary.sections.positive.header")}

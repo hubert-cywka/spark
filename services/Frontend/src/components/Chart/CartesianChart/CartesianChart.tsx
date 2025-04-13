@@ -5,6 +5,8 @@ import styles from "./styles/CartesianChart.module.scss";
 
 import { ChartContainer } from "@/components/Chart/ChartContainer/ChartContainer.tsx";
 import { CartesianChartProps } from "@/components/Chart/types/Chart";
+import { Color } from "@/types/Color";
+import { addOpacityToColor } from "@/utils/colorUtils.ts";
 
 const DEFAULT_HEIGHT = 300;
 const DEFAULT_TICKS_GAP = 30;
@@ -17,7 +19,7 @@ const DEFAULT_DEFAULT_CHART_OPACITY_STOP = 0;
 const DEFAULT_GRID_OPACITY = 0.05;
 
 type CartesianChartPropsWithChildren = CartesianChartProps<{
-    children: (p: { solidColor: string; gradientColor: string; semiTransparentColor: string; dataKey: string }) => ReactNode;
+    children: (p: { solidColor: Color; gradientColor: Color; semiTransparentColor: Color; dataKey: string }) => ReactNode;
 }>;
 
 export const CartesianChart = ({
@@ -69,9 +71,9 @@ export const CartesianChart = ({
                     <Tooltip formatter={(value) => [value, keyLabel]} wrapperClassName={styles.tooltipLabel} />
 
                     {children({
-                        semiTransparentColor: chartColor + "99",
+                        semiTransparentColor: addOpacityToColor(chartColor, 0.5),
+                        gradientColor: "url(#colorValue)" as Color,
                         solidColor: chartColor,
-                        gradientColor: "url(#colorValue)",
                         dataKey: "value",
                     })}
                 </ComposedChart>
