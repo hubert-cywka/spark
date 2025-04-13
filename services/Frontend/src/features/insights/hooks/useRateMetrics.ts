@@ -35,8 +35,8 @@ export const useRateMetrics = ({ data, enabled = true }: UseRateMetricsOptions) 
     const meaningfulInsights: Insight[] = insights
         .filter((i) => isDefined<RawInsight>(i))
         .map((insight) => ({
-            key: insight?.key,
-            score: insight?.score.value,
+            key: insight.key,
+            score: insight.score.value,
             description: t(`insights.summary.insights.${insight.key}.${insight.score.key}`),
         }));
 
