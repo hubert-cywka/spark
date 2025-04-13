@@ -51,7 +51,10 @@ export class AuthenticationController {
     @Post("register")
     async registerWithCredentials(@Body() dto: RegisterWithCredentialsDto) {
         try {
-            await this.authService.registerWithCredentials(dto);
+            await this.authService.registerWithCredentials(
+                { email: dto.email, password: dto.password },
+                { lastName: dto.lastName, firstName: dto.firstName }
+            );
         } catch (err) {
             whenError(err).is(EntityConflictError).throw(new ConflictException()).elseRethrow();
         }
@@ -61,7 +64,10 @@ export class AuthenticationController {
     @Post("login")
     async login(@Body() dto: LoginDto, @Res() response: Response) {
         try {
-            const result = await this.authService.loginWithCredentials(dto.email, dto.password);
+            const result = await this.authService.loginWithCredentials({
+                password: dto.password,
+                email: dto.email,
+            });
 
             const cookieOptions = this.refreshTokenCookieStrategy.getCookieOptions(this.refreshTokenCookieMaxAge);
             response.cookie(REFRESH_TOKEN_COOKIE_NAME, result.refreshToken, cookieOptions);
