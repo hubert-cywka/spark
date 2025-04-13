@@ -13,3 +13,13 @@ export type AuthenticationResult = {
     account: Account;
     accessScopes: AccessScopes;
 };
+
+export type Credentials = {
+    email: string;
+    password: string;
+};
+
+export type PersonalInformation = {
+    lastName: string;
+    firstName: string;
+};

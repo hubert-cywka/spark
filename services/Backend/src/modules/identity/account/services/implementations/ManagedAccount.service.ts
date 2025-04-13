@@ -166,33 +166,6 @@ export class ManagedAccountService implements IManagedAccountService {
         await this.publisher.onAccountActivationTokenRequested(account.id, email, activationToken);
     }
 
-    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
-    public async removeByInternalId(id: string): Promise<void> {
-        const repository = this.getRepository();
-        const account = await repository.findOne({ where: { id } });
-
-        if (!account) {
-            this.logger.warn({ accountId: id }, "Couldn't find account.");
-            throw new AccountNotFoundError();
-        }
-
-        await repository.remove([account]);
-    }
-
-    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
-    public async suspendByInternalId(id: string): Promise<void> {
-        const repository = this.getRepository();
-        const account = await repository.findOne({ where: { id } });
-
-        if (!account) {
-            this.logger.warn({ accountId: id }, "Couldn't find account.");
-            throw new AccountNotFoundError();
-        }
-
-        await repository.save({ ...account, suspendedAt: new Date() });
-        await this.publisher.onAccountSuspended(id);
-    }
-
     private async findOne(providerAccountId: string): Promise<ManagedAccountEntity> {
         const account = await this.getRepository().findOne({
             where: {

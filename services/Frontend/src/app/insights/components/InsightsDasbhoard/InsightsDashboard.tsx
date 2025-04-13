@@ -33,7 +33,6 @@ const SCORE_CHART_WIDTH = 15;
 export const InsightsDashboard = () => {
     const t = useTranslate();
 
-    // TODO: Save date range setting
     const [dateRange, setDateRange] = useState<{
         from: ISODateString;
         to: ISODateString;

@@ -9,6 +9,7 @@ import { UserNotFoundError } from "@/modules/users/errors/UserNotFound.error";
 import { USERS_MODULE_DATA_SOURCE } from "@/modules/users/infrastructure/database/constants";
 import { type IUserMapper, UserMapperToken } from "@/modules/users/mappers/IUser.mapper";
 import { type User } from "@/modules/users/models/User.model";
+import { type IUserPublisherService, UserPublisherServiceToken } from "@/modules/users/services/interfaces/IUserPublisher.service";
 import { type IUsersService } from "@/modules/users/services/interfaces/IUsers.service";
 
 @Injectable()
@@ -18,7 +19,9 @@ export class UsersService implements IUsersService {
     public constructor(
         @InjectTransactionHost(USERS_MODULE_DATA_SOURCE)
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
-        @Inject(UserMapperToken) private readonly userMapper: IUserMapper
+        @Inject(UserMapperToken) private readonly userMapper: IUserMapper,
+        @Inject(UserPublisherServiceToken)
+        private readonly publisher: IUserPublisherService
     ) {}
 
     public async findOneById(id: string): Promise<User> {
@@ -49,7 +52,7 @@ export class UsersService implements IUsersService {
         return this.userMapper.fromEntityToModel(insertedUser);
     }
 
-    public async activate(id: string): Promise<User> {
+    public async activateOneById(id: string): Promise<User> {
         const updateResult = await this.getRepository()
             .createQueryBuilder()
             .update(UserEntity)
@@ -68,8 +71,19 @@ export class UsersService implements IUsersService {
         return this.userMapper.fromEntityToModel(activatedUser);
     }
 
+    public async requestRemovalById(id: string): Promise<void> {
+        const result = await this.findOneById(id);
+
+        await this.publisher.onDataRemovalRequested(result.id, {
+            account: {
+                email: result.email,
+                id: result.id,
+            },
+        });
+    }
+
     @Transactional(USERS_MODULE_DATA_SOURCE)
-    public async remove(id: string): Promise<void> {
+    public async removeOneById(id: string): Promise<void> {
         const repository = this.getRepository();
         const user = await repository.findOne({ where: { id } });
 

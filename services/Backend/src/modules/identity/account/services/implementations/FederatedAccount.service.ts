@@ -106,19 +106,6 @@ export class FederatedAccountService implements IFederatedAccountService {
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
-    public async removeByInternalId(id: string): Promise<void> {
-        const repository = this.getRepository();
-        const account = await repository.findOne({ where: { id } });
-
-        if (!account) {
-            this.logger.warn({ accountId: id }, "Couldn't find account.");
-            throw new AccountNotFoundError();
-        }
-
-        await repository.remove([account]);
-    }
-
-    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
     public async activateByInternalId(id: string): Promise<void> {
         const repository = this.getRepository();
         const account = await repository.findOne({ where: { id } });
@@ -130,20 +117,6 @@ export class FederatedAccountService implements IFederatedAccountService {
 
         await repository.save({ ...account, activatedAt: new Date() });
         await this.publisher.onAccountActivated(account.id, account.email);
-    }
-
-    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
-    public async suspendByInternalId(id: string): Promise<void> {
-        const repository = this.getRepository();
-        const account = await repository.findOne({ where: { id } });
-
-        if (!account) {
-            this.logger.warn({ accountId: id }, "Couldn't find account.");
-            throw new AccountNotFoundError();
-        }
-
-        await repository.save({ ...account, suspendedAt: new Date() });
-        await this.publisher.onAccountSuspended(id);
     }
 
     private getRepository(): Repository<FederatedAccountEntity> {

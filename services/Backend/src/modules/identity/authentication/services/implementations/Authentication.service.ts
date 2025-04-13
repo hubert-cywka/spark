@@ -14,7 +14,6 @@ import {
     ManagedAccountServiceToken,
 } from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
 import { CURRENT_JWT_VERSION } from "@/modules/identity/authentication/constants";
-import { RegisterWithCredentialsDto } from "@/modules/identity/authentication/dto/incoming/RegisterWithCredentials.dto";
 import { InvalidAccessTokenError } from "@/modules/identity/authentication/errors/InvalidAccessToken.error";
 import {
     type IAccessScopesService,
@@ -29,7 +28,12 @@ import {
     type IRefreshTokenService,
     RefreshTokenServiceToken,
 } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
-import { type AccessTokenPayload, type AuthenticationResult } from "@/modules/identity/authentication/types/Authentication";
+import {
+    type AccessTokenPayload,
+    type AuthenticationResult,
+    type Credentials,
+    type PersonalInformation,
+} from "@/modules/identity/authentication/types/Authentication";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
@@ -57,13 +61,13 @@ export class AuthenticationService implements IAuthenticationService {
         this.accessTokenExpirationTimeInSeconds = configService.getOrThrow<number>("modules.identity.jwt.expirationTimeInSeconds");
     }
 
-    public async loginWithCredentials(email: string, password: string): Promise<AuthenticationResult> {
+    public async loginWithCredentials({ email, password }: Credentials): Promise<AuthenticationResult> {
         const account = await this.managedAccountService.findActivatedByCredentials(email, password);
         return await this.createAuthenticationResult(account, this.scopesService.getByAccountId(account.id));
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
-    public async registerWithCredentials({ email, password, lastName, firstName }: RegisterWithCredentialsDto): Promise<void> {
+    public async registerWithCredentials({ email, password }: Credentials, { firstName, lastName }: PersonalInformation): Promise<void> {
         const account = await this.managedAccountService.createAccountWithCredentials(email, password);
 
         await this.publisher.onAccountRegistered(account.id, {

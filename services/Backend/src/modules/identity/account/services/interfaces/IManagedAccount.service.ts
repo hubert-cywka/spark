@@ -11,7 +11,4 @@ export interface IManagedAccountService {
 
     requestPasswordChange(email: string): Promise<void>;
     updatePassword(passwordChangeToken: string, password: string): Promise<void>;
-
-    removeByInternalId(id: string): Promise<void>;
-    suspendByInternalId(id: string): Promise<void>;
 }

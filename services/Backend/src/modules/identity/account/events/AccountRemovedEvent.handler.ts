@@ -11,21 +11,15 @@ import {
 } from "@/common/events";
 import { type AccountRemovalCompletedEventPayload } from "@/common/events/types/account/AccountRemovalCompletedEvent";
 import {
-    type IFederatedAccountService,
-    FederatedAccountServiceToken,
-} from "@/modules/identity/account/services/interfaces/IFederatedAccount.service";
-import {
-    type IManagedAccountService,
-    ManagedAccountServiceToken,
-} from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
+    type IAccountRemovalService,
+    AccountRemovalServiceToken,
+} from "@/modules/identity/account/services/interfaces/IAccountRemoval.service";
 
 @Injectable()
 export class AccountRemovedEventHandler implements IInboxEventHandler {
     public constructor(
-        @Inject(FederatedAccountServiceToken)
-        private readonly federatedAccountService: IFederatedAccountService,
-        @Inject(ManagedAccountServiceToken)
-        private readonly managedAccountService: IManagedAccountService,
+        @Inject(AccountRemovalServiceToken)
+        private readonly removalService: IAccountRemovalService,
         @Inject(EventInboxToken)
         private readonly inbox: IEventInbox,
         @Inject(EventOutboxToken)
@@ -39,8 +33,7 @@ export class AccountRemovedEventHandler implements IInboxEventHandler {
     async handle(event: IntegrationEvent): Promise<void> {
         const payload = event.getPayload() as AccountRemovalCompletedEventPayload;
         await this.outbox.clearTenantEvents(payload.account.id);
-        await this.federatedAccountService.removeByInternalId(payload.account.id);
-        await this.managedAccountService.removeByInternalId(payload.account.id);
+        await this.removalService.removeByInternalId(payload.account.id);
         await this.inbox.clearTenantEvents(payload.account.id);
     }
 }
