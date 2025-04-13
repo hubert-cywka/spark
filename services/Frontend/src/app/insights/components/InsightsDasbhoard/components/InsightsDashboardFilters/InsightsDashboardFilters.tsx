@@ -19,24 +19,25 @@ export const InsightsDashboardFilters = ({ onDateRangeChange, dateRange }: Insig
 
     const presets = [
         {
-            label: t("insights.filters.presets.pastYear"),
-            preset: DateRangePreset.PAST_YEAR,
-        },
-        {
             label: t("insights.filters.presets.lastYear"),
             preset: DateRangePreset.LAST_YEAR,
+        },
+        {
+            label: t("insights.filters.presets.pastYear"),
+            preset: DateRangePreset.PAST_YEAR,
         },
         {
             label: t("insights.filters.presets.thisYear"),
             preset: DateRangePreset.THIS_YEAR,
         },
-        {
-            label: t("insights.filters.presets.pastMonth"),
-            preset: DateRangePreset.PAST_MONTH,
-        },
+
         {
             label: t("insights.filters.presets.lastMonth"),
             preset: DateRangePreset.LAST_MONTH,
+        },
+        {
+            label: t("insights.filters.presets.pastMonth"),
+            preset: DateRangePreset.PAST_MONTH,
         },
         {
             label: t("insights.filters.presets.thisMonth"),

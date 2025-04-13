@@ -151,8 +151,9 @@ export class ManagedAccountService implements IManagedAccountService {
         this.assertEligibilityForActivation(account);
         await this.getRepository().save({
             id: ownerId,
-            activatedAt: dayjs(),
+            activatedAt: new Date(),
         });
+
         await this.publisher.onAccountActivated(account.id, account.email);
     }
 

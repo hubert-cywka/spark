@@ -6,7 +6,7 @@ import { GoalLinkItem } from "@/features/entries/components/GoalLinkItem/GoalLin
 import { LinkGoalsPopover } from "@/features/entries/components/LinkGoalsPopover/LinkGoalsPopover";
 import { useUnlinkEntryFromGoal } from "@/features/entries/hooks";
 import { useUnlinkEntryFromGoalEvents } from "@/features/entries/hooks/useEntryLink/useUnlinkEntryFromGoalEvents";
-import { useGoals } from "@/features/goals/hooks/useGoals/useGoals";
+import { useGoals } from "@/features/goals/hooks/useGoals";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 type EntryGoalsListProps = {

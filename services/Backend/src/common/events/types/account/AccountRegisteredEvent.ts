@@ -1,6 +1,4 @@
-import { IntegrationEvent } from "../IntegrationEvent";
-
-import { IntegrationEventTopics } from "@/common/events";
+import { IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 
 export type AccountRegisteredEventPayload = {
     account: {
@@ -8,7 +6,6 @@ export type AccountRegisteredEventPayload = {
         email: string;
         lastName: string;
         firstName: string;
-        isActivated: boolean;
     };
 };
 

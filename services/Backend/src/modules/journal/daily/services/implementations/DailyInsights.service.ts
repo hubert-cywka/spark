@@ -4,12 +4,15 @@ import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-t
 import dayjs from "dayjs";
 import { Repository } from "typeorm";
 
+import { isOutsideDateRange } from "@/common/utils/dateUtils";
+import { mean } from "@/common/utils/mathUtils";
 import { DailyEntity } from "@/modules/journal/daily/entities/Daily.entity";
 import { type DailyActivity } from "@/modules/journal/daily/models/DailyActivity.model";
-import { DailyInsights } from "@/modules/journal/daily/models/DailyInsights.model";
+import { DailyMetrics } from "@/modules/journal/daily/models/DailyMetrics.model";
 import { type IDailyInsightsService } from "@/modules/journal/daily/services/interfaces/IDailyInsights.service";
 import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
 import { getFormattedDailyDate } from "@/modules/journal/shared/utils/getFormattedDailyDate";
+import { type ISODateStringRange } from "@/types/Date";
 
 @Injectable()
 export class DailyInsightsService implements IDailyInsightsService {
@@ -18,27 +21,32 @@ export class DailyInsightsService implements IDailyInsightsService {
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
     ) {}
 
-    public async findByDateRange(authorId: string, from: string, to: string): Promise<DailyInsights> {
-        const activityHistory = await this.getActivityHistoryByDateRange(authorId, from, to);
+    public async findMetricsByDateRange(authorId: string, dateRange: ISODateStringRange, timezone: string = "UTC"): Promise<DailyMetrics> {
+        const activityHistory = await this.getActivityHistoryByDateRange(authorId, dateRange);
+
+        const currentActivityStreak = !isOutsideDateRange(dateRange, timezone)
+            ? DailyInsightsService.findActivityStreak(activityHistory, {
+                  isCurrent: true,
+                  timezone,
+              })
+            : null;
 
         return {
-            dailyRange: {
-                from,
-                to,
-            },
+            dailyRange: dateRange,
             activityHistory,
+            currentActivityStreak,
+            longestActivityStreak: DailyInsightsService.findActivityStreak(activityHistory, { isCurrent: false, timezone }),
             totalActiveDays: DailyInsightsService.findTotalActiveDays(activityHistory),
+            activeDayRate: DailyInsightsService.findActiveDayRate(activityHistory),
             meanActivityPerDay: DailyInsightsService.findMeanActivityPerDay(activityHistory),
-            currentActivityStreak: DailyInsightsService.findActivityStreak(activityHistory, { isCurrent: true }),
-            longestActivityStreak: DailyInsightsService.findActivityStreak(activityHistory, { isCurrent: false }),
         };
     }
 
-    private async getActivityHistoryByDateRange(authorId: string, from: string, to: string): Promise<DailyActivity[]> {
+    private async getActivityHistoryByDateRange(authorId: string, dateRange: ISODateStringRange): Promise<DailyActivity[]> {
         const queryBuilder = this.getRepository()
             .createQueryBuilder("daily")
             .leftJoinAndSelect("daily.entries", "entry")
-            .where("daily.date BETWEEN :from AND :to", { from, to })
+            .where("daily.date BETWEEN :from AND :to", dateRange)
             .andWhere("daily.authorId = :authorId", { authorId })
             .orderBy("daily.date", "ASC")
             .select(["daily.date AS date", "COUNT(entry.id) AS entriesCount"])
@@ -50,17 +58,17 @@ export class DailyInsightsService implements IDailyInsightsService {
             entriesCount: parseInt(row.entriescount),
         }));
 
-        return DailyInsightsService.fillGapsInActivityHistory(mappedResult, from, to);
+        return DailyInsightsService.fillGapsInActivityHistory(mappedResult, dateRange);
     }
 
-    private static fillGapsInActivityHistory(history: DailyActivity[], from: string, to: string): DailyActivity[] {
+    private static fillGapsInActivityHistory(history: DailyActivity[], { from, to }: ISODateStringRange): DailyActivity[] {
         const allDates: string[] = [];
-        const currentDate = new Date(from);
-        const endDate = new Date(to);
+        let currentDate = dayjs.utc(from);
+        const endDate = dayjs.utc(to);
 
-        while (currentDate <= endDate) {
-            allDates.push(getFormattedDailyDate(currentDate));
-            currentDate.setDate(currentDate.getDate() + 1);
+        while (currentDate.isSame(endDate) || currentDate.isBefore(endDate)) {
+            allDates.push(getFormattedDailyDate(currentDate.toDate()));
+            currentDate = currentDate.add(1, "day");
         }
 
         const dataMap = new Map(history.map((activity) => [activity.date, activity]));
@@ -70,17 +78,18 @@ export class DailyInsightsService implements IDailyInsightsService {
         });
     }
 
-    private static findActivityStreak(activityHistory: DailyActivity[], { isCurrent }: { isCurrent: boolean }) {
+    private static findActivityStreak(activityHistory: DailyActivity[], { isCurrent, timezone }: { isCurrent: boolean; timezone: string }) {
         let maxStreak = 0;
         let streak = 0;
         let previousDate: dayjs.Dayjs | null = null;
 
         const entries = [...activityHistory]
             .filter((entry) => entry.entriesCount > 0)
-            .map((entry) => ({ date: dayjs(entry.date) }))
+            .map((entry) => ({ date: dayjs.tz(entry.date, timezone) }))
             .reverse();
 
-        if (isCurrent && (!entries.length || !entries[0].date.isSame(dayjs(), "day"))) {
+        const now = dayjs().tz(timezone);
+        if (isCurrent && (!entries.length || !entries[0].date.isSame(now, "day"))) {
             return 0;
         }
 
@@ -113,20 +122,17 @@ export class DailyInsightsService implements IDailyInsightsService {
         return activityHistory.filter(({ entriesCount }) => entriesCount).length;
     }
 
+    private static findActiveDayRate(activityHistory: DailyActivity[]) {
+        return (DailyInsightsService.findTotalActiveDays(activityHistory) / activityHistory.length) * 100;
+    }
+
     private static findMeanActivityPerDay(activityHistory: DailyActivity[]) {
         const activities = activityHistory
             .map(({ entriesCount }) => entriesCount)
             .filter((count) => !!count)
             .sort((a, b) => a - b);
-        const numberOfEntries = activities.length;
 
-        if (!numberOfEntries) {
-            return 0;
-        }
-
-        const mid = Math.floor(numberOfEntries / 2);
-
-        return numberOfEntries % 2 !== 0 ? activities[mid] : (activities[mid - 1] + activities[mid]) / 2;
+        return mean(...activities);
     }
 
     private getRepository(): Repository<DailyEntity> {

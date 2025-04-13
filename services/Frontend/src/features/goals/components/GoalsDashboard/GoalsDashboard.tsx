@@ -9,7 +9,7 @@ import { ItemLoader } from "@/components/ItemLoader/ItemLoader";
 import { GoalCardSkeleton } from "@/features/goals/components/GoalCard/GoalCardSkeleton";
 import { GoalsList } from "@/features/goals/components/GoalsList";
 import { GoalsManagementFloatingBar } from "@/features/goals/components/GoalsManagementFloatingBar/GoalsManagementFloatingBar";
-import { useGoals } from "@/features/goals/hooks/useGoals/useGoals";
+import { useGoals } from "@/features/goals/hooks/useGoals";
 import useDebounce from "@/hooks/useDebounce";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";

@@ -17,7 +17,7 @@ const DEFAULT_STROKE_COLOR = "#ffffff33";
 const DEFAULT_DEFAULT_CHART_OPACITY_START = 0.75;
 const DEFAULT_DEFAULT_CHART_OPACITY_STOP = 0.5;
 
-type RadialChartProps = ChartProps<{
+type PieChartProps = ChartProps<{
     innerRadius?: number;
     outerRadius?: number;
     withPercentage?: boolean;
@@ -31,7 +31,7 @@ export const PieChart = ({
     innerRadius = DEFAULT_INNER_RADIUS,
     chartOpacityStop = DEFAULT_DEFAULT_CHART_OPACITY_STOP,
     chartOpacityStart = DEFAULT_DEFAULT_CHART_OPACITY_START,
-}: RadialChartProps) => {
+}: PieChartProps) => {
     const colors = useMemo(() => data.map((_, i) => generateColor(i, data.length)), [data]);
     const heightWithPadding = outerRadius * 2 + LABELS_PADDING;
 

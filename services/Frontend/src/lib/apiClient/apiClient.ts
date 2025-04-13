@@ -6,6 +6,6 @@ export const apiClient = axios.create({
     withCredentials: true,
     adapter: "fetch",
     headers: {
-        "x-user-timezone": Intl.DateTimeFormat().resolvedOptions().timeZone,
+        "x-timezone": Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
 });

@@ -5,8 +5,8 @@ import styles from "./styles/AddGoalPanel.module.scss";
 import { Card } from "@/components/Card";
 import { AddGoalForm } from "@/features/goals/components/AddGoalForm/AddGoalForm";
 import { AddGoalFormInputs } from "@/features/goals/components/AddGoalForm/hooks/useAddGoalForm";
-import { useCreateGoal } from "@/features/goals/hooks/create/useCreateGoal";
-import { useCreateGoalEvents } from "@/features/goals/hooks/create/useCreateGoalEvents";
+import { useCreateGoal } from "@/features/goals/hooks/useCreateGoal";
+import { useCreateGoalEvents } from "@/features/goals/hooks/useCreateGoalEvents";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 export const AddGoalPanel = () => {
@@ -28,7 +28,7 @@ export const AddGoalPanel = () => {
     };
 
     return (
-        <Card as="section" className={styles.panel} variant="semi-translucent">
+        <Card as="section" className={styles.panel}>
             <h3 className={styles.header}>{t("goals.management.add.header")}</h3>
             <AddGoalForm onSubmit={onSubmit} isLoading={isPending} />
         </Card>

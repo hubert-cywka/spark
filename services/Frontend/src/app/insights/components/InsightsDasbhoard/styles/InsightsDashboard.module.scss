@@ -11,6 +11,13 @@
         grid-template-columns: repeat(12, 1fr);
         grid-template-rows: repeat(1, 1fr);
 
+        .column {
+            display: grid;
+            gap: tokens.$spacing-500;
+            grid-template-columns: repeat(1, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+        }
+        
         .xs, .sm, .md, .lg, .xl {
             grid-column: span 12;
         }

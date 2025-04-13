@@ -2,6 +2,7 @@ import { Transform, Type } from "class-transformer";
 import { IsArray, IsBoolean, IsDateString, IsOptional, IsUUID } from "class-validator";
 
 import { IsDateOnly } from "@/lib/validation";
+import { type ISODateString } from "@/types/Date";
 
 export class FindEntriesFiltersDto {
     @IsOptional()
@@ -14,12 +15,12 @@ export class FindEntriesFiltersDto {
     @IsOptional()
     @IsDateOnly()
     @IsDateString({ strict: true })
-    readonly from?: string;
+    readonly from?: ISODateString;
 
     @IsOptional()
     @IsDateOnly()
     @IsDateString({ strict: true })
-    readonly to?: string;
+    readonly to?: ISODateString;
 
     @IsOptional()
     @IsBoolean()

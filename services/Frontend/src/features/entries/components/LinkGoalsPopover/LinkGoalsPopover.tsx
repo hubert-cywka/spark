@@ -10,7 +10,7 @@ import { Spinner } from "@/components/Spinner";
 import { GoalLinkItem } from "@/features/entries/components/GoalLinkItem/GoalLinkItem";
 import { useLinkEntryWithGoal } from "@/features/entries/hooks";
 import { useLinkEntryWithGoalEvents } from "@/features/entries/hooks/useEntryLink/useLinkEntryWithGoalEvents";
-import { useGoals } from "@/features/goals/hooks/useGoals/useGoals";
+import { useGoals } from "@/features/goals/hooks/useGoals";
 import useDebounce from "@/hooks/useDebounce";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 

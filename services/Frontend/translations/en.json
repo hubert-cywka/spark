@@ -168,6 +168,9 @@
     },
     "common": {
         "loading": "Loading...",
+        "valueUnavailable": {
+            "label": "N/A"
+        },
         "day": {
             "monday": "Monday",
             "tuesday": "Tuesday",
@@ -317,16 +320,77 @@
                 "thisMonth": "This month"
             }
         },
+        "separators": {
+            "summary": "Summary",
+            "activity": "Activity",
+            "entries": "Entries",
+            "habits": "Habits"
+        },
+        "summary": {
+            "notEnoughData": {
+                "header": "Not enough data",
+                "caption": "For most basic metrics we require at least few logged entries to provide any meaningful insights. The more entries you log, the more insights will appear here."
+            },
+            "caption": "The more data you collect, the more meaningful insights will appear here. Keep logging your entries, and we will deliver!",
+            "sections": {
+                "positive": {
+                    "header": "Keep up good work"
+                },
+                "negative": {
+                    "header": "Room for improvement"
+                }
+            },
+            "score": {
+                "title": "Score",
+                "description": "Based on metrics gathered from your activity."
+            },
+            "insights": {
+                "completed_entries_ratio": {
+                    "too_low": "Remember to mark your entries as completed. Starting new things is good, but finishing them is even better!",
+                    "slightly_too_low": "Your completed entries ratio is still quite low. Focus on completing entries before starting new ones!",
+                    "slightly_below_optimal": "You have a decent ratio of completed entries.",
+                    "optimal": "You complete most of your entries. Great job!"
+                },
+                "featured_entries_ratio": {
+                    "too_low": "Remember to feature your entries; it will make it easier to focus on the most important parts of your work!",
+                    "slightly_too_low": "You've featured some entries, but you still don't use this feature often enough.",
+                    "slightly_below_optimal": "It's a good start, but you could feature your entries a bit more often.",
+                    "optimal": "Your featured entries ratio is perfectly balanced.",
+                    "slightly_too_high": "You feature a few too many entries. Try to focus on the most important priorities.",
+                    "too_high": "You're featuring too many entries. Remember, if everything is important, nothing is."
+                },
+                "current_streak": {
+                    "too_low": "You don't have an active streak right now. Log an entry today to start one!",
+                    "slightly_too_low": "You logged an entry today, starting a new streak! Keep it up tomorrow.",
+                    "slightly_below_optimal": "You have an active streak of a few days. Can you keep the streak going?",
+                    "optimal": "You have a long active streak going. Fantastic consistency!"
+                },
+                "active_day_rate": {
+                    "too_low": "You have entries assigned to only a few days in this period. Remember to add entries to each of your work day.",
+                    "slightly_too_low": "Your daily activity coverage is a bit low. Remember to add entries to each of your work day.",
+                    "slightly_below_optimal": "You're assigning entries consistently on many days. Keep it up!",
+                    "optimal": "You have entries assigned to most days, showing great consistency."
+                }
+            }
+        },
         "charts": {
+            "common": {
+                "details": {
+                    "tooltipTriggerLabel": "More information about '{title}' chart."
+                }
+            },
             "featuredEntriesRatio": {
-                "featuredLabel": "Featured",
-                "otherLabel": "Not featured",
-                "title": "Featured entries ratio"
+                "title": "Featured entries",
+                "description": "How many entries have been featured, expressed in percentage."
+
             },
             "completedEntriesRatio": {
-                "completedLabel": "Completed",
-                "pendingLabel": "Pending",
-                "title": "Completed entries ratio"
+                "title": "Completed entries",
+                "description": "How many entries have been completed, expressed in percentage."
+            },
+            "activeDayRate": {
+                "title": "Active day rate",
+                "description": "How many days have at least one logged entry, expressed in percentage."
             },
             "pendingEntriesAmount": {
                 "title": "Pending entries",
@@ -361,28 +425,32 @@
                 "description": "Total number of days with at least one entry."
             },
             "entriesAccumulatedByDays": {
-                "xLabel": "Day",
-                "yLabel": "Entries",
-                "title": "Total number of entries",
-                "label": "Entries"
+                "xLabel": "Assigned day",
+                "yLabel": "Cumulative entries",
+                "title": "Cumulative entries by assigned day",
+                "label": "Entries",
+                "description": "Tracks the cumulative number of entries based on the day they are assigned to."
             },
             "entryLoggingDistributionGranular": {
-                "title": "Entry logging distribution",
-                "label": "Entries",
-                "xLabel": "Time period",
-                "yLabel": "Entries"
+                "title": "Entry creation time distribution",
+                "label": "Entries created",
+                "xLabel": "Time period of creation",
+                "yLabel": "Number of entries created",
+                "description": "Shows at what times new entries are typically created."
             },
             "entriesLoggedForDay": {
-                "title": "Entries logged for day of week",
-                "label": "Entries",
-                "xLabel": "Day of week",
-                "yLabel": "Entries"
+                "title": "Entries assigned by day of week",
+                "label": "Entries assigned",
+                "xLabel": "Day of week (assigned)",
+                "yLabel": "Number of entries assigned",
+                "description": "Shows the distribution of entries based on the day of the week they are assigned to."
             },
             "dailyActivityHistogram": {
-                "xLabel": "Entries per day",
+                "xLabel": "Entries assigned per day",
                 "yLabel": "Number of days",
-                "title": "Daily activity histogram",
-                "label": "Entries"
+                "title": "Daily assignment activity histogram",
+                "label": "Days",
+                "description": "See how many days had a specific number of entries assigned to them."
             }
         }
     },

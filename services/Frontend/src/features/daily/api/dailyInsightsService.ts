@@ -1,15 +1,15 @@
 import { DailyActivityDto } from "@/features/daily/api/dto/DailyActivityDto.ts";
-import { DailyInsightsDto } from "@/features/daily/api/dto/DailyInsightsDto";
-import { DailyActivity, DailyInsights } from "@/features/daily/types/Daily";
+import { DailyMetricsDto } from "@/features/daily/api/dto/DailyMetricsDto.ts";
+import { DailyActivity, DailyMetrics } from "@/features/daily/types/Daily";
 import { apiClient } from "@/lib/apiClient/apiClient";
 
 export class DailyInsightsService {
-    public static async getInsights(from: string, to: string) {
-        const { data } = await apiClient.get<DailyInsightsDto>(`/daily/insights?from=${from}&to=${to}`);
-        return DailyInsightsService.mapDtoToInsights(data);
+    public static async getMetrics(from: string, to: string) {
+        const { data } = await apiClient.get<DailyMetricsDto>(`/daily/metrics?from=${from}&to=${to}`);
+        return DailyInsightsService.mapDtoToMetrics(data);
     }
 
-    private static mapDtoToInsights(dto: DailyInsightsDto): DailyInsights {
+    private static mapDtoToMetrics(dto: DailyMetricsDto): DailyMetrics {
         return {
             dailyRange: dto.dailyRange,
             activityHistory: dto.activityHistory.map(DailyInsightsService.mapDtoToDailyActivity),
@@ -17,6 +17,7 @@ export class DailyInsightsService {
             longestActivityStreak: dto.longestActivityStreak,
             meanActivityPerDay: dto.meanActivityPerDay,
             totalActiveDays: dto.totalActiveDays,
+            activeDayRate: dto.activeDayRate,
         };
     }
 

@@ -1,13 +1,14 @@
 import { DailyActivityDto } from "@/features/daily/api/dto/DailyActivityDto";
 
-export type DailyInsightsDto = {
+export type DailyMetricsDto = {
     dailyRange: {
         from: string;
         to: string;
     };
     activityHistory: DailyActivityDto[];
     totalActiveDays: number;
+    activeDayRate: number;
     meanActivityPerDay: number;
-    currentActivityStreak: number;
+    currentActivityStreak: number | null;
     longestActivityStreak: number;
 };

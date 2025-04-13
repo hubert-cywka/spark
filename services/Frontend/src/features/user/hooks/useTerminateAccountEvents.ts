@@ -14,7 +14,7 @@ export const useTerminateAccountEvents = () => {
 
     const onTerminateAccountSuccess = useCallback(() => {
         showToast().success({
-            title: t("user.account.terminate.notifications.success.title"),
+            title: t("user.account.termination.notifications.success.title"),
         });
         router.push(AppRoute.HOME);
     }, [router, t]);

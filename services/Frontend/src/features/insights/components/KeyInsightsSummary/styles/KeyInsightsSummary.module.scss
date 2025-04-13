@@ -1,0 +1,48 @@
+@use "src/styles/tokens";
+
+.summary {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$spacing-600;
+
+    .caption {
+        margin-top: auto;
+        align-self: center;
+        font: tokens.$typography-caption-200;
+        color: tokens.$color-neutral-text-200;
+    }
+    
+    .section {
+        .header {
+            display: flex;
+            gap: tokens.$spacing-200;
+            margin-bottom: tokens.$spacing-300;
+            
+            &.positive {
+                color: tokens.$color-success-text-300;
+            }
+
+            &.negative {
+                color: tokens.$color-info-text-300;
+            }
+
+            &.warning {
+                color: tokens.$color-accent-text-300;
+            }
+        }
+        
+        .notEnoughDataCaption {
+            font: tokens.$typography-body-100;
+            color: tokens.$color-neutral-text-100;
+        }
+        
+        .insightsList {
+            display: flex;
+            flex-direction: column;
+            gap: tokens.$spacing-200;
+            
+            padding-left: tokens.$spacing-600;
+            color: tokens.$color-neutral-text-100;
+        }
+    }
+}

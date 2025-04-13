@@ -95,13 +95,13 @@ export class FederatedAccountService implements IFederatedAccountService {
                 email: identity.email,
                 providerId: identity.providerId,
                 providerAccountId: identity.id,
-                activatedAt: now,
                 termsAndConditionsAcceptedAt: now,
             })
             .returning("*")
             .execute();
 
         const account = insertionResult.raw[0] as FederatedAccountEntity;
+
         return this.accountMapper.fromEntityToModel(account);
     }
 
@@ -116,6 +116,20 @@ export class FederatedAccountService implements IFederatedAccountService {
         }
 
         await repository.remove([account]);
+    }
+
+    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
+    public async activateByInternalId(id: string): Promise<void> {
+        const repository = this.getRepository();
+        const account = await repository.findOne({ where: { id } });
+
+        if (!account) {
+            this.logger.warn({ accountId: id }, "Couldn't find account.");
+            throw new AccountNotFoundError();
+        }
+
+        await repository.save({ ...account, activatedAt: new Date() });
+        await this.publisher.onAccountActivated(account.id, account.email);
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)

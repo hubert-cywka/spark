@@ -1,7 +1,8 @@
-import { DailyInsights } from "@/modules/journal/daily/models/DailyInsights.model";
+import { DailyMetrics } from "@/modules/journal/daily/models/DailyMetrics.model";
+import { type ISODateStringRange } from "@/types/Date";
 
 export const DailyActivityServiceToken = Symbol("DailyActivityService");
 
 export interface IDailyInsightsService {
-    findByDateRange(authorId: string, from: string, to: string): Promise<DailyInsights>;
+    findMetricsByDateRange(authorId: string, dateRange: ISODateStringRange, timezone?: string): Promise<DailyMetrics>;
 }

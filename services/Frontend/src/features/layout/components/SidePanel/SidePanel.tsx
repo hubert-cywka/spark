@@ -40,8 +40,8 @@ export const SidePanel = () => {
                     />
                 </div>
 
-                <header>
-                    <Logo className={styles.logo} />
+                <header className={styles.logoWrapper}>
+                    <Logo />
                 </header>
 
                 <Navigation isDisabled={isCollapsed && !isDesktop} />

@@ -5,7 +5,7 @@ export class DailyInsightsQueryKeyFactory {
         return [BASE_QUERY_KEY];
     }
 
-    public static createForDateRange(from: string, to: string) {
-        return [BASE_QUERY_KEY, { from, to }];
+    public static createForMetrics(from: string, to: string) {
+        return [BASE_QUERY_KEY, "metrics", { from, to }];
     }
 }

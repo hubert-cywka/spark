@@ -3,6 +3,12 @@
 .container {
     display: flex;
     justify-content: space-between;
+    
+    .noValue {
+        font-size: tokens.$font-size-900;
+        font-weight: tokens.$font-weight-300;
+        align-self: center;
+    }
 
     .textWrapper {
         max-width: 60%;

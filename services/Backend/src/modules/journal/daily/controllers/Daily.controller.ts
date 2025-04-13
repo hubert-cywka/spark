@@ -16,14 +16,15 @@ import { plainToClass } from "class-transformer";
 
 import { AccessScopes } from "@/common/decorators/AccessScope.decorator";
 import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
+import { Timezone } from "@/common/decorators/Timezone.decorator";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
 import { AccessGuard } from "@/common/guards/Access.guard";
 import { PageOptionsDto } from "@/common/pagination/dto/PageOptions.dto";
 import { CreateDailyDto } from "@/modules/journal/daily/dto/CreateDaily.dto";
-import { DailyInsightsDto } from "@/modules/journal/daily/dto/DailyInsights.dto";
+import { DailyMetricsDto } from "@/modules/journal/daily/dto/DailyMetrics.dto";
 import { FindDailyFiltersDto } from "@/modules/journal/daily/dto/FindDailyFilters.dto";
-import { FindDailyInsightsDto } from "@/modules/journal/daily/dto/FindDailyInsights.dto";
+import { FindDailyMetricsDto } from "@/modules/journal/daily/dto/FindDailyMetrics.dto";
 import { UpdateDailyDateDto } from "@/modules/journal/daily/dto/UpdateDailyDate.dto";
 import { type IDailyMapper, DailyMapperToken } from "@/modules/journal/daily/mappers/IDaily.mapper";
 import { type IDailyService, DailyServiceToken } from "@/modules/journal/daily/services/interfaces/IDaily.service";
@@ -51,12 +52,16 @@ export class DailyController {
         return this.dailyMapper.fromModelToDtoPage(result);
     }
 
-    @Get("insights")
+    @Get("metrics")
     @UseGuards(AccessGuard)
     @AccessScopes("read:daily")
-    public async getDailyActivity(@Query() { from, to }: FindDailyInsightsDto, @AuthenticatedUserContext() author: User) {
-        const result = await this.insightsService.findByDateRange(author.id, from, to);
-        return plainToClass(DailyInsightsDto, result);
+    public async getDailyActivity(
+        @Query() { from, to }: FindDailyMetricsDto,
+        @AuthenticatedUserContext() author: User,
+        @Timezone() timezone: string
+    ) {
+        const result = await this.insightsService.findMetricsByDateRange(author.id, { from, to }, timezone);
+        return plainToClass(DailyMetricsDto, result);
     }
 
     @Get(":id")
