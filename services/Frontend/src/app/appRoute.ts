@@ -14,4 +14,7 @@ export enum AppRoute {
     REGISTER = "/authentication/register",
     RESET_PASSWORD = "/authentication/reset-password",
     ACTIVATE_ACCOUNT = "/authentication/activate-account",
+
+    OIDC_LOGIN = "/authentication/open-id-connect/login",
+    OIDC_REGISTER = "/authentication/open-id-connect/register",
 }

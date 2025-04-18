@@ -6,10 +6,12 @@ import { ResetPasswordFormInputs, useResetPasswordForm } from "./hooks/useResetP
 
 import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 
+import { AppRoute } from "@/app/appRoute";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Input";
 import { useRequestPasswordResetToken, useRequestPasswordResetTokenEvents } from "@/features/auth/hooks";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
+import { getAbsoluteAppUrl } from "@/utils/appUrl";
 
 export const ResetPasswordForm = () => {
     const t = useTranslate();
@@ -21,7 +23,10 @@ export const ResetPasswordForm = () => {
     const internalOnSubmit = useCallback(
         async ({ email }: ResetPasswordFormInputs) => {
             try {
-                await mutateAsync({ email: email.trim() });
+                await mutateAsync({
+                    email: email.trim(),
+                    redirectUrl: getAbsoluteAppUrl(AppRoute.RESET_PASSWORD),
+                });
                 onPasswordResetRequestSuccess();
             } catch (err) {
                 onPasswordResetRequestError(err);

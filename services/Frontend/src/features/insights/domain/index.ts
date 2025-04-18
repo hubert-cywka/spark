@@ -1,6 +1,7 @@
-export { CompletedEntriesRatingStrategy } from "./CompletedEntriesRatingStrategy.ts";
-export { CurrentStreakRatingStrategy } from "./CurrentStreakRatingStrategy.ts";
-export { FeaturedEntriesRatingStrategy } from "./FeaturedEntriesRatingStrategy.ts";
-export { type ThresholdBasedRatingStrategy } from "./ThresholdBasedMetricRatingStrategy.ts";
+export { ActiveDayRateRatingStrategy } from "./ActiveDayRateRatingStrategy";
+export { CompletedEntriesRatingStrategy } from "./CompletedEntriesRatingStrategy";
+export { CurrentStreakRatingStrategy } from "./CurrentStreakRatingStrategy";
+export { FeaturedEntriesRatingStrategy } from "./FeaturedEntriesRatingStrategy";
+export { type ThresholdBasedRatingStrategy } from "./ThresholdBasedMetricRatingStrategy";
 
 // TODO: Refactor and move to backend

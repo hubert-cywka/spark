@@ -3,6 +3,7 @@ import { Body, Controller, HttpCode, HttpStatus, Inject, NotFoundException, Post
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
+import { type IDomainVerifierService, DomainVerifierServiceToken } from "@/common/services/IDomainVerifier.service";
 import { RedeemActivationTokenDto } from "@/modules/identity/account/dto/RedeemActivationToken.dto";
 import { RequestActivationTokenDto } from "@/modules/identity/account/dto/RequestActivationToken.dto";
 import { RequestPasswordResetDto } from "@/modules/identity/account/dto/RequestPasswordReset.dto";
@@ -13,19 +14,26 @@ import {
     type IManagedAccountService,
     ManagedAccountServiceToken,
 } from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
+import { UntrustedDomainError } from "@/modules/identity/authentication/errors/UntrustedDomain.error";
 
 @Controller("account")
 export class AccountController {
     constructor(
         @Inject(ManagedAccountServiceToken)
-        private accountService: IManagedAccountService
+        private accountService: IManagedAccountService,
+        @Inject(DomainVerifierServiceToken)
+        private readonly domainVerifier: IDomainVerifierService
     ) {}
 
     @HttpCode(HttpStatus.CREATED)
     @Post("password/reset")
-    async requestPasswordChange(@Body() { email }: RequestPasswordResetDto) {
+    async requestPasswordChange(@Body() { email, redirectUrl }: RequestPasswordResetDto) {
+        if (!this.domainVerifier.verify(redirectUrl)) {
+            throw new UntrustedDomainError(redirectUrl);
+        }
+
         try {
-            await this.accountService.requestPasswordChange(email);
+            await this.accountService.requestPasswordChange(email, redirectUrl);
         } catch (err) {
             // Hubert: Due to security reasons, do not give any information about the user, as this endpoint is exposed to public.
             // Those errors do not require any handling and the information about them is logged just before they are thrown.
@@ -71,9 +79,9 @@ export class AccountController {
 
     @HttpCode(HttpStatus.CREATED)
     @Post("activation/request")
-    async requestActivationToken(@Body() { email }: RequestActivationTokenDto) {
+    async requestActivationToken(@Body() { email, redirectUrl }: RequestActivationTokenDto) {
         try {
-            await this.accountService.requestActivation(email);
+            await this.accountService.requestActivation(email, redirectUrl);
         } catch (err) {
             // Hubert: Due to security reasons, do not give any information about the user, as this endpoint is exposed to public.
             // Those errors do not require any handling and the information about them is logged just before they are thrown.

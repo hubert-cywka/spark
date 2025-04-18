@@ -7,11 +7,13 @@ import { RegisterFormInputs, useRegisterForm } from "./hooks/useRegisterForm";
 import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 import styles from "./styles/RegisterForm.module.scss";
 
+import { AppRoute } from "@/app/appRoute";
 import { Button } from "@/components/Button";
 import { Checkbox } from "@/components/Checkbox";
 import { Field } from "@/components/Input";
 import { useRegisterWithCredentials, useRegisterWithCredentialsEvents } from "@/features/auth/hooks";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
+import { getAbsoluteAppUrl } from "@/utils/appUrl";
 
 // TODO: Finish T&C
 export const RegisterForm = () => {
@@ -33,6 +35,7 @@ export const RegisterForm = () => {
                     email: inputs.email.trim(),
                     lastName: inputs.lastName.trim(),
                     firstName: inputs.firstName.trim(),
+                    accountActivationRedirectUrl: getAbsoluteAppUrl(AppRoute.ACTIVATE_ACCOUNT),
                 });
                 onRegisterSuccess();
             } catch (err) {

@@ -1,5 +1,4 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 
 import { whenError } from "@/common/errors/whenError";
 import { AccountActivationTokenRequestedEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
@@ -9,10 +8,7 @@ import { UserActivationEmail } from "@/modules/mail/templates/UserActivationEmai
 
 @Injectable()
 export class AccountActivationTokenRequestedEventHandler implements IInboxEventHandler {
-    constructor(
-        @Inject(MailerServiceToken) private mailer: IMailerService,
-        private readonly configService: ConfigService
-    ) {}
+    constructor(@Inject(MailerServiceToken) private mailer: IMailerService) {}
 
     public canHandle(topic: string): boolean {
         return topic === IntegrationEventTopics.account.activation.requested;
@@ -21,10 +17,7 @@ export class AccountActivationTokenRequestedEventHandler implements IInboxEventH
     public async handle(event: IntegrationEvent): Promise<void> {
         const payload = event.getPayload() as AccountActivationTokenRequestedEventPayload;
         try {
-            const accountActivationPage = this.configService.getOrThrow<string>("client.url.accountActivationPage");
-            const appUrl = this.configService.getOrThrow<string>("client.url.base");
-            const pageUrl = appUrl.concat(accountActivationPage);
-            await this.mailer.send(payload.email, new UserActivationEmail(payload.activationToken, pageUrl));
+            await this.mailer.send(payload.email, new UserActivationEmail(payload.redirectUrl));
         } catch (e) {
             whenError(e).is(EmailDeliveryError).throwRpcException("Email couldn't be delivered.").elseRethrow();
         }

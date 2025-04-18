@@ -1,10 +1,8 @@
-import { IntegrationEvent } from "../IntegrationEvent";
-
-import { IntegrationEventTopics } from "@/common/events";
+import { IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 
 export type AccountRequestedPasswordResetEventPayload = {
     email: string;
-    passwordResetToken: string;
+    redirectUrl: string;
 };
 
 export class AccountRequestedPasswordResetEvent extends IntegrationEvent<AccountRequestedPasswordResetEventPayload> {

@@ -67,7 +67,11 @@ export class AuthenticationService implements IAuthenticationService {
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
-    public async registerWithCredentials({ email, password }: Credentials, { firstName, lastName }: PersonalInformation): Promise<void> {
+    public async registerWithCredentials(
+        { email, password }: Credentials,
+        { firstName, lastName }: PersonalInformation,
+        clientRedirectUrl: string
+    ): Promise<void> {
         const account = await this.managedAccountService.createAccountWithCredentials(email, password);
 
         await this.publisher.onAccountRegistered(account.id, {
@@ -79,7 +83,7 @@ export class AuthenticationService implements IAuthenticationService {
             },
         });
 
-        await this.managedAccountService.requestActivation(email);
+        await this.managedAccountService.requestActivation(email, clientRedirectUrl);
     }
 
     public async loginWithExternalIdentity(identity: ExternalIdentity): Promise<AuthenticationResult> {

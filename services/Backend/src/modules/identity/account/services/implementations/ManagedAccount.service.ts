@@ -108,10 +108,12 @@ export class ManagedAccountService implements IManagedAccountService {
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
-    public async requestPasswordChange(email: string): Promise<void> {
+    public async requestPasswordChange(email: string, clientRedirectUrl: string): Promise<void> {
         const account = await this.findOne(email);
         const passwordResetToken = await this.singleUseTokenService.issuePasswordChangeToken(account.id);
-        await this.publisher.onPasswordResetRequested(account.id, account.email, passwordResetToken);
+
+        const passwordResetRedirectUrl = `${clientRedirectUrl}?token=${passwordResetToken}`;
+        await this.publisher.onPasswordResetRequested(account.id, account.email, passwordResetRedirectUrl);
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
@@ -158,12 +160,13 @@ export class ManagedAccountService implements IManagedAccountService {
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
-    public async requestActivation(email: string): Promise<void> {
+    public async requestActivation(email: string, clientRedirectUrl: string): Promise<void> {
         const account = await this.findOne(email);
         this.assertEligibilityForActivation(account);
 
         const activationToken = await this.singleUseTokenService.issueAccountActivationToken(account.id);
-        await this.publisher.onAccountActivationTokenRequested(account.id, email, activationToken);
+        const accountActivationRedirectUrl = `${clientRedirectUrl}?token=${activationToken}`;
+        await this.publisher.onAccountActivationTokenRequested(account.id, email, accountActivationRedirectUrl);
     }
 
     private async findOne(providerAccountId: string): Promise<ManagedAccountEntity> {

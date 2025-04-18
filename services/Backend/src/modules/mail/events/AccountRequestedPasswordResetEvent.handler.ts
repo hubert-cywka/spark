@@ -1,5 +1,4 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 
 import { whenError } from "@/common/errors/whenError";
 import { AccountRequestedPasswordResetEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
@@ -9,10 +8,7 @@ import { PasswordResetRequestedEmail } from "@/modules/mail/templates/PasswordRe
 
 @Injectable()
 export class AccountRequestedPasswordResetEventHandler implements IInboxEventHandler {
-    constructor(
-        @Inject(MailerServiceToken) private mailer: IMailerService,
-        private readonly configService: ConfigService
-    ) {}
+    constructor(@Inject(MailerServiceToken) private mailer: IMailerService) {}
 
     public canHandle(topic: string): boolean {
         return topic === IntegrationEventTopics.account.password.resetRequested;
@@ -21,10 +17,7 @@ export class AccountRequestedPasswordResetEventHandler implements IInboxEventHan
     public async handle(event: IntegrationEvent): Promise<void> {
         const payload = event.getPayload() as AccountRequestedPasswordResetEventPayload;
         try {
-            const forgotPasswordPage = this.configService.getOrThrow<string>("client.url.forgotPasswordPage");
-            const appUrl = this.configService.getOrThrow<string>("client.url.base");
-            const pageUrl = appUrl.concat(forgotPasswordPage);
-            await this.mailer.send(payload.email, new PasswordResetRequestedEmail(payload.passwordResetToken, pageUrl));
+            await this.mailer.send(payload.email, new PasswordResetRequestedEmail(payload.redirectUrl));
         } catch (e) {
             whenError(e).is(EmailDeliveryError).throwRpcException("Email couldn't be delivered.").elseRethrow();
         }

@@ -12,7 +12,7 @@ export interface IAuthenticationService {
     registerWithExternalIdentity(identity: ExternalIdentity): Promise<AuthenticationResult>;
     loginWithExternalIdentity(identity: ExternalIdentity): Promise<AuthenticationResult>;
 
-    registerWithCredentials(credentials: Credentials, personalInformation: PersonalInformation): Promise<void>;
+    registerWithCredentials(credentials: Credentials, personalInformation: PersonalInformation, clientRedirectUrl: string): Promise<void>;
     loginWithCredentials(credentials: Credentials): Promise<AuthenticationResult>;
 
     redeemRefreshToken(refreshToken: string): Promise<AuthenticationResult>;
