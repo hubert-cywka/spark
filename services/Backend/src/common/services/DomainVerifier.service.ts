@@ -3,7 +3,6 @@ import { ConfigService } from "@nestjs/config";
 
 import { type IDomainVerifierService } from "@/common/services/IDomainVerifier.service";
 
-// TODO: Use this to verify URLs for password reset and account confirmation.
 @Injectable()
 export class DomainVerifierService implements IDomainVerifierService {
     private readonly trustedDomains: string[] = [];
@@ -26,15 +25,16 @@ export class DomainVerifierService implements IDomainVerifierService {
                 return false;
             }
 
-            if (
-                !this.trustedDomains.some((domain) => {
-                    const domainUrl = new URL(domain);
-                    return parsedUrl.hostname === domainUrl.hostname && parsedUrl.protocol === domainUrl.protocol;
-                })
-            ) {
+            const isTrusted = this.trustedDomains.some((domain) => {
+                const domainUrl = new URL(domain);
+                return parsedUrl.hostname === domainUrl.hostname && parsedUrl.protocol === domainUrl.protocol;
+            });
+
+            if (!isTrusted) {
                 return false;
             }
         }
+
         return true;
     }
 }

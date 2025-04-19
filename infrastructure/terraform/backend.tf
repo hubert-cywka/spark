@@ -38,22 +38,6 @@ resource "kubernetes_deployment" "backend" {
                         name  = "CLIENT_URL_BASE"
                         value = var.CLIENT_URL_BASE
                     }
-                    env {
-                        name  = "CLIENT_ACCOUNT_ACTIVATION_PAGE"
-                        value = var.CLIENT_ACCOUNT_ACTIVATION_PAGE
-                    }
-                    env {
-                        name  = "CLIENT_FORGOT_PASSWORD_PAGE"
-                        value = var.CLIENT_FORGOT_PASSWORD_PAGE
-                    }
-                    env {
-                        name  = "CLIENT_OIDC_LOGIN_PAGE"
-                        value = var.CLIENT_OIDC_LOGIN_PAGE
-                    }
-                    env {
-                        name  = "CLIENT_OIDC_REGISTER_PAGE"
-                        value = var.CLIENT_OIDC_REGISTER_PAGE
-                    }
 
                     env {
                         name  = "DATABASE_PORT"
@@ -134,7 +118,7 @@ resource "kubernetes_deployment" "backend" {
                         name  = "GDPR_DATABASE_NAME"
                         value = var.GDPR_DATABASE_NAME
                     }
-                    
+
                     env {
                         name  = "MAIL_DATABASE_NAME"
                         value = var.MAIL_DATABASE_NAME
@@ -191,7 +175,7 @@ resource "kubernetes_deployment" "backend" {
                         name = "RATE_LIMITING_BASE_TTL"
                         value = var.RATE_LIMITING_BASE_TTL
                     }
-                    
+
                     env {
                         name = "APP_NAME"
                         value = var.APP_NAME

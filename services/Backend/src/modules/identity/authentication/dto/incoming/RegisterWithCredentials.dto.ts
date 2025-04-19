@@ -21,4 +21,7 @@ export class RegisterWithCredentialsDto {
     @IsBoolean()
     @Equals(true)
     readonly hasAcceptedTermsAndConditions!: boolean;
+
+    @IsString()
+    readonly accountActivationRedirectUrl!: string;
 }

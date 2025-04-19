@@ -1,7 +1,7 @@
 variable "APP_NAME" {
     type        = string
 }
- 
+
 variable "RATE_LIMITING_BASE_TTL" {
     type        = number
 }
@@ -23,22 +23,6 @@ variable "DATABASE_PASSWORD" {
 }
 
 variable "CLIENT_URL_BASE" {
-    type        = string
-}
-
-variable "CLIENT_ACCOUNT_ACTIVATION_PAGE" {
-    type        = string
-}
-
-variable "CLIENT_FORGOT_PASSWORD_PAGE" {
-    type        = string
-}
-
-variable "CLIENT_OIDC_LOGIN_PAGE" {
-    type        = string
-}
-
-variable "CLIENT_OIDC_REGISTER_PAGE" {
     type        = string
 }
 

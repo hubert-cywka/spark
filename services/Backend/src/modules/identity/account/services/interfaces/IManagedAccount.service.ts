@@ -6,9 +6,9 @@ export interface IManagedAccountService {
     findActivatedByCredentials(email: string, password: string): Promise<Account>;
     createAccountWithCredentials(email: string, password: string): Promise<Account>;
 
-    requestActivation(email: string): Promise<void>;
+    requestActivation(email: string, clientRedirectUrl: string): Promise<void>;
     activate(activationToken: string): Promise<void>;
 
-    requestPasswordChange(email: string): Promise<void>;
+    requestPasswordChange(email: string, clientRedirectUrl: string): Promise<void>;
     updatePassword(passwordChangeToken: string, password: string): Promise<void>;
 }

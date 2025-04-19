@@ -1,10 +1,8 @@
-import { IntegrationEvent } from "../IntegrationEvent";
-
-import { IntegrationEventTopics } from "@/common/events";
+import { IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 
 export type AccountActivationTokenRequestedEventPayload = {
-    activationToken: string;
     email: string;
+    redirectUrl: string;
 };
 
 export class AccountActivationTokenRequestedEvent extends IntegrationEvent<AccountActivationTokenRequestedEventPayload> {

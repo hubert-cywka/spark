@@ -20,20 +20,20 @@ export class AccountPublisherService implements IAccountPublisherService {
         await this.outbox.enqueue(new AccountActivatedEvent(tenantId, { email, id: tenantId }));
     }
 
-    public async onAccountActivationTokenRequested(tenantId: string, email: string, activationToken: string) {
+    public async onAccountActivationTokenRequested(tenantId: string, email: string, accountActivationRedirectUrl: string) {
         await this.outbox.enqueue(
             new AccountActivationTokenRequestedEvent(tenantId, {
                 email,
-                activationToken,
+                redirectUrl: accountActivationRedirectUrl,
             })
         );
     }
 
-    public async onPasswordResetRequested(tenantId: string, email: string, passwordResetToken: string) {
+    public async onPasswordResetRequested(tenantId: string, email: string, passwordResetRedirectUrl: string) {
         await this.outbox.enqueue(
             new AccountRequestedPasswordResetEvent(tenantId, {
                 email,
-                passwordResetToken,
+                redirectUrl: passwordResetRedirectUrl,
             })
         );
     }

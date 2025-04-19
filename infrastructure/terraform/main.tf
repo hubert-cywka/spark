@@ -16,7 +16,7 @@ resource "kubernetes_config_map" "app_config" {
 
     data = {
         APP_NAME                                            = var.APP_NAME
-    
+
         RATE_LIMITING_BASE_LIMIT                            = var.RATE_LIMITING_BASE_LIMIT
         RATE_LIMITING_BASE_TTL                              = var.RATE_LIMITING_BASE_TTL
 
@@ -25,11 +25,6 @@ resource "kubernetes_config_map" "app_config" {
         DATABASE_PASSWORD                                   = var.DATABASE_PASSWORD
 
         CLIENT_URL_BASE                                     = var.CLIENT_URL_BASE
-        CLIENT_OIDC_LOGIN_PAGE                              = var.CLIENT_OIDC_LOGIN_PAGE
-        CLIENT_OIDC_REGISTER_PAGE                           = var.CLIENT_OIDC_REGISTER_PAGE
-
-        CLIENT_FORGOT_PASSWORD_PAGE                         = var.CLIENT_FORGOT_PASSWORD_PAGE
-        CLIENT_ACCOUNT_ACTIVATION_PAGE                      = var.CLIENT_ACCOUNT_ACTIVATION_PAGE
 
         PUBSUB_PORT                                         = var.PUBSUB_PORT
 
@@ -49,7 +44,7 @@ resource "kubernetes_config_map" "app_config" {
         JOURNAL_DATABASE_NAME                               = var.JOURNAL_DATABASE_NAME
 
         ALERTS_DATABASE_NAME                                = var.ALERTS_DATABASE_NAME
-        
+
         GDPR_DATABASE_NAME                                  = var.GDPR_DATABASE_NAME
 
         MAIL_DATABASE_NAME                                  = var.MAIL_DATABASE_NAME

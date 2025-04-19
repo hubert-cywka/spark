@@ -18,9 +18,11 @@ import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
+import { type IDomainVerifierService, DomainVerifierServiceToken } from "@/common/services/IDomainVerifier.service";
 import { REFRESH_TOKEN_COOKIE_NAME } from "@/modules/identity/authentication/constants";
 import { LoginDto } from "@/modules/identity/authentication/dto/incoming/Login.dto";
 import { RegisterWithCredentialsDto } from "@/modules/identity/authentication/dto/incoming/RegisterWithCredentials.dto";
+import { UntrustedDomainError } from "@/modules/identity/authentication/errors/UntrustedDomain.error";
 import { type IAuthenticationMapper, AuthenticationMapperToken } from "@/modules/identity/authentication/mappers/IAuthentication.mapper";
 import {
     type IAuthenticationService,
@@ -36,6 +38,8 @@ export class AuthenticationController {
     private readonly refreshTokenCookieMaxAge: number;
 
     public constructor(
+        @Inject(DomainVerifierServiceToken)
+        private readonly domainVerifier: IDomainVerifierService,
         @Inject(AuthenticationServiceToken)
         private readonly authService: IAuthenticationService,
         @Inject(AuthenticationMapperToken)
@@ -50,10 +54,15 @@ export class AuthenticationController {
     @HttpCode(HttpStatus.CREATED)
     @Post("register")
     async registerWithCredentials(@Body() dto: RegisterWithCredentialsDto) {
+        if (!this.domainVerifier.verify(dto.accountActivationRedirectUrl)) {
+            throw new UntrustedDomainError(dto.accountActivationRedirectUrl);
+        }
+
         try {
             await this.authService.registerWithCredentials(
                 { email: dto.email, password: dto.password },
-                { lastName: dto.lastName, firstName: dto.firstName }
+                { lastName: dto.lastName, firstName: dto.firstName },
+                dto.accountActivationRedirectUrl
             );
         } catch (err) {
             whenError(err).is(EntityConflictError).throw(new ConflictException()).elseRethrow();

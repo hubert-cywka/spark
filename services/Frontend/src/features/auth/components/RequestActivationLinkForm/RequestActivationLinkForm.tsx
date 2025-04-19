@@ -6,10 +6,12 @@ import { RequestAccountActivationFormInputs, useRequestAccountActivationLinkForm
 
 import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 
+import { AppRoute } from "@/app/appRoute";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Input";
 import { useRequestAccountActivationToken, useRequestAccountActivationTokenEvents } from "@/features/auth/hooks";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
+import { getAbsoluteAppUrl } from "@/utils/appUrl";
 
 export const RequestActivationLinkForm = () => {
     const t = useTranslate();
@@ -24,7 +26,10 @@ export const RequestActivationLinkForm = () => {
     const internalOnSubmit = useCallback(
         async ({ email }: RequestAccountActivationFormInputs) => {
             try {
-                await mutateAsync({ email: email.trim() });
+                await mutateAsync({
+                    email: email.trim(),
+                    redirectUrl: getAbsoluteAppUrl(AppRoute.ACTIVATE_ACCOUNT),
+                });
                 onRequestActivationSuccess();
             } catch (err) {
                 onRequestActivationError(err);

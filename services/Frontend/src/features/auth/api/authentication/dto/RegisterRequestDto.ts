@@ -4,4 +4,5 @@ export type RegisterRequestDto = {
     firstName: string;
     lastName: string;
     hasAcceptedTermsAndConditions: boolean;
+    accountActivationRedirectUrl: string;
 };
