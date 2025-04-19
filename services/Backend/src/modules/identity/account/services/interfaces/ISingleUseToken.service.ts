@@ -3,11 +3,7 @@ import type { SingleUseTokenRedeemData } from "@/modules/identity/account/types/
 export const SingleUseTokenServiceToken = Symbol("ISingleUseTokenServiceToken");
 
 export interface ISingleUseTokenService {
-    issueAccountActivationToken(ownerId: string): Promise<string>;
-    redeemAccountActivationToken(token: string): Promise<SingleUseTokenRedeemData>;
-    invalidateAllAccountActivationTokens(ownerId: string): Promise<void>;
-
-    issuePasswordChangeToken(ownerId: string): Promise<string>;
-    redeemPasswordChangeToken(token: string): Promise<SingleUseTokenRedeemData>;
-    invalidateAllPasswordChangeTokens(ownerId: string): Promise<void>;
+    issue(ownerId: string): Promise<string>;
+    redeem(token: string): Promise<SingleUseTokenRedeemData>;
+    invalidateAll(ownerId: string): Promise<void>;
 }

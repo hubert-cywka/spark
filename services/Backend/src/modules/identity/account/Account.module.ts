@@ -9,20 +9,20 @@ import { AccountPublisherService } from "@/modules/identity/account/services/imp
 import { AccountRemovalService } from "@/modules/identity/account/services/implementations/AccountRemoval.service";
 import { FederatedAccountService } from "@/modules/identity/account/services/implementations/FederatedAccount.service";
 import { ManagedAccountService } from "@/modules/identity/account/services/implementations/ManagedAccount.service";
-import { SingleUseTokenService } from "@/modules/identity/account/services/implementations/SingleUseToken.service";
+import { SingleUseTokenServiceFactory } from "@/modules/identity/account/services/implementations/SingleUseTokenService.factory";
 import { AccountPublisherServiceToken } from "@/modules/identity/account/services/interfaces/IAccountPublisher.service";
 import { AccountRemovalServiceToken } from "@/modules/identity/account/services/interfaces/IAccountRemoval.service";
 import { FederatedAccountServiceToken } from "@/modules/identity/account/services/interfaces/IFederatedAccount.service";
 import { ManagedAccountServiceToken } from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
-import { SingleUseTokenServiceToken } from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
+import { SingleUseTokenServiceFactoryToken } from "@/modules/identity/account/services/interfaces/ISingelUseTokenService.factory";
 import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.module";
 
 @Module({
     imports: [IdentitySharedModule],
     providers: [
         {
-            provide: SingleUseTokenServiceToken,
-            useClass: SingleUseTokenService,
+            provide: SingleUseTokenServiceFactoryToken,
+            useClass: SingleUseTokenServiceFactory,
         },
         {
             provide: AccountMapperToken,
@@ -52,7 +52,6 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
         AccountPublisherServiceToken,
         FederatedAccountServiceToken,
         ManagedAccountServiceToken,
-        SingleUseTokenServiceToken,
         AccountRemovedEventHandler,
         AccountRemovalRequestedEventHandler,
     ],

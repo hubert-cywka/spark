@@ -11,11 +11,11 @@ export class OpenIDConnectService {
     }
 
     public static async login(provider: "google") {
-        const url = `/open-id-connect/login/${provider}`;
+        const url = `/open-id-connect/login/${provider}?`
+            .concat(`loginRedirectUrl=${getAbsoluteAppUrl(AppRoute.OIDC_LOGIN)}`)
+            .concat(`&registerRedirectUrl=${getAbsoluteAppUrl(AppRoute.OIDC_REGISTER)}`);
 
-        const { data } = await apiClient.get<{ url: string }>(
-            `${url}?loginRedirectUrl=${getAbsoluteAppUrl(AppRoute.OIDC_LOGIN)}&registerRedirectUrl=${getAbsoluteAppUrl(AppRoute.OIDC_REGISTER)}`
-        );
+        const { data } = await apiClient.get<{ url: string }>(url);
         return data;
     }
 }

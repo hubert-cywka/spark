@@ -12,42 +12,20 @@ import { type SingleUseTokenRedeemData, type SingleUseTokenType } from "@/module
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
 @Injectable()
-export class SingleUseTokenService implements ISingleUseTokenService {
-    private readonly logger = new Logger(SingleUseTokenService.name);
+export abstract class BaseSingleUseTokenService implements ISingleUseTokenService {
+    private readonly logger = new Logger(BaseSingleUseTokenService.name);
     private readonly EXPIRATION_TIME = 15 * 60;
 
-    constructor(
+    protected constructor(
         @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
     ) {}
 
-    public async invalidateAllAccountActivationTokens(ownerId: string): Promise<void> {
-        await this.invalidateAllByOwnerIdAndType(ownerId, "accountActivation");
-    }
+    public abstract issue(ownerId: string): Promise<string>;
+    public abstract redeem(token: string): Promise<SingleUseTokenRedeemData>;
+    public abstract invalidateAll(ownerId: string): Promise<void>;
 
-    public async issueAccountActivationToken(ownerId: string): Promise<string> {
-        await this.invalidateAllAccountActivationTokens(ownerId);
-        return this.issueToken(ownerId, "accountActivation");
-    }
-
-    public async redeemAccountActivationToken(token: string): Promise<SingleUseTokenRedeemData> {
-        return this.redeemToken(token, "accountActivation");
-    }
-
-    public async invalidateAllPasswordChangeTokens(ownerId: string): Promise<void> {
-        await this.invalidateAllByOwnerIdAndType(ownerId, "passwordChange");
-    }
-
-    public async issuePasswordChangeToken(ownerId: string): Promise<string> {
-        await this.invalidateAllPasswordChangeTokens(ownerId);
-        return this.issueToken(ownerId, "passwordChange");
-    }
-
-    public async redeemPasswordChangeToken(token: string): Promise<SingleUseTokenRedeemData> {
-        return this.redeemToken(token, "passwordChange");
-    }
-
-    private async redeemToken(token: string, type: SingleUseTokenType): Promise<SingleUseTokenRedeemData> {
+    protected async redeemToken(token: string, type: SingleUseTokenType): Promise<SingleUseTokenRedeemData> {
         const tokenEntity = await this.findOneByValueAndType(token, type);
 
         if (!tokenEntity) {
@@ -75,7 +53,7 @@ export class SingleUseTokenService implements ISingleUseTokenService {
         return { ownerId: tokenEntity.owner.id };
     }
 
-    private async issueToken(ownerId: string, type: SingleUseTokenType): Promise<string> {
+    protected async issueToken(ownerId: string, type: SingleUseTokenType): Promise<string> {
         const token = this.generate();
         const expiresAt = dayjs().add(this.EXPIRATION_TIME, "seconds");
         const tokenEntity = await this.getRepository().save({
@@ -87,7 +65,7 @@ export class SingleUseTokenService implements ISingleUseTokenService {
         return tokenEntity.value;
     }
 
-    private async invalidateAllByOwnerIdAndType(ownerId: string, type: SingleUseTokenType): Promise<void> {
+    protected async invalidateAllByOwnerIdAndType(ownerId: string, type: SingleUseTokenType): Promise<void> {
         const now = dayjs();
         await this.getRepository().update({ owner: { id: ownerId }, invalidatedAt: IsNull(), type }, { invalidatedAt: now });
     }

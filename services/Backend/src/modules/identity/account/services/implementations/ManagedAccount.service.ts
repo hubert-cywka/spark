@@ -19,9 +19,10 @@ import {
 } from "@/modules/identity/account/services/interfaces/IAccountPublisher.service";
 import { IManagedAccountService } from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
 import {
-    type ISingleUseTokenService,
-    SingleUseTokenServiceToken,
-} from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
+    type ISingleUseTokenServiceFactory,
+    SingleUseTokenServiceFactoryToken,
+} from "@/modules/identity/account/services/interfaces/ISingelUseTokenService.factory";
+import { type ISingleUseTokenService } from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
 import { InvalidCredentialsError } from "@/modules/identity/authentication/errors/InvalidCredentials.error";
 import { ManagedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
@@ -29,6 +30,8 @@ import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/d
 @Injectable()
 export class ManagedAccountService implements IManagedAccountService {
     private readonly logger = new Logger(ManagedAccountService.name);
+    private readonly accountActivationTokenService: ISingleUseTokenService;
+    private readonly passwordChangeTokenService: ISingleUseTokenService;
     private fakePasswordHash: string | null = null;
 
     constructor(
@@ -36,11 +39,14 @@ export class ManagedAccountService implements IManagedAccountService {
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
         @Inject(AccountPublisherServiceToken)
         private readonly publisher: IAccountPublisherService,
-        @Inject(SingleUseTokenServiceToken)
-        private readonly singleUseTokenService: ISingleUseTokenService,
         @Inject(AccountMapperToken)
-        private readonly accountMapper: IAccountMapper
-    ) {}
+        private readonly accountMapper: IAccountMapper,
+        @Inject(SingleUseTokenServiceFactoryToken)
+        singleUseTokenServiceFactory: ISingleUseTokenServiceFactory
+    ) {
+        this.passwordChangeTokenService = singleUseTokenServiceFactory.create("passwordChange");
+        this.accountActivationTokenService = singleUseTokenServiceFactory.create("accountActivation");
+    }
 
     public async findActivatedByCredentials(email: string, password: string): Promise<Account> {
         if (!this.fakePasswordHash) {
@@ -110,7 +116,7 @@ export class ManagedAccountService implements IManagedAccountService {
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
     public async requestPasswordChange(email: string, clientRedirectUrl: string): Promise<void> {
         const account = await this.findOne(email);
-        const passwordResetToken = await this.singleUseTokenService.issuePasswordChangeToken(account.id);
+        const passwordResetToken = await this.passwordChangeTokenService.issue(account.id);
 
         const passwordResetRedirectUrl = `${clientRedirectUrl}?token=${passwordResetToken}`;
         await this.publisher.onPasswordResetRequested(account.id, account.email, passwordResetRedirectUrl);
@@ -118,7 +124,7 @@ export class ManagedAccountService implements IManagedAccountService {
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
     public async updatePassword(passwordChangeToken: string, password: string): Promise<void> {
-        const { ownerId } = await this.singleUseTokenService.redeemPasswordChangeToken(passwordChangeToken);
+        const { ownerId } = await this.passwordChangeTokenService.redeem(passwordChangeToken);
         const account = await this.getRepository().findOne({
             where: { id: ownerId },
         });
@@ -140,7 +146,7 @@ export class ManagedAccountService implements IManagedAccountService {
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
     public async activate(activationToken: string): Promise<void> {
-        const { ownerId } = await this.singleUseTokenService.redeemAccountActivationToken(activationToken);
+        const { ownerId } = await this.accountActivationTokenService.redeem(activationToken);
         const account = await this.getRepository().findOne({
             where: { id: ownerId },
         });
@@ -164,7 +170,7 @@ export class ManagedAccountService implements IManagedAccountService {
         const account = await this.findOne(email);
         this.assertEligibilityForActivation(account);
 
-        const activationToken = await this.singleUseTokenService.issueAccountActivationToken(account.id);
+        const activationToken = await this.accountActivationTokenService.issue(account.id);
         const accountActivationRedirectUrl = `${clientRedirectUrl}?token=${activationToken}`;
         await this.publisher.onAccountActivationTokenRequested(account.id, email, accountActivationRedirectUrl);
     }
