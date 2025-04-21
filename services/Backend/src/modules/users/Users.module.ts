@@ -2,7 +2,13 @@ import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule } from "@/common/events";
+import {
+    IInboxEventHandler,
+    InboxEventHandlersToken,
+    IntegrationEventsModule,
+    IntegrationEventStreams,
+    IntegrationEventTopics,
+} from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { UserController } from "@/modules/users/controllers/User.controller";
@@ -51,6 +57,17 @@ import { UsersSubscriber } from "@/modules/users/Users.subscriber";
         IntegrationEventsModule.forFeature({
             eventBoxFactoryClass: UsersEventBoxFactory,
             context: UsersModule.name,
+            consumers: [
+                {
+                    name: "codename_users_account",
+                    stream: IntegrationEventStreams.account,
+                    subjects: [
+                        IntegrationEventTopics.account.registration.completed,
+                        IntegrationEventTopics.account.activation.completed,
+                        IntegrationEventTopics.account.removal.completed,
+                    ],
+                },
+            ],
         }),
     ],
     controllers: [UsersSubscriber, UserController],

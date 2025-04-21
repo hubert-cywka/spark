@@ -1,13 +1,21 @@
-import { type DynamicModule, Module } from "@nestjs/common";
+import { type DynamicModule, Logger, Module } from "@nestjs/common";
 import { CronExpression, SchedulerRegistry } from "@nestjs/schedule";
-import { NatsJetStreamTransport } from "@nestjs-plugins/nestjs-nats-jetstream-transport";
+import { plainToClass } from "class-transformer";
 import { CronJob } from "cron";
 import dayjs from "dayjs";
+import { ConsumerMessages } from "nats";
 
+import {
+    NatsJetStreamConsumerMessagesToken,
+    NatsJetStreamModule,
+    NatsJetStreamModuleOptions,
+} from "@/common/events/brokers/NatsJetStream.module";
+import { EventInbox } from "@/common/events/services/implementations/EventInbox";
 import { EventBoxFactoryToken, IEventBoxFactory } from "@/common/events/services/interfaces/IEventBox.factory";
 import { EventInboxToken, IEventInbox } from "@/common/events/services/interfaces/IEventInbox";
 import { type IEventOutbox, EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
-import { IntegrationEventsModuleOptions } from "@/common/events/types";
+import { EventConsumer, IntegrationEventsModuleOptions } from "@/common/events/types";
+import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 import { ClassConstructor } from "@/types/Class";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 
@@ -18,7 +26,7 @@ const IntegrationEventsModuleOptionsToken = Symbol("IntegrationEventsModuleOptio
 @Module({})
 export class IntegrationEventsModule {
     static forRootAsync(options: {
-        useFactory: UseFactory<IntegrationEventsModuleOptions>;
+        useFactory: UseFactory<IntegrationEventsModuleOptions<NatsJetStreamModuleOptions>>;
         inject?: UseFactoryArgs;
         global?: boolean;
     }): DynamicModule {
@@ -31,16 +39,19 @@ export class IntegrationEventsModule {
                     inject: options.inject || [],
                 },
             ],
+            imports: [NatsJetStreamModule.forRootAsync(options)],
             exports: [IntegrationEventsModuleOptionsToken],
             global: options.global,
         };
     }
 
     static forFeature<T extends IEventBoxFactory>({
+        consumers,
         eventBoxFactoryClass,
         context,
         outboxProcessingInterval = 5000,
     }: {
+        consumers: EventConsumer[];
         eventBoxFactoryClass: ClassConstructor<T>;
         context: string;
         outboxProcessingInterval?: number;
@@ -72,6 +83,7 @@ export class IntegrationEventsModule {
                         schedulerRegistry.addInterval(`${context}_OutboxProcessor`, interval);
                         return interval;
                     },
+
                     inject: [SchedulerRegistry, EventOutboxToken],
                 },
 
@@ -95,25 +107,34 @@ export class IntegrationEventsModule {
                             const processedBefore = dayjs().subtract(EVENTS_RETENTION_PERIOD_IN_DAYS, "days").toDate();
                             await inbox.clearProcessedEvents(processedBefore);
                         });
+
                         schedulerRegistry.addCronJob(`${context}_InboxCleaner`, job);
                         return job;
                     },
+
                     inject: [SchedulerRegistry, EventOutboxToken],
                 },
-            ],
-            imports: [
-                NatsJetStreamTransport.registerAsync({
-                    useFactory: ({ connection }: IntegrationEventsModuleOptions) => {
-                        return {
-                            connectionOptions: {
-                                servers: `${connection.host}:${connection.port}`,
-                                name: `${context}_JetStreamPublisher`,
-                            },
-                        };
+
+                {
+                    provide: `${context}_EventsSubscriber`,
+                    useFactory: async (jobs: Promise<ConsumerMessages>[], inbox: EventInbox) => {
+                        const logger = new Logger();
+
+                        jobs.forEach(async (job) => {
+                            const messages = await job;
+
+                            for await (const message of messages) {
+                                const event = plainToClass(IntegrationEvent, message.json() as unknown);
+                                logger.log(event, `Received '${event.getTopic()}' event.`);
+                                await inbox.enqueue(event);
+                                message.ack();
+                            }
+                        });
                     },
-                    inject: [IntegrationEventsModuleOptionsToken],
-                }),
+                    inject: [NatsJetStreamConsumerMessagesToken, EventInboxToken],
+                },
             ],
+            imports: [NatsJetStreamModule.forFeature({ consumers })],
             exports: [EventBoxFactoryToken, EventOutboxToken, EventInboxToken],
         };
     }

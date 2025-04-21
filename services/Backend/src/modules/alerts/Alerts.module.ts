@@ -2,7 +2,13 @@ import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule } from "@/common/events";
+import {
+    IInboxEventHandler,
+    InboxEventHandlersToken,
+    IntegrationEventsModule,
+    IntegrationEventStreams,
+    IntegrationEventTopics,
+} from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { AlertsSubscriber } from "@/modules/alerts/Alerts.subscriber";
@@ -88,6 +94,13 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
         IntegrationEventsModule.forFeature({
             eventBoxFactoryClass: AlertsEventBoxFactory,
             context: AlertsModule.name,
+            consumers: [
+                {
+                    name: "codename_alerts_account",
+                    stream: IntegrationEventStreams.account,
+                    subjects: [IntegrationEventTopics.account.registration.completed, IntegrationEventTopics.account.removal.completed],
+                },
+            ],
         }),
     ],
     controllers: [AlertsSubscriber, AlertsController],

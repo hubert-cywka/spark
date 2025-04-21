@@ -5,6 +5,7 @@ import { EventInboxToken, IEventInbox } from "./services/interfaces/IEventInbox"
 import { EventOutboxToken, IEventOutbox } from "./services/interfaces/IEventOutbox";
 import { IInboxEventHandler, InboxEventHandlersToken } from "./services/interfaces/IInboxEventHandler";
 import { IntegrationEvent } from "./types/IntegrationEvent";
+import { IntegrationEventStreams } from "./types/IntegrationEventStreams";
 import { IntegrationEventTopics } from "./types/IntegrationEventTopics";
 import { IntegrationEventsModule } from "./IntegrationEvents.module";
 
@@ -22,7 +23,7 @@ export {
     InboxEventHandlersToken,
     IntegrationEvent,
 };
-export { IntegrationEventTopics };
+export { IntegrationEventStreams, IntegrationEventTopics };
 export * from "./types/2fa/EmailIntegrationTOTPIssuedEvent";
 export * from "./types/account/AccountActivatedEvent";
 export * from "./types/account/AccountActivationTokenRequestedEvent";

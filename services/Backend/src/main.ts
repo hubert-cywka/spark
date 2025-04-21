@@ -1,10 +1,8 @@
 import { ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
-import type { CustomStrategy } from "@nestjs/microservices";
 import type { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import { NatsJetStreamServer } from "@nestjs-plugins/nestjs-nats-jetstream-transport";
 import cookieParser from "cookie-parser";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone.js";
@@ -12,7 +10,6 @@ import utc from "dayjs/plugin/utc.js";
 import { Logger } from "nestjs-pino";
 
 import { AppModule } from "@/App.module";
-import { IntegrationEventTopics } from "@/common/events";
 import { AppConfig } from "@/config/configuration";
 import { logger } from "@/lib/logger";
 
@@ -45,37 +42,6 @@ async function bootstrap() {
 
     app.use(cookieParser(config.getOrThrow<string>("cookies.secret")));
     app.set("trust proxy", true);
-
-    await app
-        .connectMicroservice<CustomStrategy>({
-            strategy: new NatsJetStreamServer({
-                connectionOptions: {
-                    servers: `${config.getOrThrow<string>("pubsub.host")}:${config.getOrThrow<number>("pubsub.port")}`,
-                    name: "codename-listener",
-                },
-                consumerOptions: {
-                    deliverGroup: "codename-group",
-                    durable: "codename-durable",
-                    deliverTo: "codename-messages",
-                    manualAck: true,
-                },
-                streamConfig: [
-                    {
-                        name: "account",
-                        subjects: [IntegrationEventTopics.account.all],
-                    },
-                    {
-                        name: "alert",
-                        subjects: [IntegrationEventTopics.alert.all],
-                    },
-                    {
-                        name: "2fa",
-                        subjects: [IntegrationEventTopics.twoFactorAuth.all],
-                    },
-                ],
-            }),
-        })
-        .listen();
 
     // TODO: Update schemas and responses for each endpoint
     const swaggerConfig = new DocumentBuilder().setTitle("codename - OpenAPI").setVersion("1.0").addTag("codename").build();

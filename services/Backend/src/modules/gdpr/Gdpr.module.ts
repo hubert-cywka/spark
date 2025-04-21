@@ -2,7 +2,13 @@ import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule } from "@/common/events";
+import {
+    IInboxEventHandler,
+    InboxEventHandlersToken,
+    IntegrationEventsModule,
+    IntegrationEventStreams,
+    IntegrationEventTopics,
+} from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { DataPurgePlanEntity } from "@/modules/gdpr/entities/DataPurgePlan.entity";
@@ -75,6 +81,17 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
         IntegrationEventsModule.forFeature({
             eventBoxFactoryClass: GdprEventBoxFactory,
             context: GdprModule.name,
+            consumers: [
+                {
+                    name: "codename_gdpr_account",
+                    stream: IntegrationEventStreams.account,
+                    subjects: [
+                        IntegrationEventTopics.account.registration.completed,
+                        IntegrationEventTopics.account.removal.completed,
+                        IntegrationEventTopics.account.removal.requested,
+                    ],
+                },
+            ],
         }),
     ],
     controllers: [GdprSubscriber],

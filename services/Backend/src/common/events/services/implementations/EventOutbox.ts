@@ -1,15 +1,14 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
-import { NatsJetStreamClientProxy, NatsJetStreamRecordBuilder } from "@nestjs-plugins/nestjs-nats-jetstream-transport";
 import dayjs from "dayjs";
-import { PubAck } from "nats";
 import { firstValueFrom, timeout } from "rxjs";
 import { And, IsNull, LessThan, Not, Repository } from "typeorm";
 
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
+import { type IPubSubClient } from "@/jetstream";
 
 const MAX_PAGE_SIZE = 10;
 const MAX_ATTEMPTS = 10;
@@ -22,7 +21,7 @@ export class EventOutbox implements IEventOutbox {
     private readonly logger;
 
     public constructor(
-        private client: NatsJetStreamClientProxy,
+        private client: IPubSubClient,
         private txHost: TransactionHost<TransactionalAdapterTypeOrm>,
         context?: string
     ) {
@@ -125,13 +124,8 @@ export class EventOutbox implements IEventOutbox {
     private async publish(entity: OutboxEventEntity): Promise<OutboxEventEntity> {
         const event = IntegrationEvent.fromEntity(entity);
 
-        const builder = new NatsJetStreamRecordBuilder();
-        builder.setMsgId(event.getId());
-        builder.setPayload(event);
-        const record = builder.build();
-
         try {
-            const ack = await firstValueFrom(this.client.emit<PubAck>(event.getTopic(), record).pipe(timeout(PUBLISH_TIMEOUT)));
+            const ack = await firstValueFrom(this.client.publish(event).pipe(timeout(PUBLISH_TIMEOUT)));
             this.logger.log({ event, ack }, "Published event");
             entity.processedAt = dayjs().toDate();
         } catch (e) {

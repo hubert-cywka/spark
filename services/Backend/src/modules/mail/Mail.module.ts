@@ -2,7 +2,13 @@ import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule } from "@/common/events";
+import {
+    IInboxEventHandler,
+    InboxEventHandlersToken,
+    IntegrationEventsModule,
+    IntegrationEventStreams,
+    IntegrationEventTopics,
+} from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { AccountActivatedEventHandler } from "@/modules/mail/events/AccountActivatedEvent.handler";
@@ -65,6 +71,30 @@ import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.s
         IntegrationEventsModule.forFeature({
             eventBoxFactoryClass: MailEventBoxFactory,
             context: MailModule.name,
+            consumers: [
+                {
+                    name: "codename_mail_account",
+                    stream: IntegrationEventStreams.account,
+                    subjects: [
+                        IntegrationEventTopics.account.activation.requested,
+                        IntegrationEventTopics.account.password.resetRequested,
+                        IntegrationEventTopics.account.password.updated,
+                        IntegrationEventTopics.account.activation.completed,
+                        IntegrationEventTopics.account.removal.completed,
+                        IntegrationEventTopics.account.removal.requested,
+                    ],
+                },
+                {
+                    name: "codename_mail_alert",
+                    stream: IntegrationEventStreams.alert,
+                    subjects: [IntegrationEventTopics.alert.daily.reminder.triggered],
+                },
+                {
+                    name: "codename_mail_2fa",
+                    stream: IntegrationEventStreams.twoFactorAuth,
+                    subjects: [IntegrationEventTopics.twoFactorAuth.email.issued],
+                },
+            ],
         }),
     ],
     controllers: [MailSubscriber],
