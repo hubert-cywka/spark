@@ -1,6 +1,6 @@
-import { type JetStreamClient, jetstream, jetstreamManager } from "@nats-io/jetstream";
-import { DynamicModule, Logger, Module } from "@nestjs/common";
-import { connect, DiscardPolicy, NatsConnection, RetentionPolicy } from "nats";
+import { jetstreamManager } from "@nats-io/jetstream";
+import { DynamicModule, Inject, Logger, Module, OnApplicationShutdown } from "@nestjs/common";
+import { type NatsConnection, connect, DiscardPolicy, RetentionPolicy } from "nats";
 
 import { NatsJetStreamPubSubClient } from "@/common/events/brokers/services/NatsJetStreamPubSubClient";
 import { PubSubClientToken } from "@/common/events/services/interfaces/IPubSubClient";
@@ -9,7 +9,6 @@ import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 
 const NatsConnectionToken = Symbol("NatsConnection");
 const NatsJetStreamOptionsToken = Symbol("NatsJetStreamOptions");
-const NatsJetStreamClientToken = Symbol("NatsJetStreamClient");
 const NatsJetStreamManagerToken = Symbol("NatsJetStreamManager");
 
 export type NatsJetStreamModuleOptions = {
@@ -23,8 +22,35 @@ type NatsJetStreamConnectionOptions = {
 };
 
 @Module({})
-export class NatsJetStreamModule {
+export class NatsJetStreamModule implements OnApplicationShutdown {
     private static readonly logger = new Logger(NatsJetStreamModule.name);
+
+    constructor(
+        @Inject(NatsConnectionToken)
+        private readonly connection: NatsConnection
+    ) {}
+
+    async onApplicationShutdown(signal?: string) {
+        if (!this.connection) {
+            NatsJetStreamModule.logger.warn("Nats JetStream connection was not injected or is null. Cannot close.");
+            return;
+        }
+
+        if (this.connection.isDraining() || this.connection.isClosed()) {
+            NatsJetStreamModule.logger.log("Connection is already draining or closed. Skipping close.");
+            return;
+        }
+
+        NatsJetStreamModule.logger.log("Closing Nats JetStream connection.");
+
+        try {
+            await this.connection.drain();
+            await this.connection.close();
+            NatsJetStreamModule.logger.log("Closed JetStream connection.");
+        } catch (error) {
+            NatsJetStreamModule.logger.error({ error }, "Failed to close JetStream connection.");
+        }
+    }
 
     static forRootAsync(options: {
         useFactory: UseFactory<NatsJetStreamModuleOptions>;
@@ -54,15 +80,9 @@ export class NatsJetStreamModule {
                 },
 
                 {
-                    provide: NatsJetStreamClientToken,
-                    useFactory: (connection: NatsConnection) => jetstream(connection),
-                    inject: [NatsConnectionToken],
-                },
-
-                {
                     provide: PubSubClientToken,
-                    useFactory: async (client: JetStreamClient) => new NatsJetStreamPubSubClient(client),
-                    inject: [NatsJetStreamClientToken],
+                    useFactory: async (connection: NatsConnection) => new NatsJetStreamPubSubClient(connection),
+                    inject: [NatsConnectionToken],
                 },
 
                 {
@@ -76,9 +96,10 @@ export class NatsJetStreamModule {
                                 discard: DiscardPolicy.Old,
                                 ...stream,
                             });
-
                             NatsJetStreamModule.logger.log({ stream }, "Stream configured.");
                         }
+
+                        return manager;
                     },
                     inject: [NatsConnectionToken, NatsJetStreamOptionsToken],
                 },

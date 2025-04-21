@@ -81,7 +81,6 @@ export class IntegrationEventsModule {
                         schedulerRegistry.addInterval(`${context}_OutboxProcessor`, interval);
                         return interval;
                     },
-
                     inject: [SchedulerRegistry, EventOutboxToken],
                 },
 
@@ -92,6 +91,7 @@ export class IntegrationEventsModule {
                             const processedBefore = dayjs().subtract(EVENTS_RETENTION_PERIOD_IN_DAYS, "days").toDate();
                             await outbox.clearProcessedEvents(processedBefore);
                         });
+
                         schedulerRegistry.addCronJob(`${context}_OutboxCleaner`, job);
                         return job;
                     },
@@ -109,7 +109,6 @@ export class IntegrationEventsModule {
                         schedulerRegistry.addCronJob(`${context}_InboxCleaner`, job);
                         return job;
                     },
-
                     inject: [SchedulerRegistry, EventOutboxToken],
                 },
 
@@ -140,6 +139,7 @@ export class IntegrationEventsModule {
                     inject: [PubSubClientToken, EventInboxToken],
                 },
             ],
+
             exports: [EventBoxFactoryToken, EventOutboxToken, EventInboxToken],
         };
     }

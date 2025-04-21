@@ -1,6 +1,6 @@
-import { type JetStreamClient, ConsumerMessages } from "@nats-io/jetstream";
+import { ConsumerMessages, jetstream, JetStreamClient } from "@nats-io/jetstream";
 import { Injectable, Logger } from "@nestjs/common";
-import { PubAck, StringCodec } from "nats";
+import { type NatsConnection, Codec, JSONCodec, PubAck } from "nats";
 import { Observable } from "rxjs";
 import { fromPromise } from "rxjs/internal/observable/innerFrom";
 
@@ -11,14 +11,18 @@ import { EventConsumer } from "@/common/events/types";
 @Injectable()
 export class NatsJetStreamPubSubClient implements IPubSubClient {
     private readonly logger = new Logger(NatsJetStreamPubSubClient.name);
+    private readonly jetStreamClient: JetStreamClient;
+    private readonly codec: Codec<unknown>;
 
-    public constructor(private readonly jetStreamClient: JetStreamClient) {}
+    public constructor(private readonly connection: NatsConnection) {
+        this.jetStreamClient = jetstream(connection);
+        this.codec = JSONCodec();
+    }
 
     public publish(event: IntegrationEvent): Observable<PubAck> {
-        const sc = StringCodec();
-        return fromPromise(
-            this.jetStreamClient.publish(event.getTopic(), sc.encode(JSON.stringify(event.toPlain())), { msgID: event.getId() })
-        );
+        const metadata = { msgID: event.getId() };
+        const message = this.codec.encode(event.toPlain());
+        return fromPromise(this.jetStreamClient.publish(event.getTopic(), message, metadata));
     }
 
     public async subscribe(consumers: EventConsumer[]): Promise<Promise<ConsumerMessages>[]> {

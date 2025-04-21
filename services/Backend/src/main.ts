@@ -50,6 +50,7 @@ async function bootstrap() {
         useGlobalPrefix: true,
     });
 
+    app.enableShutdownHooks();
     await app.startAllMicroservices();
     await app.listen(config.getOrThrow<number>("port"));
 }
