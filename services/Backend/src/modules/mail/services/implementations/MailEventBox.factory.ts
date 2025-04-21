@@ -4,7 +4,7 @@ import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-t
 
 import { EventOutbox, IEventBoxFactory } from "@/common/events";
 import { EventInbox } from "@/common/events/services/implementations/EventInbox";
-import { type IPubSubClient, PubSubClientToken } from "@/jetstream";
+import { type IPubSubClient, PubSubClientToken } from "@/common/events/services/interfaces/IPubSubClient";
 import { MAIL_MODULE_DATA_SOURCE } from "@/modules/mail/infrastructure/database/constants";
 
 @Injectable()

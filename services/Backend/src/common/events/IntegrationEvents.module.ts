@@ -1,21 +1,19 @@
-import { type DynamicModule, Logger, Module } from "@nestjs/common";
+import { ConsumerMessages } from "@nats-io/jetstream";
+import { type DynamicModule, Module } from "@nestjs/common";
 import { CronExpression, SchedulerRegistry } from "@nestjs/schedule";
 import { plainToClass } from "class-transformer";
 import { CronJob } from "cron";
 import dayjs from "dayjs";
-import { ConsumerMessages } from "nats";
 
-import {
-    NatsJetStreamConsumerMessagesToken,
-    NatsJetStreamModule,
-    NatsJetStreamModuleOptions,
-} from "@/common/events/brokers/NatsJetStream.module";
+import { NatsJetStreamModule, NatsJetStreamModuleOptions } from "@/common/events/brokers/NatsJetStream.module";
 import { EventInbox } from "@/common/events/services/implementations/EventInbox";
 import { EventBoxFactoryToken, IEventBoxFactory } from "@/common/events/services/interfaces/IEventBox.factory";
 import { EventInboxToken, IEventInbox } from "@/common/events/services/interfaces/IEventInbox";
 import { type IEventOutbox, EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
+import { type IPubSubClient, PubSubClientToken } from "@/common/events/services/interfaces/IPubSubClient";
 import { EventConsumer, IntegrationEventsModuleOptions } from "@/common/events/types";
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
+import { logger } from "@/lib/logger";
 import { ClassConstructor } from "@/types/Class";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 
@@ -117,24 +115,31 @@ export class IntegrationEventsModule {
 
                 {
                     provide: `${context}_EventsSubscriber`,
-                    useFactory: async (jobs: Promise<ConsumerMessages>[], inbox: EventInbox) => {
-                        const logger = new Logger();
+                    useFactory: async (client: IPubSubClient, inbox: EventInbox) => {
+                        const subscriptions = await client.subscribe(consumers);
 
-                        jobs.forEach(async (job) => {
-                            const messages = await job;
-
+                        const listen = async (messages: ConsumerMessages) => {
                             for await (const message of messages) {
-                                const event = plainToClass(IntegrationEvent, message.json() as unknown);
-                                logger.log(event, `Received '${event.getTopic()}' event.`);
-                                await inbox.enqueue(event);
-                                message.ack();
+                                try {
+                                    const event = plainToClass(IntegrationEvent, message.json() as unknown);
+                                    logger.log(event, `Received '${event.getTopic()}' event.`);
+                                    await inbox.enqueue(event);
+                                    message.ack();
+                                } catch (err) {
+                                    message.nak();
+                                }
                             }
-                        });
+                        };
+
+                        void (async () => {
+                            for await (const subscription of subscriptions) {
+                                void listen(subscription);
+                            }
+                        })();
                     },
-                    inject: [NatsJetStreamConsumerMessagesToken, EventInboxToken],
+                    inject: [PubSubClientToken, EventInboxToken],
                 },
             ],
-            imports: [NatsJetStreamModule.forFeature({ consumers })],
             exports: [EventBoxFactoryToken, EventOutboxToken, EventInboxToken],
         };
     }
