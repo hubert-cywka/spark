@@ -7,7 +7,7 @@ import { And, IsNull, LessThan, Not, Repository } from "typeorm";
 
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
-import { type IPubSubClient } from "@/common/events/services/interfaces/IPubSubClient";
+import { type IPubSubProducer } from "@/common/events/services/interfaces/IPubSubProducer";
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 
 const MAX_PAGE_SIZE = 10;
@@ -21,7 +21,7 @@ export class EventOutbox implements IEventOutbox {
     private readonly logger;
 
     public constructor(
-        private client: IPubSubClient,
+        private client: IPubSubProducer,
         private txHost: TransactionHost<TransactionalAdapterTypeOrm>,
         context?: string
     ) {

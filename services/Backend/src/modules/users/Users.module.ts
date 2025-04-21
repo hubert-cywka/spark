@@ -26,7 +26,6 @@ import { UsersService } from "@/modules/users/services/implementations/Users.ser
 import { UsersEventBoxFactory } from "@/modules/users/services/implementations/UsersEventBox.factory";
 import { UserPublisherServiceToken } from "@/modules/users/services/interfaces/IUserPublisher.service";
 import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
-import { UsersSubscriber } from "@/modules/users/Users.subscriber";
 
 @Module({
     providers: [
@@ -70,6 +69,6 @@ import { UsersSubscriber } from "@/modules/users/Users.subscriber";
             ],
         }),
     ],
-    controllers: [UsersSubscriber, UserController],
+    controllers: [UserController],
 })
 export class UsersModule {}

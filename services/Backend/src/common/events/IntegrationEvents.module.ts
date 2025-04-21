@@ -1,23 +1,22 @@
 import { ConsumerMessages } from "@nats-io/jetstream";
 import { type DynamicModule, Module } from "@nestjs/common";
-import { CronExpression, SchedulerRegistry } from "@nestjs/schedule";
-import { plainToClass } from "class-transformer";
-import { CronJob } from "cron";
-import dayjs from "dayjs";
+import { ClassConstructor, plainToClass } from "class-transformer";
 
 import { NatsJetStreamModule, NatsJetStreamModuleOptions } from "@/common/events/brokers/NatsJetStream.module";
 import { EventInbox } from "@/common/events/services/implementations/EventInbox";
-import { EventBoxFactoryToken, IEventBoxFactory } from "@/common/events/services/interfaces/IEventBox.factory";
-import { EventInboxToken, IEventInbox } from "@/common/events/services/interfaces/IEventInbox";
-import { type IEventOutbox, EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
-import { type IPubSubClient, PubSubClientToken } from "@/common/events/services/interfaces/IPubSubClient";
+import { InboxEventsRemovalJob } from "@/common/events/services/implementations/InboxEventRemoval.job";
+import { InboxProcessorJob } from "@/common/events/services/implementations/InboxProcessor.job";
+import { OutboxEventsRemovalJob } from "@/common/events/services/implementations/OutboxEventRemoval.job";
+import { OutboxProcessorJob } from "@/common/events/services/implementations/OutboxProcessor.job";
+import { type IEventBoxFactory, EventBoxFactoryToken } from "@/common/events/services/interfaces/IEventBox.factory";
+import { type IEventInbox, EventInboxToken } from "@/common/events/services/interfaces/IEventInbox";
+import { EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
+import { type IInboxEventHandler, InboxEventHandlersToken } from "@/common/events/services/interfaces/IInboxEventHandler";
+import { type IPubSubConsumer, PubSubConsumerToken } from "@/common/events/services/interfaces/IPubSubConsumer";
 import { EventConsumer, IntegrationEventsModuleOptions } from "@/common/events/types";
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 import { logger } from "@/lib/logger";
-import { ClassConstructor } from "@/types/Class";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
-
-const EVENTS_RETENTION_PERIOD_IN_DAYS = 7;
 
 const IntegrationEventsModuleOptionsToken = Symbol("IntegrationEventsModuleOptions");
 
@@ -34,7 +33,7 @@ export class IntegrationEventsModule {
                 {
                     provide: IntegrationEventsModuleOptionsToken,
                     useFactory: options.useFactory,
-                    inject: options.inject || [],
+                    inject: options.inject ?? [],
                 },
             ],
             imports: [NatsJetStreamModule.forRootAsync(options)],
@@ -47,12 +46,10 @@ export class IntegrationEventsModule {
         consumers,
         eventBoxFactoryClass,
         context,
-        outboxProcessingInterval = 5000,
     }: {
         consumers: EventConsumer[];
         eventBoxFactoryClass: ClassConstructor<T>;
         context: string;
-        outboxProcessingInterval?: number;
     }): DynamicModule {
         return {
             module: IntegrationEventsModule,
@@ -75,47 +72,31 @@ export class IntegrationEventsModule {
                 },
 
                 {
-                    provide: `${context}_OutboxProcessorJob`,
-                    useFactory: (schedulerRegistry: SchedulerRegistry, outbox: IEventOutbox) => {
-                        const interval = setInterval(async () => await outbox.process(), outboxProcessingInterval);
-                        schedulerRegistry.addInterval(`${context}_OutboxProcessor`, interval);
-                        return interval;
-                    },
-                    inject: [SchedulerRegistry, EventOutboxToken],
+                    provide: InboxProcessorJob,
+                    useFactory: (inbox: IEventInbox, handlers: IInboxEventHandler[]) => new InboxProcessorJob(inbox, handlers),
+                    inject: [EventInboxToken, InboxEventHandlersToken],
                 },
 
                 {
-                    provide: `${context}_OutboxCleanerJob`,
-                    useFactory: (schedulerRegistry: SchedulerRegistry, outbox: IEventOutbox) => {
-                        const job = new CronJob(CronExpression.EVERY_DAY_AT_3AM, async () => {
-                            const processedBefore = dayjs().subtract(EVENTS_RETENTION_PERIOD_IN_DAYS, "days").toDate();
-                            await outbox.clearProcessedEvents(processedBefore);
-                        });
-
-                        schedulerRegistry.addCronJob(`${context}_OutboxCleaner`, job);
-                        return job;
-                    },
-                    inject: [SchedulerRegistry, EventOutboxToken],
+                    provide: OutboxProcessorJob,
+                    useClass: OutboxProcessorJob,
                 },
 
                 {
-                    provide: `${context}_InboxCleanerJob`,
-                    useFactory: (schedulerRegistry: SchedulerRegistry, inbox: IEventInbox) => {
-                        const job = new CronJob(CronExpression.EVERY_DAY_AT_4AM, async () => {
-                            const processedBefore = dayjs().subtract(EVENTS_RETENTION_PERIOD_IN_DAYS, "days").toDate();
-                            await inbox.clearProcessedEvents(processedBefore);
-                        });
-
-                        schedulerRegistry.addCronJob(`${context}_InboxCleaner`, job);
-                        return job;
-                    },
-                    inject: [SchedulerRegistry, EventOutboxToken],
+                    provide: InboxEventsRemovalJob,
+                    useClass: InboxEventsRemovalJob,
                 },
 
                 {
+                    provide: OutboxEventsRemovalJob,
+                    useClass: OutboxEventsRemovalJob,
+                },
+
+                {
+                    // TODO
                     provide: `${context}_EventsSubscriber`,
-                    useFactory: async (client: IPubSubClient, inbox: EventInbox) => {
-                        const subscriptions = await client.subscribe(consumers);
+                    useFactory: async (consumer: IPubSubConsumer, inbox: EventInbox) => {
+                        const subscriptions = await consumer.subscribe(consumers);
 
                         const listen = async (messages: ConsumerMessages) => {
                             for await (const message of messages) {
@@ -136,7 +117,7 @@ export class IntegrationEventsModule {
                             }
                         })();
                     },
-                    inject: [PubSubClientToken, EventInboxToken],
+                    inject: [PubSubConsumerToken, EventInboxToken],
                 },
             ],
 

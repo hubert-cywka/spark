@@ -19,7 +19,6 @@ import { AuthenticationModule } from "@/modules/identity/authentication/Authenti
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
 import { AccountPasswordUpdatedEventHandler } from "@/modules/identity/authentication/events/AccountPasswordUpdatedEvent.handler";
 import { AccountSuspendedEventHandler } from "@/modules/identity/authentication/events/AccountSuspendedEvent.handler";
-import { IdentitySubscriber } from "@/modules/identity/Identity.subscriber";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 import { InitializeIdentityModule1735737549567 } from "@/modules/identity/infrastructure/database/migrations/1735737549567-InitializeIdentityModule";
 import { AddTenantIdToOutboxAndInbox1743101746907 } from "@/modules/identity/infrastructure/database/migrations/1743101746907-addTenantIdToOutboxAndInbox";
@@ -78,7 +77,7 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
         AuthenticationModule,
         TwoFactorAuthenticationModule,
     ],
-    controllers: [IdentitySubscriber],
+    controllers: [],
     exports: [],
 })
 export class IdentityModule {}

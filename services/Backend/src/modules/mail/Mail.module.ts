@@ -22,7 +22,6 @@ import { TwoFactorAuthCodeIssuedEventHandler } from "@/modules/mail/events/TwoFa
 import { MAIL_MODULE_DATA_SOURCE } from "@/modules/mail/infrastructure/database/constants";
 import { InitializeMailModule1735737562761 } from "@/modules/mail/infrastructure/database/migrations/1735737562761-InitializeMailModule";
 import { AddTenantIdToOutboxAndInbox1743101783697 } from "@/modules/mail/infrastructure/database/migrations/1743101783697-addTenantIdToOutboxAndInbox";
-import { MailSubscriber } from "@/modules/mail/Mail.subscriber";
 import { MailerService } from "@/modules/mail/services/implementations/Mailer.service";
 import { MailEventBoxFactory } from "@/modules/mail/services/implementations/MailEventBox.factory";
 import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
@@ -97,6 +96,6 @@ import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.s
             ],
         }),
     ],
-    controllers: [MailSubscriber],
+    controllers: [],
 })
 export class MailModule {}

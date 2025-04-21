@@ -32,7 +32,6 @@ import { AddTenantIdToOutboxAndInbox1743101763604 } from "@/modules/journal/infr
 import { DeleteOnCascade1743158742983 } from "@/modules/journal/infrastructure/database/migrations/1743158742983-deleteOnCascade";
 import { DeleteGoalsOnCascade1743159095911 } from "@/modules/journal/infrastructure/database/migrations/1743159095911-deleteGoalsOnCascade";
 import { DeleteOnCascadeFix1743159586254 } from "@/modules/journal/infrastructure/database/migrations/1743159586254-deleteOnCascadeFix";
-import { JournalSubscriber } from "@/modules/journal/Journal.subscriber";
 import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.module";
 
 @Module({
@@ -82,6 +81,6 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
         GoalsModule,
         EntriesModule,
     ],
-    controllers: [JournalSubscriber],
+    controllers: [],
 })
 export class JournalModule {}

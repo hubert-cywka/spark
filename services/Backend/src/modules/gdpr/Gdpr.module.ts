@@ -16,7 +16,6 @@ import { TenantEntity } from "@/modules/gdpr/entities/Tenant.entity";
 import { TenantRegisteredEventHandler } from "@/modules/gdpr/events/TenantRegisteredEvent.handler";
 import { TenantRemovalRequestedEventHandler } from "@/modules/gdpr/events/TenantRemovalRequestedEvent.handler";
 import { TenantRemovedEventHandler } from "@/modules/gdpr/events/TenantRemovedEvent.handler";
-import { GdprSubscriber } from "@/modules/gdpr/Gdpr.subscriber";
 import { GDPR_MODULE_DATA_SOURCE } from "@/modules/gdpr/infrastructure/database/constants";
 import { AddTenantEntity1743100640810 } from "@/modules/gdpr/infrastructure/database/migrations/1743100640810-addTenantEntity";
 import { AddTenantIdToOutboxAndInbox1743101706566 } from "@/modules/gdpr/infrastructure/database/migrations/1743101706566-addTenantIdToOutboxAndInbox";
@@ -94,6 +93,6 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
             ],
         }),
     ],
-    controllers: [GdprSubscriber],
+    controllers: [],
 })
 export class GdprModule {}

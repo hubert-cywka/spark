@@ -11,7 +11,6 @@ import {
 } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
-import { AlertsSubscriber } from "@/modules/alerts/Alerts.subscriber";
 import { AlertsController } from "@/modules/alerts/controllers/Alerts.controller";
 import { AlertEntity } from "@/modules/alerts/entities/Alert.entity";
 import { RecipientEntity } from "@/modules/alerts/entities/Recipient.entity";
@@ -103,6 +102,6 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
             ],
         }),
     ],
-    controllers: [AlertsSubscriber, AlertsController],
+    controllers: [AlertsController],
 })
 export class AlertsModule {}

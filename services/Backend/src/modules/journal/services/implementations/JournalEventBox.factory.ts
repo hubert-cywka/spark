@@ -4,14 +4,14 @@ import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-t
 
 import { EventOutbox, IEventBoxFactory } from "@/common/events";
 import { EventInbox } from "@/common/events/services/implementations/EventInbox";
-import { type IPubSubClient, PubSubClientToken } from "@/common/events/services/interfaces/IPubSubClient";
+import { type IPubSubProducer, PubSubProducerToken } from "@/common/events/services/interfaces/IPubSubProducer";
 import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
 
 @Injectable()
 export class JournalEventBoxFactory implements IEventBoxFactory {
     public constructor(
-        @Inject(PubSubClientToken)
-        private readonly clientProxy: IPubSubClient,
+        @Inject(PubSubProducerToken)
+        private readonly clientProxy: IPubSubProducer,
         @InjectTransactionHost(JOURNAL_MODULE_DATA_SOURCE)
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
     ) {}

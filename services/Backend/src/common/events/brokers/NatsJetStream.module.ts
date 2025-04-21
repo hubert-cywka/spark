@@ -2,8 +2,10 @@ import { jetstreamManager } from "@nats-io/jetstream";
 import { DynamicModule, Inject, Logger, Module, OnApplicationShutdown } from "@nestjs/common";
 import { type NatsConnection, connect, DiscardPolicy, RetentionPolicy } from "nats";
 
-import { NatsJetStreamPubSubClient } from "@/common/events/brokers/services/NatsJetStreamPubSubClient";
-import { PubSubClientToken } from "@/common/events/services/interfaces/IPubSubClient";
+import { NatsJetStreamConsumer } from "@/common/events/brokers/services/NatsJetStreamConsumer";
+import { NatsJetStreamProducer } from "@/common/events/brokers/services/NatsJetStreamProducer";
+import { PubSubConsumerToken } from "@/common/events/services/interfaces/IPubSubConsumer";
+import { PubSubProducerToken } from "@/common/events/services/interfaces/IPubSubProducer";
 import { EventStream } from "@/common/events/types";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 
@@ -30,7 +32,7 @@ export class NatsJetStreamModule implements OnApplicationShutdown {
         private readonly connection: NatsConnection
     ) {}
 
-    async onApplicationShutdown(signal?: string) {
+    async onApplicationShutdown() {
         if (!this.connection) {
             NatsJetStreamModule.logger.warn("Nats JetStream connection was not injected or is null. Cannot close.");
             return;
@@ -45,7 +47,6 @@ export class NatsJetStreamModule implements OnApplicationShutdown {
 
         try {
             await this.connection.drain();
-            await this.connection.close();
             NatsJetStreamModule.logger.log("Closed JetStream connection.");
         } catch (error) {
             NatsJetStreamModule.logger.error({ error }, "Failed to close JetStream connection.");
@@ -80,8 +81,14 @@ export class NatsJetStreamModule implements OnApplicationShutdown {
                 },
 
                 {
-                    provide: PubSubClientToken,
-                    useFactory: async (connection: NatsConnection) => new NatsJetStreamPubSubClient(connection),
+                    provide: PubSubProducerToken,
+                    useFactory: async (connection: NatsConnection) => new NatsJetStreamProducer(connection),
+                    inject: [NatsConnectionToken],
+                },
+
+                {
+                    provide: PubSubConsumerToken,
+                    useFactory: async (connection: NatsConnection) => new NatsJetStreamConsumer(connection),
                     inject: [NatsConnectionToken],
                 },
 
@@ -104,7 +111,7 @@ export class NatsJetStreamModule implements OnApplicationShutdown {
                     inject: [NatsConnectionToken, NatsJetStreamOptionsToken],
                 },
             ],
-            exports: [PubSubClientToken],
+            exports: [PubSubConsumerToken, PubSubProducerToken],
             global: options.global,
         };
     }
