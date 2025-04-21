@@ -67,7 +67,10 @@ import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.s
             }),
             inject: [ConfigService],
         }),
-        IntegrationEventsModule.forFeature({
+        IntegrationEventsModule.forFeatureAsync({
+            useFactory: () => ({
+                handlers: [],
+            }),
             eventBoxFactoryClass: MailEventBoxFactory,
             context: MailModule.name,
             consumers: [

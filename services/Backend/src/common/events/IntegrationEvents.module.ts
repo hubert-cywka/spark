@@ -11,14 +11,14 @@ import { OutboxProcessorJob } from "@/common/events/services/implementations/Out
 import { type IEventBoxFactory, EventBoxFactoryToken } from "@/common/events/services/interfaces/IEventBox.factory";
 import { type IEventInbox, EventInboxToken } from "@/common/events/services/interfaces/IEventInbox";
 import { EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
-import { type IInboxEventHandler, InboxEventHandlersToken } from "@/common/events/services/interfaces/IInboxEventHandler";
 import { type IPubSubConsumer, PubSubConsumerToken } from "@/common/events/services/interfaces/IPubSubConsumer";
-import { EventConsumer, IntegrationEventsModuleOptions } from "@/common/events/types";
+import { EventConsumer, IntegrationEventsForFeatureOptions, IntegrationEventsModuleOptions } from "@/common/events/types";
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 import { logger } from "@/lib/logger";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 
-const IntegrationEventsModuleOptionsToken = Symbol("IntegrationEventsModuleOptions");
+const IntegrationEventsForRootOptionsToken = Symbol("IntegrationEventsForRootOptions");
+const IntegrationEventsForFeatureOptionsToken = Symbol("IntegrationEventsForFeatureOptions");
 
 @Module({})
 export class IntegrationEventsModule {
@@ -31,22 +31,20 @@ export class IntegrationEventsModule {
             module: IntegrationEventsModule,
             providers: [
                 {
-                    provide: IntegrationEventsModuleOptionsToken,
+                    provide: IntegrationEventsForRootOptionsToken,
                     useFactory: options.useFactory,
                     inject: options.inject ?? [],
                 },
             ],
             imports: [NatsJetStreamModule.forRootAsync(options)],
-            exports: [IntegrationEventsModuleOptionsToken],
+            exports: [IntegrationEventsForRootOptionsToken],
             global: options.global,
         };
     }
 
-    static forFeature<T extends IEventBoxFactory>({
-        consumers,
-        eventBoxFactoryClass,
-        context,
-    }: {
+    static forFeatureAsync<T extends IEventBoxFactory>(options: {
+        useFactory: UseFactory<IntegrationEventsForFeatureOptions>;
+        inject?: UseFactoryArgs;
         consumers: EventConsumer[];
         eventBoxFactoryClass: ClassConstructor<T>;
         context: string;
@@ -55,26 +53,33 @@ export class IntegrationEventsModule {
             module: IntegrationEventsModule,
             providers: [
                 {
+                    provide: IntegrationEventsForFeatureOptionsToken,
+                    useFactory: options.useFactory,
+                    inject: options.inject ?? [],
+                },
+
+                {
                     provide: EventBoxFactoryToken,
-                    useClass: eventBoxFactoryClass,
+                    useClass: options.eventBoxFactoryClass,
                 },
 
                 {
                     provide: EventOutboxToken,
-                    useFactory: (factory: IEventBoxFactory) => factory.createOutbox(`${context}_Outbox`),
+                    useFactory: (factory: IEventBoxFactory) => factory.createOutbox(`${options.context}_Outbox`),
                     inject: [EventBoxFactoryToken],
                 },
 
                 {
                     provide: EventInboxToken,
-                    useFactory: (factory: IEventBoxFactory) => factory.createInbox(`${context}_Inbox`),
+                    useFactory: (factory: IEventBoxFactory) => factory.createInbox(`${options.context}_Inbox`),
                     inject: [EventBoxFactoryToken],
                 },
 
                 {
                     provide: InboxProcessorJob,
-                    useFactory: (inbox: IEventInbox, handlers: IInboxEventHandler[]) => new InboxProcessorJob(inbox, handlers),
-                    inject: [EventInboxToken, InboxEventHandlersToken],
+                    useFactory: (inbox: IEventInbox, { handlers }: IntegrationEventsForFeatureOptions) =>
+                        new InboxProcessorJob(inbox, handlers),
+                    inject: [EventInboxToken, IntegrationEventsForFeatureOptionsToken],
                 },
 
                 {
@@ -94,9 +99,9 @@ export class IntegrationEventsModule {
 
                 {
                     // TODO
-                    provide: `${context}_EventsSubscriber`,
+                    provide: `${options.context}_EventsSubscriber`,
                     useFactory: async (consumer: IPubSubConsumer, inbox: EventInbox) => {
-                        const subscriptions = await consumer.subscribe(consumers);
+                        const subscriptions = await consumer.subscribe(options.consumers);
 
                         const listen = async (messages: ConsumerMessages) => {
                             for await (const message of messages) {

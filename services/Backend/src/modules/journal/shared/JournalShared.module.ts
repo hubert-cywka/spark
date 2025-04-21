@@ -6,7 +6,10 @@ import { JournalEventBoxFactory } from "@/modules/journal/services/implementatio
 @Module({
     providers: [],
     imports: [
-        IntegrationEventsModule.forFeature({
+        IntegrationEventsModule.forFeatureAsync({
+            useFactory: () => ({
+                handlers: [],
+            }),
             eventBoxFactoryClass: JournalEventBoxFactory,
             context: JournalSharedModule.name,
             consumers: [

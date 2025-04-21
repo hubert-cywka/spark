@@ -90,7 +90,10 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
             }),
             inject: [ConfigService],
         }),
-        IntegrationEventsModule.forFeature({
+        IntegrationEventsModule.forFeatureAsync({
+            useFactory: () => ({
+                handlers: [],
+            }),
             eventBoxFactoryClass: AlertsEventBoxFactory,
             context: AlertsModule.name,
             consumers: [

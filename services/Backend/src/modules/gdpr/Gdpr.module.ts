@@ -77,7 +77,10 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
             }),
             inject: [ConfigService],
         }),
-        IntegrationEventsModule.forFeature({
+        IntegrationEventsModule.forFeatureAsync({
+            useFactory: () => ({
+                handlers: [],
+            }),
             eventBoxFactoryClass: GdprEventBoxFactory,
             context: GdprModule.name,
             consumers: [

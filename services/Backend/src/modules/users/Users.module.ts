@@ -53,7 +53,11 @@ import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.se
             }),
             inject: [ConfigService],
         }),
-        IntegrationEventsModule.forFeature({
+        IntegrationEventsModule.forFeatureAsync({
+            useFactory: (...handlers: IInboxEventHandler[]) => ({
+                handlers: [],
+            }),
+            inject: [UserActivatedEventHandler, UserRegisteredEventHandler, UserRemovedEventHandler],
             eventBoxFactoryClass: UsersEventBoxFactory,
             context: UsersModule.name,
             consumers: [
