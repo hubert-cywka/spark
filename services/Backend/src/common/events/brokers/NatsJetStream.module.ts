@@ -6,7 +6,7 @@ import { NatsJetStreamConsumer } from "@/common/events/brokers/services/NatsJetS
 import { NatsJetStreamProducer } from "@/common/events/brokers/services/NatsJetStreamProducer";
 import { PubSubConsumerToken } from "@/common/events/services/interfaces/IPubSubConsumer";
 import { PubSubProducerToken } from "@/common/events/services/interfaces/IPubSubProducer";
-import { EventStream } from "@/common/events/types";
+import { IntegrationEventsStream } from "@/common/events/types";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 
 const NatsConnectionToken = Symbol("NatsConnection");
@@ -15,7 +15,7 @@ const NatsJetStreamManagerToken = Symbol("NatsJetStreamManager");
 
 export type NatsJetStreamModuleOptions = {
     connection: NatsJetStreamConnectionOptions;
-    streams: EventStream[];
+    streams: IntegrationEventsStream[];
 };
 
 type NatsJetStreamConnectionOptions = {

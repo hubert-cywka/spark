@@ -1,9 +1,9 @@
-import { Module } from "@nestjs/common";
+import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import {
-    IInboxEventHandler,
+    type IInboxEventHandler,
     InboxEventHandlersToken,
     IntegrationEventsModule,
     IntegrationEventStreams,
@@ -11,8 +11,14 @@ import {
 } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
-import { InboxProcessorJob } from "@/common/events/services/implementations/InboxProcessor.job";
-import { OutboxProcessorJob } from "@/common/events/services/implementations/OutboxProcessor.job";
+import {
+    type IIntegrationEventsJobsOrchestrator,
+    IntegrationEventsJobsOrchestratorToken,
+} from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
+import {
+    type IIntegrationEventsSubscriber,
+    IntegrationEventsSubscriberToken,
+} from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
 import { UserController } from "@/modules/users/controllers/User.controller";
 import { UserEntity } from "@/modules/users/entities/User.entity";
 import { UserActivatedEventHandler } from "@/modules/users/events/UserActivatedEvent.handler";
@@ -42,8 +48,6 @@ import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.se
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
             inject: [UserActivatedEventHandler, UserRegisteredEventHandler, UserRemovedEventHandler],
         },
-        { provide: InboxProcessorJob, useClass: InboxProcessorJob },
-        { provide: OutboxProcessorJob, useClass: OutboxProcessorJob },
     ],
     imports: [
         DatabaseModule.forRootAsync(USERS_MODULE_DATA_SOURCE, [UserEntity, OutboxEventEntity, InboxEventEntity], {
@@ -62,19 +66,33 @@ import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.se
             eventBoxFactory: {
                 useClass: UsersEventBoxFactory,
             },
-            consumers: [
-                {
-                    name: "codename_users_account",
-                    stream: IntegrationEventStreams.account,
-                    subjects: [
-                        IntegrationEventTopics.account.registration.completed,
-                        IntegrationEventTopics.account.activation.completed,
-                        IntegrationEventTopics.account.removal.completed,
-                    ],
-                },
-            ],
         }),
     ],
     controllers: [UserController],
 })
-export class UsersModule {}
+export class UsersModule implements OnModuleInit {
+    public constructor(
+        @Inject(IntegrationEventsSubscriberToken)
+        private readonly subscriber: IIntegrationEventsSubscriber,
+        @Inject(IntegrationEventsJobsOrchestratorToken)
+        private readonly orchestrator: IIntegrationEventsJobsOrchestrator,
+        @Inject(InboxEventHandlersToken)
+        private readonly handlers: IInboxEventHandler[]
+    ) {}
+
+    public onModuleInit() {
+        this.orchestrator.init(this.handlers);
+
+        void this.subscriber.listen([
+            {
+                name: "codename_users_account",
+                stream: IntegrationEventStreams.account,
+                subjects: [
+                    IntegrationEventTopics.account.registration.completed,
+                    IntegrationEventTopics.account.activation.completed,
+                    IntegrationEventTopics.account.removal.completed,
+                ],
+            },
+        ]);
+    }
+}

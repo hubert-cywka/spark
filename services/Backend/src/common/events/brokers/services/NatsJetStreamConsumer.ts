@@ -1,9 +1,12 @@
 import { ConsumerMessages, jetstream, JetStreamClient, JetStreamManager } from "@nats-io/jetstream";
 import { Injectable, Logger } from "@nestjs/common";
+import { plainToClass } from "class-transformer";
 import { type NatsConnection } from "nats";
 
-import { type IPubSubConsumer } from "@/common/events/services/interfaces/IPubSubConsumer";
-import { EventConsumer } from "@/common/events/types";
+import { IntegrationEvent } from "@/common/events";
+import { type IPubSubConsumer, OnEventReceivedHandler } from "@/common/events/services/interfaces/IPubSubConsumer";
+import { IntegrationEventsConsumer } from "@/common/events/types";
+import { logger } from "@/lib/logger";
 
 @Injectable()
 export class NatsJetStreamConsumer implements IPubSubConsumer {
@@ -15,9 +18,30 @@ export class NatsJetStreamConsumer implements IPubSubConsumer {
         this.jetStreamClient = jetstream(connection);
     }
 
-    public async subscribe(consumers: EventConsumer[]): Promise<Promise<ConsumerMessages>[]> {
+    public async listen(consumers: IntegrationEventsConsumer[], onEventReceived: OnEventReceivedHandler): Promise<void> {
         await this.registerConsumers(consumers);
+        const streams = await this.getMessagesStreams(consumers);
 
+        for await (const stream of streams) {
+            void this.readMessagesStream(stream, onEventReceived);
+        }
+    }
+
+    private async readMessagesStream(messages: ConsumerMessages, onEventReceived: OnEventReceivedHandler) {
+        for await (const message of messages) {
+            const event = plainToClass(IntegrationEvent, message.json() as unknown);
+
+            try {
+                await onEventReceived(event, message.ack, message.nak);
+                message.ack();
+            } catch (error) {
+                logger.log({ error }, "Couldn't receive event.");
+                message.nak();
+            }
+        }
+    }
+
+    private async getMessagesStreams(consumers: IntegrationEventsConsumer[]) {
         const consumerMessagesList: Promise<ConsumerMessages>[] = [];
 
         for await (const consumer of consumers) {
@@ -33,7 +57,7 @@ export class NatsJetStreamConsumer implements IPubSubConsumer {
         return consumerMessagesList;
     }
 
-    private async registerConsumers(consumers: EventConsumer[]): Promise<void> {
+    private async registerConsumers(consumers: IntegrationEventsConsumer[]): Promise<void> {
         const streams = [...new Set(consumers.map((consumer) => consumer.stream))];
         const registeredConsumers = await this.getRegisteredConsumers(streams);
 
@@ -50,11 +74,12 @@ export class NatsJetStreamConsumer implements IPubSubConsumer {
         }
     }
 
-    private async getRegisteredConsumers(streams: string[]): Promise<EventConsumer[]> {
-        const existingConsumers: EventConsumer[] = [];
+    private async getRegisteredConsumers(streams: string[]): Promise<IntegrationEventsConsumer[]> {
+        const existingConsumers: IntegrationEventsConsumer[] = [];
         const manager = await this.getManager();
 
         for (const stream of streams) {
+            await this.jetStreamManager?.streams.purge(stream); // TODO
             const streamConsumers = manager.consumers.list(stream);
 
             for await (const consumer of streamConsumers) {
@@ -69,7 +94,7 @@ export class NatsJetStreamConsumer implements IPubSubConsumer {
         return existingConsumers;
     }
 
-    private async createConsumer(consumer: EventConsumer): Promise<void> {
+    private async createConsumer(consumer: IntegrationEventsConsumer): Promise<void> {
         const manager = await this.getManager();
 
         await manager.consumers.add(consumer.stream, {
@@ -81,7 +106,7 @@ export class NatsJetStreamConsumer implements IPubSubConsumer {
         });
     }
 
-    private async updateConsumer(consumer: EventConsumer): Promise<void> {
+    private async updateConsumer(consumer: IntegrationEventsConsumer): Promise<void> {
         const manager = await this.getManager();
 
         await manager.consumers.update(consumer.stream, consumer.name, {

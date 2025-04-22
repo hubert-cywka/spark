@@ -1,10 +1,18 @@
-import { Module } from "@nestjs/common";
+import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { IInboxEventHandler, InboxEventHandlersToken } from "@/common/events";
+import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventStreams, IntegrationEventTopics } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import {
+    type IIntegrationEventsJobsOrchestrator,
+    IntegrationEventsJobsOrchestratorToken,
+} from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
+import {
+    type IIntegrationEventsSubscriber,
+    IntegrationEventsSubscriberToken,
+} from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
 import { AuthorsModule } from "@/modules/journal/authors/Authors.module";
 import { AuthorEntity } from "@/modules/journal/authors/entities/Author.entity";
 import { AccountRegisteredEventHandler } from "@/modules/journal/authors/events/AccountRegisteredEvent.handler";
@@ -33,8 +41,6 @@ import { DeleteOnCascade1743158742983 } from "@/modules/journal/infrastructure/d
 import { DeleteGoalsOnCascade1743159095911 } from "@/modules/journal/infrastructure/database/migrations/1743159095911-deleteGoalsOnCascade";
 import { DeleteOnCascadeFix1743159586254 } from "@/modules/journal/infrastructure/database/migrations/1743159586254-deleteOnCascadeFix";
 import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.module";
-import {InboxProcessorJob} from "@/common/events/services/implementations/InboxProcessor.job";
-import {OutboxProcessorJob} from "@/common/events/services/implementations/OutboxProcessor.job";
 
 @Module({
     providers: [
@@ -42,16 +48,6 @@ import {OutboxProcessorJob} from "@/common/events/services/implementations/Outbo
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
             inject: [AccountRegisteredEventHandler, AuthorRemovedEventHandler],
-        },
-
-        {
-            provide: InboxProcessorJob,
-            useClass: InboxProcessorJob,
-        },
-
-        {
-            provide: OutboxProcessorJob,
-            useClass: OutboxProcessorJob,
         },
     ],
     imports: [
@@ -95,4 +91,24 @@ import {OutboxProcessorJob} from "@/common/events/services/implementations/Outbo
     ],
     controllers: [],
 })
-export class JournalModule {}
+export class JournalModule implements OnModuleInit {
+    public constructor(
+        @Inject(IntegrationEventsSubscriberToken)
+        private readonly subscriber: IIntegrationEventsSubscriber,
+        @Inject(IntegrationEventsJobsOrchestratorToken)
+        private readonly orchestrator: IIntegrationEventsJobsOrchestrator,
+        @Inject(InboxEventHandlersToken)
+        private readonly handlers: IInboxEventHandler[]
+    ) {}
+
+    public onModuleInit() {
+        this.orchestrator.init(this.handlers);
+        void this.subscriber.listen([
+            {
+                name: "codename_journal_account",
+                stream: IntegrationEventStreams.account,
+                subjects: [IntegrationEventTopics.account.registration.completed, IntegrationEventTopics.account.removal.completed],
+            },
+        ]);
+    }
+}

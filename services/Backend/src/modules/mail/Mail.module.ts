@@ -1,9 +1,9 @@
-import { Module } from "@nestjs/common";
+import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import {
-    IInboxEventHandler,
+    type IInboxEventHandler,
     InboxEventHandlersToken,
     IntegrationEventsModule,
     IntegrationEventStreams,
@@ -11,8 +11,14 @@ import {
 } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
-import { InboxProcessorJob } from "@/common/events/services/implementations/InboxProcessor.job";
-import { OutboxProcessorJob } from "@/common/events/services/implementations/OutboxProcessor.job";
+import {
+    type IIntegrationEventsJobsOrchestrator,
+    IntegrationEventsJobsOrchestratorToken,
+} from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
+import {
+    type IIntegrationEventsSubscriber,
+    IntegrationEventsSubscriberToken,
+} from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
 import { AccountActivatedEventHandler } from "@/modules/mail/events/AccountActivatedEvent.handler";
 import { AccountActivationTokenRequestedEventHandler } from "@/modules/mail/events/AccountActivationTokenRequestedEvent.handler";
 import { AccountPasswordUpdatedEventHandler } from "@/modules/mail/events/AccountPasswordUpdatedEvent.handler";
@@ -53,16 +59,6 @@ import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.s
                 TwoFactorAuthCodeIssuedEventHandler,
             ],
         },
-
-        {
-            provide: InboxProcessorJob,
-            useClass: InboxProcessorJob,
-        },
-
-        {
-            provide: OutboxProcessorJob,
-            useClass: OutboxProcessorJob,
-        },
     ],
     imports: [
         DatabaseModule.forRootAsync(MAIL_MODULE_DATA_SOURCE, [OutboxEventEntity, InboxEventEntity], {
@@ -81,32 +77,45 @@ import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.s
             eventBoxFactory: {
                 useClass: MailEventBoxFactory,
             },
-            consumers: [
-                {
-                    name: "codename_mail_account",
-                    stream: IntegrationEventStreams.account,
-                    subjects: [
-                        IntegrationEventTopics.account.activation.requested,
-                        IntegrationEventTopics.account.password.resetRequested,
-                        IntegrationEventTopics.account.password.updated,
-                        IntegrationEventTopics.account.activation.completed,
-                        IntegrationEventTopics.account.removal.completed,
-                        IntegrationEventTopics.account.removal.requested,
-                    ],
-                },
-                {
-                    name: "codename_mail_alert",
-                    stream: IntegrationEventStreams.alert,
-                    subjects: [IntegrationEventTopics.alert.daily.reminder.triggered],
-                },
-                {
-                    name: "codename_mail_2fa",
-                    stream: IntegrationEventStreams.twoFactorAuth,
-                    subjects: [IntegrationEventTopics.twoFactorAuth.email.issued],
-                },
-            ],
         }),
     ],
     controllers: [],
 })
-export class MailModule {}
+export class MailModule implements OnModuleInit {
+    public constructor(
+        @Inject(IntegrationEventsSubscriberToken)
+        private readonly subscriber: IIntegrationEventsSubscriber,
+        @Inject(IntegrationEventsJobsOrchestratorToken)
+        private readonly orchestrator: IIntegrationEventsJobsOrchestrator,
+        @Inject(InboxEventHandlersToken)
+        private readonly handlers: IInboxEventHandler[]
+    ) {}
+
+    public onModuleInit() {
+        this.orchestrator.init(this.handlers);
+        void this.subscriber.listen([
+            {
+                name: "codename_mail_account",
+                stream: IntegrationEventStreams.account,
+                subjects: [
+                    IntegrationEventTopics.account.activation.requested,
+                    IntegrationEventTopics.account.password.resetRequested,
+                    IntegrationEventTopics.account.password.updated,
+                    IntegrationEventTopics.account.activation.completed,
+                    IntegrationEventTopics.account.removal.completed,
+                    IntegrationEventTopics.account.removal.requested,
+                ],
+            },
+            {
+                name: "codename_mail_alert",
+                stream: IntegrationEventStreams.alert,
+                subjects: [IntegrationEventTopics.alert.daily.reminder.triggered],
+            },
+            {
+                name: "codename_mail_2fa",
+                stream: IntegrationEventStreams.twoFactorAuth,
+                subjects: [IntegrationEventTopics.twoFactorAuth.email.issued],
+            },
+        ]);
+    }
+}

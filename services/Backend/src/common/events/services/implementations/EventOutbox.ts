@@ -55,7 +55,7 @@ export class EventOutbox implements IEventOutbox {
         }
     }
 
-    public async process() {
+    public async processPendingEvents() {
         let totalSuccessful = 0;
         let totalProcessed = 0;
         let breakpoint = true;

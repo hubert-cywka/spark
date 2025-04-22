@@ -1,11 +1,11 @@
 export type IntegrationEventsModuleOptions<T> = T & {};
 
-export type EventStream = {
+export type IntegrationEventsStream = {
     name: string;
     subjects: string[];
 };
 
-export type EventConsumer = {
+export type IntegrationEventsConsumer = {
     name: string;
     stream: string;
     subjects: string[];

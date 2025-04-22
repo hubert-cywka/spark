@@ -83,10 +83,7 @@ export class EventInbox implements IEventInbox {
     }
 
     // TODO: Should each batch contain topics from only one topics family?
-    // Alternatively, we could process in batch messages with no previous processing attempts.
-    // Messages with at least one attempt, would be processed outside of any batches.
-    // Also, we could consider processing tenant's messages in batch.
-    public async process(handlers: IInboxEventHandler[]): Promise<void> {
+    public async processPendingEvents(handlers: IInboxEventHandler[]): Promise<void> {
         let totalProcessed = 0;
         let processedInRecentBatch = Infinity;
 

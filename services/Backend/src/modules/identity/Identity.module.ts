@@ -1,10 +1,18 @@
-import { Module } from "@nestjs/common";
+import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { IInboxEventHandler, InboxEventHandlersToken } from "@/common/events";
+import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventStreams, IntegrationEventTopics } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import {
+    type IIntegrationEventsJobsOrchestrator,
+    IntegrationEventsJobsOrchestratorToken,
+} from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
+import {
+    type IIntegrationEventsSubscriber,
+    IntegrationEventsSubscriberToken,
+} from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
 import { TwoFactorAuthenticationIntegrationEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationIntegration.entity";
 import { AccountActivatedEventHandler } from "@/modules/identity/2fa/events/AccountActivatedEvent.handler";
 import { TwoFactorAuthenticationModule } from "@/modules/identity/2fa/TwoFactorAuthentication.module";
@@ -26,8 +34,6 @@ import { DeleteOnCascade1743158756974 } from "@/modules/identity/infrastructure/
 import { AddOptionToSuspendAccounts1743167408668 } from "@/modules/identity/infrastructure/database/migrations/1743167408668-addOptionToSuspendAccounts";
 import { AddTTLFor2FAIntegrations1743713719361 } from "@/modules/identity/infrastructure/database/migrations/1743713719361-addTTLFor2FAIntegrations";
 import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.module";
-import {InboxProcessorJob} from "@/common/events/services/implementations/InboxProcessor.job";
-import {OutboxProcessorJob} from "@/common/events/services/implementations/OutboxProcessor.job";
 
 @Module({
     providers: [
@@ -41,16 +47,6 @@ import {OutboxProcessorJob} from "@/common/events/services/implementations/Outbo
                 AccountRemovalRequestedEventHandler,
                 AccountActivatedEventHandler,
             ],
-        },
-
-        {
-            provide: InboxProcessorJob,
-            useClass: InboxProcessorJob,
-        },
-
-        {
-            provide: OutboxProcessorJob,
-            useClass: OutboxProcessorJob,
         },
     ],
     imports: [
@@ -92,4 +88,30 @@ import {OutboxProcessorJob} from "@/common/events/services/implementations/Outbo
     controllers: [],
     exports: [],
 })
-export class IdentityModule {}
+export class IdentityModule implements OnModuleInit {
+    public constructor(
+        @Inject(IntegrationEventsSubscriberToken)
+        private readonly subscriber: IIntegrationEventsSubscriber,
+        @Inject(IntegrationEventsJobsOrchestratorToken)
+        private readonly orchestrator: IIntegrationEventsJobsOrchestrator,
+        @Inject(InboxEventHandlersToken)
+        private readonly handlers: IInboxEventHandler[]
+    ) {}
+
+    public onModuleInit() {
+        this.orchestrator.init(this.handlers);
+        void this.subscriber.listen([
+            {
+                name: "codename_identity_account",
+                stream: IntegrationEventStreams.account,
+                subjects: [
+                    IntegrationEventTopics.account.password.updated,
+                    IntegrationEventTopics.account.activation.completed,
+                    IntegrationEventTopics.account.removal.completed,
+                    IntegrationEventTopics.account.removal.requested,
+                    IntegrationEventTopics.account.suspended,
+                ],
+            },
+        ]);
+    }
+}
