@@ -11,6 +11,8 @@ import {
 } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import { InboxProcessorJob } from "@/common/events/services/implementations/InboxProcessor.job";
+import { OutboxProcessorJob } from "@/common/events/services/implementations/OutboxProcessor.job";
 import { UserController } from "@/modules/users/controllers/User.controller";
 import { UserEntity } from "@/modules/users/entities/User.entity";
 import { UserActivatedEventHandler } from "@/modules/users/events/UserActivatedEvent.handler";
@@ -32,14 +34,16 @@ import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.se
         { provide: UserMapperToken, useClass: UserMapper },
         { provide: UsersServiceToken, useClass: UsersService },
         { provide: UserPublisherServiceToken, useClass: UserPublisherService },
-        UserActivatedEventHandler,
-        UserRegisteredEventHandler,
-        UserRemovedEventHandler,
+        { provide: UserActivatedEventHandler, useClass: UserActivatedEventHandler },
+        { provide: UserRegisteredEventHandler, useClass: UserRegisteredEventHandler },
+        { provide: UserRemovedEventHandler, useClass: UserRemovedEventHandler },
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
             inject: [UserActivatedEventHandler, UserRegisteredEventHandler, UserRemovedEventHandler],
         },
+        { provide: InboxProcessorJob, useClass: InboxProcessorJob },
+        { provide: OutboxProcessorJob, useClass: OutboxProcessorJob },
     ],
     imports: [
         DatabaseModule.forRootAsync(USERS_MODULE_DATA_SOURCE, [UserEntity, OutboxEventEntity, InboxEventEntity], {
@@ -53,13 +57,11 @@ import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.se
             }),
             inject: [ConfigService],
         }),
-        IntegrationEventsModule.forFeatureAsync({
-            useFactory: (...handlers: IInboxEventHandler[]) => ({
-                handlers: [],
-            }),
-            inject: [UserActivatedEventHandler, UserRegisteredEventHandler, UserRemovedEventHandler],
-            eventBoxFactoryClass: UsersEventBoxFactory,
+        IntegrationEventsModule.forFeature({
             context: UsersModule.name,
+            eventBoxFactory: {
+                useClass: UsersEventBoxFactory,
+            },
             consumers: [
                 {
                     name: "codename_users_account",

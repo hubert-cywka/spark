@@ -33,6 +33,8 @@ import { DeleteOnCascade1743158742983 } from "@/modules/journal/infrastructure/d
 import { DeleteGoalsOnCascade1743159095911 } from "@/modules/journal/infrastructure/database/migrations/1743159095911-deleteGoalsOnCascade";
 import { DeleteOnCascadeFix1743159586254 } from "@/modules/journal/infrastructure/database/migrations/1743159586254-deleteOnCascadeFix";
 import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.module";
+import {InboxProcessorJob} from "@/common/events/services/implementations/InboxProcessor.job";
+import {OutboxProcessorJob} from "@/common/events/services/implementations/OutboxProcessor.job";
 
 @Module({
     providers: [
@@ -40,6 +42,16 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
             inject: [AccountRegisteredEventHandler, AuthorRemovedEventHandler],
+        },
+
+        {
+            provide: InboxProcessorJob,
+            useClass: InboxProcessorJob,
+        },
+
+        {
+            provide: OutboxProcessorJob,
+            useClass: OutboxProcessorJob,
         },
     ],
     imports: [

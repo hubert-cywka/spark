@@ -11,6 +11,8 @@ import {
 } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import { InboxProcessorJob } from "@/common/events/services/implementations/InboxProcessor.job";
+import { OutboxProcessorJob } from "@/common/events/services/implementations/OutboxProcessor.job";
 import { AccountActivatedEventHandler } from "@/modules/mail/events/AccountActivatedEvent.handler";
 import { AccountActivationTokenRequestedEventHandler } from "@/modules/mail/events/AccountActivationTokenRequestedEvent.handler";
 import { AccountPasswordUpdatedEventHandler } from "@/modules/mail/events/AccountPasswordUpdatedEvent.handler";
@@ -28,18 +30,15 @@ import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.s
 
 @Module({
     providers: [
-        {
-            provide: MailerServiceToken,
-            useClass: MailerService,
-        },
-        AccountActivatedEventHandler,
-        AccountActivationTokenRequestedEventHandler,
-        AccountPasswordUpdatedEventHandler,
-        AccountRequestedPasswordResetEventHandler,
-        DailyReminderTriggeredEventHandler,
-        AccountRemovedEventHandler,
-        AccountRemovalRequestedEventHandler,
-        TwoFactorAuthCodeIssuedEventHandler,
+        { provide: MailerServiceToken, useClass: MailerService },
+        { provide: AccountActivatedEventHandler, useClass: AccountActivatedEventHandler },
+        { provide: AccountActivationTokenRequestedEventHandler, useClass: AccountActivationTokenRequestedEventHandler },
+        { provide: AccountPasswordUpdatedEventHandler, useClass: AccountPasswordUpdatedEventHandler },
+        { provide: AccountRequestedPasswordResetEventHandler, useClass: AccountRequestedPasswordResetEventHandler },
+        { provide: DailyReminderTriggeredEventHandler, useClass: DailyReminderTriggeredEventHandler },
+        { provide: AccountRemovedEventHandler, useClass: AccountRemovedEventHandler },
+        { provide: AccountRemovalRequestedEventHandler, useClass: AccountRemovalRequestedEventHandler },
+        { provide: TwoFactorAuthCodeIssuedEventHandler, useClass: TwoFactorAuthCodeIssuedEventHandler },
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
@@ -54,6 +53,16 @@ import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.s
                 TwoFactorAuthCodeIssuedEventHandler,
             ],
         },
+
+        {
+            provide: InboxProcessorJob,
+            useClass: InboxProcessorJob,
+        },
+
+        {
+            provide: OutboxProcessorJob,
+            useClass: OutboxProcessorJob,
+        },
     ],
     imports: [
         DatabaseModule.forRootAsync(MAIL_MODULE_DATA_SOURCE, [OutboxEventEntity, InboxEventEntity], {
@@ -67,12 +76,11 @@ import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.s
             }),
             inject: [ConfigService],
         }),
-        IntegrationEventsModule.forFeatureAsync({
-            useFactory: () => ({
-                handlers: [],
-            }),
-            eventBoxFactoryClass: MailEventBoxFactory,
+        IntegrationEventsModule.forFeature({
             context: MailModule.name,
+            eventBoxFactory: {
+                useClass: MailEventBoxFactory,
+            },
             consumers: [
                 {
                     name: "codename_mail_account",

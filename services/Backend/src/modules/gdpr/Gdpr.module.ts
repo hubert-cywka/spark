@@ -11,6 +11,8 @@ import {
 } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import { InboxProcessorJob } from "@/common/events/services/implementations/InboxProcessor.job";
+import { OutboxProcessorJob } from "@/common/events/services/implementations/OutboxProcessor.job";
 import { DataPurgePlanEntity } from "@/modules/gdpr/entities/DataPurgePlan.entity";
 import { TenantEntity } from "@/modules/gdpr/entities/Tenant.entity";
 import { TenantRegisteredEventHandler } from "@/modules/gdpr/events/TenantRegisteredEvent.handler";
@@ -34,29 +36,27 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
 
 @Module({
     providers: [
-        {
-            provide: TenantMapperToken,
-            useClass: TenantMapper,
-        },
-        {
-            provide: TenantServiceToken,
-            useClass: TenantService,
-        },
-        {
-            provide: DataPurgeServiceToken,
-            useClass: DataPurgeService,
-        },
-        {
-            provide: DataPurgePublisherServiceToken,
-            useClass: DataPurgePublisherService,
-        },
-        TenantRegisteredEventHandler,
-        TenantRemovedEventHandler,
-        TenantRemovalRequestedEventHandler,
+        { provide: TenantMapperToken, useClass: TenantMapper },
+        { provide: TenantServiceToken, useClass: TenantService },
+        { provide: DataPurgeServiceToken, useClass: DataPurgeService },
+        { provide: DataPurgePublisherServiceToken, useClass: DataPurgePublisherService },
+        { provide: TenantRegisteredEventHandler, useClass: TenantRegisteredEventHandler },
+        { provide: TenantRemovedEventHandler, useClass: TenantRemovedEventHandler },
+        { provide: TenantRemovalRequestedEventHandler, useClass: TenantRemovalRequestedEventHandler },
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
             inject: [TenantRegisteredEventHandler, TenantRemovedEventHandler, TenantRemovalRequestedEventHandler],
+        },
+
+        {
+            provide: InboxProcessorJob,
+            useClass: InboxProcessorJob,
+        },
+
+        {
+            provide: OutboxProcessorJob,
+            useClass: OutboxProcessorJob,
         },
     ],
     imports: [
@@ -77,12 +77,11 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
             }),
             inject: [ConfigService],
         }),
-        IntegrationEventsModule.forFeatureAsync({
-            useFactory: () => ({
-                handlers: [],
-            }),
-            eventBoxFactoryClass: GdprEventBoxFactory,
+        IntegrationEventsModule.forFeature({
             context: GdprModule.name,
+            eventBoxFactory: {
+                useClass: GdprEventBoxFactory,
+            },
             consumers: [
                 {
                     name: "codename_gdpr_account",

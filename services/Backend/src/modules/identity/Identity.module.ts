@@ -26,6 +26,8 @@ import { DeleteOnCascade1743158756974 } from "@/modules/identity/infrastructure/
 import { AddOptionToSuspendAccounts1743167408668 } from "@/modules/identity/infrastructure/database/migrations/1743167408668-addOptionToSuspendAccounts";
 import { AddTTLFor2FAIntegrations1743713719361 } from "@/modules/identity/infrastructure/database/migrations/1743713719361-addTTLFor2FAIntegrations";
 import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.module";
+import {InboxProcessorJob} from "@/common/events/services/implementations/InboxProcessor.job";
+import {OutboxProcessorJob} from "@/common/events/services/implementations/OutboxProcessor.job";
 
 @Module({
     providers: [
@@ -39,6 +41,16 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
                 AccountRemovalRequestedEventHandler,
                 AccountActivatedEventHandler,
             ],
+        },
+
+        {
+            provide: InboxProcessorJob,
+            useClass: InboxProcessorJob,
+        },
+
+        {
+            provide: OutboxProcessorJob,
+            useClass: OutboxProcessorJob,
         },
     ],
     imports: [

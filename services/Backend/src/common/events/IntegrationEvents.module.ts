@@ -5,20 +5,17 @@ import { ClassConstructor, plainToClass } from "class-transformer";
 import { NatsJetStreamModule, NatsJetStreamModuleOptions } from "@/common/events/brokers/NatsJetStream.module";
 import { EventInbox } from "@/common/events/services/implementations/EventInbox";
 import { InboxEventsRemovalJob } from "@/common/events/services/implementations/InboxEventRemoval.job";
-import { InboxProcessorJob } from "@/common/events/services/implementations/InboxProcessor.job";
 import { OutboxEventsRemovalJob } from "@/common/events/services/implementations/OutboxEventRemoval.job";
-import { OutboxProcessorJob } from "@/common/events/services/implementations/OutboxProcessor.job";
 import { type IEventBoxFactory, EventBoxFactoryToken } from "@/common/events/services/interfaces/IEventBox.factory";
-import { type IEventInbox, EventInboxToken } from "@/common/events/services/interfaces/IEventInbox";
+import { EventInboxToken } from "@/common/events/services/interfaces/IEventInbox";
 import { EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
 import { type IPubSubConsumer, PubSubConsumerToken } from "@/common/events/services/interfaces/IPubSubConsumer";
-import { EventConsumer, IntegrationEventsForFeatureOptions, IntegrationEventsModuleOptions } from "@/common/events/types";
+import { EventConsumer, IntegrationEventsModuleOptions } from "@/common/events/types";
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 import { logger } from "@/lib/logger";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 
-const IntegrationEventsForRootOptionsToken = Symbol("IntegrationEventsForRootOptions");
-const IntegrationEventsForFeatureOptionsToken = Symbol("IntegrationEventsForFeatureOptions");
+const IntegrationEventsModuleOptionsToken = Symbol("IntegrationEventsModuleOptions");
 
 @Module({})
 export class IntegrationEventsModule {
@@ -31,60 +28,46 @@ export class IntegrationEventsModule {
             module: IntegrationEventsModule,
             providers: [
                 {
-                    provide: IntegrationEventsForRootOptionsToken,
+                    provide: IntegrationEventsModuleOptionsToken,
                     useFactory: options.useFactory,
                     inject: options.inject ?? [],
                 },
             ],
             imports: [NatsJetStreamModule.forRootAsync(options)],
-            exports: [IntegrationEventsForRootOptionsToken],
+            exports: [IntegrationEventsModuleOptionsToken],
             global: options.global,
         };
     }
 
-    static forFeatureAsync<T extends IEventBoxFactory>(options: {
-        useFactory: UseFactory<IntegrationEventsForFeatureOptions>;
-        inject?: UseFactoryArgs;
+    static forFeature<T extends IEventBoxFactory>({
+        consumers,
+        eventBoxFactory,
+        context,
+    }: {
         consumers: EventConsumer[];
-        eventBoxFactoryClass: ClassConstructor<T>;
+        eventBoxFactory: {
+            useClass: ClassConstructor<T>;
+        };
         context: string;
     }): DynamicModule {
         return {
             module: IntegrationEventsModule,
             providers: [
                 {
-                    provide: IntegrationEventsForFeatureOptionsToken,
-                    useFactory: options.useFactory,
-                    inject: options.inject ?? [],
-                },
-
-                {
                     provide: EventBoxFactoryToken,
-                    useClass: options.eventBoxFactoryClass,
+                    useClass: eventBoxFactory.useClass,
                 },
 
                 {
                     provide: EventOutboxToken,
-                    useFactory: (factory: IEventBoxFactory) => factory.createOutbox(`${options.context}_Outbox`),
+                    useFactory: (factory: IEventBoxFactory) => factory.createOutbox(`${context}_Outbox`),
                     inject: [EventBoxFactoryToken],
                 },
 
                 {
                     provide: EventInboxToken,
-                    useFactory: (factory: IEventBoxFactory) => factory.createInbox(`${options.context}_Inbox`),
+                    useFactory: (factory: IEventBoxFactory) => factory.createInbox(`${context}_Inbox`),
                     inject: [EventBoxFactoryToken],
-                },
-
-                {
-                    provide: InboxProcessorJob,
-                    useFactory: (inbox: IEventInbox, { handlers }: IntegrationEventsForFeatureOptions) =>
-                        new InboxProcessorJob(inbox, handlers),
-                    inject: [EventInboxToken, IntegrationEventsForFeatureOptionsToken],
-                },
-
-                {
-                    provide: OutboxProcessorJob,
-                    useClass: OutboxProcessorJob,
                 },
 
                 {
@@ -99,9 +82,9 @@ export class IntegrationEventsModule {
 
                 {
                     // TODO
-                    provide: `${options.context}_EventsSubscriber`,
+                    provide: `${context}_EventsSubscriber`,
                     useFactory: async (consumer: IPubSubConsumer, inbox: EventInbox) => {
-                        const subscriptions = await consumer.subscribe(options.consumers);
+                        const subscriptions = await consumer.subscribe(consumers);
 
                         const listen = async (messages: ConsumerMessages) => {
                             for await (const message of messages) {

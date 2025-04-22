@@ -5,12 +5,11 @@ import { IdentityEventBoxFactory } from "@/modules/identity/shared/services/Iden
 
 @Module({
     imports: [
-        IntegrationEventsModule.forFeatureAsync({
-            useFactory: () => ({
-                handlers: [],
-            }),
-            eventBoxFactoryClass: IdentityEventBoxFactory,
+        IntegrationEventsModule.forFeature({
             context: IdentitySharedModule.name,
+            eventBoxFactory: {
+                useClass: IdentityEventBoxFactory,
+            },
             consumers: [
                 {
                     name: "codename_identity_account",

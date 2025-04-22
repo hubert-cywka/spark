@@ -11,6 +11,8 @@ import {
 } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import { InboxProcessorJob } from "@/common/events/services/implementations/InboxProcessor.job";
+import { OutboxProcessorJob } from "@/common/events/services/implementations/OutboxProcessor.job";
 import { AlertsController } from "@/modules/alerts/controllers/Alerts.controller";
 import { AlertEntity } from "@/modules/alerts/entities/Alert.entity";
 import { RecipientEntity } from "@/modules/alerts/entities/Recipient.entity";
@@ -47,25 +49,26 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
         { provide: RecipientMapperToken, useClass: RecipientMapper },
         { provide: RecipientServiceToken, useClass: RecipientService },
         { provide: AlertServiceToken, useClass: AlertService },
-        {
-            provide: AlertsProcessorServiceToken,
-            useClass: AlertsProcessorService,
-        },
-        {
-            provide: AlertSchedulerServiceToken,
-            useClass: AlertSchedulerService,
-        },
+        { provide: AlertsProcessorServiceToken, useClass: AlertsProcessorService },
+        { provide: AlertSchedulerServiceToken, useClass: AlertSchedulerService },
         { provide: AlertMapperToken, useClass: AlertMapper },
-        {
-            provide: AlertPublisherServiceToken,
-            useClass: AlertPublisherService,
-        },
-        RecipientRegisteredEventHandler,
-        RecipientRemovedEventHandler,
+        { provide: AlertPublisherServiceToken, useClass: AlertPublisherService },
+        { provide: RecipientRegisteredEventHandler, useClass: RecipientRegisteredEventHandler },
+        { provide: RecipientRemovedEventHandler, useClass: RecipientRemovedEventHandler },
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
             inject: [RecipientRegisteredEventHandler, RecipientRemovedEventHandler],
+        },
+
+        {
+            provide: InboxProcessorJob,
+            useClass: InboxProcessorJob,
+        },
+
+        {
+            provide: OutboxProcessorJob,
+            useClass: OutboxProcessorJob,
         },
     ],
     imports: [
@@ -90,12 +93,11 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
             }),
             inject: [ConfigService],
         }),
-        IntegrationEventsModule.forFeatureAsync({
-            useFactory: () => ({
-                handlers: [],
-            }),
-            eventBoxFactoryClass: AlertsEventBoxFactory,
+        IntegrationEventsModule.forFeature({
             context: AlertsModule.name,
+            eventBoxFactory: {
+                useClass: AlertsEventBoxFactory,
+            },
             consumers: [
                 {
                     name: "codename_alerts_account",
