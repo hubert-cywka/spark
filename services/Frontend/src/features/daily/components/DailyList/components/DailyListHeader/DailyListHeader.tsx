@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
 import { Calendar, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Plus } from "lucide-react";
-import { useFormatter } from "next-intl";
+import { useLocale } from "next-intl";
 
 import styles from "./styles/DailyListHeader.module.scss";
 
@@ -26,7 +26,7 @@ export const DailyListHeader = ({
     children,
 }: DailyListHeaderProps) => {
     const now = new Date();
-    const formatter = useFormatter();
+    const locale = useLocale();
     const isCurrentYearAndMonth = now.getMonth() === timeframeStart.getMonth() && now.getFullYear() === timeframeStart.getFullYear();
 
     return (
@@ -53,8 +53,8 @@ export const DailyListHeader = ({
                 </div>
 
                 <h1 className={styles.header}>
-                    {timeframeStart.getFullYear()},{" "}
-                    {formatter.dateTime(timeframeStart, {
+                    {timeframeStart.toLocaleDateString(locale, {
+                        year: "numeric",
                         month: "long",
                     })}
                 </h1>

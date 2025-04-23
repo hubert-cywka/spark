@@ -22,6 +22,10 @@
             height: 100%;
             align-items: center;
             display: flex;
+            
+            .navigationIcon {
+                min-width: tokens.$font-size-500;
+            }
         }
     }
 }

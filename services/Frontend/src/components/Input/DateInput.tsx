@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ChangeEventHandler, forwardRef, ReactNode } from "react";
+import React, { ChangeEventHandler, forwardRef, ReactNode, useCallback, useEffect } from "react";
 import { DateField, DateFieldProps as RacDateFieldProps, DateValue, FieldError, Label } from "react-aria-components";
 import { fromDate } from "@internationalized/date";
 
@@ -55,15 +55,24 @@ export const DateInput = forwardRef<HTMLDivElement, DateInputProps>(
         },
         ref
     ) => {
-        const internalDateValue = convertToDateValue(value);
         const internalDefaultDateValue = convertToDateValue(defaultValue);
+        const internalDateValue = convertToDateValue(value);
         const internalMinValue = convertToDateValue(minValue);
         const internalMaxValue = convertToDateValue(maxValue);
         const internalPlaceholderValue = convertToDateValue(placeholderValue);
 
-        const handleChange = (newValue: DateValue | null) => {
-            onChange(newValue ? newValue.toDate("UTC") : undefined);
-        };
+        const handleChange = useCallback(
+            (newValue: DateValue | null) => {
+                onChange(newValue ? newValue.toDate("UTC") : undefined);
+            },
+            [onChange]
+        );
+
+        useEffect(() => {
+            if (!internalDateValue && internalDefaultDateValue) {
+                handleChange(internalDefaultDateValue);
+            }
+        }, [handleChange, internalDateValue, internalDefaultDateValue]);
 
         return (
             <DateField

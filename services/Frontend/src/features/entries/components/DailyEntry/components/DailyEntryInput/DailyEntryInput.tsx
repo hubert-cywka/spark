@@ -125,7 +125,7 @@ export const DailyEntryInput = ({
                 className={classNames(styles.content, styles.editable)}
                 placeholder={placeholder}
                 value={content}
-                autoFocus
+                autoFocus // TODO: Improve focus management, auto focus is not good solution
             />
         );
     }

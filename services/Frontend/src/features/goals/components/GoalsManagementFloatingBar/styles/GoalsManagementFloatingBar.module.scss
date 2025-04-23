@@ -19,7 +19,7 @@
     box-shadow: tokens.$shadow-200;
 
     position: fixed;
-    z-index: 1;
+    z-index: 1000;
     bottom: 5%;
     left: 50%;
     transform: translateX(-50%);
