@@ -83,7 +83,7 @@ export class EventInbox implements IEventInbox {
     }
 
     // TODO: Should each batch contain topics from only one topics family?
-    public async process(handlers: IInboxEventHandler[]): Promise<void> {
+    public async processPendingEvents(handlers: IInboxEventHandler[]): Promise<void> {
         let totalProcessed = 0;
         let processedInRecentBatch = Infinity;
 

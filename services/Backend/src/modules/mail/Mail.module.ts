@@ -1,10 +1,24 @@
-import { Module } from "@nestjs/common";
+import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule } from "@/common/events";
+import {
+    type IInboxEventHandler,
+    InboxEventHandlersToken,
+    IntegrationEventsModule,
+    IntegrationEventStreams,
+    IntegrationEventTopics,
+} from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import {
+    type IIntegrationEventsJobsOrchestrator,
+    IntegrationEventsJobsOrchestratorToken,
+} from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
+import {
+    type IIntegrationEventsSubscriber,
+    IntegrationEventsSubscriberToken,
+} from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
 import { AccountActivatedEventHandler } from "@/modules/mail/events/AccountActivatedEvent.handler";
 import { AccountActivationTokenRequestedEventHandler } from "@/modules/mail/events/AccountActivationTokenRequestedEvent.handler";
 import { AccountPasswordUpdatedEventHandler } from "@/modules/mail/events/AccountPasswordUpdatedEvent.handler";
@@ -16,25 +30,45 @@ import { TwoFactorAuthCodeIssuedEventHandler } from "@/modules/mail/events/TwoFa
 import { MAIL_MODULE_DATA_SOURCE } from "@/modules/mail/infrastructure/database/constants";
 import { InitializeMailModule1735737562761 } from "@/modules/mail/infrastructure/database/migrations/1735737562761-InitializeMailModule";
 import { AddTenantIdToOutboxAndInbox1743101783697 } from "@/modules/mail/infrastructure/database/migrations/1743101783697-addTenantIdToOutboxAndInbox";
-import { MailSubscriber } from "@/modules/mail/Mail.subscriber";
 import { MailerService } from "@/modules/mail/services/implementations/Mailer.service";
 import { MailEventBoxFactory } from "@/modules/mail/services/implementations/MailEventBox.factory";
 import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
 
 @Module({
     providers: [
+        { provide: MailerServiceToken, useClass: MailerService },
         {
-            provide: MailerServiceToken,
-            useClass: MailerService,
+            provide: AccountActivatedEventHandler,
+            useClass: AccountActivatedEventHandler,
         },
-        AccountActivatedEventHandler,
-        AccountActivationTokenRequestedEventHandler,
-        AccountPasswordUpdatedEventHandler,
-        AccountRequestedPasswordResetEventHandler,
-        DailyReminderTriggeredEventHandler,
-        AccountRemovedEventHandler,
-        AccountRemovalRequestedEventHandler,
-        TwoFactorAuthCodeIssuedEventHandler,
+        {
+            provide: AccountActivationTokenRequestedEventHandler,
+            useClass: AccountActivationTokenRequestedEventHandler,
+        },
+        {
+            provide: AccountPasswordUpdatedEventHandler,
+            useClass: AccountPasswordUpdatedEventHandler,
+        },
+        {
+            provide: AccountRequestedPasswordResetEventHandler,
+            useClass: AccountRequestedPasswordResetEventHandler,
+        },
+        {
+            provide: DailyReminderTriggeredEventHandler,
+            useClass: DailyReminderTriggeredEventHandler,
+        },
+        {
+            provide: AccountRemovedEventHandler,
+            useClass: AccountRemovedEventHandler,
+        },
+        {
+            provide: AccountRemovalRequestedEventHandler,
+            useClass: AccountRemovalRequestedEventHandler,
+        },
+        {
+            provide: TwoFactorAuthCodeIssuedEventHandler,
+            useClass: TwoFactorAuthCodeIssuedEventHandler,
+        },
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
@@ -63,10 +97,49 @@ import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.s
             inject: [ConfigService],
         }),
         IntegrationEventsModule.forFeature({
-            eventBoxFactoryClass: MailEventBoxFactory,
             context: MailModule.name,
+            eventBoxFactory: {
+                useClass: MailEventBoxFactory,
+            },
         }),
     ],
-    controllers: [MailSubscriber],
+    controllers: [],
 })
-export class MailModule {}
+export class MailModule implements OnModuleInit {
+    public constructor(
+        @Inject(IntegrationEventsSubscriberToken)
+        private readonly subscriber: IIntegrationEventsSubscriber,
+        @Inject(IntegrationEventsJobsOrchestratorToken)
+        private readonly orchestrator: IIntegrationEventsJobsOrchestrator,
+        @Inject(InboxEventHandlersToken)
+        private readonly handlers: IInboxEventHandler[]
+    ) {}
+
+    public onModuleInit() {
+        this.orchestrator.start(this.handlers);
+        void this.subscriber.listen([
+            {
+                name: "codename_mail_account",
+                stream: IntegrationEventStreams.account,
+                subjects: [
+                    IntegrationEventTopics.account.activation.requested,
+                    IntegrationEventTopics.account.password.resetRequested,
+                    IntegrationEventTopics.account.password.updated,
+                    IntegrationEventTopics.account.activation.completed,
+                    IntegrationEventTopics.account.removal.completed,
+                    IntegrationEventTopics.account.removal.requested,
+                ],
+            },
+            {
+                name: "codename_mail_alert",
+                stream: IntegrationEventStreams.alert,
+                subjects: [IntegrationEventTopics.alert.daily.reminder.triggered],
+            },
+            {
+                name: "codename_mail_2fa",
+                stream: IntegrationEventStreams.twoFactorAuth,
+                subjects: [IntegrationEventTopics.twoFactorAuth.email.issued],
+            },
+        ]);
+    }
+}

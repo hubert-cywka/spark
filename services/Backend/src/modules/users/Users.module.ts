@@ -1,10 +1,24 @@
-import { Module } from "@nestjs/common";
+import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule } from "@/common/events";
+import {
+    type IInboxEventHandler,
+    InboxEventHandlersToken,
+    IntegrationEventsModule,
+    IntegrationEventStreams,
+    IntegrationEventTopics,
+} from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import {
+    type IIntegrationEventsJobsOrchestrator,
+    IntegrationEventsJobsOrchestratorToken,
+} from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
+import {
+    type IIntegrationEventsSubscriber,
+    IntegrationEventsSubscriberToken,
+} from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
 import { UserController } from "@/modules/users/controllers/User.controller";
 import { UserEntity } from "@/modules/users/entities/User.entity";
 import { UserActivatedEventHandler } from "@/modules/users/events/UserActivatedEvent.handler";
@@ -20,16 +34,21 @@ import { UsersService } from "@/modules/users/services/implementations/Users.ser
 import { UsersEventBoxFactory } from "@/modules/users/services/implementations/UsersEventBox.factory";
 import { UserPublisherServiceToken } from "@/modules/users/services/interfaces/IUserPublisher.service";
 import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
-import { UsersSubscriber } from "@/modules/users/Users.subscriber";
 
 @Module({
     providers: [
         { provide: UserMapperToken, useClass: UserMapper },
         { provide: UsersServiceToken, useClass: UsersService },
         { provide: UserPublisherServiceToken, useClass: UserPublisherService },
-        UserActivatedEventHandler,
-        UserRegisteredEventHandler,
-        UserRemovedEventHandler,
+        {
+            provide: UserActivatedEventHandler,
+            useClass: UserActivatedEventHandler,
+        },
+        {
+            provide: UserRegisteredEventHandler,
+            useClass: UserRegisteredEventHandler,
+        },
+        { provide: UserRemovedEventHandler, useClass: UserRemovedEventHandler },
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
@@ -49,10 +68,37 @@ import { UsersSubscriber } from "@/modules/users/Users.subscriber";
             inject: [ConfigService],
         }),
         IntegrationEventsModule.forFeature({
-            eventBoxFactoryClass: UsersEventBoxFactory,
             context: UsersModule.name,
+            eventBoxFactory: {
+                useClass: UsersEventBoxFactory,
+            },
         }),
     ],
-    controllers: [UsersSubscriber, UserController],
+    controllers: [UserController],
 })
-export class UsersModule {}
+export class UsersModule implements OnModuleInit {
+    public constructor(
+        @Inject(IntegrationEventsSubscriberToken)
+        private readonly subscriber: IIntegrationEventsSubscriber,
+        @Inject(IntegrationEventsJobsOrchestratorToken)
+        private readonly orchestrator: IIntegrationEventsJobsOrchestrator,
+        @Inject(InboxEventHandlersToken)
+        private readonly handlers: IInboxEventHandler[]
+    ) {}
+
+    public onModuleInit() {
+        this.orchestrator.start(this.handlers);
+
+        void this.subscriber.listen([
+            {
+                name: "codename_users_account",
+                stream: IntegrationEventStreams.account,
+                subjects: [
+                    IntegrationEventTopics.account.registration.completed,
+                    IntegrationEventTopics.account.activation.completed,
+                    IntegrationEventTopics.account.removal.completed,
+                ],
+            },
+        ]);
+    }
+}

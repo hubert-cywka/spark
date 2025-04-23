@@ -1,24 +1,23 @@
 import { type DynamicModule, Module } from "@nestjs/common";
-import { CronExpression, SchedulerRegistry } from "@nestjs/schedule";
-import { NatsJetStreamTransport } from "@nestjs-plugins/nestjs-nats-jetstream-transport";
-import { CronJob } from "cron";
-import dayjs from "dayjs";
+import { ClassConstructor } from "class-transformer";
 
-import { EventBoxFactoryToken, IEventBoxFactory } from "@/common/events/services/interfaces/IEventBox.factory";
-import { EventInboxToken, IEventInbox } from "@/common/events/services/interfaces/IEventInbox";
-import { type IEventOutbox, EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
+import { NatsJetStreamModule, NatsJetStreamModuleOptions } from "@/common/events/brokers/NatsJetStream.module";
+import { IntegrationEventsJobsOrchestrator } from "@/common/events/services/implementations/IntegrationEventsJobsOrchestrator";
+import { IntegrationEventsSubscriber } from "@/common/events/services/implementations/IntegrationEventsSubscriber";
+import { type IEventBoxFactory, EventBoxFactoryToken } from "@/common/events/services/interfaces/IEventBox.factory";
+import { EventInboxToken } from "@/common/events/services/interfaces/IEventInbox";
+import { EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
+import { IntegrationEventsJobsOrchestratorToken } from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
+import { IntegrationEventsSubscriberToken } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
 import { IntegrationEventsModuleOptions } from "@/common/events/types";
-import { ClassConstructor } from "@/types/Class";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
-
-const EVENTS_RETENTION_PERIOD_IN_DAYS = 7;
 
 const IntegrationEventsModuleOptionsToken = Symbol("IntegrationEventsModuleOptions");
 
 @Module({})
 export class IntegrationEventsModule {
     static forRootAsync(options: {
-        useFactory: UseFactory<IntegrationEventsModuleOptions>;
+        useFactory: UseFactory<IntegrationEventsModuleOptions<NatsJetStreamModuleOptions>>;
         inject?: UseFactoryArgs;
         global?: boolean;
     }): DynamicModule {
@@ -28,29 +27,30 @@ export class IntegrationEventsModule {
                 {
                     provide: IntegrationEventsModuleOptionsToken,
                     useFactory: options.useFactory,
-                    inject: options.inject || [],
+                    inject: options.inject ?? [],
                 },
             ],
+            imports: [NatsJetStreamModule.forRootAsync(options)],
             exports: [IntegrationEventsModuleOptionsToken],
             global: options.global,
         };
     }
 
-    static forFeature<T extends IEventBoxFactory>({
-        eventBoxFactoryClass,
+    static forFeature({
+        eventBoxFactory,
         context,
-        outboxProcessingInterval = 5000,
     }: {
-        eventBoxFactoryClass: ClassConstructor<T>;
         context: string;
-        outboxProcessingInterval?: number;
+        eventBoxFactory: {
+            useClass: ClassConstructor<IEventBoxFactory>;
+        };
     }): DynamicModule {
         return {
             module: IntegrationEventsModule,
             providers: [
                 {
                     provide: EventBoxFactoryToken,
-                    useClass: eventBoxFactoryClass,
+                    useClass: eventBoxFactory.useClass,
                 },
 
                 {
@@ -66,55 +66,17 @@ export class IntegrationEventsModule {
                 },
 
                 {
-                    provide: `${context}_OutboxProcessorJob`,
-                    useFactory: (schedulerRegistry: SchedulerRegistry, outbox: IEventOutbox) => {
-                        const interval = setInterval(async () => await outbox.process(), outboxProcessingInterval);
-                        schedulerRegistry.addInterval(`${context}_OutboxProcessor`, interval);
-                        return interval;
-                    },
-                    inject: [SchedulerRegistry, EventOutboxToken],
+                    provide: IntegrationEventsSubscriberToken,
+                    useClass: IntegrationEventsSubscriber,
                 },
 
                 {
-                    provide: `${context}_OutboxCleanerJob`,
-                    useFactory: (schedulerRegistry: SchedulerRegistry, outbox: IEventOutbox) => {
-                        const job = new CronJob(CronExpression.EVERY_DAY_AT_3AM, async () => {
-                            const processedBefore = dayjs().subtract(EVENTS_RETENTION_PERIOD_IN_DAYS, "days").toDate();
-                            await outbox.clearProcessedEvents(processedBefore);
-                        });
-                        schedulerRegistry.addCronJob(`${context}_OutboxCleaner`, job);
-                        return job;
-                    },
-                    inject: [SchedulerRegistry, EventOutboxToken],
+                    provide: IntegrationEventsJobsOrchestratorToken,
+                    useClass: IntegrationEventsJobsOrchestrator,
                 },
+            ],
 
-                {
-                    provide: `${context}_InboxCleanerJob`,
-                    useFactory: (schedulerRegistry: SchedulerRegistry, inbox: IEventInbox) => {
-                        const job = new CronJob(CronExpression.EVERY_DAY_AT_4AM, async () => {
-                            const processedBefore = dayjs().subtract(EVENTS_RETENTION_PERIOD_IN_DAYS, "days").toDate();
-                            await inbox.clearProcessedEvents(processedBefore);
-                        });
-                        schedulerRegistry.addCronJob(`${context}_InboxCleaner`, job);
-                        return job;
-                    },
-                    inject: [SchedulerRegistry, EventOutboxToken],
-                },
-            ],
-            imports: [
-                NatsJetStreamTransport.registerAsync({
-                    useFactory: ({ connection }: IntegrationEventsModuleOptions) => {
-                        return {
-                            connectionOptions: {
-                                servers: `${connection.host}:${connection.port}`,
-                                name: `${context}_JetStreamPublisher`,
-                            },
-                        };
-                    },
-                    inject: [IntegrationEventsModuleOptionsToken],
-                }),
-            ],
-            exports: [EventBoxFactoryToken, EventOutboxToken, EventInboxToken],
+            exports: [EventOutboxToken, EventInboxToken, IntegrationEventsSubscriberToken, IntegrationEventsJobsOrchestratorToken],
         };
     }
 }

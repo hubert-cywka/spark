@@ -1,10 +1,18 @@
-import { Module } from "@nestjs/common";
+import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { IInboxEventHandler, InboxEventHandlersToken } from "@/common/events";
+import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventStreams, IntegrationEventTopics } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import {
+    type IIntegrationEventsJobsOrchestrator,
+    IntegrationEventsJobsOrchestratorToken,
+} from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
+import {
+    type IIntegrationEventsSubscriber,
+    IntegrationEventsSubscriberToken,
+} from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
 import { TwoFactorAuthenticationIntegrationEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationIntegration.entity";
 import { AccountActivatedEventHandler } from "@/modules/identity/2fa/events/AccountActivatedEvent.handler";
 import { TwoFactorAuthenticationModule } from "@/modules/identity/2fa/TwoFactorAuthentication.module";
@@ -19,7 +27,6 @@ import { AuthenticationModule } from "@/modules/identity/authentication/Authenti
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
 import { AccountPasswordUpdatedEventHandler } from "@/modules/identity/authentication/events/AccountPasswordUpdatedEvent.handler";
 import { AccountSuspendedEventHandler } from "@/modules/identity/authentication/events/AccountSuspendedEvent.handler";
-import { IdentitySubscriber } from "@/modules/identity/Identity.subscriber";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 import { InitializeIdentityModule1735737549567 } from "@/modules/identity/infrastructure/database/migrations/1735737549567-InitializeIdentityModule";
 import { AddTenantIdToOutboxAndInbox1743101746907 } from "@/modules/identity/infrastructure/database/migrations/1743101746907-addTenantIdToOutboxAndInbox";
@@ -78,7 +85,33 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
         AuthenticationModule,
         TwoFactorAuthenticationModule,
     ],
-    controllers: [IdentitySubscriber],
+    controllers: [],
     exports: [],
 })
-export class IdentityModule {}
+export class IdentityModule implements OnModuleInit {
+    public constructor(
+        @Inject(IntegrationEventsSubscriberToken)
+        private readonly subscriber: IIntegrationEventsSubscriber,
+        @Inject(IntegrationEventsJobsOrchestratorToken)
+        private readonly orchestrator: IIntegrationEventsJobsOrchestrator,
+        @Inject(InboxEventHandlersToken)
+        private readonly handlers: IInboxEventHandler[]
+    ) {}
+
+    public onModuleInit() {
+        this.orchestrator.start(this.handlers);
+        void this.subscriber.listen([
+            {
+                name: "codename_identity_account",
+                stream: IntegrationEventStreams.account,
+                subjects: [
+                    IntegrationEventTopics.account.password.updated,
+                    IntegrationEventTopics.account.activation.completed,
+                    IntegrationEventTopics.account.removal.completed,
+                    IntegrationEventTopics.account.removal.requested,
+                    IntegrationEventTopics.account.suspended,
+                ],
+            },
+        ]);
+    }
+}

@@ -1,16 +1,29 @@
-import { Module } from "@nestjs/common";
+import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule } from "@/common/events";
+import {
+    type IInboxEventHandler,
+    InboxEventHandlersToken,
+    IntegrationEventsModule,
+    IntegrationEventStreams,
+    IntegrationEventTopics,
+} from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import {
+    type IIntegrationEventsJobsOrchestrator,
+    IntegrationEventsJobsOrchestratorToken,
+} from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
+import {
+    type IIntegrationEventsSubscriber,
+    IntegrationEventsSubscriberToken,
+} from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
 import { DataPurgePlanEntity } from "@/modules/gdpr/entities/DataPurgePlan.entity";
 import { TenantEntity } from "@/modules/gdpr/entities/Tenant.entity";
 import { TenantRegisteredEventHandler } from "@/modules/gdpr/events/TenantRegisteredEvent.handler";
 import { TenantRemovalRequestedEventHandler } from "@/modules/gdpr/events/TenantRemovalRequestedEvent.handler";
 import { TenantRemovedEventHandler } from "@/modules/gdpr/events/TenantRemovedEvent.handler";
-import { GdprSubscriber } from "@/modules/gdpr/Gdpr.subscriber";
 import { GDPR_MODULE_DATA_SOURCE } from "@/modules/gdpr/infrastructure/database/constants";
 import { AddTenantEntity1743100640810 } from "@/modules/gdpr/infrastructure/database/migrations/1743100640810-addTenantEntity";
 import { AddTenantIdToOutboxAndInbox1743101706566 } from "@/modules/gdpr/infrastructure/database/migrations/1743101706566-addTenantIdToOutboxAndInbox";
@@ -29,25 +42,25 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
 
 @Module({
     providers: [
-        {
-            provide: TenantMapperToken,
-            useClass: TenantMapper,
-        },
-        {
-            provide: TenantServiceToken,
-            useClass: TenantService,
-        },
-        {
-            provide: DataPurgeServiceToken,
-            useClass: DataPurgeService,
-        },
+        { provide: TenantMapperToken, useClass: TenantMapper },
+        { provide: TenantServiceToken, useClass: TenantService },
+        { provide: DataPurgeServiceToken, useClass: DataPurgeService },
         {
             provide: DataPurgePublisherServiceToken,
             useClass: DataPurgePublisherService,
         },
-        TenantRegisteredEventHandler,
-        TenantRemovedEventHandler,
-        TenantRemovalRequestedEventHandler,
+        {
+            provide: TenantRegisteredEventHandler,
+            useClass: TenantRegisteredEventHandler,
+        },
+        {
+            provide: TenantRemovedEventHandler,
+            useClass: TenantRemovedEventHandler,
+        },
+        {
+            provide: TenantRemovalRequestedEventHandler,
+            useClass: TenantRemovalRequestedEventHandler,
+        },
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
@@ -73,10 +86,36 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
             inject: [ConfigService],
         }),
         IntegrationEventsModule.forFeature({
-            eventBoxFactoryClass: GdprEventBoxFactory,
             context: GdprModule.name,
+            eventBoxFactory: {
+                useClass: GdprEventBoxFactory,
+            },
         }),
     ],
-    controllers: [GdprSubscriber],
+    controllers: [],
 })
-export class GdprModule {}
+export class GdprModule implements OnModuleInit {
+    public constructor(
+        @Inject(IntegrationEventsSubscriberToken)
+        private readonly subscriber: IIntegrationEventsSubscriber,
+        @Inject(IntegrationEventsJobsOrchestratorToken)
+        private readonly orchestrator: IIntegrationEventsJobsOrchestrator,
+        @Inject(InboxEventHandlersToken)
+        private readonly handlers: IInboxEventHandler[]
+    ) {}
+
+    public onModuleInit() {
+        this.orchestrator.start(this.handlers);
+        void this.subscriber.listen([
+            {
+                name: "codename_gdpr_account",
+                stream: IntegrationEventStreams.account,
+                subjects: [
+                    IntegrationEventTopics.account.registration.completed,
+                    IntegrationEventTopics.account.removal.completed,
+                    IntegrationEventTopics.account.removal.requested,
+                ],
+            },
+        ]);
+    }
+}

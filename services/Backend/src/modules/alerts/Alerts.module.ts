@@ -1,11 +1,24 @@
-import { Module } from "@nestjs/common";
+import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule } from "@/common/events";
+import {
+    type IInboxEventHandler,
+    InboxEventHandlersToken,
+    IntegrationEventsModule,
+    IntegrationEventStreams,
+    IntegrationEventTopics,
+} from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
-import { AlertsSubscriber } from "@/modules/alerts/Alerts.subscriber";
+import {
+    type IIntegrationEventsJobsOrchestrator,
+    IntegrationEventsJobsOrchestratorToken,
+} from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
+import {
+    type IIntegrationEventsSubscriber,
+    IntegrationEventsSubscriberToken,
+} from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
 import { AlertsController } from "@/modules/alerts/controllers/Alerts.controller";
 import { AlertEntity } from "@/modules/alerts/entities/Alert.entity";
 import { RecipientEntity } from "@/modules/alerts/entities/Recipient.entity";
@@ -55,8 +68,14 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
             provide: AlertPublisherServiceToken,
             useClass: AlertPublisherService,
         },
-        RecipientRegisteredEventHandler,
-        RecipientRemovedEventHandler,
+        {
+            provide: RecipientRegisteredEventHandler,
+            useClass: RecipientRegisteredEventHandler,
+        },
+        {
+            provide: RecipientRemovedEventHandler,
+            useClass: RecipientRemovedEventHandler,
+        },
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
@@ -86,10 +105,33 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
             inject: [ConfigService],
         }),
         IntegrationEventsModule.forFeature({
-            eventBoxFactoryClass: AlertsEventBoxFactory,
             context: AlertsModule.name,
+            eventBoxFactory: {
+                useClass: AlertsEventBoxFactory,
+            },
         }),
     ],
-    controllers: [AlertsSubscriber, AlertsController],
+    controllers: [AlertsController],
 })
-export class AlertsModule {}
+export class AlertsModule implements OnModuleInit {
+    public constructor(
+        @Inject(IntegrationEventsSubscriberToken)
+        private readonly subscriber: IIntegrationEventsSubscriber,
+        @Inject(IntegrationEventsJobsOrchestratorToken)
+        private readonly orchestrator: IIntegrationEventsJobsOrchestrator,
+        @Inject(InboxEventHandlersToken)
+        private readonly handlers: IInboxEventHandler[]
+    ) {}
+
+    public onModuleInit() {
+        this.orchestrator.start(this.handlers);
+
+        void this.subscriber.listen([
+            {
+                name: "codename_alerts_account",
+                stream: IntegrationEventStreams.account,
+                subjects: [IntegrationEventTopics.account.registration.completed, IntegrationEventTopics.account.removal.completed],
+            },
+        ]);
+    }
+}

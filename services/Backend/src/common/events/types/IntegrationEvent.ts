@@ -1,3 +1,5 @@
+import { classToPlain } from "class-transformer";
+
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 
@@ -18,6 +20,10 @@ export class IntegrationEvent<T = unknown> {
 
     public static fromEntity<T = unknown>(entity: OutboxEventEntity<T> | InboxEventEntity<T>): IntegrationEvent<T> {
         return new IntegrationEvent<T>(entity.tenantId, entity.topic, entity.payload, entity.createdAt, entity.id);
+    }
+
+    public toPlain(): object {
+        return classToPlain(this);
     }
 
     public getTopic(): string {

@@ -7,8 +7,10 @@ import { JournalEventBoxFactory } from "@/modules/journal/services/implementatio
     providers: [],
     imports: [
         IntegrationEventsModule.forFeature({
-            eventBoxFactoryClass: JournalEventBoxFactory,
             context: JournalSharedModule.name,
+            eventBoxFactory: {
+                useClass: JournalEventBoxFactory,
+            },
         }),
     ],
     exports: [IntegrationEventsModule],

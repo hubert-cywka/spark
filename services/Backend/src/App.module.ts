@@ -5,7 +5,7 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { ThrottlerModule } from "@nestjs/throttler";
 import { LoggerModule } from "nestjs-pino";
 
-import { IntegrationEventsModule } from "@/common/events";
+import { IntegrationEventsModule, IntegrationEventStreams, IntegrationEventTopics } from "@/common/events";
 import { ThrottlingGuard } from "@/common/guards/Throttling.guard";
 import { AppConfig } from "@/config/configuration";
 import { GlobalModule } from "@/Global.module";
@@ -48,6 +48,20 @@ import { UsersModule } from "@/modules/users/Users.module";
                         port: config.getOrThrow<number>("pubsub.port"),
                         host: config.getOrThrow<string>("pubsub.host"),
                     },
+                    streams: [
+                        {
+                            name: IntegrationEventStreams.account,
+                            subjects: [IntegrationEventTopics.account.all],
+                        },
+                        {
+                            name: IntegrationEventStreams.alert,
+                            subjects: [IntegrationEventTopics.alert.all],
+                        },
+                        {
+                            name: IntegrationEventStreams.twoFactorAuth,
+                            subjects: [IntegrationEventTopics.twoFactorAuth.all],
+                        },
+                    ],
                 };
             },
             inject: [ConfigService],

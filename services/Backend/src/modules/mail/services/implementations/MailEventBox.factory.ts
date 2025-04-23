@@ -1,16 +1,17 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
-import { NatsJetStreamClientProxy } from "@nestjs-plugins/nestjs-nats-jetstream-transport";
 
 import { EventOutbox, IEventBoxFactory } from "@/common/events";
 import { EventInbox } from "@/common/events/services/implementations/EventInbox";
+import { type IPubSubProducer, PubSubProducerToken } from "@/common/events/services/interfaces/IPubSubProducer";
 import { MAIL_MODULE_DATA_SOURCE } from "@/modules/mail/infrastructure/database/constants";
 
 @Injectable()
 export class MailEventBoxFactory implements IEventBoxFactory {
     public constructor(
-        private readonly clientProxy: NatsJetStreamClientProxy,
+        @Inject(PubSubProducerToken)
+        private readonly clientProxy: IPubSubProducer,
         @InjectTransactionHost(MAIL_MODULE_DATA_SOURCE)
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
     ) {}

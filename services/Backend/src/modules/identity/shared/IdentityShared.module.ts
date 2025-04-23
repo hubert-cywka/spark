@@ -6,8 +6,10 @@ import { IdentityEventBoxFactory } from "@/modules/identity/shared/services/Iden
 @Module({
     imports: [
         IntegrationEventsModule.forFeature({
-            eventBoxFactoryClass: IdentityEventBoxFactory,
             context: IdentitySharedModule.name,
+            eventBoxFactory: {
+                useClass: IdentityEventBoxFactory,
+            },
         }),
     ],
     exports: [IntegrationEventsModule],

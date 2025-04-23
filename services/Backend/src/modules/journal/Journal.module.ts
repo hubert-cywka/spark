@@ -1,10 +1,18 @@
-import { Module } from "@nestjs/common";
+import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { IInboxEventHandler, InboxEventHandlersToken } from "@/common/events";
+import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventStreams, IntegrationEventTopics } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import {
+    type IIntegrationEventsJobsOrchestrator,
+    IntegrationEventsJobsOrchestratorToken,
+} from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
+import {
+    type IIntegrationEventsSubscriber,
+    IntegrationEventsSubscriberToken,
+} from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
 import { AuthorsModule } from "@/modules/journal/authors/Authors.module";
 import { AuthorEntity } from "@/modules/journal/authors/entities/Author.entity";
 import { AccountRegisteredEventHandler } from "@/modules/journal/authors/events/AccountRegisteredEvent.handler";
@@ -32,7 +40,6 @@ import { AddTenantIdToOutboxAndInbox1743101763604 } from "@/modules/journal/infr
 import { DeleteOnCascade1743158742983 } from "@/modules/journal/infrastructure/database/migrations/1743158742983-deleteOnCascade";
 import { DeleteGoalsOnCascade1743159095911 } from "@/modules/journal/infrastructure/database/migrations/1743159095911-deleteGoalsOnCascade";
 import { DeleteOnCascadeFix1743159586254 } from "@/modules/journal/infrastructure/database/migrations/1743159586254-deleteOnCascadeFix";
-import { JournalSubscriber } from "@/modules/journal/Journal.subscriber";
 import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.module";
 
 @Module({
@@ -82,6 +89,26 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
         GoalsModule,
         EntriesModule,
     ],
-    controllers: [JournalSubscriber],
+    controllers: [],
 })
-export class JournalModule {}
+export class JournalModule implements OnModuleInit {
+    public constructor(
+        @Inject(IntegrationEventsSubscriberToken)
+        private readonly subscriber: IIntegrationEventsSubscriber,
+        @Inject(IntegrationEventsJobsOrchestratorToken)
+        private readonly orchestrator: IIntegrationEventsJobsOrchestrator,
+        @Inject(InboxEventHandlersToken)
+        private readonly handlers: IInboxEventHandler[]
+    ) {}
+
+    public onModuleInit() {
+        this.orchestrator.start(this.handlers);
+        void this.subscriber.listen([
+            {
+                name: "codename_journal_account",
+                stream: IntegrationEventStreams.account,
+                subjects: [IntegrationEventTopics.account.registration.completed, IntegrationEventTopics.account.removal.completed],
+            },
+        ]);
+    }
+}

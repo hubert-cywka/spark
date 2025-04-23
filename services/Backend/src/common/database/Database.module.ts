@@ -47,6 +47,7 @@ export class DatabaseModule {
 
                         return {
                             ...dbOptions,
+                            name: dataSource,
                             type: "postgres",
                             logging: false,
                             autoLoadEntities: true,
