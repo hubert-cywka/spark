@@ -14,12 +14,9 @@ export class IntegrationEventsSubscriber implements IIntegrationEventsSubscriber
     ) {}
 
     public async listen(consumers: IntegrationEventsConsumer[]): Promise<void> {
-        const inbox = this.inbox;
-
         await this.consumer.listen(consumers, async (event, ack, nack) => {
             try {
-                logger.log(event, `Received '${event.getTopic()}' event.`);
-                await inbox.enqueue(event);
+                await this.inbox.enqueue(event);
                 ack();
             } catch (error) {
                 logger.log({ error }, "Couldn't enqueue event.");

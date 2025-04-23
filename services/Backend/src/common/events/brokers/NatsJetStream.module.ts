@@ -34,7 +34,7 @@ export class NatsJetStreamModule implements OnApplicationShutdown {
 
     async onApplicationShutdown() {
         if (!this.connection) {
-            NatsJetStreamModule.logger.warn("Nats JetStream connection was not injected or is null. Cannot close.");
+            NatsJetStreamModule.logger.warn("Nats JetStream connection is null. Cannot close.");
             return;
         }
 

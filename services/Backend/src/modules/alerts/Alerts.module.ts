@@ -55,12 +55,27 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
         { provide: RecipientMapperToken, useClass: RecipientMapper },
         { provide: RecipientServiceToken, useClass: RecipientService },
         { provide: AlertServiceToken, useClass: AlertService },
-        { provide: AlertsProcessorServiceToken, useClass: AlertsProcessorService },
-        { provide: AlertSchedulerServiceToken, useClass: AlertSchedulerService },
+        {
+            provide: AlertsProcessorServiceToken,
+            useClass: AlertsProcessorService,
+        },
+        {
+            provide: AlertSchedulerServiceToken,
+            useClass: AlertSchedulerService,
+        },
         { provide: AlertMapperToken, useClass: AlertMapper },
-        { provide: AlertPublisherServiceToken, useClass: AlertPublisherService },
-        { provide: RecipientRegisteredEventHandler, useClass: RecipientRegisteredEventHandler },
-        { provide: RecipientRemovedEventHandler, useClass: RecipientRemovedEventHandler },
+        {
+            provide: AlertPublisherServiceToken,
+            useClass: AlertPublisherService,
+        },
+        {
+            provide: RecipientRegisteredEventHandler,
+            useClass: RecipientRegisteredEventHandler,
+        },
+        {
+            provide: RecipientRemovedEventHandler,
+            useClass: RecipientRemovedEventHandler,
+        },
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
@@ -109,7 +124,8 @@ export class AlertsModule implements OnModuleInit {
     ) {}
 
     public onModuleInit() {
-        this.orchestrator.init(this.handlers);
+        this.orchestrator.start(this.handlers);
+
         void this.subscriber.listen([
             {
                 name: "codename_alerts_account",

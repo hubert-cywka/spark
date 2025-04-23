@@ -99,7 +99,7 @@ export class IdentityModule implements OnModuleInit {
     ) {}
 
     public onModuleInit() {
-        this.orchestrator.init(this.handlers);
+        this.orchestrator.start(this.handlers);
         void this.subscriber.listen([
             {
                 name: "codename_identity_account",

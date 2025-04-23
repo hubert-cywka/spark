@@ -19,7 +19,7 @@ export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobs
         private readonly registry: SchedulerRegistry
     ) {}
 
-    public init(handlers: IInboxEventHandler[]) {
+    public start(handlers: IInboxEventHandler[]) {
         if (this.isInitialized) {
             this.logger.warn("Already initialized.");
             return;

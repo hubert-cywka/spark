@@ -40,8 +40,14 @@ import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.se
         { provide: UserMapperToken, useClass: UserMapper },
         { provide: UsersServiceToken, useClass: UsersService },
         { provide: UserPublisherServiceToken, useClass: UserPublisherService },
-        { provide: UserActivatedEventHandler, useClass: UserActivatedEventHandler },
-        { provide: UserRegisteredEventHandler, useClass: UserRegisteredEventHandler },
+        {
+            provide: UserActivatedEventHandler,
+            useClass: UserActivatedEventHandler,
+        },
+        {
+            provide: UserRegisteredEventHandler,
+            useClass: UserRegisteredEventHandler,
+        },
         { provide: UserRemovedEventHandler, useClass: UserRemovedEventHandler },
         {
             provide: InboxEventHandlersToken,
@@ -81,7 +87,7 @@ export class UsersModule implements OnModuleInit {
     ) {}
 
     public onModuleInit() {
-        this.orchestrator.init(this.handlers);
+        this.orchestrator.start(this.handlers);
 
         void this.subscriber.listen([
             {

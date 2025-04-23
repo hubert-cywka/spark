@@ -32,8 +32,11 @@ export class NatsJetStreamConsumer implements IPubSubConsumer {
             const event = plainToClass(IntegrationEvent, message.json() as unknown);
 
             try {
-                await onEventReceived(event, message.ack, message.nak);
-                message.ack();
+                await onEventReceived(
+                    event,
+                    () => message.ack(),
+                    () => message.nak()
+                );
             } catch (error) {
                 logger.log({ error }, "Couldn't receive event.");
                 message.nak();
@@ -79,7 +82,6 @@ export class NatsJetStreamConsumer implements IPubSubConsumer {
         const manager = await this.getManager();
 
         for (const stream of streams) {
-            await this.jetStreamManager?.streams.purge(stream); // TODO
             const streamConsumers = manager.consumers.list(stream);
 
             for await (const consumer of streamConsumers) {

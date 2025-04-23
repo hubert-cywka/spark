@@ -37,14 +37,38 @@ import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.s
 @Module({
     providers: [
         { provide: MailerServiceToken, useClass: MailerService },
-        { provide: AccountActivatedEventHandler, useClass: AccountActivatedEventHandler },
-        { provide: AccountActivationTokenRequestedEventHandler, useClass: AccountActivationTokenRequestedEventHandler },
-        { provide: AccountPasswordUpdatedEventHandler, useClass: AccountPasswordUpdatedEventHandler },
-        { provide: AccountRequestedPasswordResetEventHandler, useClass: AccountRequestedPasswordResetEventHandler },
-        { provide: DailyReminderTriggeredEventHandler, useClass: DailyReminderTriggeredEventHandler },
-        { provide: AccountRemovedEventHandler, useClass: AccountRemovedEventHandler },
-        { provide: AccountRemovalRequestedEventHandler, useClass: AccountRemovalRequestedEventHandler },
-        { provide: TwoFactorAuthCodeIssuedEventHandler, useClass: TwoFactorAuthCodeIssuedEventHandler },
+        {
+            provide: AccountActivatedEventHandler,
+            useClass: AccountActivatedEventHandler,
+        },
+        {
+            provide: AccountActivationTokenRequestedEventHandler,
+            useClass: AccountActivationTokenRequestedEventHandler,
+        },
+        {
+            provide: AccountPasswordUpdatedEventHandler,
+            useClass: AccountPasswordUpdatedEventHandler,
+        },
+        {
+            provide: AccountRequestedPasswordResetEventHandler,
+            useClass: AccountRequestedPasswordResetEventHandler,
+        },
+        {
+            provide: DailyReminderTriggeredEventHandler,
+            useClass: DailyReminderTriggeredEventHandler,
+        },
+        {
+            provide: AccountRemovedEventHandler,
+            useClass: AccountRemovedEventHandler,
+        },
+        {
+            provide: AccountRemovalRequestedEventHandler,
+            useClass: AccountRemovalRequestedEventHandler,
+        },
+        {
+            provide: TwoFactorAuthCodeIssuedEventHandler,
+            useClass: TwoFactorAuthCodeIssuedEventHandler,
+        },
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
@@ -92,7 +116,7 @@ export class MailModule implements OnModuleInit {
     ) {}
 
     public onModuleInit() {
-        this.orchestrator.init(this.handlers);
+        this.orchestrator.start(this.handlers);
         void this.subscriber.listen([
             {
                 name: "codename_mail_account",

@@ -45,10 +45,22 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
         { provide: TenantMapperToken, useClass: TenantMapper },
         { provide: TenantServiceToken, useClass: TenantService },
         { provide: DataPurgeServiceToken, useClass: DataPurgeService },
-        { provide: DataPurgePublisherServiceToken, useClass: DataPurgePublisherService },
-        { provide: TenantRegisteredEventHandler, useClass: TenantRegisteredEventHandler },
-        { provide: TenantRemovedEventHandler, useClass: TenantRemovedEventHandler },
-        { provide: TenantRemovalRequestedEventHandler, useClass: TenantRemovalRequestedEventHandler },
+        {
+            provide: DataPurgePublisherServiceToken,
+            useClass: DataPurgePublisherService,
+        },
+        {
+            provide: TenantRegisteredEventHandler,
+            useClass: TenantRegisteredEventHandler,
+        },
+        {
+            provide: TenantRemovedEventHandler,
+            useClass: TenantRemovedEventHandler,
+        },
+        {
+            provide: TenantRemovalRequestedEventHandler,
+            useClass: TenantRemovalRequestedEventHandler,
+        },
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
@@ -93,7 +105,7 @@ export class GdprModule implements OnModuleInit {
     ) {}
 
     public onModuleInit() {
-        this.orchestrator.init(this.handlers);
+        this.orchestrator.start(this.handlers);
         void this.subscriber.listen([
             {
                 name: "codename_gdpr_account",
