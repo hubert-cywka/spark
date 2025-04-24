@@ -33,6 +33,7 @@ export const DailyEntryInput = ({
     const [content, setContent] = useState(initialContent);
     const [isEditing, setIsEditing] = useState(!initialContent);
     const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
+    const shouldAutoFocus = useRef<boolean | null>(null);
 
     const handleSaveContent = (newContent: string) => {
         if (!newContent.trim() || initialContent === newContent) {
@@ -94,6 +95,8 @@ export const DailyEntryInput = ({
     };
 
     const handleBlur = () => {
+        shouldAutoFocus.current = false;
+
         if (!content) {
             onDelete();
         } else {
@@ -103,6 +106,7 @@ export const DailyEntryInput = ({
     };
 
     const handleFocus = () => {
+        shouldAutoFocus.current = true;
         setIsEditing(true);
     };
 
@@ -125,7 +129,7 @@ export const DailyEntryInput = ({
                 className={classNames(styles.content, styles.editable)}
                 placeholder={placeholder}
                 value={content}
-                autoFocus
+                autoFocus={!!shouldAutoFocus.current}
             />
         );
     }
