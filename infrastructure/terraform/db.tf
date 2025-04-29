@@ -24,7 +24,7 @@ resource "kubernetes_deployment" "db" {
                     name  = "db"
                     image = "postgres:17.0"
                     port {
-                        container_port = var.DATABASE_PORT
+                        container_port = var.POSTGRESQL_PORT
                     }
                     env {
                         name  = "POSTGRES_USER"
@@ -66,8 +66,8 @@ resource "kubernetes_service" "db" {
         }
 
         port {
-            port        = var.DATABASE_PORT
-            target_port = var.DATABASE_PORT
+            port        = var.POSTGRESQL_PORT
+            target_port = var.POSTGRESQL_PORT
         }
 
         type = "ClusterIP"
