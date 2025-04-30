@@ -7,6 +7,10 @@
         "port": 5432,
         "detachable": false
     },
+    "pooler": {
+        "port": 6432,
+        "detachable": false
+    },
     "pubsub": {
         "port": 4222,
         "detachable": false

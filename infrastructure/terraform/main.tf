@@ -67,6 +67,14 @@ resource "kubernetes_config_map" "app_config" {
         GOOGLE_OIDC_REDIRECT_URL                            = var.GOOGLE_OIDC_REDIRECT_URL
 
         COOKIES_SECRET                                      = var.COOKIES_SECRET
+        
+        PGBOUNCER_POOL_MODE                                 = var.PGBOUNCER_POOL_MODE
+        PGBOUNCER_QUERY_WAIT_TIMEOUT                        = var.PGBOUNCER_QUERY_WAIT_TIMEOUT
+        PGBOUNCER_MAX_CLIENT_CONN                           = var.PGBOUNCER_MAX_CLIENT_CONN
+        PGBOUNCER_DEFAULT_POOL_SIZE                         = var.PGBOUNCER_DEFAULT_POOL_SIZE
+        PGBOUNCER_STATS_USERS                               = var.PGBOUNCER_STATS_USERS
+        PGBOUNCER_DATABASE                                  = var.PGBOUNCER_DATABASE
+        POSTGRESQL_PORT                                     = var.POSTGRESQL_PORT
     }
 }
 

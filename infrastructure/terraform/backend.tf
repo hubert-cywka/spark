@@ -53,7 +53,7 @@ resource "kubernetes_deployment" "backend" {
                     }
                     env {
                         name  = "DATABASE_HOST"
-                        value = "${kubernetes_service.db.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
+                        value = "${kubernetes_service.pooler.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
                     }
 
                     env {
@@ -184,7 +184,7 @@ resource "kubernetes_deployment" "backend" {
             }
         }
     }
-    depends_on = [kubernetes_deployment.db, kubernetes_deployment.pubsub]
+    depends_on = [kubernetes_deployment.pooler, kubernetes_deployment.pubsub]
 }
 
 resource "kubernetes_service" "backend" {

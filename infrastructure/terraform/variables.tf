@@ -141,3 +141,31 @@ variable "GOOGLE_OIDC_REDIRECT_URL" {
 variable "COOKIES_SECRET" {
     type        = string
 }
+
+variable "PGBOUNCER_POOL_MODE" {
+    type        = string
+}
+
+variable "PGBOUNCER_QUERY_WAIT_TIMEOUT" {
+    type        = number
+}
+
+variable "PGBOUNCER_MAX_CLIENT_CONN" {
+    type        = number
+}
+
+variable "PGBOUNCER_DEFAULT_POOL_SIZE" {
+    type        = number
+}
+
+variable "PGBOUNCER_STATS_USERS" {
+    type        = string
+}
+
+variable "PGBOUNCER_DATABASE" {
+    type        = string
+}
+
+variable "POSTGRESQL_PORT" {
+    type        = number
+}
