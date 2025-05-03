@@ -23,7 +23,7 @@ import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
-import { type IDomainVerifierService, DomainVerifierServiceToken } from "@/common/services/IDomainVerifier.service";
+import { type IDomainVerifierService, DomainVerifierServiceToken } from "@/common/services/interfaces/IDomainVerifier.service";
 import {
     OIDC_CODE_VERIFIER_COOKIE_NAME,
     OIDC_EXTERNAL_IDENTITY,

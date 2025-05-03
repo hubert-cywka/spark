@@ -4,9 +4,9 @@ import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-t
 import dayjs from "dayjs";
 import { And, IsNull, LessThan, Not, Repository } from "typeorm";
 
-import { IInboxEventHandler } from "@/common/events";
+import { type IInboxEventHandler } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
-import { IEventInbox } from "@/common/events/services/interfaces/IEventInbox";
+import { type IEventInbox } from "@/common/events/services/interfaces/IEventInbox";
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 
 const MAX_PAGE_SIZE = 10;
@@ -32,7 +32,7 @@ export class EventInbox implements IEventInbox {
     private readonly logger;
 
     public constructor(
-        private txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
         context?: string
     ) {
         this.logger = new Logger(context ?? EventInbox.name);
@@ -53,7 +53,8 @@ export class EventInbox implements IEventInbox {
                 id: event.getId(),
                 tenantId: event.getTenantId(),
                 topic: event.getTopic(),
-                payload: event.getPayload(),
+                payload: event.getRawPayload(),
+                isEncrypted: event.isEncrypted(),
                 createdAt: event.getCreatedAt(),
                 receivedAt: dayjs(),
             });
@@ -84,16 +85,20 @@ export class EventInbox implements IEventInbox {
 
     // TODO: Should each batch contain topics from only one topics family?
     public async processPendingEvents(handlers: IInboxEventHandler[]): Promise<void> {
-        let totalProcessed = 0;
-        let processedInRecentBatch = Infinity;
+        try {
+            let totalProcessed = 0;
+            let processedInRecentBatch = Infinity;
 
-        while (processedInRecentBatch !== 0) {
-            processedInRecentBatch = await this.processBatch(handlers, MAX_PAGE_SIZE, totalProcessed);
-            totalProcessed += processedInRecentBatch;
-        }
+            while (processedInRecentBatch !== 0) {
+                processedInRecentBatch = await this.processBatch(handlers, MAX_PAGE_SIZE, totalProcessed);
+                totalProcessed += processedInRecentBatch;
+            }
 
-        if (totalProcessed !== 0) {
-            this.logger.log({ count: totalProcessed }, "Processed events");
+            if (totalProcessed !== 0) {
+                this.logger.log({ count: totalProcessed }, "Processed events");
+            }
+        } catch (error) {
+            this.logger.error({ error }, "Failed to process pending events.");
         }
     }
 

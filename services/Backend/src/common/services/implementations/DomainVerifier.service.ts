@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
-import { type IDomainVerifierService } from "@/common/services/IDomainVerifier.service";
+import { type IDomainVerifierService } from "@/common/services/interfaces/IDomainVerifier.service";
 
 @Injectable()
 export class DomainVerifierService implements IDomainVerifierService {

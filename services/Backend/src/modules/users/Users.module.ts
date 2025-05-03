@@ -28,6 +28,7 @@ import { USERS_MODULE_DATA_SOURCE } from "@/modules/users/infrastructure/databas
 import { InitializeUsersModule1735737579670 } from "@/modules/users/infrastructure/database/migrations/1735737579670-InitializeUsersModule";
 import { AddTenantIdToOutboxAndInbox1743101796654 } from "@/modules/users/infrastructure/database/migrations/1743101796654-addTenantIdToOutboxAndInbox";
 import { RemoveUserPersonalInfo1746284981052 } from "@/modules/users/infrastructure/database/migrations/1746284981052-removeUserPersonalInfo";
+import { EncryptedEvents1746293623196 } from "@/modules/users/infrastructure/database/migrations/1746293623196-encryptedEvents";
 import { UserMapperToken } from "@/modules/users/mappers/IUser.mapper";
 import { UserMapper } from "@/modules/users/mappers/User.mapper";
 import { UserPublisherService } from "@/modules/users/services/implementations/UserPublisher.service";
@@ -68,6 +69,7 @@ import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.se
                     InitializeUsersModule1735737579670,
                     AddTenantIdToOutboxAndInbox1743101796654,
                     RemoveUserPersonalInfo1746284981052,
+                    EncryptedEvents1746293623196,
                 ],
             }),
             inject: [ConfigService],

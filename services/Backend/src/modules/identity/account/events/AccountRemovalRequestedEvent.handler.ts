@@ -21,7 +21,7 @@ export class AccountRemovalRequestedEventHandler implements IInboxEventHandler {
     }
 
     async handle(event: IntegrationEvent): Promise<void> {
-        const { account } = event.getPayload() as AccountRemovalRequestedEventPayload;
+        const { account } = (await event.getPayload()) as AccountRemovalRequestedEventPayload;
         return await this.removalService.suspendByInternalId(account.id);
     }
 }

@@ -17,6 +17,12 @@ export const AppConfig = () => ({
         secret: process.env.COOKIES_SECRET,
     },
 
+    events: {
+        encryption: {
+            secret: process.env.EVENTS_ENCRYPTION_SECRET,
+        },
+    },
+
     pubsub: {
         host: process.env.PUBSUB_HOST,
         port: parseInt(process.env.PUBSUB_PORT ?? ""),

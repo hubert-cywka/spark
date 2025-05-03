@@ -1,7 +1,7 @@
 import { Global, Module } from "@nestjs/common";
 
-import { DomainVerifierService } from "@/common/services/DomainVerifier.service";
-import { DomainVerifierServiceToken } from "@/common/services/IDomainVerifier.service";
+import { DomainVerifierService } from "@/common/services/implementations/DomainVerifier.service";
+import { DomainVerifierServiceToken } from "@/common/services/interfaces/IDomainVerifier.service";
 
 @Global()
 @Module({

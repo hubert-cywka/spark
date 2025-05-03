@@ -30,6 +30,7 @@ import { TwoFactorAuthCodeIssuedEventHandler } from "@/modules/mail/events/TwoFa
 import { MAIL_MODULE_DATA_SOURCE } from "@/modules/mail/infrastructure/database/constants";
 import { InitializeMailModule1735737562761 } from "@/modules/mail/infrastructure/database/migrations/1735737562761-InitializeMailModule";
 import { AddTenantIdToOutboxAndInbox1743101783697 } from "@/modules/mail/infrastructure/database/migrations/1743101783697-addTenantIdToOutboxAndInbox";
+import { EncryptedEvents1746294905909 } from "@/modules/mail/infrastructure/database/migrations/1746294905909-encryptedEvents";
 import { MailerService } from "@/modules/mail/services/implementations/Mailer.service";
 import { MailEventBoxFactory } from "@/modules/mail/services/implementations/MailEventBox.factory";
 import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
@@ -92,7 +93,7 @@ import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.s
                 password: configService.getOrThrow<string>("modules.mail.database.password"),
                 host: configService.getOrThrow<string>("modules.mail.database.host"),
                 database: configService.getOrThrow<string>("modules.mail.database.name"),
-                migrations: [InitializeMailModule1735737562761, AddTenantIdToOutboxAndInbox1743101783697],
+                migrations: [InitializeMailModule1735737562761, AddTenantIdToOutboxAndInbox1743101783697, EncryptedEvents1746294905909],
             }),
             inject: [ConfigService],
         }),

@@ -22,8 +22,8 @@ export class EventOutbox implements IEventOutbox {
     private readonly logger;
 
     public constructor(
-        private client: IPubSubProducer,
-        private txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        private readonly client: IPubSubProducer,
+        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
         context?: string
     ) {
         this.logger = new Logger(context ?? EventOutbox.name);
@@ -36,7 +36,8 @@ export class EventOutbox implements IEventOutbox {
             id: event.getId(),
             tenantId: event.getTenantId(),
             topic: event.getTopic(),
-            payload: event.getPayload(),
+            payload: event.getRawPayload(),
+            isEncrypted: event.isEncrypted(),
             createdAt: event.getCreatedAt(),
         });
 
@@ -57,30 +58,34 @@ export class EventOutbox implements IEventOutbox {
     }
 
     public async processPendingEvents() {
-        let totalSuccessful = 0;
-        let totalProcessed = 0;
-        let breakpoint = true;
+        try {
+            let totalSuccessful = 0;
+            let totalProcessed = 0;
+            let breakpoint = true;
 
-        while (breakpoint) {
-            const { total, successful } = await this.processBatch(MAX_PAGE_SIZE, totalProcessed);
-            totalProcessed += total;
-            totalSuccessful += successful;
+            while (breakpoint) {
+                const { total, successful } = await this.processBatch(MAX_PAGE_SIZE, totalProcessed);
+                totalProcessed += total;
+                totalSuccessful += successful;
 
-            if (total === 0) {
-                breakpoint = false;
+                if (total === 0) {
+                    breakpoint = false;
+                }
             }
-        }
 
-        if (totalProcessed !== 0) {
-            this.logger.log(
-                {
-                    processed: {
-                        total: totalProcessed,
-                        successful: totalSuccessful,
+            if (totalProcessed !== 0) {
+                this.logger.log(
+                    {
+                        processed: {
+                            total: totalProcessed,
+                            successful: totalSuccessful,
+                        },
                     },
-                },
-                "Processed events"
-            );
+                    "Processed events"
+                );
+            }
+        } catch (error) {
+            this.logger.error({ error }, "Failed to process pending events.");
         }
     }
 

@@ -17,7 +17,7 @@ export class RecipientCreatedEventHandler implements IInboxEventHandler {
     }
 
     async handle(event: IntegrationEvent): Promise<void> {
-        const payload = event.getPayload() as AccountCreatedEventPayload;
+        const payload = (await event.getPayload()) as AccountCreatedEventPayload;
         try {
             await this.recipientService.create(payload.id, payload.email);
         } catch (e) {

@@ -16,7 +16,7 @@ export class AccountRemovalRequestedEventHandler implements IInboxEventHandler {
     }
 
     public async handle(event: IntegrationEvent): Promise<void> {
-        const payload = event.getPayload() as AccountRemovalRequestedEventPayload;
+        const payload = (await event.getPayload()) as AccountRemovalRequestedEventPayload;
         try {
             await this.mailer.send(payload.account.email, new AccountRemovalRequestedEmail());
         } catch (e) {

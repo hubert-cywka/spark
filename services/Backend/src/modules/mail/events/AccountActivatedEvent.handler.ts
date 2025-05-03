@@ -19,7 +19,7 @@ export class AccountActivatedEventHandler implements IInboxEventHandler {
     }
 
     public async handle(event: IntegrationEvent): Promise<void> {
-        const payload = event.getPayload() as AccountActivatedEventPayload;
+        const payload = (await event.getPayload()) as AccountActivatedEventPayload;
         try {
             const appUrl = this.configService.getOrThrow<string>("client.url.base");
             await this.mailer.send(payload.email, new UserActivatedEmail(appUrl));

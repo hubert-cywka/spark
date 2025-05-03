@@ -19,7 +19,7 @@ export class AccountPasswordUpdatedEventHandler implements IInboxEventHandler {
     }
 
     public async handle(event: IntegrationEvent): Promise<void> {
-        const payload = event.getPayload() as AccountPasswordUpdatedEventPayload;
+        const payload = (await event.getPayload()) as AccountPasswordUpdatedEventPayload;
         try {
             const appUrl = this.configService.getOrThrow<string>("client.url.base");
             await this.mailer.send(payload.email, new PasswordUpdatedEmail(appUrl));

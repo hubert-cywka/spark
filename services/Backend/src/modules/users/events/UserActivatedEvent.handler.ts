@@ -14,7 +14,7 @@ export class UserActivatedEventHandler implements IInboxEventHandler {
     }
 
     public async handle(event: IntegrationEvent): Promise<void> {
-        const payload = event.getPayload() as AccountActivatedEventPayload;
+        const payload = (await event.getPayload()) as AccountActivatedEventPayload;
         try {
             await this.usersService.activateOneById(payload.id);
         } catch (e) {

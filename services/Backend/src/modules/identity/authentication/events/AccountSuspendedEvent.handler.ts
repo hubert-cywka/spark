@@ -19,7 +19,7 @@ export class AccountSuspendedEventHandler implements IInboxEventHandler {
     }
 
     public async handle(event: IntegrationEvent): Promise<void> {
-        const payload = event.getPayload() as AccountSuspendedEventPayload;
+        const payload = (await event.getPayload()) as AccountSuspendedEventPayload;
         await this.refreshTokenService.invalidateAllByOwnerId(payload.id);
     }
 }

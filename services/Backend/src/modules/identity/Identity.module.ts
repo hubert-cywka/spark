@@ -33,6 +33,7 @@ import { AddTenantIdToOutboxAndInbox1743101746907 } from "@/modules/identity/inf
 import { DeleteOnCascade1743158756974 } from "@/modules/identity/infrastructure/database/migrations/1743158756974-deleteOnCascade";
 import { AddOptionToSuspendAccounts1743167408668 } from "@/modules/identity/infrastructure/database/migrations/1743167408668-addOptionToSuspendAccounts";
 import { AddTTLFor2FAIntegrations1743713719361 } from "@/modules/identity/infrastructure/database/migrations/1743713719361-addTTLFor2FAIntegrations";
+import { EncryptedEvents1746293636231 } from "@/modules/identity/infrastructure/database/migrations/1746293636231-encryptedEvents";
 import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.module";
 
 @Module({
@@ -75,6 +76,7 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
                         DeleteOnCascade1743158756974,
                         AddOptionToSuspendAccounts1743167408668,
                         AddTTLFor2FAIntegrations1743713719361,
+                        EncryptedEvents1746293636231,
                     ],
                 }),
                 inject: [ConfigService],
