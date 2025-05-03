@@ -911,22 +911,6 @@
                     },
                     "label": "Email"
                 },
-                "firstName": {
-                    "errors": {
-                        "required": "Name is required.",
-                        "tooLong": "Name can't exceed {length} characters.",
-                        "invalid": "Name is invalid."
-                    },
-                    "label": "First name"
-                },
-                "lastName": {
-                    "errors": {
-                        "required": "Name is required.",
-                        "tooLong": "Name can't exceed {length} characters.",
-                        "invalid": "Name is invalid."
-                    },
-                    "label": "Last name"
-                },
                 "password": {
                     "errors": {
                         "weak": "Password requires at least {length} characters.",

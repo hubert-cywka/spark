@@ -1,15 +1,4 @@
-import {
-    Body,
-    ConflictException,
-    Controller,
-    ForbiddenException,
-    HttpCode,
-    HttpStatus,
-    Inject,
-    Post,
-    Res,
-    UnauthorizedException,
-} from "@nestjs/common";
+import { Body, Controller, ForbiddenException, HttpCode, HttpStatus, Inject, Post, Res, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { type Response } from "express";
 
@@ -59,13 +48,9 @@ export class AuthenticationController {
         }
 
         try {
-            await this.authService.registerWithCredentials(
-                { email: dto.email, password: dto.password },
-                { lastName: dto.lastName, firstName: dto.firstName },
-                dto.accountActivationRedirectUrl
-            );
+            await this.authService.registerWithCredentials({ email: dto.email, password: dto.password }, dto.accountActivationRedirectUrl);
         } catch (err) {
-            whenError(err).is(EntityConflictError).throw(new ConflictException()).elseRethrow();
+            whenError(err).is(EntityConflictError).ignore().elseRethrow();
         }
     }
 

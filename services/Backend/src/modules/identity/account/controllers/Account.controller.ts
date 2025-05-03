@@ -1,5 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Inject, NotFoundException, Post, Put } from "@nestjs/common";
 
+import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
@@ -8,8 +9,6 @@ import { RedeemActivationTokenDto } from "@/modules/identity/account/dto/RedeemA
 import { RequestActivationTokenDto } from "@/modules/identity/account/dto/RequestActivationToken.dto";
 import { RequestPasswordResetDto } from "@/modules/identity/account/dto/RequestPasswordReset.dto";
 import { UpdatePasswordDto } from "@/modules/identity/account/dto/UpdatePassword.dto";
-import { AccountAlreadyActivatedError } from "@/modules/identity/account/errors/AccountAlreadyActivated.error";
-import { AccountNotFoundError } from "@/modules/identity/account/errors/AccountNotFound.error";
 import {
     type IManagedAccountService,
     ManagedAccountServiceToken,
@@ -37,11 +36,7 @@ export class AccountController {
         } catch (err) {
             // Hubert: Due to security reasons, do not give any information about the user, as this endpoint is exposed to public.
             // Those errors do not require any handling and the information about them is logged just before they are thrown.
-            if (err instanceof AccountNotFoundError) {
-                return;
-            } else {
-                throw err;
-            }
+            whenError(err).is(EntityNotFoundError).ignore().elseRethrow();
         }
     }
 
@@ -85,11 +80,7 @@ export class AccountController {
         } catch (err) {
             // Hubert: Due to security reasons, do not give any information about the user, as this endpoint is exposed to public.
             // Those errors do not require any handling and the information about them is logged just before they are thrown.
-            if (err instanceof AccountNotFoundError || err instanceof AccountAlreadyActivatedError) {
-                return;
-            } else {
-                throw err;
-            }
+            whenError(err).is(EntityNotFoundError).ignore().is(EntityConflictError).ignore().elseRethrow();
         }
     }
 }

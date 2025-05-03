@@ -15,7 +15,7 @@ import {
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
 import { AuthorsModule } from "@/modules/journal/authors/Authors.module";
 import { AuthorEntity } from "@/modules/journal/authors/entities/Author.entity";
-import { AccountRegisteredEventHandler } from "@/modules/journal/authors/events/AccountRegisteredEvent.handler";
+import { AccountCreatedEventHandler } from "@/modules/journal/authors/events/AccountCreatedEvent.handler";
 import { AuthorRemovedEventHandler } from "@/modules/journal/authors/events/AuthorRemovedEvent.handler";
 import { DailyModule } from "@/modules/journal/daily/Daily.module";
 import { DailyEntity } from "@/modules/journal/daily/entities/Daily.entity";
@@ -47,7 +47,7 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
-            inject: [AccountRegisteredEventHandler, AuthorRemovedEventHandler],
+            inject: [AccountCreatedEventHandler, AuthorRemovedEventHandler],
         },
     ],
     imports: [
@@ -107,7 +107,7 @@ export class JournalModule implements OnModuleInit {
             {
                 name: "codename_journal_account",
                 stream: IntegrationEventStreams.account,
-                subjects: [IntegrationEventTopics.account.registration.completed, IntegrationEventTopics.account.removal.completed],
+                subjects: [IntegrationEventTopics.account.created, IntegrationEventTopics.account.removal.completed],
             },
         ]);
     }

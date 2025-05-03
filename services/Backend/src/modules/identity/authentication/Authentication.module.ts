@@ -13,12 +13,10 @@ import { AuthenticationMapper } from "@/modules/identity/authentication/mappers/
 import { AuthenticationMapperToken } from "@/modules/identity/authentication/mappers/IAuthentication.mapper";
 import { AccessScopesService } from "@/modules/identity/authentication/services/implementations/AccessScopes.service";
 import { AuthenticationService } from "@/modules/identity/authentication/services/implementations/Authentication.service";
-import { AuthPublisherService } from "@/modules/identity/authentication/services/implementations/AuthPublisher.service";
 import { OIDCProviderFactory } from "@/modules/identity/authentication/services/implementations/OIDCProvider.factory";
 import { RefreshTokenService } from "@/modules/identity/authentication/services/implementations/RefreshToken.service";
 import { AccessScopesServiceToken } from "@/modules/identity/authentication/services/interfaces/IAccessScopes.service";
 import { AuthenticationServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
-import { AuthPublisherServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthPublisher.service";
 import { OIDCProviderFactoryToken } from "@/modules/identity/authentication/services/interfaces/IOIDCProvider.factory";
 import { RefreshTokenServiceToken } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
 import { AccessTokenStrategy } from "@/modules/identity/authentication/strategies/AccessToken.strategy";
@@ -40,10 +38,6 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
         {
             provide: OIDCProviderFactoryToken,
             useClass: OIDCProviderFactory,
-        },
-        {
-            provide: AuthPublisherServiceToken,
-            useClass: AuthPublisherService,
         },
         {
             provide: RefreshTokenServiceToken,

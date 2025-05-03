@@ -14,6 +14,7 @@ const MAX_PAGE_SIZE = 10;
 const MAX_ATTEMPTS = 10;
 const PUBLISH_TIMEOUT = 1000;
 
+// TODO: Encrypt messages?
 // TODO: Implement better retry mechanism
 // TODO: CDC instead of polling?
 @Injectable()

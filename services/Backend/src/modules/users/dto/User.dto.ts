@@ -7,12 +7,6 @@ export class UserDto {
     @IsString()
     readonly email!: string;
 
-    @IsString()
-    readonly firstName!: string;
-
-    @IsString()
-    readonly lastName!: string;
-
     @IsBoolean()
     readonly isActivated!: boolean;
 }

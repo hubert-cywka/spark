@@ -21,7 +21,7 @@ import {
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
 import { DataPurgePlanEntity } from "@/modules/gdpr/entities/DataPurgePlan.entity";
 import { TenantEntity } from "@/modules/gdpr/entities/Tenant.entity";
-import { TenantRegisteredEventHandler } from "@/modules/gdpr/events/TenantRegisteredEvent.handler";
+import { TenantCreatedEventHandler } from "@/modules/gdpr/events/TenantCreatedEvent.handler";
 import { TenantRemovalRequestedEventHandler } from "@/modules/gdpr/events/TenantRemovalRequestedEvent.handler";
 import { TenantRemovedEventHandler } from "@/modules/gdpr/events/TenantRemovedEvent.handler";
 import { GDPR_MODULE_DATA_SOURCE } from "@/modules/gdpr/infrastructure/database/constants";
@@ -50,8 +50,8 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
             useClass: DataPurgePublisherService,
         },
         {
-            provide: TenantRegisteredEventHandler,
-            useClass: TenantRegisteredEventHandler,
+            provide: TenantCreatedEventHandler,
+            useClass: TenantCreatedEventHandler,
         },
         {
             provide: TenantRemovedEventHandler,
@@ -64,7 +64,7 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
-            inject: [TenantRegisteredEventHandler, TenantRemovedEventHandler, TenantRemovalRequestedEventHandler],
+            inject: [TenantCreatedEventHandler, TenantRemovedEventHandler, TenantRemovalRequestedEventHandler],
         },
     ],
     imports: [
@@ -111,7 +111,7 @@ export class GdprModule implements OnModuleInit {
                 name: "codename_gdpr_account",
                 stream: IntegrationEventStreams.account,
                 subjects: [
-                    IntegrationEventTopics.account.registration.completed,
+                    IntegrationEventTopics.account.created,
                     IntegrationEventTopics.account.removal.completed,
                     IntegrationEventTopics.account.removal.requested,
                 ],

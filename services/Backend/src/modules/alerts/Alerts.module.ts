@@ -22,7 +22,7 @@ import {
 import { AlertsController } from "@/modules/alerts/controllers/Alerts.controller";
 import { AlertEntity } from "@/modules/alerts/entities/Alert.entity";
 import { RecipientEntity } from "@/modules/alerts/entities/Recipient.entity";
-import { RecipientRegisteredEventHandler } from "@/modules/alerts/events/RecipientRegisteredEvent.handler";
+import { RecipientCreatedEventHandler } from "@/modules/alerts/events/RecipientCreatedEvent.handler";
 import { RecipientRemovedEventHandler } from "@/modules/alerts/events/RecipientRemovedEvent.handler";
 import { ALERTS_MODULE_DATA_SOURCE } from "@/modules/alerts/infrastructure/database/constants";
 import { InitializeInboxAndOutbox1737489799641 } from "@/modules/alerts/infrastructure/database/migrations/1737489799641-InitializeInboxAndOutbox";
@@ -69,8 +69,8 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
             useClass: AlertPublisherService,
         },
         {
-            provide: RecipientRegisteredEventHandler,
-            useClass: RecipientRegisteredEventHandler,
+            provide: RecipientCreatedEventHandler,
+            useClass: RecipientCreatedEventHandler,
         },
         {
             provide: RecipientRemovedEventHandler,
@@ -79,7 +79,7 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
-            inject: [RecipientRegisteredEventHandler, RecipientRemovedEventHandler],
+            inject: [RecipientCreatedEventHandler, RecipientRemovedEventHandler],
         },
     ],
     imports: [
@@ -130,7 +130,7 @@ export class AlertsModule implements OnModuleInit {
             {
                 name: "codename_alerts_account",
                 stream: IntegrationEventStreams.account,
-                subjects: [IntegrationEventTopics.account.registration.completed, IntegrationEventTopics.account.removal.completed],
+                subjects: [IntegrationEventTopics.account.created, IntegrationEventTopics.account.removal.completed],
             },
         ]);
     }
