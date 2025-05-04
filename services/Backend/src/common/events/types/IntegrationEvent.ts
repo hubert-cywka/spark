@@ -84,7 +84,7 @@ export class IntegrationEvent<T = unknown> {
     }
 
     public isEncrypted(): boolean {
-        return typeof this.payload === "string";
+        return typeof this.getRawPayload() === "string";
     }
 
     public getId(): string {

@@ -47,6 +47,7 @@ export const ResetPasswordForm = () => {
                 />
             </div>
 
+            {/* TODO: Enable after 60s */}
             <Button isLoading={isPending} isDisabled={isSuccess} size="3" type="submit">
                 {t("authentication.requestPasswordReset.form.submitButton")}
             </Button>

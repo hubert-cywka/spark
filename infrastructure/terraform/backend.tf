@@ -35,6 +35,16 @@ resource "kubernetes_deployment" "backend" {
                     }
 
                     env {
+                        name  = "APP_NAME"
+                        value = var.APP_NAME
+                    }
+                
+                    env {
+                        name  = "EVENTS_ENCRYPTION_SECRET_64_BYTES"
+                        value = var.EVENTS_ENCRYPTION_SECRET_64_BYTES
+                    }
+
+                    env {
                         name  = "CLIENT_URL_BASE"
                         value = var.CLIENT_URL_BASE
                     }
