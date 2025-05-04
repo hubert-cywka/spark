@@ -1,6 +1,4 @@
-import { IntegrationEvent } from "../IntegrationEvent";
-
-import { IntegrationEventTopics } from "@/common/events";
+import { IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 
 export type AccountSuspendedEventPayload = {
     id: string;
@@ -8,6 +6,10 @@ export type AccountSuspendedEventPayload = {
 
 export class AccountSuspendedEvent extends IntegrationEvent<AccountSuspendedEventPayload> {
     public constructor(tenantId: string, payload: AccountSuspendedEventPayload) {
-        super(tenantId, IntegrationEventTopics.account.suspended, payload);
+        super({
+            topic: IntegrationEventTopics.account.suspended,
+            payload,
+            tenantId,
+        });
     }
 }

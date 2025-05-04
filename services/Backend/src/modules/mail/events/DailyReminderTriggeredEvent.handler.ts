@@ -20,7 +20,7 @@ export class DailyReminderTriggeredEventHandler implements IInboxEventHandler {
     }
 
     public async handle(event: IntegrationEvent): Promise<void> {
-        const payload = (await event.getPayload()) as DailyReminderTriggeredEventPayload;
+        const payload = event.getPayload() as DailyReminderTriggeredEventPayload;
         try {
             const appUrl = this.configService.getOrThrow<string>("client.url.base");
             await this.mailer.send(payload.email, new DailyReminderEmail(appUrl));

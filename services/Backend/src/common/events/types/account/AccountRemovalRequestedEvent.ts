@@ -9,6 +9,10 @@ export type AccountRemovalRequestedEventPayload = {
 
 export class AccountRemovalRequestedEvent extends IntegrationEvent<AccountRemovalRequestedEventPayload> {
     public constructor(tenantId: string, payload: AccountRemovalRequestedEventPayload) {
-        super(tenantId, IntegrationEventTopics.account.removal.requested, payload);
+        super({
+            topic: IntegrationEventTopics.account.removal.requested,
+            payload,
+            tenantId,
+        });
     }
 }

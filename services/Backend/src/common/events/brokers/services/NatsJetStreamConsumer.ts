@@ -1,6 +1,5 @@
 import { ConsumerMessages, jetstream, JetStreamClient, JetStreamManager } from "@nats-io/jetstream";
 import { Injectable, Logger } from "@nestjs/common";
-import { plainToClass } from "class-transformer";
 import { type NatsConnection } from "nats";
 
 import { IntegrationEvent } from "@/common/events";
@@ -29,7 +28,7 @@ export class NatsJetStreamConsumer implements IPubSubConsumer {
 
     private async readMessagesStream(messages: ConsumerMessages, onEventReceived: OnEventReceivedHandler) {
         for await (const message of messages) {
-            const event = plainToClass(IntegrationEvent, message.json() as unknown);
+            const event = IntegrationEvent.fromPlain(message.json());
 
             try {
                 await onEventReceived(

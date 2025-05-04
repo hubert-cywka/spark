@@ -2,11 +2,13 @@ import { type DynamicModule, Module } from "@nestjs/common";
 import { ClassConstructor } from "class-transformer";
 
 import { NatsJetStreamModule, NatsJetStreamModuleOptions } from "@/common/events/brokers/NatsJetStream.module";
+import { IntegrationEventsEncryptionService } from "@/common/events/services/implementations/IntegrationEventsEncryption.service";
 import { IntegrationEventsJobsOrchestrator } from "@/common/events/services/implementations/IntegrationEventsJobsOrchestrator";
 import { IntegrationEventsSubscriber } from "@/common/events/services/implementations/IntegrationEventsSubscriber";
 import { type IEventBoxFactory, EventBoxFactoryToken } from "@/common/events/services/interfaces/IEventBox.factory";
 import { EventInboxToken } from "@/common/events/services/interfaces/IEventInbox";
 import { EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
+import { IntegrationEventsEncryptionServiceToken } from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
 import { IntegrationEventsJobsOrchestratorToken } from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
 import { IntegrationEventsSubscriberToken } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
 import { IntegrationEventsModuleOptions } from "@/common/events/types";
@@ -74,9 +76,19 @@ export class IntegrationEventsModule {
                     provide: IntegrationEventsJobsOrchestratorToken,
                     useClass: IntegrationEventsJobsOrchestrator,
                 },
+                {
+                    provide: IntegrationEventsEncryptionServiceToken,
+                    useClass: IntegrationEventsEncryptionService,
+                },
             ],
 
-            exports: [EventOutboxToken, EventInboxToken, IntegrationEventsSubscriberToken, IntegrationEventsJobsOrchestratorToken],
+            exports: [
+                EventOutboxToken,
+                EventInboxToken,
+                IntegrationEventsSubscriberToken,
+                IntegrationEventsJobsOrchestratorToken,
+                IntegrationEventsEncryptionServiceToken,
+            ],
         };
     }
 }

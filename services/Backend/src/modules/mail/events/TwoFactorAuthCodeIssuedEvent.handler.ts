@@ -15,7 +15,7 @@ export class TwoFactorAuthCodeIssuedEventHandler implements IInboxEventHandler {
     }
 
     public async handle(event: IntegrationEvent): Promise<void> {
-        const payload = (await event.getPayload()) as EmailIntegrationTOTPIssuedEventPayload;
+        const payload = event.getPayload() as EmailIntegrationTOTPIssuedEventPayload;
         try {
             await this.mailer.send(payload.email, new TwoFactorAuthCodeIssuedEmail(payload.code));
         } catch (e) {

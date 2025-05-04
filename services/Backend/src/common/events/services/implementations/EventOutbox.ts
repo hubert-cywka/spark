@@ -7,6 +7,7 @@ import { And, IsNull, LessThan, Not, Repository } from "typeorm";
 
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
+import { type IIntegrationEventsEncryptionService } from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
 import { type IPubSubProducer } from "@/common/events/services/interfaces/IPubSubProducer";
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 
@@ -14,7 +15,6 @@ const MAX_PAGE_SIZE = 10;
 const MAX_ATTEMPTS = 10;
 const PUBLISH_TIMEOUT = 1000;
 
-// TODO: Encrypt messages?
 // TODO: Implement better retry mechanism
 // TODO: CDC instead of polling?
 @Injectable()
@@ -24,25 +24,33 @@ export class EventOutbox implements IEventOutbox {
     public constructor(
         private readonly client: IPubSubProducer,
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        private readonly encryptionService: IIntegrationEventsEncryptionService,
         context?: string
     ) {
         this.logger = new Logger(context ?? EventOutbox.name);
     }
 
-    public async enqueue(event: IntegrationEvent): Promise<void> {
+    public async enqueue(event: IntegrationEvent, options?: { encrypt: boolean }): Promise<void> {
         const repository = this.getRepository();
+        let preparedEvent: IntegrationEvent;
+
+        if (options?.encrypt) {
+            preparedEvent = await this.encryptionService.encrypt(event);
+        } else {
+            preparedEvent = event.copy();
+        }
 
         const entity = repository.create({
-            id: event.getId(),
-            tenantId: event.getTenantId(),
-            topic: event.getTopic(),
-            payload: event.getRawPayload(),
-            isEncrypted: event.isEncrypted(),
-            createdAt: event.getCreatedAt(),
+            id: preparedEvent.getId(),
+            tenantId: preparedEvent.getTenantId(),
+            topic: preparedEvent.getTopic(),
+            payload: preparedEvent.getRawPayload(),
+            isEncrypted: preparedEvent.isEncrypted(),
+            createdAt: preparedEvent.getCreatedAt(),
         });
 
         await repository.save(entity);
-        this.logger.log(event, "Event added to outbox.");
+        this.logger.log(preparedEvent, "Event added to outbox.");
     }
 
     public async clearProcessedEvents(processedBefore: Date): Promise<void> {

@@ -7,6 +7,10 @@ export type EmailIntegrationTOTPIssuedEventPayload = {
 
 export class EmailIntegrationTOTPIssuedEvent extends IntegrationEvent<EmailIntegrationTOTPIssuedEventPayload> {
     public constructor(tenantId: string, payload: EmailIntegrationTOTPIssuedEventPayload) {
-        super(tenantId, IntegrationEventTopics.twoFactorAuth.email.issued, payload);
+        super({
+            topic: IntegrationEventTopics.twoFactorAuth.email.issued,
+            payload,
+            tenantId,
+        });
     }
 }

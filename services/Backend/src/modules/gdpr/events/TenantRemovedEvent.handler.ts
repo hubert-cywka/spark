@@ -28,7 +28,7 @@ export class TenantRemovedEventHandler implements IInboxEventHandler {
     }
 
     async handle(event: IntegrationEvent): Promise<void> {
-        const payload = (await event.getPayload()) as AccountRemovalCompletedEventPayload;
+        const payload = event.getPayload() as AccountRemovalCompletedEventPayload;
         await this.outbox.clearTenantEvents(payload.account.id);
         await this.tenantService.remove(payload.account.id);
         await this.inbox.clearTenantEvents(payload.account.id);

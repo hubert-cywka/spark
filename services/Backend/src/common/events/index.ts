@@ -3,7 +3,7 @@ import { EventOutbox } from "./services/implementations/EventOutbox";
 import { EventBoxFactoryToken, IEventBoxFactory } from "./services/interfaces/IEventBox.factory";
 import { EventInboxToken, IEventInbox } from "./services/interfaces/IEventInbox";
 import { EventOutboxToken, IEventOutbox } from "./services/interfaces/IEventOutbox";
-import { IInboxEventHandler, InboxEventHandlersToken } from "./services/interfaces/IInboxEventHandler";
+import { type IInboxEventHandler, InboxEventHandlersToken } from "./services/interfaces/IInboxEventHandler";
 import { IntegrationEvent } from "./types/IntegrationEvent";
 import { IntegrationEventStreams } from "./types/IntegrationEventStreams";
 import { IntegrationEventTopics } from "./types/IntegrationEventTopics";

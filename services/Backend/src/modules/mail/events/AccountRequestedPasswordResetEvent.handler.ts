@@ -15,7 +15,7 @@ export class AccountRequestedPasswordResetEventHandler implements IInboxEventHan
     }
 
     public async handle(event: IntegrationEvent): Promise<void> {
-        const payload = (await event.getPayload()) as AccountRequestedPasswordResetEventPayload;
+        const payload = event.getPayload() as AccountRequestedPasswordResetEventPayload;
         try {
             await this.mailer.send(payload.email, new PasswordResetRequestedEmail(payload.redirectUrl));
         } catch (e) {

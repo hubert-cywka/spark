@@ -7,6 +7,10 @@ export type AccountCreatedEventPayload = {
 
 export class AccountCreatedEvent extends IntegrationEvent<AccountCreatedEventPayload> {
     public constructor(tenantId: string, payload: AccountCreatedEventPayload) {
-        super(tenantId, IntegrationEventTopics.account.created, payload);
+        super({
+            topic: IntegrationEventTopics.account.created,
+            payload,
+            tenantId,
+        });
     }
 }

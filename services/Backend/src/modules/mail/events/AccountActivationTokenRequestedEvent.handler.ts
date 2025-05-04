@@ -15,7 +15,7 @@ export class AccountActivationTokenRequestedEventHandler implements IInboxEventH
     }
 
     public async handle(event: IntegrationEvent): Promise<void> {
-        const payload = (await event.getPayload()) as AccountActivationTokenRequestedEventPayload;
+        const payload = event.getPayload() as AccountActivationTokenRequestedEventPayload;
         try {
             await this.mailer.send(payload.email, new UserActivationEmail(payload.redirectUrl));
         } catch (e) {

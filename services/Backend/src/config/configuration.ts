@@ -19,7 +19,7 @@ export const AppConfig = () => ({
 
     events: {
         encryption: {
-            secret: process.env.EVENTS_ENCRYPTION_SECRET,
+            secret: process.env.EVENTS_ENCRYPTION_SECRET_64_BYTES,
         },
     },
 

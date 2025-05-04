@@ -26,23 +26,23 @@ export class AccountPublisherService implements IAccountPublisherService {
     }
 
     public async onAccountActivationTokenRequested(tenantId: string, email: string, accountActivationRedirectUrl: string) {
-        const event = new AccountActivationTokenRequestedEvent(tenantId, {
-            email,
-            redirectUrl: accountActivationRedirectUrl,
-        });
-
-        await event.encrypt();
-        await this.outbox.enqueue(event);
+        await this.outbox.enqueue(
+            new AccountActivationTokenRequestedEvent(tenantId, {
+                email,
+                redirectUrl: accountActivationRedirectUrl,
+            }),
+            { encrypt: true }
+        );
     }
 
     public async onPasswordResetRequested(tenantId: string, email: string, passwordResetRedirectUrl: string) {
-        const event = new AccountRequestedPasswordResetEvent(tenantId, {
-            email,
-            redirectUrl: passwordResetRedirectUrl,
-        });
-
-        await event.encrypt();
-        await this.outbox.enqueue(event);
+        await this.outbox.enqueue(
+            new AccountRequestedPasswordResetEvent(tenantId, {
+                email,
+                redirectUrl: passwordResetRedirectUrl,
+            }),
+            { encrypt: true }
+        );
     }
 
     public async onPasswordUpdated(tenantId: string, email: string) {
