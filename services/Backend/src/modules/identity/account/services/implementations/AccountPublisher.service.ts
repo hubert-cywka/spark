@@ -3,6 +3,7 @@ import { Inject } from "@nestjs/common";
 import {
     AccountActivatedEvent,
     AccountActivationTokenRequestedEvent,
+    AccountCreatedEvent,
     AccountPasswordUpdatedEvent,
     AccountRequestedPasswordResetEvent,
 } from "@/common/events";
@@ -16,6 +17,10 @@ export class AccountPublisherService implements IAccountPublisherService {
         private readonly outbox: IEventOutbox
     ) {}
 
+    public async onAccountCreated(tenantId: string, email: string): Promise<void> {
+        await this.outbox.enqueue(new AccountCreatedEvent(tenantId, { id: tenantId, email }));
+    }
+
     public async onAccountActivated(tenantId: string, email: string) {
         await this.outbox.enqueue(new AccountActivatedEvent(tenantId, { email, id: tenantId }));
     }
@@ -25,7 +30,8 @@ export class AccountPublisherService implements IAccountPublisherService {
             new AccountActivationTokenRequestedEvent(tenantId, {
                 email,
                 redirectUrl: accountActivationRedirectUrl,
-            })
+            }),
+            { encrypt: true }
         );
     }
 
@@ -34,7 +40,8 @@ export class AccountPublisherService implements IAccountPublisherService {
             new AccountRequestedPasswordResetEvent(tenantId, {
                 email,
                 redirectUrl: passwordResetRedirectUrl,
-            })
+            }),
+            { encrypt: true }
         );
     }
 

@@ -15,7 +15,7 @@ import {
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
 import { AuthorsModule } from "@/modules/journal/authors/Authors.module";
 import { AuthorEntity } from "@/modules/journal/authors/entities/Author.entity";
-import { AccountRegisteredEventHandler } from "@/modules/journal/authors/events/AccountRegisteredEvent.handler";
+import { AccountCreatedEventHandler } from "@/modules/journal/authors/events/AccountCreatedEvent.handler";
 import { AuthorRemovedEventHandler } from "@/modules/journal/authors/events/AuthorRemovedEvent.handler";
 import { DailyModule } from "@/modules/journal/daily/Daily.module";
 import { DailyEntity } from "@/modules/journal/daily/entities/Daily.entity";
@@ -40,6 +40,7 @@ import { AddTenantIdToOutboxAndInbox1743101763604 } from "@/modules/journal/infr
 import { DeleteOnCascade1743158742983 } from "@/modules/journal/infrastructure/database/migrations/1743158742983-deleteOnCascade";
 import { DeleteGoalsOnCascade1743159095911 } from "@/modules/journal/infrastructure/database/migrations/1743159095911-deleteGoalsOnCascade";
 import { DeleteOnCascadeFix1743159586254 } from "@/modules/journal/infrastructure/database/migrations/1743159586254-deleteOnCascadeFix";
+import { EncryptedEvents1746293695291 } from "@/modules/journal/infrastructure/database/migrations/1746293695291-encryptedEvents";
 import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.module";
 
 @Module({
@@ -47,7 +48,7 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
-            inject: [AccountRegisteredEventHandler, AuthorRemovedEventHandler],
+            inject: [AccountCreatedEventHandler, AuthorRemovedEventHandler],
         },
     ],
     imports: [
@@ -78,6 +79,7 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
                         DeleteOnCascade1743158742983,
                         DeleteGoalsOnCascade1743159095911,
                         DeleteOnCascadeFix1743159586254,
+                        EncryptedEvents1746293695291,
                     ],
                 }),
                 inject: [ConfigService],
@@ -107,7 +109,7 @@ export class JournalModule implements OnModuleInit {
             {
                 name: "codename_journal_account",
                 stream: IntegrationEventStreams.account,
-                subjects: [IntegrationEventTopics.account.registration.completed, IntegrationEventTopics.account.removal.completed],
+                subjects: [IntegrationEventTopics.account.created, IntegrationEventTopics.account.removal.completed],
             },
         ]);
     }

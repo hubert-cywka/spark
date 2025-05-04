@@ -11,8 +11,6 @@ export class UserMapper extends BaseModelDTOEntityMapper<User, UserDto, UserEnti
         return {
             id: dto.id,
             email: dto.email,
-            firstName: dto.firstName,
-            lastName: dto.lastName,
             isActivated: dto.isActivated,
         };
     }
@@ -21,8 +19,6 @@ export class UserMapper extends BaseModelDTOEntityMapper<User, UserDto, UserEnti
         return {
             id: entity.id,
             email: entity.email,
-            firstName: entity.firstName,
-            lastName: entity.lastName,
             isActivated: entity.isActivated,
         };
     }
@@ -31,8 +27,6 @@ export class UserMapper extends BaseModelDTOEntityMapper<User, UserDto, UserEnti
         return plainToClass(UserDto, {
             id: model.id,
             email: model.email,
-            firstName: model.firstName,
-            lastName: model.lastName,
             isActivated: model.isActivated,
         });
     }

@@ -7,6 +7,7 @@ import { And, IsNull, LessThan, Not, Repository } from "typeorm";
 
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
+import { type IIntegrationEventsEncryptionService } from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
 import { type IPubSubProducer } from "@/common/events/services/interfaces/IPubSubProducer";
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 
@@ -21,26 +22,35 @@ export class EventOutbox implements IEventOutbox {
     private readonly logger;
 
     public constructor(
-        private client: IPubSubProducer,
-        private txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        private readonly client: IPubSubProducer,
+        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        private readonly encryptionService: IIntegrationEventsEncryptionService,
         context?: string
     ) {
         this.logger = new Logger(context ?? EventOutbox.name);
     }
 
-    public async enqueue(event: IntegrationEvent): Promise<void> {
+    public async enqueue(event: IntegrationEvent, options?: { encrypt: boolean }): Promise<void> {
         const repository = this.getRepository();
+        let preparedEvent: IntegrationEvent;
+
+        if (options?.encrypt) {
+            preparedEvent = await this.encryptionService.encrypt(event);
+        } else {
+            preparedEvent = event.copy();
+        }
 
         const entity = repository.create({
-            id: event.getId(),
-            tenantId: event.getTenantId(),
-            topic: event.getTopic(),
-            payload: event.getPayload(),
-            createdAt: event.getCreatedAt(),
+            id: preparedEvent.getId(),
+            tenantId: preparedEvent.getTenantId(),
+            topic: preparedEvent.getTopic(),
+            payload: preparedEvent.getRawPayload(),
+            isEncrypted: preparedEvent.isEncrypted(),
+            createdAt: preparedEvent.getCreatedAt(),
         });
 
         await repository.save(entity);
-        this.logger.log(event, "Event added to outbox.");
+        this.logger.log(preparedEvent, "Event added to outbox.");
     }
 
     public async clearProcessedEvents(processedBefore: Date): Promise<void> {
@@ -56,30 +66,34 @@ export class EventOutbox implements IEventOutbox {
     }
 
     public async processPendingEvents() {
-        let totalSuccessful = 0;
-        let totalProcessed = 0;
-        let breakpoint = true;
+        try {
+            let totalSuccessful = 0;
+            let totalProcessed = 0;
+            let breakpoint = true;
 
-        while (breakpoint) {
-            const { total, successful } = await this.processBatch(MAX_PAGE_SIZE, totalProcessed);
-            totalProcessed += total;
-            totalSuccessful += successful;
+            while (breakpoint) {
+                const { total, successful } = await this.processBatch(MAX_PAGE_SIZE, totalProcessed);
+                totalProcessed += total;
+                totalSuccessful += successful;
 
-            if (total === 0) {
-                breakpoint = false;
+                if (total === 0) {
+                    breakpoint = false;
+                }
             }
-        }
 
-        if (totalProcessed !== 0) {
-            this.logger.log(
-                {
-                    processed: {
-                        total: totalProcessed,
-                        successful: totalSuccessful,
+            if (totalProcessed !== 0) {
+                this.logger.log(
+                    {
+                        processed: {
+                            total: totalProcessed,
+                            successful: totalSuccessful,
+                        },
                     },
-                },
-                "Processed events"
-            );
+                    "Processed events"
+                );
+            }
+        } catch (error) {
+            this.logger.error({ error }, "Failed to process pending events.");
         }
     }
 

@@ -4,6 +4,10 @@ import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-t
 
 import { EventOutbox, IEventBoxFactory } from "@/common/events";
 import { EventInbox } from "@/common/events/services/implementations/EventInbox";
+import {
+    type IIntegrationEventsEncryptionService,
+    IntegrationEventsEncryptionServiceToken,
+} from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
 import { type IPubSubProducer, PubSubProducerToken } from "@/common/events/services/interfaces/IPubSubProducer";
 import { USERS_MODULE_DATA_SOURCE } from "@/modules/users/infrastructure/database/constants";
 
@@ -12,15 +16,17 @@ export class UsersEventBoxFactory implements IEventBoxFactory {
     public constructor(
         @Inject(PubSubProducerToken)
         private readonly clientProxy: IPubSubProducer,
+        @Inject(IntegrationEventsEncryptionServiceToken)
+        private readonly encryptionService: IIntegrationEventsEncryptionService,
         @InjectTransactionHost(USERS_MODULE_DATA_SOURCE)
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
     ) {}
 
     public createOutbox(context?: string) {
-        return new EventOutbox(this.clientProxy, this.txHost, context);
+        return new EventOutbox(this.clientProxy, this.txHost, this.encryptionService, context);
     }
 
     public createInbox(context?: string) {
-        return new EventInbox(this.txHost, context);
+        return new EventInbox(this.txHost, this.encryptionService, context);
     }
 }

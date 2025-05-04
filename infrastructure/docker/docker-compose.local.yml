@@ -64,6 +64,7 @@ services:
             - "${BACKEND_PORT}:80"
         environment:
             - APP_NAME=${APP_NAME}
+            - EVENTS_ENCRYPTION_SECRET_64_BYTES=${EVENTS_ENCRYPTION_SECRET_64_BYTES}
 
             - CLIENT_URL_BASE=${CLIENT_URL_BASE}
 

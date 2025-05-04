@@ -11,6 +11,9 @@ export class InboxEventEntity<T = unknown> {
     @Column({ type: "varchar" })
     topic!: string;
 
+    @Column({ type: "boolean", default: false })
+    isEncrypted!: boolean;
+
     @Column({ type: "jsonb" })
     payload!: T;
 

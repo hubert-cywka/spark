@@ -1,15 +1,4 @@
-import {
-    Body,
-    ConflictException,
-    Controller,
-    ForbiddenException,
-    HttpCode,
-    HttpStatus,
-    Inject,
-    Post,
-    Res,
-    UnauthorizedException,
-} from "@nestjs/common";
+import { Body, Controller, ForbiddenException, HttpCode, HttpStatus, Inject, Post, Res, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { type Response } from "express";
 
@@ -18,7 +7,7 @@ import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
-import { type IDomainVerifierService, DomainVerifierServiceToken } from "@/common/services/IDomainVerifier.service";
+import { type IDomainVerifierService, DomainVerifierServiceToken } from "@/common/services/interfaces/IDomainVerifier.service";
 import { REFRESH_TOKEN_COOKIE_NAME } from "@/modules/identity/authentication/constants";
 import { LoginDto } from "@/modules/identity/authentication/dto/incoming/Login.dto";
 import { RegisterWithCredentialsDto } from "@/modules/identity/authentication/dto/incoming/RegisterWithCredentials.dto";
@@ -59,13 +48,9 @@ export class AuthenticationController {
         }
 
         try {
-            await this.authService.registerWithCredentials(
-                { email: dto.email, password: dto.password },
-                { lastName: dto.lastName, firstName: dto.firstName },
-                dto.accountActivationRedirectUrl
-            );
+            await this.authService.registerWithCredentials({ email: dto.email, password: dto.password }, dto.accountActivationRedirectUrl);
         } catch (err) {
-            whenError(err).is(EntityConflictError).throw(new ConflictException()).elseRethrow();
+            whenError(err).is(EntityConflictError).ignore().elseRethrow();
         }
     }
 

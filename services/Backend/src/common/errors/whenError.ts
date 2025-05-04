@@ -5,28 +5,42 @@ interface ConstructorOf<C> {
 }
 
 export function whenError(error: unknown) {
+    let handled = false;
+
     const actions = {
         is<T extends Error>(ErrorType: ConstructorOf<T>) {
+            const shouldProceed = !handled && error instanceof ErrorType;
+
             return {
                 throw(err: Error) {
-                    if (error instanceof ErrorType) {
+                    if (shouldProceed) {
+                        handled = true;
                         throw err;
                     }
+                    return actions;
+                },
 
+                ignore() {
+                    if (shouldProceed) {
+                        handled = true;
+                    }
                     return actions;
                 },
 
                 throwRpcException(message: string) {
-                    if (error instanceof ErrorType) {
+                    if (shouldProceed) {
+                        handled = true;
                         throw new RpcException(message);
                     }
-
                     return actions;
                 },
             };
         },
+
         elseRethrow() {
-            throw error;
+            if (!handled) {
+                throw error;
+            }
         },
     };
 

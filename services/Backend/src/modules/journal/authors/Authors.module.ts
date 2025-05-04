@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { AccountRegisteredEventHandler } from "@/modules/journal/authors/events/AccountRegisteredEvent.handler";
+import { AccountCreatedEventHandler } from "@/modules/journal/authors/events/AccountCreatedEvent.handler";
 import { AuthorRemovedEventHandler } from "@/modules/journal/authors/events/AuthorRemovedEvent.handler";
 import { AuthorMapper } from "@/modules/journal/authors/mappers/Author.mapper";
 import { AuthorMapperToken } from "@/modules/journal/authors/mappers/IAuthor.mapper";
@@ -19,9 +19,9 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
             provide: AuthorServiceToken,
             useClass: AuthorService,
         },
-        AccountRegisteredEventHandler,
+        AccountCreatedEventHandler,
         AuthorRemovedEventHandler,
     ],
-    exports: [AuthorServiceToken, AccountRegisteredEventHandler, AuthorRemovedEventHandler],
+    exports: [AuthorServiceToken, AccountCreatedEventHandler, AuthorRemovedEventHandler],
 })
 export class AuthorsModule {}

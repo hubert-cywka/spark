@@ -21,7 +21,7 @@ import {
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
 import { DataPurgePlanEntity } from "@/modules/gdpr/entities/DataPurgePlan.entity";
 import { TenantEntity } from "@/modules/gdpr/entities/Tenant.entity";
-import { TenantRegisteredEventHandler } from "@/modules/gdpr/events/TenantRegisteredEvent.handler";
+import { TenantCreatedEventHandler } from "@/modules/gdpr/events/TenantCreatedEvent.handler";
 import { TenantRemovalRequestedEventHandler } from "@/modules/gdpr/events/TenantRemovalRequestedEvent.handler";
 import { TenantRemovedEventHandler } from "@/modules/gdpr/events/TenantRemovedEvent.handler";
 import { GDPR_MODULE_DATA_SOURCE } from "@/modules/gdpr/infrastructure/database/constants";
@@ -30,6 +30,7 @@ import { AddTenantIdToOutboxAndInbox1743101706566 } from "@/modules/gdpr/infrast
 import { AddDataPurgePlans1743151982101 } from "@/modules/gdpr/infrastructure/database/migrations/1743151982101-addDataPurgePlans";
 import { AddProcessedAtTimestamp1743153555989 } from "@/modules/gdpr/infrastructure/database/migrations/1743153555989-addProcessedAtTimestamp";
 import { DeleteOnCascade1743158769846 } from "@/modules/gdpr/infrastructure/database/migrations/1743158769846-deleteOnCascade";
+import { EncryptedEvents1746293676452 } from "@/modules/gdpr/infrastructure/database/migrations/1746293676452-encryptedEvents";
 import { TenantMapperToken } from "@/modules/gdpr/mappers/ITenant.mapper";
 import { TenantMapper } from "@/modules/gdpr/mappers/Tenant.mapper";
 import { DataPurgeService } from "@/modules/gdpr/services/implementations/DataPurge.service";
@@ -50,8 +51,8 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
             useClass: DataPurgePublisherService,
         },
         {
-            provide: TenantRegisteredEventHandler,
-            useClass: TenantRegisteredEventHandler,
+            provide: TenantCreatedEventHandler,
+            useClass: TenantCreatedEventHandler,
         },
         {
             provide: TenantRemovedEventHandler,
@@ -64,7 +65,7 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
-            inject: [TenantRegisteredEventHandler, TenantRemovedEventHandler, TenantRemovalRequestedEventHandler],
+            inject: [TenantCreatedEventHandler, TenantRemovedEventHandler, TenantRemovalRequestedEventHandler],
         },
     ],
     imports: [
@@ -81,6 +82,7 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
                     AddDataPurgePlans1743151982101,
                     AddProcessedAtTimestamp1743153555989,
                     DeleteOnCascade1743158769846,
+                    EncryptedEvents1746293676452,
                 ],
             }),
             inject: [ConfigService],
@@ -111,7 +113,7 @@ export class GdprModule implements OnModuleInit {
                 name: "codename_gdpr_account",
                 stream: IntegrationEventStreams.account,
                 subjects: [
-                    IntegrationEventTopics.account.registration.completed,
+                    IntegrationEventTopics.account.created,
                     IntegrationEventTopics.account.removal.completed,
                     IntegrationEventTopics.account.removal.requested,
                 ],

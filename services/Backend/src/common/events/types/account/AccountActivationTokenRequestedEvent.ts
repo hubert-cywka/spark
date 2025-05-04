@@ -7,6 +7,10 @@ export type AccountActivationTokenRequestedEventPayload = {
 
 export class AccountActivationTokenRequestedEvent extends IntegrationEvent<AccountActivationTokenRequestedEventPayload> {
     public constructor(tenantId: string, payload: AccountActivationTokenRequestedEventPayload) {
-        super(tenantId, IntegrationEventTopics.account.activation.requested, payload);
+        super({
+            topic: IntegrationEventTopics.account.activation.requested,
+            payload,
+            tenantId,
+        });
     }
 }

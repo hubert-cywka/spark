@@ -2,6 +2,10 @@ variable "APP_NAME" {
     type        = string
 }
 
+variable "EVENTS_ENCRYPTION_SECRET_64_BYTES" {
+    type        = string
+}
+
 variable "RATE_LIMITING_BASE_TTL" {
     type        = number
 }

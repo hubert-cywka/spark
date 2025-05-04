@@ -6,6 +6,10 @@ export type DailyReminderTriggeredEventPayload = {
 
 export class DailyReminderTriggeredEvent extends IntegrationEvent<DailyReminderTriggeredEventPayload> {
     public constructor(tenantId: string, payload: DailyReminderTriggeredEventPayload) {
-        super(tenantId, IntegrationEventTopics.alert.daily.reminder.triggered, payload);
+        super({
+            topic: IntegrationEventTopics.alert.daily.reminder.triggered,
+            payload,
+            tenantId,
+        });
     }
 }

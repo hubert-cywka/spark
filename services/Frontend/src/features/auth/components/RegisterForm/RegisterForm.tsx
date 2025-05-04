@@ -33,8 +33,6 @@ export const RegisterForm = () => {
                 await requestRegistration({
                     ...inputs,
                     email: inputs.email.trim(),
-                    lastName: inputs.lastName.trim(),
-                    firstName: inputs.firstName.trim(),
                     accountActivationRedirectUrl: getAbsoluteAppUrl(AppRoute.ACTIVATE_ACCOUNT),
                 });
                 onRegisterSuccess();
@@ -48,23 +46,6 @@ export const RegisterForm = () => {
     return (
         <form className={sharedStyles.form} onSubmit={handleSubmit(onSubmit)}>
             <div className={sharedStyles.fieldsWrapper}>
-                <div className={styles.nameFieldsWrapper}>
-                    <Field
-                        label={t("authentication.common.fields.firstName.label")}
-                        size="3"
-                        required
-                        {...register("firstName")}
-                        error={errors.firstName?.message}
-                    />
-                    <Field
-                        label={t("authentication.common.fields.lastName.label")}
-                        size="3"
-                        required
-                        {...register("lastName")}
-                        error={errors.lastName?.message}
-                    />
-                </div>
-
                 <Field
                     label={t("authentication.common.fields.email.label")}
                     autoComplete="email"

@@ -13,6 +13,6 @@ export class TwoFactorAuthenticationEmailIntegrationPublisherService implements 
     ) {}
 
     public async onTOTPIssued(tenantId: string, payload: EmailIntegrationTOTPIssuedEventPayload): Promise<void> {
-        await this.outbox.enqueue(new EmailIntegrationTOTPIssuedEvent(tenantId, payload));
+        await this.outbox.enqueue(new EmailIntegrationTOTPIssuedEvent(tenantId, payload), { encrypt: true });
     }
 }

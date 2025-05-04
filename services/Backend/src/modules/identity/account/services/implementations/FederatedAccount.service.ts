@@ -65,6 +65,7 @@ export class FederatedAccountService implements IFederatedAccountService {
         return this.accountMapper.fromEntityToModel(account);
     }
 
+    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
     public async createAccountWithExternalIdentity(identity: ExternalIdentity): Promise<Account> {
         const repository = this.getRepository();
         const existingAccount = await repository.findOne({
@@ -101,6 +102,7 @@ export class FederatedAccountService implements IFederatedAccountService {
             .execute();
 
         const account = insertionResult.raw[0] as FederatedAccountEntity;
+        await this.publisher.onAccountCreated(account.id, account.email);
 
         return this.accountMapper.fromEntityToModel(account);
     }

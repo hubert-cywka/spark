@@ -21,10 +21,6 @@ import {
 } from "@/modules/identity/authentication/services/interfaces/IAccessScopes.service";
 import { type IAuthenticationService } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
 import {
-    type IAuthPublisherService,
-    AuthPublisherServiceToken,
-} from "@/modules/identity/authentication/services/interfaces/IAuthPublisher.service";
-import {
     type IRefreshTokenService,
     RefreshTokenServiceToken,
 } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
@@ -32,7 +28,6 @@ import {
     type AccessTokenPayload,
     type AuthenticationResult,
     type Credentials,
-    type PersonalInformation,
 } from "@/modules/identity/authentication/types/Authentication";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
@@ -52,8 +47,6 @@ export class AuthenticationService implements IAuthenticationService {
         private federatedAccountService: IFederatedAccountService,
         @Inject(RefreshTokenServiceToken)
         private refreshTokenService: IRefreshTokenService,
-        @Inject(AuthPublisherServiceToken)
-        private publisher: IAuthPublisherService,
         @Inject(AccessScopesServiceToken)
         private scopesService: IAccessScopesService
     ) {
@@ -67,22 +60,8 @@ export class AuthenticationService implements IAuthenticationService {
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
-    public async registerWithCredentials(
-        { email, password }: Credentials,
-        { firstName, lastName }: PersonalInformation,
-        clientRedirectUrl: string
-    ): Promise<void> {
-        const account = await this.managedAccountService.createAccountWithCredentials(email, password);
-
-        await this.publisher.onAccountRegistered(account.id, {
-            account: {
-                firstName,
-                lastName,
-                email,
-                id: account.id,
-            },
-        });
-
+    public async registerWithCredentials({ email, password }: Credentials, clientRedirectUrl: string): Promise<void> {
+        await this.managedAccountService.createAccountWithCredentials(email, password);
         await this.managedAccountService.requestActivation(email, clientRedirectUrl);
     }
 
@@ -94,17 +73,6 @@ export class AuthenticationService implements IAuthenticationService {
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
     public async registerWithExternalIdentity(identity: ExternalIdentity): Promise<AuthenticationResult> {
         const account = await this.federatedAccountService.createAccountWithExternalIdentity(identity);
-        const { firstName, lastName, email } = identity;
-
-        await this.publisher.onAccountRegistered(account.id, {
-            account: {
-                firstName,
-                lastName,
-                email,
-                id: account.id,
-            },
-        });
-
         await this.federatedAccountService.activateByInternalId(account.id);
         return await this.createAuthenticationResult(account, this.scopesService.getByAccountId(account.id));
     }

@@ -2,24 +2,65 @@ import { classToPlain } from "class-transformer";
 
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import { PayloadEncryptedError } from "@/common/events/errors/PayloadEncrypted.error";
+
+type IntegrationEventMetadata = {
+    id?: string;
+    createdAt?: Date;
+};
+
+type RequiredIntegrationEventFields<T = unknown> = {
+    topic: string;
+    tenantId: string;
+    payload: T;
+};
+
+type IntegrationEventFields<T = unknown> = IntegrationEventMetadata & RequiredIntegrationEventFields<T>;
 
 export class IntegrationEvent<T = unknown> {
-    private readonly topic: string;
-    private readonly payload: T;
     private readonly id: string;
     private readonly tenantId: string;
+    private readonly topic: string;
+    private readonly payload: T;
     private readonly createdAt: Date;
 
-    public constructor(tenantId: string, topic: string, payload: T, createdAt: Date = new Date(), id: string = crypto.randomUUID()) {
+    public constructor({ tenantId, topic, payload, id = crypto.randomUUID(), createdAt = new Date() }: IntegrationEventFields<T>) {
+        this.id = id;
         this.topic = topic;
         this.payload = payload;
         this.createdAt = createdAt;
         this.tenantId = tenantId;
-        this.id = id;
     }
 
     public static fromEntity<T = unknown>(entity: OutboxEventEntity<T> | InboxEventEntity<T>): IntegrationEvent<T> {
-        return new IntegrationEvent<T>(entity.tenantId, entity.topic, entity.payload, entity.createdAt, entity.id);
+        return new IntegrationEvent<T>({
+            createdAt: entity.createdAt,
+            payload: entity.payload,
+            tenantId: entity.tenantId,
+            topic: entity.topic,
+            id: entity.id,
+        });
+    }
+
+    public static fromPlain<T = unknown>(plain: IntegrationEventFields<T>): IntegrationEvent<T> {
+        return new IntegrationEvent<T>({
+            createdAt: plain.createdAt,
+            payload: plain.payload,
+            tenantId: plain.tenantId,
+            topic: plain.topic,
+            id: plain.id,
+        });
+    }
+
+    public copy(overrides: Partial<RequiredIntegrationEventFields<T>> = {}) {
+        return new IntegrationEvent<T>({
+            id: this.id,
+            createdAt: this.createdAt,
+            payload: this.payload,
+            topic: this.topic,
+            tenantId: this.tenantId,
+            ...overrides,
+        });
     }
 
     public toPlain(): object {
@@ -31,7 +72,19 @@ export class IntegrationEvent<T = unknown> {
     }
 
     public getPayload(): T {
+        if (this.isEncrypted()) {
+            throw new PayloadEncryptedError();
+        }
+
+        return this.payload as T;
+    }
+
+    public getRawPayload(): string | T {
         return this.payload;
+    }
+
+    public isEncrypted(): boolean {
+        return typeof this.getRawPayload() === "string";
     }
 
     public getId(): string {

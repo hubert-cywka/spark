@@ -22,7 +22,7 @@ import {
 import { AlertsController } from "@/modules/alerts/controllers/Alerts.controller";
 import { AlertEntity } from "@/modules/alerts/entities/Alert.entity";
 import { RecipientEntity } from "@/modules/alerts/entities/Recipient.entity";
-import { RecipientRegisteredEventHandler } from "@/modules/alerts/events/RecipientRegisteredEvent.handler";
+import { RecipientCreatedEventHandler } from "@/modules/alerts/events/RecipientCreatedEvent.handler";
 import { RecipientRemovedEventHandler } from "@/modules/alerts/events/RecipientRemovedEvent.handler";
 import { ALERTS_MODULE_DATA_SOURCE } from "@/modules/alerts/infrastructure/database/constants";
 import { InitializeInboxAndOutbox1737489799641 } from "@/modules/alerts/infrastructure/database/migrations/1737489799641-InitializeInboxAndOutbox";
@@ -34,6 +34,7 @@ import { FixDaysOfWeekColumnType1737574459955 } from "@/modules/alerts/infrastru
 import { SwitchFromLastTriggeredAtToNextTriggerAt1738948797659 } from "@/modules/alerts/infrastructure/database/migrations/1738948797659-SwitchFromLastTriggeredAtToNextTriggerAt";
 import { AddTenantIdToOutboxAndInbox1743101730316 } from "@/modules/alerts/infrastructure/database/migrations/1743101730316-addTenantIdToOutboxAndInbox";
 import { DeleteAlertsOnCascade1743158723835 } from "@/modules/alerts/infrastructure/database/migrations/1743158723835-deleteAlertsOnCascade";
+import { EncryptedEvents1746293664099 } from "@/modules/alerts/infrastructure/database/migrations/1746293664099-encryptedEvents";
 import { AlertMapper } from "@/modules/alerts/mappers/Alert.mapper";
 import { AlertMapperToken } from "@/modules/alerts/mappers/IAlert.mapper";
 import { RecipientMapperToken } from "@/modules/alerts/mappers/IRecipient.mapper";
@@ -69,8 +70,8 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
             useClass: AlertPublisherService,
         },
         {
-            provide: RecipientRegisteredEventHandler,
-            useClass: RecipientRegisteredEventHandler,
+            provide: RecipientCreatedEventHandler,
+            useClass: RecipientCreatedEventHandler,
         },
         {
             provide: RecipientRemovedEventHandler,
@@ -79,7 +80,7 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
-            inject: [RecipientRegisteredEventHandler, RecipientRemovedEventHandler],
+            inject: [RecipientCreatedEventHandler, RecipientRemovedEventHandler],
         },
     ],
     imports: [
@@ -100,6 +101,7 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
                     SwitchFromLastTriggeredAtToNextTriggerAt1738948797659,
                     AddTenantIdToOutboxAndInbox1743101730316,
                     DeleteAlertsOnCascade1743158723835,
+                    EncryptedEvents1746293664099,
                 ],
             }),
             inject: [ConfigService],
@@ -130,7 +132,7 @@ export class AlertsModule implements OnModuleInit {
             {
                 name: "codename_alerts_account",
                 stream: IntegrationEventStreams.account,
-                subjects: [IntegrationEventTopics.account.registration.completed, IntegrationEventTopics.account.removal.completed],
+                subjects: [IntegrationEventTopics.account.created, IntegrationEventTopics.account.removal.completed],
             },
         ]);
     }

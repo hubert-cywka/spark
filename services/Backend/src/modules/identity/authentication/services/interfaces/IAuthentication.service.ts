@@ -1,9 +1,5 @@
 import { AccessScope } from "@/common/types/AccessScope";
-import {
-    type AuthenticationResult,
-    type Credentials,
-    type PersonalInformation,
-} from "@/modules/identity/authentication/types/Authentication";
+import { type AuthenticationResult, type Credentials } from "@/modules/identity/authentication/types/Authentication";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
 
 export const AuthenticationServiceToken = Symbol("IAuthenticationService");
@@ -12,7 +8,7 @@ export interface IAuthenticationService {
     registerWithExternalIdentity(identity: ExternalIdentity): Promise<AuthenticationResult>;
     loginWithExternalIdentity(identity: ExternalIdentity): Promise<AuthenticationResult>;
 
-    registerWithCredentials(credentials: Credentials, personalInformation: PersonalInformation, clientRedirectUrl: string): Promise<void>;
+    registerWithCredentials(credentials: Credentials, clientRedirectUrl: string): Promise<void>;
     loginWithCredentials(credentials: Credentials): Promise<AuthenticationResult>;
 
     redeemRefreshToken(refreshToken: string): Promise<AuthenticationResult>;

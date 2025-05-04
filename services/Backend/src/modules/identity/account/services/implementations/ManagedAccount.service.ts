@@ -82,6 +82,7 @@ export class ManagedAccountService implements IManagedAccountService {
         return this.accountMapper.fromEntityToModel(account);
     }
 
+    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
     public async createAccountWithCredentials(email: string, password: string): Promise<Account> {
         const repository = this.getRepository();
 
@@ -91,6 +92,7 @@ export class ManagedAccountService implements IManagedAccountService {
 
         if (existingAccount) {
             this.logger.warn({ email }, "Account already exists.");
+            // TODO: Inform user about this
             throw new AccountAlreadyExistsError();
         }
 
@@ -110,6 +112,8 @@ export class ManagedAccountService implements IManagedAccountService {
             .execute();
 
         const account = insertionResult.raw[0] as ManagedAccountEntity;
+        await this.publisher.onAccountCreated(account.id, account.email);
+
         return this.accountMapper.fromEntityToModel(account);
     }
 
