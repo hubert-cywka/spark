@@ -27,7 +27,7 @@ resource "kubernetes_deployment" "backend" {
 
           liveness_probe {
             http_get {
-              path = "/healthz/liveness"
+              path = "/api/healthz/liveness"
               port = var.BACKEND_PORT
             }
 
@@ -40,7 +40,7 @@ resource "kubernetes_deployment" "backend" {
 
           readiness_probe {
             http_get {
-              path = "/healthz/readiness"
+              path = "/api/healthz/readiness"
               port = var.BACKEND_PORT
             }
 
