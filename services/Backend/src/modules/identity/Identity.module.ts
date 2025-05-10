@@ -65,6 +65,7 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
             ],
             {
                 useFactory: (configService: ConfigService) => ({
+                    logging: configService.getOrThrow<boolean>("modules.identity.database.logging"),
                     port: configService.getOrThrow<number>("modules.identity.database.port"),
                     username: configService.getOrThrow<string>("modules.identity.database.username"),
                     password: configService.getOrThrow<string>("modules.identity.database.password"),

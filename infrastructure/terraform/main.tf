@@ -1,82 +1,83 @@
 provider "kubernetes" {
-    config_path = "~/.kube/config"
+  config_path = "~/.kube/config"
 }
 
 resource "kubernetes_namespace" "codename" {
-    metadata {
-        name = "codename"
-    }
+  metadata {
+    name = "codename"
+  }
 }
 
 resource "kubernetes_config_map" "app_config" {
-    metadata {
-        name      = "app-config"
-        namespace = kubernetes_namespace.codename.metadata[0].name
-    }
+  metadata {
+    name      = "app-config"
+    namespace = kubernetes_namespace.codename.metadata[0].name
+  }
 
-    data = {
-        APP_NAME                                            = var.APP_NAME
+  data = {
+    APP_NAME = var.APP_NAME
 
-        EVENTS_ENCRYPTION_SECRET_64_BYTES                            = var.EVENTS_ENCRYPTION_SECRET_64_BYTES
+    EVENTS_ENCRYPTION_SECRET_64_BYTES = var.EVENTS_ENCRYPTION_SECRET_64_BYTES
 
-        RATE_LIMITING_BASE_LIMIT                            = var.RATE_LIMITING_BASE_LIMIT
-        RATE_LIMITING_BASE_TTL                              = var.RATE_LIMITING_BASE_TTL
+    RATE_LIMITING_BASE_LIMIT = var.RATE_LIMITING_BASE_LIMIT
+    RATE_LIMITING_BASE_TTL   = var.RATE_LIMITING_BASE_TTL
 
-        DATABASE_PORT                                       = var.DATABASE_PORT
-        DATABASE_USERNAME                                   = var.DATABASE_USERNAME
-        DATABASE_PASSWORD                                   = var.DATABASE_PASSWORD
+    DATABASE_LOGGING_ENABLED = var.DATABASE_LOGGING_ENABLED
+    DATABASE_PORT            = var.DATABASE_PORT
+    DATABASE_USERNAME        = var.DATABASE_USERNAME
+    DATABASE_PASSWORD        = var.DATABASE_PASSWORD
 
-        CLIENT_URL_BASE                                     = var.CLIENT_URL_BASE
+    CLIENT_URL_BASE = var.CLIENT_URL_BASE
 
-        PUBSUB_PORT                                         = var.PUBSUB_PORT
+    PUBSUB_PORT = var.PUBSUB_PORT
 
-        BACKEND_PORT                                        = var.BACKEND_PORT
-        JWT_SIGNING_SECRET                                  = var.JWT_SIGNING_SECRET
-        OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS              = var.OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS
-        JWT_EXPIRATION_TIME_IN_SECONDS                      = var.JWT_EXPIRATION_TIME_IN_SECONDS
-        REFRESH_TOKEN_SIGNING_SECRET                        = var.REFRESH_TOKEN_SIGNING_SECRET
-        REFRESH_TOKEN_EXPIRATION_TIME_IN_SECONDS            = var.REFRESH_TOKEN_EXPIRATION_TIME_IN_SECONDS
+    BACKEND_PORT                             = var.BACKEND_PORT
+    JWT_SIGNING_SECRET                       = var.JWT_SIGNING_SECRET
+    OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS   = var.OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS
+    JWT_EXPIRATION_TIME_IN_SECONDS           = var.JWT_EXPIRATION_TIME_IN_SECONDS
+    REFRESH_TOKEN_SIGNING_SECRET             = var.REFRESH_TOKEN_SIGNING_SECRET
+    REFRESH_TOKEN_EXPIRATION_TIME_IN_SECONDS = var.REFRESH_TOKEN_EXPIRATION_TIME_IN_SECONDS
 
-        AUTH_DATABASE_NAME                                  = var.AUTH_DATABASE_NAME
-        AUTH_THROTTLE_TTL_IN_MS                             = var.AUTH_THROTTLE_TTL_IN_MS
-        AUTH_THROTTLE_LIMIT                                 = var.AUTH_THROTTLE_LIMIT
+    AUTH_DATABASE_NAME      = var.AUTH_DATABASE_NAME
+    AUTH_THROTTLE_TTL_IN_MS = var.AUTH_THROTTLE_TTL_IN_MS
+    AUTH_THROTTLE_LIMIT     = var.AUTH_THROTTLE_LIMIT
 
-        USERS_DATABASE_NAME                                 = var.USERS_DATABASE_NAME
+    USERS_DATABASE_NAME = var.USERS_DATABASE_NAME
 
-        JOURNAL_DATABASE_NAME                               = var.JOURNAL_DATABASE_NAME
+    JOURNAL_DATABASE_NAME = var.JOURNAL_DATABASE_NAME
 
-        ALERTS_DATABASE_NAME                                = var.ALERTS_DATABASE_NAME
+    ALERTS_DATABASE_NAME = var.ALERTS_DATABASE_NAME
 
-        GDPR_DATABASE_NAME                                  = var.GDPR_DATABASE_NAME
+    GDPR_DATABASE_NAME = var.GDPR_DATABASE_NAME
 
-        MAIL_DATABASE_NAME                                  = var.MAIL_DATABASE_NAME
+    MAIL_DATABASE_NAME = var.MAIL_DATABASE_NAME
 
-        FRONTEND_PORT                                       = var.FRONTEND_PORT
+    FRONTEND_PORT = var.FRONTEND_PORT
 
-        GATEWAY_PORT                                        = var.GATEWAY_PORT
-        GATEWAY_ALLOWED_ORIGINS                             = var.GATEWAY_ALLOWED_ORIGINS
-        GATEWAY_URL                                         = var.GATEWAY_URL
+    GATEWAY_PORT            = var.GATEWAY_PORT
+    GATEWAY_ALLOWED_ORIGINS = var.GATEWAY_ALLOWED_ORIGINS
+    GATEWAY_URL             = var.GATEWAY_URL
 
-        MAIL_SENDER_PORT                                    = var.MAIL_SENDER_PORT
-        MAIL_SENDER_NAME                                    = var.MAIL_SENDER_NAME
-        MAIL_SENDER_USER                                    = var.MAIL_SENDER_USER
-        MAIL_SENDER_PASSWORD                                = var.MAIL_SENDER_PASSWORD
-        MAIL_SENDER_PORT                                    = var.MAIL_SENDER_PORT
-        MAIL_DEBUG_MODE                                     = var.MAIL_DEBUG_MODE
+    MAIL_SENDER_PORT     = var.MAIL_SENDER_PORT
+    MAIL_SENDER_NAME     = var.MAIL_SENDER_NAME
+    MAIL_SENDER_USER     = var.MAIL_SENDER_USER
+    MAIL_SENDER_PASSWORD = var.MAIL_SENDER_PASSWORD
+    MAIL_SENDER_PORT     = var.MAIL_SENDER_PORT
+    MAIL_DEBUG_MODE      = var.MAIL_DEBUG_MODE
 
-        GOOGLE_CLIENT_ID                                    = var.GOOGLE_CLIENT_ID
-        GOOGLE_CLIENT_SECRET                                = var.GOOGLE_CLIENT_SECRET
-        GOOGLE_OIDC_REDIRECT_URL                            = var.GOOGLE_OIDC_REDIRECT_URL
+    GOOGLE_CLIENT_ID         = var.GOOGLE_CLIENT_ID
+    GOOGLE_CLIENT_SECRET     = var.GOOGLE_CLIENT_SECRET
+    GOOGLE_OIDC_REDIRECT_URL = var.GOOGLE_OIDC_REDIRECT_URL
 
-        COOKIES_SECRET                                      = var.COOKIES_SECRET
-        
-        PGBOUNCER_POOL_MODE                                 = var.PGBOUNCER_POOL_MODE
-        PGBOUNCER_QUERY_WAIT_TIMEOUT                        = var.PGBOUNCER_QUERY_WAIT_TIMEOUT
-        PGBOUNCER_MAX_CLIENT_CONN                           = var.PGBOUNCER_MAX_CLIENT_CONN
-        PGBOUNCER_DEFAULT_POOL_SIZE                         = var.PGBOUNCER_DEFAULT_POOL_SIZE
-        PGBOUNCER_STATS_USERS                               = var.PGBOUNCER_STATS_USERS
-        PGBOUNCER_DATABASE                                  = var.PGBOUNCER_DATABASE
-        POSTGRESQL_PORT                                     = var.POSTGRESQL_PORT
-    }
+    COOKIES_SECRET = var.COOKIES_SECRET
+
+    PGBOUNCER_POOL_MODE          = var.PGBOUNCER_POOL_MODE
+    PGBOUNCER_QUERY_WAIT_TIMEOUT = var.PGBOUNCER_QUERY_WAIT_TIMEOUT
+    PGBOUNCER_MAX_CLIENT_CONN    = var.PGBOUNCER_MAX_CLIENT_CONN
+    PGBOUNCER_DEFAULT_POOL_SIZE  = var.PGBOUNCER_DEFAULT_POOL_SIZE
+    PGBOUNCER_STATS_USERS        = var.PGBOUNCER_STATS_USERS
+    PGBOUNCER_DATABASE           = var.PGBOUNCER_DATABASE
+    POSTGRESQL_PORT              = var.POSTGRESQL_PORT
+  }
 }
 

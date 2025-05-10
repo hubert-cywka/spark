@@ -16,6 +16,7 @@ type DatabaseModuleOptions = {
     host: string;
     database: string;
     migrations: MigrationConstructor[];
+    logging?: boolean;
 };
 
 @Module({})
@@ -49,7 +50,7 @@ export class DatabaseModule {
                             ...dbOptions,
                             name: dataSource,
                             type: "postgres",
-                            logging: false,
+                            logging: dbOptions.logging,
                             autoLoadEntities: true,
                             migrationsRun: true,
                             synchronize: false,

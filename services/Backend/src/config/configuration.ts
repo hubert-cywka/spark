@@ -31,6 +31,7 @@ export const AppConfig = () => ({
     modules: {
         gdpr: {
             database: {
+                logging: process.env.DATABASE_LOGGING_ENABLED === "true",
                 port: process.env.DATABASE_PORT,
                 username: process.env.DATABASE_USERNAME,
                 password: process.env.DATABASE_PASSWORD,
@@ -41,6 +42,7 @@ export const AppConfig = () => ({
 
         alerts: {
             database: {
+                logging: process.env.DATABASE_LOGGING_ENABLED === "true",
                 port: process.env.DATABASE_PORT,
                 username: process.env.DATABASE_USERNAME,
                 password: process.env.DATABASE_PASSWORD,
@@ -59,6 +61,7 @@ export const AppConfig = () => ({
                 host: process.env.MAIL_SENDER_HOST,
             },
             database: {
+                logging: process.env.DATABASE_LOGGING_ENABLED === "true",
                 port: process.env.DATABASE_PORT,
                 username: process.env.DATABASE_USERNAME,
                 password: process.env.DATABASE_PASSWORD,
@@ -69,6 +72,7 @@ export const AppConfig = () => ({
 
         users: {
             database: {
+                logging: process.env.DATABASE_LOGGING_ENABLED === "true",
                 port: process.env.DATABASE_PORT,
                 username: process.env.DATABASE_USERNAME,
                 password: process.env.DATABASE_PASSWORD,
@@ -79,6 +83,7 @@ export const AppConfig = () => ({
 
         journal: {
             database: {
+                logging: process.env.DATABASE_LOGGING_ENABLED === "true",
                 port: process.env.DATABASE_PORT,
                 username: process.env.DATABASE_USERNAME,
                 password: process.env.DATABASE_PASSWORD,
@@ -97,6 +102,7 @@ export const AppConfig = () => ({
                 expirationTimeInSeconds: parseInt(process.env.REFRESH_TOKEN_EXPIRATION_TIME_IN_SECONDS ?? ""),
             },
             database: {
+                logging: process.env.DATABASE_LOGGING_ENABLED === "true",
                 port: process.env.DATABASE_PORT,
                 username: process.env.DATABASE_USERNAME,
                 password: process.env.DATABASE_PASSWORD,

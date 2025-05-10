@@ -57,6 +57,7 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
             [OutboxEventEntity, InboxEventEntity, EntryEntity, DailyEntity, AuthorEntity, GoalEntity],
             {
                 useFactory: (configService: ConfigService) => ({
+                    logging: configService.getOrThrow<boolean>("modules.journal.database.logging"),
                     port: configService.getOrThrow<number>("modules.journal.database.port"),
                     username: configService.getOrThrow<string>("modules.journal.database.username"),
                     password: configService.getOrThrow<string>("modules.journal.database.password"),

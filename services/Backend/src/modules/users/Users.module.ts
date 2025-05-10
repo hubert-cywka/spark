@@ -60,6 +60,7 @@ import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.se
     imports: [
         DatabaseModule.forRootAsync(USERS_MODULE_DATA_SOURCE, [UserEntity, OutboxEventEntity, InboxEventEntity], {
             useFactory: (configService: ConfigService) => ({
+                logging: configService.getOrThrow<boolean>("modules.users.database.logging"),
                 port: configService.getOrThrow<number>("modules.users.database.port"),
                 username: configService.getOrThrow<string>("modules.users.database.username"),
                 password: configService.getOrThrow<string>("modules.users.database.password"),
