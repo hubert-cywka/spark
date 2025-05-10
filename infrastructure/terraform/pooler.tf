@@ -25,13 +25,8 @@ resource "kubernetes_deployment" "pooler" {
           image = "bitnami/pgbouncer:1.24.1"
 
           liveness_probe {
-            exec {
-              command = [
-                "pg_isready",
-                "-h", "localhost",
-                "-p", "6432",
-                "-t", "1"
-              ]
+            tcp_socket {
+              port = 6432
             }
 
             initial_delay_seconds = 15
@@ -42,13 +37,8 @@ resource "kubernetes_deployment" "pooler" {
           }
 
           readiness_probe {
-            exec {
-              command = [
-                "pg_isready",
-                "-h", "localhost",
-                "-p", "6432",
-                "-t", "1"
-              ]
+            tcp_socket {
+              port = 6432
             }
 
             initial_delay_seconds = 20

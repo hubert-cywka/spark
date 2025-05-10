@@ -28,6 +28,8 @@ resource "kubernetes_deployment" "db" {
             exec {
               command = [
                 "pg_isready",
+                "-U", var.DATABASE_USERNAME,
+                "-d", "db",
                 "-h", "localhost",
                 "-p", "5432",
                 "-t", "1"
@@ -42,8 +44,15 @@ resource "kubernetes_deployment" "db" {
           }
 
           readiness_probe {
-            tcp_socket {
-              port = 6432
+            exec {
+              command = [
+                "pg_isready",
+                "-U", var.DATABASE_USERNAME,
+                "-d", "db",
+                "-h", "localhost",
+                "-p", "5432",
+                "-t", "1"
+              ]
             }
 
             initial_delay_seconds = 20
