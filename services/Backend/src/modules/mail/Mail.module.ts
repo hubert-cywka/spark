@@ -88,6 +88,7 @@ import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.s
     imports: [
         DatabaseModule.forRootAsync(MAIL_MODULE_DATA_SOURCE, [OutboxEventEntity, InboxEventEntity], {
             useFactory: (configService: ConfigService) => ({
+                logging: configService.getOrThrow<boolean>("modules.mail.database.logging"),
                 port: configService.getOrThrow<number>("modules.mail.database.port"),
                 username: configService.getOrThrow<string>("modules.mail.database.username"),
                 password: configService.getOrThrow<string>("modules.mail.database.password"),

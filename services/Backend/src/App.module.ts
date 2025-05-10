@@ -12,6 +12,7 @@ import { GlobalModule } from "@/Global.module";
 import { loggerOptions } from "@/lib/logger";
 import { AlertsModule } from "@/modules/alerts/Alerts.module";
 import { GdprModule } from "@/modules/gdpr/Gdpr.module";
+import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
 import { IdentityModule } from "@/modules/identity/Identity.module";
 import { JournalModule } from "@/modules/journal/Journal.module";
 import { MailModule } from "@/modules/mail/Mail.module";
@@ -74,6 +75,7 @@ import { UsersModule } from "@/modules/users/Users.module";
         JournalModule,
         AlertsModule,
         GdprModule,
+        HealthCheckModule,
     ],
     providers: [{ provide: APP_GUARD, useClass: ThrottlingGuard }],
     exports: [],

@@ -86,6 +86,7 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
     imports: [
         DatabaseModule.forRootAsync(ALERTS_MODULE_DATA_SOURCE, [OutboxEventEntity, InboxEventEntity, AlertEntity, RecipientEntity], {
             useFactory: (configService: ConfigService) => ({
+                logging: configService.getOrThrow<boolean>("modules.alerts.database.logging"),
                 port: configService.getOrThrow<number>("modules.alerts.database.port"),
                 username: configService.getOrThrow<string>("modules.alerts.database.username"),
                 password: configService.getOrThrow<string>("modules.alerts.database.password"),

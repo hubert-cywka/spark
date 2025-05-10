@@ -71,6 +71,7 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
     imports: [
         DatabaseModule.forRootAsync(GDPR_MODULE_DATA_SOURCE, [OutboxEventEntity, InboxEventEntity, TenantEntity, DataPurgePlanEntity], {
             useFactory: (configService: ConfigService) => ({
+                logging: configService.getOrThrow<boolean>("modules.gdpr.database.logging"),
                 port: configService.getOrThrow<number>("modules.gdpr.database.port"),
                 username: configService.getOrThrow<string>("modules.gdpr.database.username"),
                 password: configService.getOrThrow<string>("modules.gdpr.database.password"),
