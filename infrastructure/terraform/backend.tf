@@ -51,6 +51,19 @@ resource "kubernetes_deployment" "backend" {
             failure_threshold     = 3
           }
 
+          startup_probe {
+            http_get {
+              path = "/api/healthz/startup"
+              port = var.BACKEND_PORT
+            }
+
+            initial_delay_seconds = 0
+            period_seconds        = 10
+            timeout_seconds       = 5
+            success_threshold     = 1
+            failure_threshold     = 15
+          }
+
           port {
             container_port = var.BACKEND_PORT
           }

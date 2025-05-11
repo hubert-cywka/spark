@@ -12,4 +12,9 @@ export class HealthCheckController {
     public async readiness() {
         return "OK";
     }
+
+    @Get("/startup")
+    public async startup() {
+        return "OK";
+    }
 }
