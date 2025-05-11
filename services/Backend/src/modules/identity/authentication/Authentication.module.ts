@@ -19,7 +19,6 @@ import { AccessScopesServiceToken } from "@/modules/identity/authentication/serv
 import { AuthenticationServiceToken } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
 import { OIDCProviderFactoryToken } from "@/modules/identity/authentication/services/interfaces/IOIDCProvider.factory";
 import { RefreshTokenServiceToken } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
-import { AccessTokenStrategy } from "@/modules/identity/authentication/strategies/AccessToken.strategy";
 import { RefreshTokenCookieStrategyToken } from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
 import { SecureRefreshTokenCookieStrategy } from "@/modules/identity/authentication/strategies/refreshToken/SecureRefreshTokenCookie.strategy";
 import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.module";
@@ -48,11 +47,10 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
             useClass: SecureRefreshTokenCookieStrategy,
         },
         { provide: AccessScopesServiceToken, useClass: AccessScopesService },
-        AccessTokenStrategy,
         AccountPasswordUpdatedEventHandler,
         AccountSuspendedEventHandler,
     ],
     controllers: [AuthenticationController, OpenIDConnectController, AccessScopesController],
-    exports: [AccountPasswordUpdatedEventHandler, AccountSuspendedEventHandler, AccessTokenStrategy],
+    exports: [AccountPasswordUpdatedEventHandler, AccountSuspendedEventHandler],
 })
 export class AuthenticationModule {}

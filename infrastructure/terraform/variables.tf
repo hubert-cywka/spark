@@ -106,7 +106,7 @@ variable "MAIL_DATABASE_NAME" {
   type = string
 }
 
-variable "GATEWAY_ALLOWED_ORIGINS" {
+variable "ALLOWED_ORIGINS" {
   type = string
 }
 

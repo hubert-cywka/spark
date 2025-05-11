@@ -109,13 +109,35 @@ $DockerComposeLocal = Get-Content -Path $DockerComposeRootDir/docker-compose.loc
 
 foreach ($DetachedService in $DetachedServices) {
     $PortValue = $ServicesList[$DetachedService].port
-    $EnvNamePrefix = $DetachedService.ToUpper() -replace "-", "_"
+    
+    if ($DetachedService -eq "backend") {
+        $EnvPort = "IDENTITY_SERVICE_PORT=$($PortValue)"
+        $EnvAddress = "IDENTITY_SERVICE_ADDRESS=host.docker.internal"
+        Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvAddress
+        Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvPort
 
-    $EnvPort = "$($EnvNamePrefix)_PORT=$($PortValue)"
-    $EnvAddress = "$($EnvNamePrefix)_ADDRESS=host.docker.internal"
+        $EnvPort = "ALERTS_SERVICE_PORT=$($PortValue)"
+        $EnvAddress = "ALERTS_SERVICE_ADDRESS=host.docker.internal"
+        Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvAddress
+        Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvPort
 
-    Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvAddress
-    Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvPort
+        $EnvPort = "JOURNAL_SERVICE_PORT=$($PortValue)"
+        $EnvAddress = "JOURNAL_SERVICE_ADDRESS=host.docker.internal"
+        Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvAddress
+        Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvPort
+
+        $EnvPort = "USERS_SERVICE_PORT=$($PortValue)"
+        $EnvAddress = "USERS_SERVICE_ADDRESS=host.docker.internal"
+        Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvAddress
+        Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvPort
+    } else {
+        $EnvNamePrefix = $DetachedService.ToUpper() -replace "-", "_"
+        $EnvPort = "$($EnvNamePrefix)_PORT=$($PortValue)"
+        $EnvAddress = "$($EnvNamePrefix)_ADDRESS=host.docker.internal"
+
+        Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvAddress
+        Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvPort
+    }
 }
 
 $DockerComposeLocal | ConvertTo-Yaml | Out-File -FilePath $DockerComposeRootDir/docker-compose.local.override.yml -Encoding UTF8

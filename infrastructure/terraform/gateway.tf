@@ -51,13 +51,44 @@ resource "kubernetes_deployment" "gateway" {
           }
 
           env {
-            name  = "BACKEND_ADDRESS"
-            value = "${kubernetes_service.backend.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
+            name  = "IDENTITY_SERVICE_ADDRESS"
+            value = "identity-service.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
           }
           env {
-            name  = "BACKEND_PORT"
+            name  = "IDENTITY_SERVICE_PORT"
             value = var.BACKEND_PORT
           }
+
+          env {
+            name  = "JOURNAL_SERVICE_ADDRESS"
+            value = "journal-service.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
+
+          }
+          env {
+            name  = "JOURNAL_SERVICE_PORT"
+            value = var.BACKEND_PORT
+          }
+
+          env {
+            name  = "USERS_SERVICE_ADDRESS"
+            value = "users-service.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
+
+          }
+          env {
+            name  = "USERS_SERVICE_PORT"
+            value = var.BACKEND_PORT
+          }
+
+          env {
+            name  = "ALERTS_SERVICE_ADDRESS"
+            value = "alerts-service.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
+
+          }
+          env {
+            name  = "ALERTS_SERVICE_PORT"
+            value = var.BACKEND_PORT
+          }
+
           env {
             name  = "FRONTEND_ADDRESS"
             value = "${kubernetes_service.frontend.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
@@ -68,7 +99,7 @@ resource "kubernetes_deployment" "gateway" {
           }
           env {
             name  = "ALLOWED_ORIGINS"
-            value = var.GATEWAY_ALLOWED_ORIGINS
+            value = var.ALLOWED_ORIGINS
           }
         }
       }

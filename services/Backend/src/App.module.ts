@@ -6,20 +6,22 @@ import { ThrottlerModule } from "@nestjs/throttler";
 import { LoggerModule } from "nestjs-pino";
 
 import { IntegrationEventsModule, IntegrationEventStreams, IntegrationEventTopics } from "@/common/events";
+import { AccessTokenStrategy } from "@/common/guards/AccessToken.strategy";
 import { ThrottlingGuard } from "@/common/guards/Throttling.guard";
 import { AppConfig } from "@/config/configuration";
-import { GlobalModule } from "@/Global.module";
 import { loggerOptions } from "@/lib/logger";
 import { AlertsModule } from "@/modules/alerts/Alerts.module";
 import { GdprModule } from "@/modules/gdpr/Gdpr.module";
+import { GlobalModule } from "@/modules/global/Global.module";
 import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
 import { IdentityModule } from "@/modules/identity/Identity.module";
 import { JournalModule } from "@/modules/journal/Journal.module";
 import { MailModule } from "@/modules/mail/Mail.module";
 import { UsersModule } from "@/modules/users/Users.module";
+import { ModuleImport } from "@/types/Module";
 
-@Module({
-    imports: [
+const getAppBaseImports = (): ModuleImport[] => {
+    return [
         LoggerModule.forRoot({ pinoHttp: loggerOptions }),
         ConfigModule.forRoot({
             load: [AppConfig],
@@ -31,13 +33,6 @@ import { UsersModule } from "@/modules/users/Users.module";
                 {
                     ttl: configService.getOrThrow<number>("throttle.ttl"),
                     limit: configService.getOrThrow<number>("throttle.limit"),
-                    scope: [
-                        {
-                            endpoint: "identity",
-                            ttl: configService.getOrThrow<number>("modules.identity.throttle.ttl"),
-                            limit: configService.getOrThrow<number>("modules.identity.throttle.limit"),
-                        },
-                    ],
                 },
             ],
             inject: [ConfigService],
@@ -69,15 +64,43 @@ import { UsersModule } from "@/modules/users/Users.module";
             global: true,
         }),
         GlobalModule,
-        IdentityModule,
-        MailModule,
-        UsersModule,
-        JournalModule,
-        AlertsModule,
-        GdprModule,
         HealthCheckModule,
-    ],
-    providers: [{ provide: APP_GUARD, useClass: ThrottlingGuard }],
+    ];
+};
+
+const getAppImports = (): ModuleImport[] => {
+    const imports = getAppBaseImports();
+
+    if (process.env.IDENTITY_MODULE_ENABLED === "true") {
+        imports.push(IdentityModule);
+    }
+
+    if (process.env.JOURNAL_MODULE_ENABLED === "true") {
+        imports.push(JournalModule);
+    }
+
+    if (process.env.ALERTS_MODULE_ENABLED === "true") {
+        imports.push(AlertsModule);
+    }
+
+    if (process.env.USERS_MODULE_ENABLED === "true") {
+        imports.push(UsersModule);
+    }
+
+    if (process.env.GDPR_MODULE_ENABLED === "true") {
+        imports.push(GdprModule);
+    }
+
+    if (process.env.MAIL_MODULE_ENABLED === "true") {
+        imports.push(MailModule);
+    }
+
+    return imports;
+};
+
+@Module({
+    imports: getAppImports(),
+    providers: [{ provide: APP_GUARD, useClass: ThrottlingGuard }, AccessTokenStrategy],
     exports: [],
 })
 export class AppModule {}

@@ -50,8 +50,8 @@ export class AuthenticationService implements IAuthenticationService {
         @Inject(AccessScopesServiceToken)
         private scopesService: IAccessScopesService
     ) {
-        this.accessTokenSigningSecret = configService.getOrThrow<string>("modules.identity.jwt.signingSecret");
-        this.accessTokenExpirationTimeInSeconds = configService.getOrThrow<number>("modules.identity.jwt.expirationTimeInSeconds");
+        this.accessTokenSigningSecret = configService.getOrThrow<string>("auth.jwt.signingSecret");
+        this.accessTokenExpirationTimeInSeconds = configService.getOrThrow<number>("auth.jwt.expirationTimeInSeconds");
     }
 
     public async loginWithCredentials({ email, password }: Credentials): Promise<AuthenticationResult> {
