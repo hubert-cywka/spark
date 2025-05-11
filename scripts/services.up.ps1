@@ -110,6 +110,7 @@ $DockerComposeLocal = Get-Content -Path $DockerComposeRootDir/docker-compose.loc
 foreach ($DetachedService in $DetachedServices) {
     $PortValue = $ServicesList[$DetachedService].port
     
+    # "backend" is modular - locally it runs as a single process, in docker it runs as multiple containers.
     if ($DetachedService -eq "backend") {
         $EnvPort = "IDENTITY_SERVICE_PORT=$($PortValue)"
         $EnvAddress = "IDENTITY_SERVICE_ADDRESS=host.docker.internal"
