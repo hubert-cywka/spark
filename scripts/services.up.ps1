@@ -103,42 +103,18 @@ Import-Module powershell-yaml
 
 # Create docker-compose.local.override.yml file
 # In that file we want to override envoy related envs, so envoy can proxy to services running on host machine.
-# Same applies to Stitching service, as it needs to know where are the GraphQL sub-graphs.
 $GatewayService = "gateway"
 $DockerComposeLocal = Get-Content -Path $DockerComposeRootDir/docker-compose.local.yml | ConvertFrom-Yaml
 
 foreach ($DetachedService in $DetachedServices) {
     $PortValue = $ServicesList[$DetachedService].port
-    
-    # "backend" is modular - locally it runs as a single process, in docker it runs as multiple containers.
-    if ($DetachedService -eq "backend") {
-        $EnvPort = "IDENTITY_SERVICE_PORT=$($PortValue)"
-        $EnvAddress = "IDENTITY_SERVICE_ADDRESS=host.docker.internal"
-        Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvAddress
-        Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvPort
+    $EnvNamePrefix = $DetachedService.ToUpper() -replace "-", "_"
 
-        $EnvPort = "ALERTS_SERVICE_PORT=$($PortValue)"
-        $EnvAddress = "ALERTS_SERVICE_ADDRESS=host.docker.internal"
-        Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvAddress
-        Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvPort
+    $EnvPort = "$($EnvNamePrefix)_PORT=$($PortValue)"
+    $EnvAddress = "$($EnvNamePrefix)_ADDRESS=host.docker.internal"
 
-        $EnvPort = "JOURNAL_SERVICE_PORT=$($PortValue)"
-        $EnvAddress = "JOURNAL_SERVICE_ADDRESS=host.docker.internal"
-        Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvAddress
-        Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvPort
-
-        $EnvPort = "USERS_SERVICE_PORT=$($PortValue)"
-        $EnvAddress = "USERS_SERVICE_ADDRESS=host.docker.internal"
-        Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvAddress
-        Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvPort
-    } else {
-        $EnvNamePrefix = $DetachedService.ToUpper() -replace "-", "_"
-        $EnvPort = "$($EnvNamePrefix)_PORT=$($PortValue)"
-        $EnvAddress = "$($EnvNamePrefix)_ADDRESS=host.docker.internal"
-
-        Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvAddress
-        Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvPort
-    }
+    Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvAddress
+    Update-Or-Add-EnvVariable -envList ([ref]$DockerComposeLocal.services.$GatewayService.environment) -newEnvVariable $EnvPort
 }
 
 $DockerComposeLocal | ConvertTo-Yaml | Out-File -FilePath $DockerComposeRootDir/docker-compose.local.override.yml -Encoding UTF8

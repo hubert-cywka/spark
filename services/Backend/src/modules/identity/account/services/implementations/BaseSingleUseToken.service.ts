@@ -11,6 +11,7 @@ import { type ISingleUseTokenService } from "@/modules/identity/account/services
 import { type SingleUseTokenRedeemData, type SingleUseTokenType } from "@/modules/identity/account/types/SingleUseToken";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
+// TODO: Hash tokens
 @Injectable()
 export abstract class BaseSingleUseTokenService implements ISingleUseTokenService {
     private readonly logger = new Logger(BaseSingleUseTokenService.name);

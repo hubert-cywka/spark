@@ -23,7 +23,27 @@
         "port": 5100,
         "detachable": true
     },
-    "backend": {
+    "identity-service": {
+        "port": 5200,
+        "detachable": true
+    },
+    "journal-service": {
+        "port": 5200,
+        "detachable": true
+    },
+    "alerts-service": {
+        "port": 5200,
+        "detachable": true
+    },
+    "users-service": {
+        "port": 5200,
+        "detachable": true
+    },
+    "gdpr-service": {
+        "port": 5200,
+        "detachable": true
+    },
+    "mail-service": {
         "port": 5200,
         "detachable": true
     }

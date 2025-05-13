@@ -100,6 +100,10 @@ export const AppConfig = () => ({
         },
 
         identity: {
+            singleUseTokens: {
+                // TODO: Use dedicated secret
+                signingSecret: process.env.REFRESH_TOKEN_SIGNING_SECRET,
+            },
             refreshToken: {
                 signingSecret: process.env.REFRESH_TOKEN_SIGNING_SECRET,
                 expirationTimeInSeconds: parseInt(process.env.REFRESH_TOKEN_EXPIRATION_TIME_IN_SECONDS ?? ""),
