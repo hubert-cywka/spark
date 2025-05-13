@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import clsx from "clsx";
 import { ChevronLeft } from "lucide-react";
 
@@ -12,19 +12,24 @@ import { AccessGuard } from "@/features/auth/components/AccessGuard";
 import { LogoutButton } from "@/features/auth/components/LogoutButton/LogoutButton";
 import { Navigation } from "@/features/layout/components/Navigation/Navigation";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useOutsideClick } from "@/hooks/useOutsideClick.ts";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 export const SidePanel = () => {
     const t = useTranslate();
+    const isDesktop = useMediaQuery("(min-width: 768px)");
     // Hubert: On mobile this component should be hidden by default. We are using css to achieve that to prevent layout
     // shifts, but the user still needs to be able to open the component. It doesn't matter if we set it to 'true' on
     // initial render on desktop.
     const [isCollapsed, setIsCollapsed] = useState(true);
     const toggleCollapsedState = () => setIsCollapsed((prev) => !prev);
-    const isDesktop = useMediaQuery("(min-width: 768px)");
+    const collapse = useCallback(() => setIsCollapsed(true), []);
+
+    const ref = useOutsideClick(collapse);
 
     return (
         <aside
+            ref={ref}
             className={clsx(styles.container, {
                 [styles.collapsed]: isCollapsed,
             })}
