@@ -7,6 +7,7 @@ import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-t
 import dayjs from "dayjs";
 import { IsNull, LessThanOrEqual, Repository } from "typeorm";
 
+import { toSHA256 } from "@/common/utils/hashUtils";
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
 import { RefreshTokenNotFoundError } from "@/modules/identity/authentication/errors/RefreshTokenNotFound.error";
 import { type IRefreshTokenService } from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
@@ -105,11 +106,7 @@ export class RefreshTokenService implements IRefreshTokenService {
     }
 
     private async hashToken(value: string): Promise<string> {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(value);
-        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+        return toSHA256(value);
     }
 
     private isValid(token: RefreshTokenEntity): boolean {

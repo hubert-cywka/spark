@@ -4,6 +4,7 @@ import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-t
 import dayjs from "dayjs";
 import { IsNull, Repository } from "typeorm";
 
+import { toSHA256 } from "@/common/utils/hashUtils";
 import { SingleUseTokenEntity } from "@/modules/identity/account/entities/SingleUseTokenEntity";
 import { TokenInvalidError } from "@/modules/identity/account/errors/TokenInvalid.error";
 import { TokenNotFoundError } from "@/modules/identity/account/errors/TokenNotFound.error";
@@ -57,13 +58,16 @@ export abstract class BaseSingleUseTokenService implements ISingleUseTokenServic
     protected async issueToken(ownerId: string, type: SingleUseTokenType): Promise<string> {
         const token = this.generate();
         const expiresAt = dayjs().add(this.EXPIRATION_TIME, "seconds");
-        const tokenEntity = await this.getRepository().save({
+
+        const hashedValue = await this.hashToken(token);
+        await this.getRepository().save({
             owner: { id: ownerId },
             type,
-            value: token,
+            value: hashedValue,
             expiresAt,
         });
-        return tokenEntity.value;
+
+        return token;
     }
 
     protected async invalidateAllByOwnerIdAndType(ownerId: string, type: SingleUseTokenType): Promise<void> {
@@ -72,10 +76,15 @@ export abstract class BaseSingleUseTokenService implements ISingleUseTokenServic
     }
 
     private async findOneByValueAndType(value: string, type: SingleUseTokenType): Promise<SingleUseTokenEntity | null> {
+        const hashedValue = await this.hashToken(value);
         return this.getRepository().findOne({
-            where: { value, type },
+            where: { value: hashedValue, type },
             relations: ["owner"],
         });
+    }
+
+    private async hashToken(value: string): Promise<string> {
+        return toSHA256(value);
     }
 
     private isValid(token: SingleUseTokenEntity): boolean {
