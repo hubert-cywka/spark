@@ -1,11 +1,9 @@
-export const buildCSPConfig = () => {
-    const isProd = process.env.NODE_ENV === "production";
+export const buildCSPConfig = (nonce: string) => {
     const apiURL = process.env.NEXT_PUBLIC_API_URL;
 
-    // TODO: CSP policy has problems in production build.
     const cspHeader = `
     default-src 'self';
-    script-src 'self' ${isProd ? "" : "'unsafe-inline'"};
+    script-src 'self' 'nonce-${nonce}';
     style-src 'self' 'unsafe-inline';
     img-src 'self' blob: data:;
     font-src 'self';

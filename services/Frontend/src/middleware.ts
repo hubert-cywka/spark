@@ -15,9 +15,12 @@ export const config = {
 };
 
 export function middleware(request: NextRequest) {
-    const contentSecurityPolicyHeaderValue = buildCSPConfig();
-
     const requestHeaders = new Headers(request.headers);
+
+    const nonce = crypto.randomUUID();
+    requestHeaders.set("x-nonce", nonce);
+
+    const contentSecurityPolicyHeaderValue = buildCSPConfig(nonce);
     requestHeaders.set("Content-Security-Policy", contentSecurityPolicyHeaderValue);
 
     const response = NextResponse.next({
