@@ -28,7 +28,62 @@ services:
         networks:
             - services_network
 
-    backend:
+    identity-service:
+        build:
+            context: ../../services/Backend
+            dockerfile: Dockerfile
+        restart: always
+        networks:
+            - services_network
+        depends_on:
+            - pubsub
+            - pooler
+
+    journal-service:
+        build:
+            context: ../../services/Backend
+            dockerfile: Dockerfile
+        restart: always
+        networks:
+            - services_network
+        depends_on:
+            - pubsub
+            - pooler
+    
+    alerts-service:
+        build:
+            context: ../../services/Backend
+            dockerfile: Dockerfile
+        restart: always
+        networks:
+            - services_network
+        depends_on:
+            - pubsub
+            - pooler
+    
+    gdpr-service:
+        build:
+            context: ../../services/Backend
+            dockerfile: Dockerfile
+        restart: always
+        networks:
+            - services_network
+        depends_on:
+            - pubsub
+            - pooler
+    
+    users-service:
+        build:
+            context: ../../services/Backend
+            dockerfile: Dockerfile
+        restart: always
+        networks:
+            - services_network
+        depends_on:
+            - pubsub
+            - pooler
+                
+    mail-service:
         build:
             context: ../../services/Backend
             dockerfile: Dockerfile

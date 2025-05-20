@@ -45,12 +45,19 @@ services:
         ports:
             - "${GATEWAY_PORT}:80"
             - "5010:9901"
+        env_file:
+            - "./.env"
         environment:
-            - BACKEND_ADDRESS=${BACKEND_HOST}
-            - BACKEND_PORT=80
+            - IDENTITY_SERVICE_ADDRESS=${IDENTITY_SERVICE_HOST}
+            - IDENTITY_SERVICE_PORT=80
+            - JOURNAL_SERVICE_ADDRESS=${JOURNAL_SERVICE_HOST}
+            - JOURNAL_SERVICE_PORT=80
+            - ALERTS_SERVICE_ADDRESS=${ALERTS_SERVICE_HOST}
+            - ALERTS_SERVICE_PORT=80
+            - USERS_SERVICE_ADDRESS=${USERS_SERVICE_HOST}
+            - USERS_SERVICE_PORT=80
             - FRONTEND_ADDRESS=${FRONTEND_HOST}
             - FRONTEND_PORT=80
-            - ALLOWED_ORIGINS=${GATEWAY_ALLOWED_ORIGINS}
 
     frontend:
         ports:
@@ -59,63 +66,92 @@ services:
             - PORT=80
             - NEXT_PUBLIC_API_URL=${GATEWAY_URL}
 
-    backend:
+    identity-service:
         ports:
-            - "${BACKEND_PORT}:80"
+            - "${IDENTITY_SERVICE_PORT}:80"
         healthcheck:
             test: [ "CMD", "curl", "-f", "http://localhost:80/healthz/liveness" ]
             start_period: 30s
             interval: 15s
             timeout: 5s
             retries: 3
+        env_file:
+            - ".env"
         environment:
-            - APP_NAME=${APP_NAME}
-            - EVENTS_ENCRYPTION_SECRET_64_BYTES=${EVENTS_ENCRYPTION_SECRET_64_BYTES}
-
-            - CLIENT_URL_BASE=${CLIENT_URL_BASE}
-
-            - RATE_LIMITING_BASE_LIMIT=${RATE_LIMITING_BASE_LIMIT}
-            - RATE_LIMITING_BASE_TTL=${RATE_LIMITING_BASE_TTL}
-
-            - PUBSUB_HOST=${PUBSUB_HOST}
-            - PUBSUB_PORT=${PUBSUB_PORT}
-
-            - DATABASE_LOGGING_ENABLED=${DATABASE_LOGGING_ENABLED}
-            - DATABASE_PORT=${DATABASE_PORT}
-            - DATABASE_USERNAME=${DATABASE_USERNAME}
-            - DATABASE_PASSWORD=${DATABASE_PASSWORD}
-            - DATABASE_HOST=${DATABASE_HOST}
-
             - PORT=80
-            - JWT_SIGNING_SECRET=${JWT_SIGNING_SECRET}
-            - JWT_EXPIRATION_TIME_IN_SECONDS=${JWT_EXPIRATION_TIME_IN_SECONDS}
-            - OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS=${OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS}
-            - REFRESH_TOKEN_SIGNING_SECRET=${REFRESH_TOKEN_SIGNING_SECRET}
-            - REFRESH_TOKEN_EXPIRATION_TIME_IN_SECONDS=${REFRESH_TOKEN_EXPIRATION_TIME_IN_SECONDS}
+            - IDENTITY_MODULE_ENABLED=true
 
-            - AUTH_DATABASE_NAME=${AUTH_DATABASE_NAME}
-            - AUTH_THROTTLE_LIMIT=${AUTH_THROTTLE_LIMIT}
-            - AUTH_THROTTLE_TTL_IN_MS=${AUTH_THROTTLE_TTL_IN_MS}
+    journal-service:
+        ports:
+            - "${JOURNAL_SERVICE_PORT}:80"
+        healthcheck:
+            test: [ "CMD", "curl", "-f", "http://localhost:80/healthz/liveness" ]
+            start_period: 30s
+            interval: 15s
+            timeout: 5s
+            retries: 3
+        env_file:
+            - ".env"
+        environment:
+            - PORT=80
+            - JOURNAL_MODULE_ENABLED=true
+                
+    alerts-service:
+        ports:
+            - "${ALERTS_SERVICE_PORT}:80"
+        healthcheck:
+            test: [ "CMD", "curl", "-f", "http://localhost:80/healthz/liveness" ]
+            start_period: 30s
+            interval: 15s
+            timeout: 5s
+            retries: 3
+        env_file:
+            - ".env"
+        environment:
+            - PORT=80
+            - ALERTS_MODULE_ENABLED=true
 
-            - USERS_DATABASE_NAME=${USERS_DATABASE_NAME}
-
-            - MAIL_SENDER_NAME=${MAIL_SENDER_NAME}
-            - MAIL_SENDER_USER=${MAIL_SENDER_USER}
-            - MAIL_SENDER_PASSWORD=${MAIL_SENDER_PASSWORD}
-            - MAIL_SENDER_HOST=${MAIL_SENDER_HOST}
-            - MAIL_SENDER_PORT=${MAIL_SENDER_PORT}
-            - MAIL_DEBUG_MODE=${MAIL_DEBUG_MODE}
-
-            - MAIL_DATABASE_NAME=${MAIL_DATABASE_NAME}
-
-            - ALERTS_DATABASE_NAME=${ALERTS_DATABASE_NAME}
-
-            - GDPR_DATABASE_NAME=${GDPR_DATABASE_NAME}
-
-            - JOURNAL_DATABASE_NAME=${JOURNAL_DATABASE_NAME}
-
-            - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-            - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-            - GOOGLE_OIDC_REDIRECT_URL=${GOOGLE_OIDC_REDIRECT_URL}
-
-            - COOKIES_SECRET=${COOKIES_SECRET}
+    users-service:
+        ports:
+            - "${USERS_SERVICE_PORT}:80"
+        healthcheck:
+            test: [ "CMD", "curl", "-f", "http://localhost:80/healthz/liveness" ]
+            start_period: 30s
+            interval: 15s
+            timeout: 5s
+            retries: 3
+        env_file:
+            - ".env"
+        environment:
+            - PORT=80
+            - USERS_MODULE_ENABLED=true
+                
+    gdpr-service:
+        ports:
+            - "${GDPR_SERVICE_PORT}:80"
+        healthcheck:
+            test: [ "CMD", "curl", "-f", "http://localhost:80/healthz/liveness" ]
+            start_period: 30s
+            interval: 15s
+            timeout: 5s
+            retries: 3
+        env_file:
+            - ".env"
+        environment:
+            - PORT=80
+            - GDPR_MODULE_ENABLED=true
+                
+    mail-service:
+        ports:
+            - "${MAIL_SERVICE_PORT}:80"
+        healthcheck:
+            test: [ "CMD", "curl", "-f", "http://localhost:80/healthz/liveness" ]
+            start_period: 30s
+            interval: 15s
+            timeout: 5s
+            retries: 3
+        env_file:
+            - ".env"
+        environment:
+            - PORT=80
+            - MAIL_MODULE_ENABLED=true

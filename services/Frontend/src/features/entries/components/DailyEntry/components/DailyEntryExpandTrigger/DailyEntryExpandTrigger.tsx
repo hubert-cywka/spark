@@ -1,5 +1,5 @@
 import { KeyboardEvent } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 
 import styles from "./styles/DailyEntryExpandTrigger.module.scss";
 
@@ -48,7 +48,7 @@ export const DailyEntryExpandTrigger = ({
             onKeyDown={handleKeyDown}
             size="1"
             variant="subtle"
-            iconSlot={isCollapsed ? ChevronDown : ChevronUp}
+            iconSlot={isCollapsed ? ChevronRight : ChevronDown}
             className={styles.trigger}
             onPress={onClick}
         />

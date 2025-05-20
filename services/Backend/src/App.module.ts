@@ -6,20 +6,31 @@ import { ThrottlerModule } from "@nestjs/throttler";
 import { LoggerModule } from "nestjs-pino";
 
 import { IntegrationEventsModule, IntegrationEventStreams, IntegrationEventTopics } from "@/common/events";
+import { AccessTokenStrategy } from "@/common/guards/AccessToken.strategy";
 import { ThrottlingGuard } from "@/common/guards/Throttling.guard";
 import { AppConfig } from "@/config/configuration";
-import { GlobalModule } from "@/Global.module";
-import { loggerOptions } from "@/lib/logger";
+import { logger, loggerOptions } from "@/lib/logger";
 import { AlertsModule } from "@/modules/alerts/Alerts.module";
 import { GdprModule } from "@/modules/gdpr/Gdpr.module";
+import { GlobalModule } from "@/modules/global/Global.module";
 import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
 import { IdentityModule } from "@/modules/identity/Identity.module";
 import { JournalModule } from "@/modules/journal/Journal.module";
 import { MailModule } from "@/modules/mail/Mail.module";
 import { UsersModule } from "@/modules/users/Users.module";
+import { ModuleImport } from "@/types/Module";
 
-@Module({
-    imports: [
+const PLUGGABLE_MODULES_MAP = {
+    IDENTITY_MODULE_ENABLED: IdentityModule,
+    JOURNAL_MODULE_ENABLED: JournalModule,
+    ALERTS_MODULE_ENABLED: AlertsModule,
+    USERS_MODULE_ENABLED: UsersModule,
+    GDPR_MODULE_ENABLED: GdprModule,
+    MAIL_MODULE_ENABLED: MailModule,
+};
+
+const getAppBaseImports = (): ModuleImport[] => {
+    return [
         LoggerModule.forRoot({ pinoHttp: loggerOptions }),
         ConfigModule.forRoot({
             load: [AppConfig],
@@ -31,13 +42,6 @@ import { UsersModule } from "@/modules/users/Users.module";
                 {
                     ttl: configService.getOrThrow<number>("throttle.ttl"),
                     limit: configService.getOrThrow<number>("throttle.limit"),
-                    scope: [
-                        {
-                            endpoint: "identity",
-                            ttl: configService.getOrThrow<number>("modules.identity.throttle.ttl"),
-                            limit: configService.getOrThrow<number>("modules.identity.throttle.limit"),
-                        },
-                    ],
                 },
             ],
             inject: [ConfigService],
@@ -69,15 +73,28 @@ import { UsersModule } from "@/modules/users/Users.module";
             global: true,
         }),
         GlobalModule,
-        IdentityModule,
-        MailModule,
-        UsersModule,
-        JournalModule,
-        AlertsModule,
-        GdprModule,
         HealthCheckModule,
-    ],
-    providers: [{ provide: APP_GUARD, useClass: ThrottlingGuard }],
+    ];
+};
+
+const getAppImports = (): ModuleImport[] => {
+    const imports = getAppBaseImports();
+
+    for (const [flag, module] of Object.entries(PLUGGABLE_MODULES_MAP)) {
+        if (process.env[flag] !== "true") {
+            continue;
+        }
+
+        imports.push(module);
+        logger.log(`Module ${module.name} enabled.`);
+    }
+
+    return imports;
+};
+
+@Module({
+    imports: getAppImports(),
+    providers: [{ provide: APP_GUARD, useClass: ThrottlingGuard }, AccessTokenStrategy],
     exports: [],
 })
 export class AppModule {}

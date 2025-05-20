@@ -103,7 +103,6 @@ Import-Module powershell-yaml
 
 # Create docker-compose.local.override.yml file
 # In that file we want to override envoy related envs, so envoy can proxy to services running on host machine.
-# Same applies to Stitching service, as it needs to know where are the GraphQL sub-graphs.
 $GatewayService = "gateway"
 $DockerComposeLocal = Get-Content -Path $DockerComposeRootDir/docker-compose.local.yml | ConvertFrom-Yaml
 

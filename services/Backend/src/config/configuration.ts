@@ -28,6 +28,13 @@ export const AppConfig = () => ({
         port: parseInt(process.env.PUBSUB_PORT ?? ""),
     },
 
+    auth: {
+        jwt: {
+            signingSecret: process.env.JWT_SIGNING_SECRET,
+            expirationTimeInSeconds: parseInt(process.env.JWT_EXPIRATION_TIME_IN_SECONDS ?? ""),
+        },
+    },
+
     modules: {
         gdpr: {
             database: {
@@ -93,10 +100,6 @@ export const AppConfig = () => ({
         },
 
         identity: {
-            jwt: {
-                signingSecret: process.env.JWT_SIGNING_SECRET,
-                expirationTimeInSeconds: parseInt(process.env.JWT_EXPIRATION_TIME_IN_SECONDS ?? ""),
-            },
             refreshToken: {
                 signingSecret: process.env.REFRESH_TOKEN_SIGNING_SECRET,
                 expirationTimeInSeconds: parseInt(process.env.REFRESH_TOKEN_EXPIRATION_TIME_IN_SECONDS ?? ""),

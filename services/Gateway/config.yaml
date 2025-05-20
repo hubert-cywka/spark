@@ -67,9 +67,64 @@ static_resources:
                                               status: 204
 
                                         - match:
-                                              prefix: /api
+                                              prefix: /api/alert
                                           route:
-                                              cluster: backend
+                                              cluster: alerts
+                                              
+                                        -   match:
+                                                prefix: /api/user
+                                            route:
+                                                cluster: users
+                                                
+                                        -   match:
+                                                prefix: /api/alert
+                                            route:
+                                                cluster: alerts
+                                                
+                                        -   match:
+                                                prefix: /api/daily
+                                            route:
+                                                cluster: journal
+
+                                        -   match:
+                                                prefix: /api/entry
+                                            route:
+                                                cluster: journal
+                                                
+                                        -   match:
+                                                prefix: /api/goal
+                                            route:
+                                                cluster: journal
+                                                
+                                        -   match:
+                                                prefix: /api/2fa
+                                            route:
+                                                cluster: identity
+
+                                        -   match:
+                                                prefix: /api/2fa
+                                            route:
+                                                cluster: identity
+                                                
+                                        -   match:
+                                                prefix: /api/account
+                                            route:
+                                                cluster: identity
+                                                
+                                        -   match:
+                                                prefix: /api/scopes
+                                            route:
+                                                cluster: identity
+                                                
+                                        -   match:
+                                                prefix: /api/auth
+                                            route:
+                                                cluster: identity
+
+                                        -   match:
+                                                prefix: /api/open-id-connect
+                                            route:
+                                                cluster: identity
 
                                         - match:
                                               prefix: /
@@ -96,17 +151,62 @@ static_resources:
                                       address: '${FRONTEND_ADDRESS}'
                                       port_value: '${FRONTEND_PORT}'
 
-        - name: backend
+        - name: identity
           connect_timeout: 5s
           type: STRICT_DNS
           dns_lookup_family: V4_ONLY
           lb_policy: ROUND_ROBIN
           load_assignment:
-              cluster_name: backend
+              cluster_name: identity
               endpoints:
                   - lb_endpoints:
                         - endpoint:
                               address:
                                   socket_address:
-                                      address: '${BACKEND_ADDRESS}'
-                                      port_value: '${BACKEND_PORT}'
+                                      address: '${IDENTITY_SERVICE_ADDRESS}'
+                                      port_value: '${IDENTITY_SERVICE_PORT}'
+
+        - name: journal
+          connect_timeout: 5s
+          type: STRICT_DNS
+          dns_lookup_family: V4_ONLY
+          lb_policy: ROUND_ROBIN
+          load_assignment:
+              cluster_name: journal
+              endpoints:
+                  - lb_endpoints:
+                        - endpoint:
+                              address:
+                                  socket_address:
+                                      address: '${JOURNAL_SERVICE_ADDRESS}'
+                                      port_value: '${JOURNAL_SERVICE_PORT}'
+                                      
+        - name: alerts
+          connect_timeout: 5s
+          type: STRICT_DNS
+          dns_lookup_family: V4_ONLY
+          lb_policy: ROUND_ROBIN
+          load_assignment:
+              cluster_name: alerts
+              endpoints:
+                  - lb_endpoints:
+                        - endpoint:
+                              address:
+                                  socket_address:
+                                      address: '${ALERTS_SERVICE_ADDRESS}'
+                                      port_value: '${ALERTS_SERVICE_PORT}'
+
+        - name: users
+          connect_timeout: 5s
+          type: STRICT_DNS
+          dns_lookup_family: V4_ONLY
+          lb_policy: ROUND_ROBIN
+          load_assignment:
+              cluster_name: users
+              endpoints:
+                  - lb_endpoints:
+                        - endpoint:
+                              address:
+                                  socket_address:
+                                      address: '${USERS_SERVICE_ADDRESS}'
+                                      port_value: '${USERS_SERVICE_PORT}'
