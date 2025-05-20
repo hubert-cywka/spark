@@ -9,7 +9,7 @@ import { IntegrationEventsModule, IntegrationEventStreams, IntegrationEventTopic
 import { AccessTokenStrategy } from "@/common/guards/AccessToken.strategy";
 import { ThrottlingGuard } from "@/common/guards/Throttling.guard";
 import { AppConfig } from "@/config/configuration";
-import { loggerOptions } from "@/lib/logger";
+import { logger, loggerOptions } from "@/lib/logger";
 import { AlertsModule } from "@/modules/alerts/Alerts.module";
 import { GdprModule } from "@/modules/gdpr/Gdpr.module";
 import { GlobalModule } from "@/modules/global/Global.module";
@@ -19,6 +19,15 @@ import { JournalModule } from "@/modules/journal/Journal.module";
 import { MailModule } from "@/modules/mail/Mail.module";
 import { UsersModule } from "@/modules/users/Users.module";
 import { ModuleImport } from "@/types/Module";
+
+const PLUGGABLE_MODULES_MAP = {
+    IDENTITY_MODULE_ENABLED: IdentityModule,
+    JOURNAL_MODULE_ENABLED: JournalModule,
+    ALERTS_MODULE_ENABLED: AlertsModule,
+    USERS_MODULE_ENABLED: UsersModule,
+    GDPR_MODULE_ENABLED: GdprModule,
+    MAIL_MODULE_ENABLED: MailModule,
+};
 
 const getAppBaseImports = (): ModuleImport[] => {
     return [
@@ -71,28 +80,13 @@ const getAppBaseImports = (): ModuleImport[] => {
 const getAppImports = (): ModuleImport[] => {
     const imports = getAppBaseImports();
 
-    if (process.env.IDENTITY_MODULE_ENABLED === "true") {
-        imports.push(IdentityModule);
-    }
+    for (const [flag, module] of Object.entries(PLUGGABLE_MODULES_MAP)) {
+        if (process.env[flag] !== "true") {
+            continue;
+        }
 
-    if (process.env.JOURNAL_MODULE_ENABLED === "true") {
-        imports.push(JournalModule);
-    }
-
-    if (process.env.ALERTS_MODULE_ENABLED === "true") {
-        imports.push(AlertsModule);
-    }
-
-    if (process.env.USERS_MODULE_ENABLED === "true") {
-        imports.push(UsersModule);
-    }
-
-    if (process.env.GDPR_MODULE_ENABLED === "true") {
-        imports.push(GdprModule);
-    }
-
-    if (process.env.MAIL_MODULE_ENABLED === "true") {
-        imports.push(MailModule);
+        imports.push(module);
+        logger.log(`Module ${module.name} enabled.`);
     }
 
     return imports;
