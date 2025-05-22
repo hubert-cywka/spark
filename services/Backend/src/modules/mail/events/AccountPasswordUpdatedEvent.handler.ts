@@ -1,17 +1,17 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 
 import { whenError } from "@/common/errors/whenError";
 import { AccountPasswordUpdatedEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 import { EmailDeliveryError } from "@/modules/mail/errors/EmailDelivery.error";
 import { type IMailerService, MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
-import { PasswordUpdatedEmail } from "@/modules/mail/templates/PasswordUpdatedEmail";
+import { type IEmailTemplateFactory, EmailTemplateFactoryToken } from "@/modules/mail/templates/IEmailTemplate.factory";
 
 @Injectable()
-export class AccountPasswordUpdatedEventHandler implements IInboxEventHandler {
+export class AccountPasswordUpdatedEventHandler<T> implements IInboxEventHandler {
     constructor(
-        @Inject(MailerServiceToken) private mailer: IMailerService,
-        private readonly configService: ConfigService
+        @Inject(MailerServiceToken) private mailer: IMailerService<T>,
+        @Inject(EmailTemplateFactoryToken)
+        private emailFactory: IEmailTemplateFactory<T>
     ) {}
 
     public canHandle(topic: string): boolean {
@@ -21,8 +21,7 @@ export class AccountPasswordUpdatedEventHandler implements IInboxEventHandler {
     public async handle(event: IntegrationEvent): Promise<void> {
         const payload = event.getPayload() as AccountPasswordUpdatedEventPayload;
         try {
-            const appUrl = this.configService.getOrThrow<string>("client.url.base");
-            await this.mailer.send(payload.email, new PasswordUpdatedEmail(appUrl));
+            await this.mailer.send(payload.email, this.emailFactory.createPasswordUpdatedEmail());
         } catch (e) {
             whenError(e).is(EmailDeliveryError).throwRpcException("Email couldn't be delivered.").elseRethrow();
         }

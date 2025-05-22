@@ -1,4 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
+import dayjs from "dayjs";
 
 import { type IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 import { AccountRemovalRequestedEventPayload } from "@/common/events/types/account/AccountRemovalRequestedEvent";
@@ -17,6 +18,7 @@ export class TenantRemovalRequestedEventHandler implements IInboxEventHandler {
 
     async handle(event: IntegrationEvent): Promise<void> {
         const payload = event.getPayload() as AccountRemovalRequestedEventPayload;
-        await this.dataPurgeService.scheduleForTenant(payload.account.id);
+        const removeAt = dayjs().add(payload.retentionPeriod, "days").toDate();
+        await this.dataPurgeService.scheduleForTenant(payload.account.id, removeAt);
     }
 }

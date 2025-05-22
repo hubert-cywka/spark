@@ -5,10 +5,10 @@ import { createTransport } from "nodemailer";
 
 import { EmailDeliveryError } from "@/modules/mail/errors/EmailDelivery.error";
 import { type IMailerService } from "@/modules/mail/services/interfaces/IMailer.service";
-import { type IEmailTemplate } from "@/modules/mail/templates/IEmailTemplate";
+import { type IEmailTemplate } from "@/modules/mail/templates/native/IEmailTemplate";
 
 @Injectable()
-export class MailerService implements IMailerService {
+export class MailerService implements IMailerService<IEmailTemplate> {
     private readonly logger = new Logger(MailerService.name);
     private readonly transporter: Transporter;
     private readonly senderName: string;

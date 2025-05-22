@@ -1,6 +1,7 @@
 import { IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 
 export type AccountRemovalRequestedEventPayload = {
+    retentionPeriod: number;
     account: {
         id: string;
         email: string;

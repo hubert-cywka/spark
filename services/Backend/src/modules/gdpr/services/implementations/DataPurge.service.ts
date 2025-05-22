@@ -14,7 +14,6 @@ import {
 } from "@/modules/gdpr/services/interfaces/IDataPurgePublisher.service";
 
 const PURGE_PROCESSING_INTERVAL = 1000 * 60 * 60;
-const DATA_RETENTION_PERIOD = 1000 * 60 * 60 * 24 * 7;
 
 @Injectable()
 export class DataPurgeService implements IDataPurgeService {
@@ -28,7 +27,7 @@ export class DataPurgeService implements IDataPurgeService {
     ) {}
 
     @Transactional(GDPR_MODULE_DATA_SOURCE)
-    public async scheduleForTenant(tenantId: string): Promise<void> {
+    public async scheduleForTenant(tenantId: string, removeAt: Date): Promise<void> {
         const repository = this.getRepository();
         const existingPlan = await repository.findOne({
             where: { tenantId, cancelledAt: IsNull(), processedAt: IsNull() },
@@ -40,6 +39,7 @@ export class DataPurgeService implements IDataPurgeService {
             const newPlan = await repository.save({
                 tenantId,
                 scheduledAt: new Date(),
+                removeAt,
             });
             this.logger.log({ tenantId, planId: newPlan.id }, "Purge plan created.");
         }
@@ -79,11 +79,11 @@ export class DataPurgeService implements IDataPurgeService {
     @Interval(PURGE_PROCESSING_INTERVAL)
     @Transactional(GDPR_MODULE_DATA_SOURCE)
     private async processDataPurgePlans(): Promise<void> {
-        const scheduledBefore = dayjs().subtract(DATA_RETENTION_PERIOD, "milliseconds");
+        const now = dayjs();
 
         const plansToProcess = await this.getRepository()
             .createQueryBuilder("plan")
-            .where(":scheduledBefore >= plan.scheduledAt", { scheduledBefore })
+            .where(":now >= plan.removeAt", { now })
             .andWhere("plan.cancelledAt IS NULL")
             .andWhere("plan.processedAt IS NULL")
             .getMany();
