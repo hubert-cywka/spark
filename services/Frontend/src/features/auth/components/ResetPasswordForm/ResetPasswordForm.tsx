@@ -7,17 +7,19 @@ import { ResetPasswordFormInputs, useResetPasswordForm } from "./hooks/useResetP
 import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 
 import { AppRoute } from "@/app/appRoute";
-import { Button } from "@/components/Button";
+import { ButtonWithThrottle } from "@/components/ButtonWithThrottle";
 import { Field } from "@/components/Input";
 import { useRequestPasswordResetToken, useRequestPasswordResetTokenEvents } from "@/features/auth/hooks";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 import { getAbsoluteAppUrl } from "@/utils/appUrl";
 
+const RESEND_DELAY = 60;
+
 export const ResetPasswordForm = () => {
     const t = useTranslate();
 
     const { register, handleSubmit } = useResetPasswordForm();
-    const { mutateAsync, isSuccess, isPending } = useRequestPasswordResetToken();
+    const { mutateAsync, isPending } = useRequestPasswordResetToken();
     const { onPasswordResetRequestError, onPasswordResetRequestSuccess } = useRequestPasswordResetTokenEvents();
 
     const internalOnSubmit = useCallback(
@@ -35,6 +37,14 @@ export const ResetPasswordForm = () => {
         [mutateAsync, onPasswordResetRequestError, onPasswordResetRequestSuccess]
     );
 
+    const formatResendButtonLabel = (seconds: number) => {
+        if (seconds) {
+            return `${t("authentication.requestPasswordReset.form.submitButton")} (${seconds}s)`;
+        }
+
+        return t("authentication.requestPasswordReset.form.submitButton");
+    };
+
     return (
         <form className={sharedStyles.form} onSubmit={handleSubmit(internalOnSubmit)}>
             <div className={sharedStyles.fieldsWrapper}>
@@ -47,10 +57,7 @@ export const ResetPasswordForm = () => {
                 />
             </div>
 
-            {/* TODO: Enable after 60s */}
-            <Button isLoading={isPending} isDisabled={isSuccess} size="3" type="submit">
-                {t("authentication.requestPasswordReset.form.submitButton")}
-            </Button>
+            <ButtonWithThrottle throttle={RESEND_DELAY} label={formatResendButtonLabel} type="submit" isDisabled={isPending} size="3" />
         </form>
     );
 };
