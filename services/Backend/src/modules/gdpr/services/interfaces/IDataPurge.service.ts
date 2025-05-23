@@ -1,6 +1,6 @@
 export const DataPurgeServiceToken = Symbol("DataPurgeService");
 
 export interface IDataPurgeService {
-    scheduleForTenant(id: string, removeAt: Date): Promise<void>;
+    scheduleForTenant(id: string): Promise<void>;
     cancelForTenant(id: string): Promise<void>;
 }

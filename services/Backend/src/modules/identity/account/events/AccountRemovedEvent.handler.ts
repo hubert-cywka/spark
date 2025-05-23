@@ -1,4 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
+import { Transactional } from "@nestjs-cls/transactional";
 
 import {
     type IEventInbox,
@@ -14,6 +15,7 @@ import {
     type IAccountRemovalService,
     AccountRemovalServiceToken,
 } from "@/modules/identity/account/services/interfaces/IAccountRemoval.service";
+import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
 @Injectable()
 export class AccountRemovedEventHandler implements IInboxEventHandler {
@@ -30,10 +32,11 @@ export class AccountRemovedEventHandler implements IInboxEventHandler {
         return topic === IntegrationEventTopics.account.removal.completed;
     }
 
+    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
     async handle(event: IntegrationEvent): Promise<void> {
         const payload = event.getPayload() as AccountRemovalCompletedEventPayload;
         await this.outbox.clearTenantEvents(payload.account.id);
-        await this.removalService.removeByInternalId(payload.account.id);
         await this.inbox.clearTenantEvents(payload.account.id);
+        await this.removalService.removeByInternalId(payload.account.id);
     }
 }

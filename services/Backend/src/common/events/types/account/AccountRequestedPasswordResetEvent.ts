@@ -1,7 +1,7 @@
 import { IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 
 export type AccountRequestedPasswordResetEventPayload = {
-    email: string;
+    account: { id: string };
     redirectUrl: string;
 };
 

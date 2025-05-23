@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { IEmailTemplateFactory } from "@/modules/mail/templates/IEmailTemplate.factory";
-import { AccountRemovalRequestedEmail } from "@/modules/mail/templates/sendgrid/AccountRemovalRequestedEmail";
+import { AccountRemovalScheduledEmail } from "@/modules/mail/templates/sendgrid/AccountRemovalScheduledEmail";
 import { DailyReminderEmail } from "@/modules/mail/templates/sendgrid/DailyReminderEmail";
 import { ISendGridEmailTemplate } from "@/modules/mail/templates/sendgrid/ISendGridEmailTemplate";
 import { PasswordResetRequestedEmail } from "@/modules/mail/templates/sendgrid/PasswordResetRequestedEmail";
@@ -21,8 +21,8 @@ export class SendgridEmailTemplateFactory implements IEmailTemplateFactory<ISend
         this.appName = this.configService.getOrThrow<string>("appName");
     }
 
-    createAccountRemovalRequestedEmail(retentionPeriod: number): ISendGridEmailTemplate {
-        return new AccountRemovalRequestedEmail(this.appName, this.appUrl, retentionPeriod);
+    createAccountRemovalScheduledEmail(toBeRemovedAt: Date): ISendGridEmailTemplate {
+        return new AccountRemovalScheduledEmail(this.appName, this.appUrl, toBeRemovedAt);
     }
 
     createDailyReminderEmail(): ISendGridEmailTemplate {

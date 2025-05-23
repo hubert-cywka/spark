@@ -19,6 +19,6 @@ export class AccountActivatedEventHandler implements IInboxEventHandler {
 
     public async handle(event: IntegrationEvent): Promise<void> {
         const payload = event.getPayload() as AccountActivatedEventPayload;
-        await this.service.enableDefaultIntegrations(payload.id);
+        await this.service.enableDefaultIntegrations(payload.account.id);
     }
 }

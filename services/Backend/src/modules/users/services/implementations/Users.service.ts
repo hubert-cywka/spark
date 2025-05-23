@@ -12,8 +12,6 @@ import { type User } from "@/modules/users/models/User.model";
 import { type IUserPublisherService, UserPublisherServiceToken } from "@/modules/users/services/interfaces/IUserPublisher.service";
 import { type IUsersService } from "@/modules/users/services/interfaces/IUsers.service";
 
-const USERS_DATA_RETENTION_PERIOD_IN_DAYS = 7;
-
 @Injectable()
 export class UsersService implements IUsersService {
     private readonly logger = new Logger(UsersService.name);
@@ -77,9 +75,7 @@ export class UsersService implements IUsersService {
         const result = await this.findOneById(id);
 
         await this.publisher.onDataRemovalRequested(result.id, {
-            retentionPeriod: USERS_DATA_RETENTION_PERIOD_IN_DAYS,
             account: {
-                email: result.email,
                 id: result.id,
             },
         });

@@ -19,6 +19,6 @@ export class AccountPasswordUpdatedEventHandler implements IInboxEventHandler {
 
     public async handle(event: IntegrationEvent): Promise<void> {
         const payload = event.getPayload() as AccountPasswordUpdatedEventPayload;
-        await this.refreshTokenService.invalidateAllByOwnerId(payload.id);
+        await this.refreshTokenService.invalidateAllByOwnerId(payload.account.id);
     }
 }

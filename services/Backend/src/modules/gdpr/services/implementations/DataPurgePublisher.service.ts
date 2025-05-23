@@ -6,6 +6,10 @@ import {
     AccountRemovalCompletedEvent,
     AccountRemovalCompletedEventPayload,
 } from "@/common/events/types/account/AccountRemovalCompletedEvent";
+import {
+    AccountRemovalScheduledEvent,
+    AccountRemovalScheduledEventPayload,
+} from "@/common/events/types/account/AccountRemovalScheduledEvent";
 import { type IDataPurgePublisherService } from "@/modules/gdpr/services/interfaces/IDataPurgePublisher.service";
 
 @Injectable()
@@ -17,5 +21,9 @@ export class DataPurgePublisherService implements IDataPurgePublisherService {
 
     public async onPurgePlanProcessed(tenantId: string, payload: AccountRemovalCompletedEventPayload): Promise<void> {
         await this.outbox.enqueue(new AccountRemovalCompletedEvent(tenantId, payload));
+    }
+
+    public async onPurgePlanScheduled(tenantId: string, payload: AccountRemovalScheduledEventPayload): Promise<void> {
+        await this.outbox.enqueue(new AccountRemovalScheduledEvent(tenantId, payload));
     }
 }

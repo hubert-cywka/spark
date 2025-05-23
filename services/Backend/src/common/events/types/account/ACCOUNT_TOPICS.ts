@@ -13,6 +13,7 @@ export const ACCOUNT_TOPICS = {
     },
     removal: {
         requested: "account.removal_requested",
+        scheduled: "account.removal_scheduled",
         completed: "account.removal_completed",
     },
 };

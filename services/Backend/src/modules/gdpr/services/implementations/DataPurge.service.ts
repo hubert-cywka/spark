@@ -14,6 +14,7 @@ import {
 } from "@/modules/gdpr/services/interfaces/IDataPurgePublisher.service";
 
 const PURGE_PROCESSING_INTERVAL = 1000 * 60 * 60;
+const DATA_RETENTION_PERIOD_IN_DAYS = 7;
 
 @Injectable()
 export class DataPurgeService implements IDataPurgeService {
@@ -27,7 +28,7 @@ export class DataPurgeService implements IDataPurgeService {
     ) {}
 
     @Transactional(GDPR_MODULE_DATA_SOURCE)
-    public async scheduleForTenant(tenantId: string, removeAt: Date): Promise<void> {
+    public async scheduleForTenant(tenantId: string): Promise<void> {
         const repository = this.getRepository();
         const existingPlan = await repository.findOne({
             where: { tenantId, cancelledAt: IsNull(), processedAt: IsNull() },
@@ -35,14 +36,22 @@ export class DataPurgeService implements IDataPurgeService {
 
         if (existingPlan) {
             this.logger.warn({ tenantId, planId: existingPlan.id }, "Purge plan already exists.");
-        } else {
-            const newPlan = await repository.save({
-                tenantId,
-                scheduledAt: new Date(),
-                removeAt,
-            });
-            this.logger.log({ tenantId, planId: newPlan.id }, "Purge plan created.");
+            return;
         }
+
+        const removeAt = dayjs().add(DATA_RETENTION_PERIOD_IN_DAYS, "days").toDate();
+        const newPlan = await repository.save({
+            tenantId,
+            scheduledAt: new Date(),
+            removeAt,
+        });
+
+        await this.publisher.onPurgePlanScheduled(newPlan.tenantId, {
+            account: { id: newPlan.tenantId },
+            toBeRemovedAt: removeAt,
+        });
+
+        this.logger.log({ tenantId, planId: newPlan.id }, "Purge plan created.");
     }
 
     @Transactional(GDPR_MODULE_DATA_SOURCE)

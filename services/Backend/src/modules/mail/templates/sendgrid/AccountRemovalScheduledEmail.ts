@@ -1,10 +1,10 @@
 import { ISendGridEmailTemplate } from "@/modules/mail/templates/sendgrid/ISendGridEmailTemplate";
 
-export class AccountRemovalRequestedEmail implements ISendGridEmailTemplate {
+export class AccountRemovalScheduledEmail implements ISendGridEmailTemplate {
     public constructor(
         private readonly appName: string,
         private readonly appUrl: string,
-        private readonly retentionPeriod: number
+        private readonly toBeRemovedAt: Date
     ) {}
 
     public getTemplateId(): string {
@@ -15,7 +15,7 @@ export class AccountRemovalRequestedEmail implements ISendGridEmailTemplate {
         return {
             appName: this.appName,
             appUrl: this.appUrl,
-            retentionPeriod: this.retentionPeriod,
+            toBeRemovedAt: this.toBeRemovedAt.toISOString(),
             currentYear: new Date().getFullYear(),
         };
     }

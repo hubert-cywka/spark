@@ -1,7 +1,9 @@
 import { IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 
 export type DailyReminderTriggeredEventPayload = {
-    email: string;
+    account: {
+        id: string;
+    };
 };
 
 export class DailyReminderTriggeredEvent extends IntegrationEvent<DailyReminderTriggeredEventPayload> {

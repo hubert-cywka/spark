@@ -18,38 +18,47 @@ export class AccountPublisherService implements IAccountPublisherService {
     ) {}
 
     public async onAccountCreated(tenantId: string, email: string): Promise<void> {
-        await this.outbox.enqueue(new AccountCreatedEvent(tenantId, { id: tenantId, email }));
+        await this.outbox.enqueue(
+            new AccountCreatedEvent(tenantId, {
+                account: { id: tenantId, email },
+            })
+        );
     }
 
     public async onAccountActivated(tenantId: string, email: string) {
-        await this.outbox.enqueue(new AccountActivatedEvent(tenantId, { email, id: tenantId }));
+        await this.outbox.enqueue(
+            new AccountActivatedEvent(tenantId, {
+                account: { id: tenantId, email },
+            })
+        );
     }
 
-    public async onAccountActivationTokenRequested(tenantId: string, email: string, accountActivationRedirectUrl: string) {
+    public async onAccountActivationTokenRequested(tenantId: string, accountActivationRedirectUrl: string) {
         await this.outbox.enqueue(
             new AccountActivationTokenRequestedEvent(tenantId, {
-                email,
+                account: { id: tenantId },
                 redirectUrl: accountActivationRedirectUrl,
             }),
             { encrypt: true }
         );
     }
 
-    public async onPasswordResetRequested(tenantId: string, email: string, passwordResetRedirectUrl: string) {
+    public async onPasswordResetRequested(tenantId: string, passwordResetRedirectUrl: string) {
         await this.outbox.enqueue(
             new AccountRequestedPasswordResetEvent(tenantId, {
-                email,
+                account: { id: tenantId },
                 redirectUrl: passwordResetRedirectUrl,
             }),
             { encrypt: true }
         );
     }
 
-    public async onPasswordUpdated(tenantId: string, email: string) {
+    public async onPasswordUpdated(tenantId: string) {
         await this.outbox.enqueue(
             new AccountPasswordUpdatedEvent(tenantId, {
-                email,
-                id: tenantId,
+                account: {
+                    id: tenantId,
+                },
             })
         );
     }
@@ -57,7 +66,9 @@ export class AccountPublisherService implements IAccountPublisherService {
     public async onAccountSuspended(tenantId: string) {
         await this.outbox.enqueue(
             new AccountSuspendedEvent(tenantId, {
-                id: tenantId,
+                account: {
+                    id: tenantId,
+                },
             })
         );
     }

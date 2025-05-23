@@ -11,5 +11,5 @@ export interface IEmailTemplateFactory<T> {
 
     createDailyReminderEmail(): T;
 
-    createAccountRemovalRequestedEmail(retentionPeriod: number): T;
+    createAccountRemovalScheduledEmail(toBeRemovedAt: Date): T;
 }

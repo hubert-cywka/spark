@@ -19,10 +19,11 @@ import {
     type IIntegrationEventsSubscriber,
     IntegrationEventsSubscriberToken,
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
+import { RecipientEntity } from "@/modules/mail/entities/Recipient.entity";
 import { AccountActivatedEventHandler } from "@/modules/mail/events/AccountActivatedEvent.handler";
 import { AccountActivationTokenRequestedEventHandler } from "@/modules/mail/events/AccountActivationTokenRequestedEvent.handler";
 import { AccountPasswordUpdatedEventHandler } from "@/modules/mail/events/AccountPasswordUpdatedEvent.handler";
-import { AccountRemovalRequestedEventHandler } from "@/modules/mail/events/AccountRemovalRequestedEvent.handler";
+import { AccountRemovalScheduledEventHandler } from "@/modules/mail/events/AccountRemovalScheduledEvent.handler";
 import { AccountRemovedEventHandler } from "@/modules/mail/events/AccountRemovedEvent.handler";
 import { AccountRequestedPasswordResetEventHandler } from "@/modules/mail/events/AccountRequestedPasswordResetEvent.handler";
 import { DailyReminderTriggeredEventHandler } from "@/modules/mail/events/DailyReminderTriggeredEvent.handler";
@@ -31,15 +32,37 @@ import { MAIL_MODULE_DATA_SOURCE } from "@/modules/mail/infrastructure/database/
 import { InitializeMailModule1735737562761 } from "@/modules/mail/infrastructure/database/migrations/1735737562761-InitializeMailModule";
 import { AddTenantIdToOutboxAndInbox1743101783697 } from "@/modules/mail/infrastructure/database/migrations/1743101783697-addTenantIdToOutboxAndInbox";
 import { EncryptedEvents1746294905909 } from "@/modules/mail/infrastructure/database/migrations/1746294905909-encryptedEvents";
+import { AddRecipient1748032112854 } from "@/modules/mail/infrastructure/database/migrations/1748032112854-AddRecipient";
+import { RecipientMapperToken } from "@/modules/mail/mappers/IRecipient.mapper";
+import { RecipientMapper } from "@/modules/mail/mappers/Recipient.mapper";
+import { EmailLookupService } from "@/modules/mail/services/implementations/EmailLookup.service";
 import { MailEventBoxFactory } from "@/modules/mail/services/implementations/MailEventBox.factory";
+import { RecipientService } from "@/modules/mail/services/implementations/Recipient.service";
 import { SendGridMailerService } from "@/modules/mail/services/implementations/SendGridMailer.service";
+import { EmailLookupServiceToken } from "@/modules/mail/services/interfaces/IEmailLookup.service";
 import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
+import { RecipientServiceToken } from "@/modules/mail/services/interfaces/IRecipient.service";
 import { EmailTemplateFactoryToken } from "@/modules/mail/templates/IEmailTemplate.factory";
 import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/SendgridEmailTemplate.factory";
 
 @Module({
     providers: [
-        { provide: MailerServiceToken, useClass: SendGridMailerService },
+        {
+            provide: RecipientMapperToken,
+            useClass: RecipientMapper,
+        },
+        {
+            provide: RecipientServiceToken,
+            useClass: RecipientService,
+        },
+        {
+            provide: EmailLookupServiceToken,
+            useClass: EmailLookupService,
+        },
+        {
+            provide: MailerServiceToken,
+            useClass: SendGridMailerService,
+        },
         {
             provide: EmailTemplateFactoryToken,
             useClass: SendgridEmailTemplateFactory,
@@ -69,8 +92,8 @@ import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/
             useClass: AccountRemovedEventHandler,
         },
         {
-            provide: AccountRemovalRequestedEventHandler,
-            useClass: AccountRemovalRequestedEventHandler,
+            provide: AccountRemovalScheduledEventHandler,
+            useClass: AccountRemovalScheduledEventHandler,
         },
         {
             provide: TwoFactorAuthCodeIssuedEventHandler,
@@ -86,13 +109,13 @@ import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/
                 AccountRequestedPasswordResetEventHandler,
                 DailyReminderTriggeredEventHandler,
                 AccountRemovedEventHandler,
-                AccountRemovalRequestedEventHandler,
+                AccountRemovalScheduledEventHandler,
                 TwoFactorAuthCodeIssuedEventHandler,
             ],
         },
     ],
     imports: [
-        DatabaseModule.forRootAsync(MAIL_MODULE_DATA_SOURCE, [OutboxEventEntity, InboxEventEntity], {
+        DatabaseModule.forRootAsync(MAIL_MODULE_DATA_SOURCE, [OutboxEventEntity, InboxEventEntity, RecipientEntity], {
             useFactory: (configService: ConfigService) => ({
                 logging: configService.getOrThrow<boolean>("modules.mail.database.logging"),
                 port: configService.getOrThrow<number>("modules.mail.database.port"),
@@ -100,7 +123,12 @@ import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/
                 password: configService.getOrThrow<string>("modules.mail.database.password"),
                 host: configService.getOrThrow<string>("modules.mail.database.host"),
                 database: configService.getOrThrow<string>("modules.mail.database.name"),
-                migrations: [InitializeMailModule1735737562761, AddTenantIdToOutboxAndInbox1743101783697, EncryptedEvents1746294905909],
+                migrations: [
+                    InitializeMailModule1735737562761,
+                    AddTenantIdToOutboxAndInbox1743101783697,
+                    EncryptedEvents1746294905909,
+                    AddRecipient1748032112854,
+                ],
             }),
             inject: [ConfigService],
         }),
@@ -135,7 +163,7 @@ export class MailModule implements OnModuleInit {
                     IntegrationEventTopics.account.password.updated,
                     IntegrationEventTopics.account.activation.completed,
                     IntegrationEventTopics.account.removal.completed,
-                    IntegrationEventTopics.account.removal.requested,
+                    IntegrationEventTopics.account.removal.scheduled,
                 ],
             },
             {
