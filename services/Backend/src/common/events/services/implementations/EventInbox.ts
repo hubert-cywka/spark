@@ -2,12 +2,15 @@ import { Injectable, Logger } from "@nestjs/common";
 import { TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import dayjs from "dayjs";
-import { And, IsNull, LessThan, Not, Repository } from "typeorm";
+import { Repository } from "typeorm";
 
 import { type IInboxEventHandler } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { type IEventInbox } from "@/common/events/services/interfaces/IEventInbox";
+import { type IEventOutboxOptions } from "@/common/events/services/interfaces/IEventOutboxOptions";
+import { type IEventsRemover } from "@/common/events/services/interfaces/IEventsRemover";
 import { type IIntegrationEventsEncryptionService } from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
+import { type IPubSubProducer } from "@/common/events/services/interfaces/IPubSubProducer";
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 
 const MAX_PAGE_SIZE = 10;
@@ -30,14 +33,17 @@ const MAX_ATTEMPTS = 10;
  */
 @Injectable()
 export class EventInbox implements IEventInbox {
+    private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>;
     private readonly logger;
 
     public constructor(
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
-        private readonly encryptionService: IIntegrationEventsEncryptionService,
-        context?: string
+        options: IEventOutboxOptions,
+        private readonly client: IPubSubProducer,
+        private readonly eventsRemover: IEventsRemover,
+        private readonly encryptionService: IIntegrationEventsEncryptionService
     ) {
-        this.logger = new Logger(context ?? EventInbox.name);
+        this.logger = new Logger(options.context);
+        this.txHost = options.txHost;
     }
 
     public async enqueue(event: IntegrationEvent): Promise<void> {
@@ -65,24 +71,12 @@ export class EventInbox implements IEventInbox {
         });
     }
 
-    public async clearTenantEvents(tenantId: string): Promise<void> {
-        await this.txHost.withTransaction(async () => {
-            const repository = this.getRepository();
-            const result = await repository.delete({ tenantId });
-            this.logger.log({ tenantId, events: result.affected }, "Deleted tenant's events.");
-        });
+    public async clearProcessedEvents(processedBefore: Date): Promise<void> {
+        await this.eventsRemover.removeProcessedBefore(processedBefore, this.getRepository());
     }
 
-    public async clearProcessedEvents(processedBefore: Date): Promise<void> {
-        try {
-            const result = await this.getRepository().delete({
-                processedAt: And(LessThan(processedBefore), Not(IsNull())),
-            });
-            const count = result.affected ?? 0;
-            this.logger.log({ processedBefore, count }, "Removed old events.");
-        } catch (err) {
-            this.logger.error({ processedBefore, err }, "Failed to remove old events.");
-        }
+    public async clearTenantEvents(tenantId: string): Promise<void> {
+        await this.eventsRemover.removeByTenant(tenantId, this.getRepository());
     }
 
     // TODO: Should each batch contain topics from only one topics family?

@@ -3,10 +3,12 @@ import { TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import dayjs from "dayjs";
 import { firstValueFrom, timeout } from "rxjs";
-import { And, IsNull, LessThan, Not, Repository } from "typeorm";
+import { Repository } from "typeorm";
 
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
+import { type IEventOutboxOptions } from "@/common/events/services/interfaces/IEventOutboxOptions";
+import { type IEventsRemover } from "@/common/events/services/interfaces/IEventsRemover";
 import { type IIntegrationEventsEncryptionService } from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
 import { type IPubSubProducer } from "@/common/events/services/interfaces/IPubSubProducer";
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
@@ -19,26 +21,22 @@ const PUBLISH_TIMEOUT = 1000;
 // TODO: CDC instead of polling?
 @Injectable()
 export class EventOutbox implements IEventOutbox {
+    private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>;
     private readonly logger;
 
     public constructor(
+        options: IEventOutboxOptions,
         private readonly client: IPubSubProducer,
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
-        private readonly encryptionService: IIntegrationEventsEncryptionService,
-        context?: string
+        private readonly eventsRemover: IEventsRemover,
+        private readonly encryptionService: IIntegrationEventsEncryptionService
     ) {
-        this.logger = new Logger(context ?? EventOutbox.name);
+        this.logger = new Logger(options.context);
+        this.txHost = options.txHost;
     }
 
     public async enqueue(event: IntegrationEvent, options?: { encrypt: boolean }): Promise<void> {
+        const preparedEvent = await this.prepareEventToStore(event, options);
         const repository = this.getRepository();
-        let preparedEvent: IntegrationEvent;
-
-        if (options?.encrypt) {
-            preparedEvent = await this.encryptionService.encrypt(event);
-        } else {
-            preparedEvent = event.copy();
-        }
 
         const entity = repository.create({
             id: preparedEvent.getId(),
@@ -54,15 +52,11 @@ export class EventOutbox implements IEventOutbox {
     }
 
     public async clearProcessedEvents(processedBefore: Date): Promise<void> {
-        try {
-            const result = await this.getRepository().delete({
-                processedAt: And(LessThan(processedBefore), Not(IsNull())),
-            });
-            const count = result.affected ?? 0;
-            this.logger.log({ processedBefore, count }, "Removed old events.");
-        } catch (err) {
-            this.logger.error({ processedBefore, err }, "Failed to remove old events.");
-        }
+        await this.eventsRemover.removeProcessedBefore(processedBefore, this.getRepository());
+    }
+
+    public async clearTenantEvents(tenantId: string): Promise<void> {
+        await this.eventsRemover.removeByTenant(tenantId, this.getRepository());
     }
 
     public async processPendingEvents() {
@@ -97,12 +91,12 @@ export class EventOutbox implements IEventOutbox {
         }
     }
 
-    public async clearTenantEvents(tenantId: string): Promise<void> {
-        await this.txHost.withTransaction(async () => {
-            const repository = this.getRepository();
-            const result = await repository.delete({ tenantId });
-            this.logger.log({ tenantId, events: result.affected }, "Deleted tenant's events.");
-        });
+    private async prepareEventToStore(event: IntegrationEvent, options?: { encrypt: boolean }): Promise<IntegrationEvent> {
+        if (options?.encrypt) {
+            return await this.encryptionService.encrypt(event);
+        } else {
+            return event.copy();
+        }
     }
 
     private async processBatch(pageSize: number, offset: number) {

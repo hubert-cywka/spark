@@ -1,32 +1,29 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 
-import { EventOutbox, IEventBoxFactory } from "@/common/events";
-import { EventInbox } from "@/common/events/services/implementations/EventInbox";
-import {
-    type IIntegrationEventsEncryptionService,
-    IntegrationEventsEncryptionServiceToken,
-} from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
-import { type IPubSubProducer, PubSubProducerToken } from "@/common/events/services/interfaces/IPubSubProducer";
+import { IEventBoxFactory } from "@/common/events";
 import { GDPR_MODULE_DATA_SOURCE } from "@/modules/gdpr/infrastructure/database/constants";
 
 @Injectable()
 export class GdprEventBoxFactory implements IEventBoxFactory {
     public constructor(
-        @Inject(PubSubProducerToken)
-        private readonly clientProxy: IPubSubProducer,
-        @Inject(IntegrationEventsEncryptionServiceToken)
-        private readonly encryptionService: IIntegrationEventsEncryptionService,
         @InjectTransactionHost(GDPR_MODULE_DATA_SOURCE)
         private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
     ) {}
 
-    public createOutbox(context?: string) {
-        return new EventOutbox(this.clientProxy, this.txHost, this.encryptionService, context);
+    public createOutboxOptions(context: string) {
+        return this.createOptions(context);
     }
 
-    public createInbox(context?: string) {
-        return new EventInbox(this.txHost, this.encryptionService, context);
+    public createInboxOptions(context: string) {
+        return this.createOptions(context);
+    }
+
+    private createOptions(context: string) {
+        return {
+            txHost: this.txHost,
+            context,
+        };
     }
 }
