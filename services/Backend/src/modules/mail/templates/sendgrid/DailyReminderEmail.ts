@@ -1,6 +1,6 @@
-import { ISendGridEmailTemplate } from "@/modules/mail/templates/sendgrid/ISendGridEmailTemplate";
+import { IEmailTemplate } from "@/modules/mail/templates/IEmailTemplate";
 
-export class DailyReminderEmail implements ISendGridEmailTemplate {
+export class DailyReminderEmail implements IEmailTemplate {
     public constructor(
         private readonly appName: string,
         private readonly appUrl: string

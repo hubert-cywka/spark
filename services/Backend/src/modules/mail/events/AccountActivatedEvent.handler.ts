@@ -6,13 +6,13 @@ import { type IRecipientService, RecipientServiceToken } from "@/modules/mail/se
 import { type IEmailTemplateFactory, EmailTemplateFactoryToken } from "@/modules/mail/templates/IEmailTemplate.factory";
 
 @Injectable()
-export class AccountActivatedEventHandler<T> implements IInboxEventHandler {
+export class AccountActivatedEventHandler implements IInboxEventHandler {
     constructor(
-        @Inject(MailerServiceToken) private mailer: IMailerService<T>,
+        @Inject(MailerServiceToken) private mailer: IMailerService,
         @Inject(RecipientServiceToken)
         private recipientService: IRecipientService,
         @Inject(EmailTemplateFactoryToken)
-        private emailFactory: IEmailTemplateFactory<T>
+        private emailFactory: IEmailTemplateFactory
     ) {}
 
     public canHandle(topic: string): boolean {

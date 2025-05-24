@@ -1,20 +1,25 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import type { Transporter } from "nodemailer";
 import { createTransport } from "nodemailer";
 
 import { EmailDeliveryError } from "@/modules/mail/errors/EmailDelivery.error";
+import { IMailCompilerService, MailCompilerServiceToken } from "@/modules/mail/services/interfaces/IMailCompiler.service";
 import { type IMailerService } from "@/modules/mail/services/interfaces/IMailer.service";
-import { type IEmailTemplate } from "@/modules/mail/templates/native/IEmailTemplate";
+import { type IEmailTemplate } from "@/modules/mail/templates/IEmailTemplate";
 
 @Injectable()
-export class MailerService implements IMailerService<IEmailTemplate> {
+export class MailerService implements IMailerService {
     private readonly logger = new Logger(MailerService.name);
     private readonly transporter: Transporter;
     private readonly senderName: string;
     private readonly isInDebugMode: boolean;
 
-    public constructor(private configService: ConfigService) {
+    public constructor(
+        @Inject(MailCompilerServiceToken)
+        private readonly compiler: IMailCompilerService,
+        configService: ConfigService
+    ) {
         this.senderName = configService.getOrThrow<string>("modules.mail.sender.name");
         this.isInDebugMode = configService.getOrThrow<boolean>("modules.mail.isDebugMode");
 
@@ -29,8 +34,7 @@ export class MailerService implements IMailerService<IEmailTemplate> {
     }
 
     public async send(recipient: string, email: IEmailTemplate): Promise<void> {
-        const subject = email.getSubject();
-        const html = email.getBody();
+        const { subject, html } = this.compiler.compile(email);
 
         if (this.isInDebugMode) {
             this.logger.log({ recipient, subject }, "Mailer is running in debug mode, the real email was not sent.");

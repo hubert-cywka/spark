@@ -1,6 +1,6 @@
-import { ISendGridEmailTemplate } from "@/modules/mail/templates/sendgrid/ISendGridEmailTemplate";
+import { IEmailTemplate } from "@/modules/mail/templates/IEmailTemplate";
 
-export class UserActivationEmail implements ISendGridEmailTemplate {
+export class UserActivationEmail implements IEmailTemplate {
     public constructor(
         private readonly appName: string,
         private readonly appUrl: string,

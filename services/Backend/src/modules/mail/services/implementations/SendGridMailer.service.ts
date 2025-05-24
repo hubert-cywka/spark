@@ -4,10 +4,10 @@ import sendgridMailer from "@sendgrid/mail";
 
 import { EmailDeliveryError } from "@/modules/mail/errors/EmailDelivery.error";
 import { type IMailerService } from "@/modules/mail/services/interfaces/IMailer.service";
-import { ISendGridEmailTemplate } from "@/modules/mail/templates/sendgrid/ISendGridEmailTemplate";
+import { IEmailTemplate } from "@/modules/mail/templates/IEmailTemplate";
 
 @Injectable()
-export class SendGridMailerService implements IMailerService<ISendGridEmailTemplate> {
+export class SendGridMailerService implements IMailerService {
     private readonly logger = new Logger(SendGridMailerService.name);
     private readonly senderName: string;
     private readonly isInDebugMode: boolean;
@@ -18,7 +18,7 @@ export class SendGridMailerService implements IMailerService<ISendGridEmailTempl
         sendgridMailer.setApiKey(configService.getOrThrow<string>("modules.mail.sender.password"));
     }
 
-    public async send(recipient: string, template: ISendGridEmailTemplate): Promise<void> {
+    public async send(recipient: string, template: IEmailTemplate): Promise<void> {
         const templateId = template.getTemplateId();
         const templateVariables = template.getTemplateVariables();
 

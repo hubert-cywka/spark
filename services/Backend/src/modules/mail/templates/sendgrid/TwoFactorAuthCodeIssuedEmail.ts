@@ -1,6 +1,6 @@
-import { ISendGridEmailTemplate } from "@/modules/mail/templates/sendgrid/ISendGridEmailTemplate";
+import { IEmailTemplate } from "@/modules/mail/templates/IEmailTemplate";
 
-export class TwoFactorAuthCodeIssuedEmail implements ISendGridEmailTemplate {
+export class TwoFactorAuthCodeIssuedEmail implements IEmailTemplate {
     public constructor(
         private readonly appName: string,
         private readonly appUrl: string,

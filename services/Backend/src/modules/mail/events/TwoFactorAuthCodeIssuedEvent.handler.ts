@@ -6,13 +6,13 @@ import { type IMailerService, MailerServiceToken } from "@/modules/mail/services
 import { type IEmailTemplateFactory, EmailTemplateFactoryToken } from "@/modules/mail/templates/IEmailTemplate.factory";
 
 @Injectable()
-export class TwoFactorAuthCodeIssuedEventHandler<T> implements IInboxEventHandler {
+export class TwoFactorAuthCodeIssuedEventHandler implements IInboxEventHandler {
     constructor(
-        @Inject(MailerServiceToken) private mailer: IMailerService<T>,
+        @Inject(MailerServiceToken) private mailer: IMailerService,
         @Inject(EmailLookupServiceToken)
         private emailLookup: IEmailLookupService,
         @Inject(EmailTemplateFactoryToken)
-        private emailFactory: IEmailTemplateFactory<T>
+        private emailFactory: IEmailTemplateFactory
     ) {}
 
     public canHandle(topic: string): boolean {

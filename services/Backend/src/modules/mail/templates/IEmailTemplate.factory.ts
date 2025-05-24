@@ -1,15 +1,17 @@
+import { IEmailTemplate } from "@/modules/mail/templates/IEmailTemplate";
+
 export const EmailTemplateFactoryToken = Symbol("EmailTemplateFactory");
 
-export interface IEmailTemplateFactory<T> {
-    createUserActivationEmail(url: string): T;
-    createUserActivatedEmail(): T;
+export interface IEmailTemplateFactory {
+    createUserActivationEmail(url: string): IEmailTemplate;
+    createUserActivatedEmail(): IEmailTemplate;
 
-    createTwoFactorAuthCodeIssuedEmail(code: string): T;
+    createTwoFactorAuthCodeIssuedEmail(code: string): IEmailTemplate;
 
-    createPasswordUpdatedEmail(): T;
-    createPasswordResetRequestedEmail(url: string): T;
+    createPasswordUpdatedEmail(): IEmailTemplate;
+    createPasswordResetRequestedEmail(url: string): IEmailTemplate;
 
-    createDailyReminderEmail(): T;
+    createDailyReminderEmail(): IEmailTemplate;
 
-    createAccountRemovalScheduledEmail(toBeRemovedAt: string): T;
+    createAccountRemovalScheduledEmail(toBeRemovedAt: string): IEmailTemplate;
 }
