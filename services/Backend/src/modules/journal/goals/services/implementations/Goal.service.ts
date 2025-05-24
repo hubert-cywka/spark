@@ -1,6 +1,5 @@
 import { Inject, Logger } from "@nestjs/common";
-import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 import { PageOptions } from "@/common/pagination/types/PageOptions";
@@ -17,8 +16,8 @@ export class GoalService implements IGoalService {
     private readonly logger = new Logger(GoalService.name);
 
     public constructor(
-        @InjectTransactionHost(JOURNAL_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        @InjectRepository(GoalEntity, JOURNAL_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<GoalEntity>,
         @Inject(GoalMapperToken) private readonly goalMapper: IGoalMapper
     ) {}
 
@@ -164,6 +163,6 @@ export class GoalService implements IGoalService {
     }
 
     private getRepository(): Repository<GoalEntity> {
-        return this.txHost.tx.getRepository(GoalEntity);
+        return this.repository;
     }
 }

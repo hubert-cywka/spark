@@ -1,9 +1,9 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { Interval } from "@nestjs/schedule";
-import { InjectTransactionHost, Transactional, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 import dayjs from "dayjs";
 import { IsNull, Repository } from "typeorm";
+import { Transactional } from "typeorm-transactional";
 
 import { DataPurgePlanEntity } from "@/modules/gdpr/entities/DataPurgePlan.entity";
 import { GDPR_MODULE_DATA_SOURCE } from "@/modules/gdpr/infrastructure/database/constants";
@@ -21,13 +21,13 @@ export class DataPurgeService implements IDataPurgeService {
     private readonly logger = new Logger(DataPurgeService.name);
 
     public constructor(
-        @InjectTransactionHost(GDPR_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        @InjectRepository(DataPurgePlanEntity, GDPR_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<DataPurgePlanEntity>,
         @Inject(DataPurgePublisherServiceToken)
         private readonly publisher: IDataPurgePublisherService
     ) {}
 
-    @Transactional(GDPR_MODULE_DATA_SOURCE)
+    @Transactional({ connectionName: GDPR_MODULE_DATA_SOURCE })
     public async scheduleForTenant(tenantId: string): Promise<void> {
         const repository = this.getRepository();
         const existingPlan = await repository.findOne({
@@ -54,7 +54,7 @@ export class DataPurgeService implements IDataPurgeService {
         this.logger.log({ tenantId, planId: newPlan.id }, "Purge plan created.");
     }
 
-    @Transactional(GDPR_MODULE_DATA_SOURCE)
+    @Transactional({ connectionName: GDPR_MODULE_DATA_SOURCE })
     public async cancelForTenant(tenantId: string): Promise<void> {
         const repository = this.getRepository();
         const result = await repository.update({ tenantId, cancelledAt: IsNull(), processedAt: IsNull() }, { cancelledAt: new Date() });
@@ -66,6 +66,7 @@ export class DataPurgeService implements IDataPurgeService {
         }
     }
 
+    @Transactional({ connectionName: GDPR_MODULE_DATA_SOURCE })
     private async processPlan(plan: DataPurgePlanEntity): Promise<void> {
         const now = dayjs();
 
@@ -74,19 +75,17 @@ export class DataPurgeService implements IDataPurgeService {
             return;
         }
 
-        await this.txHost.withTransaction(async () => {
-            const repository = this.getRepository();
-            await repository.save({ ...plan, processedAt: now });
+        const repository = this.getRepository();
+        await repository.save({ ...plan, processedAt: now });
 
-            await this.publisher.onPurgePlanProcessed(plan.tenantId, {
-                account: { id: plan.tenantId },
-            });
-            this.logger.log({ planId: plan.id, scheduledAt: plan.scheduledAt }, "Purge plan processed.");
+        await this.publisher.onPurgePlanProcessed(plan.tenantId, {
+            account: { id: plan.tenantId },
         });
+        this.logger.log({ planId: plan.id, scheduledAt: plan.scheduledAt }, "Purge plan processed.");
     }
 
     @Interval(PURGE_PROCESSING_INTERVAL)
-    @Transactional(GDPR_MODULE_DATA_SOURCE)
+    @Transactional({ connectionName: GDPR_MODULE_DATA_SOURCE })
     private async processDataPurgePlans(): Promise<void> {
         const now = dayjs();
 
@@ -105,6 +104,6 @@ export class DataPurgeService implements IDataPurgeService {
     }
 
     private getRepository(): Repository<DataPurgePlanEntity> {
-        return this.txHost.tx.getRepository(DataPurgePlanEntity);
+        return this.repository;
     }
 }

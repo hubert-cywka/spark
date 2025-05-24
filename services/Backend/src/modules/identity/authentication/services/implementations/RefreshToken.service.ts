@@ -2,8 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { Cron, CronExpression } from "@nestjs/schedule";
-import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 import dayjs from "dayjs";
 import { IsNull, LessThanOrEqual, Repository } from "typeorm";
 
@@ -23,8 +22,8 @@ export class RefreshTokenService implements IRefreshTokenService {
     constructor(
         configService: ConfigService,
         private readonly jwtService: JwtService,
-        @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
+        @InjectRepository(RefreshTokenEntity, IDENTITY_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<RefreshTokenEntity>
     ) {
         this.signingSecret = configService.getOrThrow<string>("modules.identity.refreshToken.signingSecret");
         this.expirationTimeInSeconds = configService.getOrThrow<number>("modules.identity.refreshToken.expirationTimeInSeconds");
@@ -131,6 +130,6 @@ export class RefreshTokenService implements IRefreshTokenService {
     }
 
     private getRepository(): Repository<RefreshTokenEntity> {
-        return this.txHost.tx.getRepository(RefreshTokenEntity);
+        return this.repository;
     }
 }

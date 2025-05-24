@@ -1,6 +1,5 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 import { PageOptions } from "@/common/pagination/types/PageOptions";
@@ -17,8 +16,8 @@ export class DailyService implements IDailyService {
     private readonly logger = new Logger(DailyService.name);
 
     public constructor(
-        @InjectTransactionHost(JOURNAL_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        @InjectRepository(DailyEntity, JOURNAL_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<DailyEntity>,
         @Inject(DailyMapperToken)
         private readonly dailyMapper: IDailyMapper
     ) {}
@@ -119,6 +118,6 @@ export class DailyService implements IDailyService {
     }
 
     private getRepository(): Repository<DailyEntity> {
-        return this.txHost.tx.getRepository(DailyEntity);
+        return this.repository;
     }
 }

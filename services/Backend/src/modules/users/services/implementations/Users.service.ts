@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { InjectTransactionHost, Transactional, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { Transactional } from "typeorm-transactional";
 
 import { UserEntity } from "@/modules/users/entities/User.entity";
 import { UserAlreadyExistsError } from "@/modules/users/errors/UserAlreadyExists.error";
@@ -17,8 +17,8 @@ export class UsersService implements IUsersService {
     private readonly logger = new Logger(UsersService.name);
 
     public constructor(
-        @InjectTransactionHost(USERS_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        @InjectRepository(UserEntity, USERS_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<UserEntity>,
         @Inject(UserMapperToken) private readonly userMapper: IUserMapper,
         @Inject(UserPublisherServiceToken)
         private readonly publisher: IUserPublisherService
@@ -81,7 +81,7 @@ export class UsersService implements IUsersService {
         });
     }
 
-    @Transactional(USERS_MODULE_DATA_SOURCE)
+    @Transactional({ connectionName: USERS_MODULE_DATA_SOURCE })
     public async removeOneById(id: string): Promise<void> {
         const repository = this.getRepository();
         const user = await repository.findOne({ where: { id } });
@@ -95,6 +95,6 @@ export class UsersService implements IUsersService {
     }
 
     private getRepository(): Repository<UserEntity> {
-        return this.txHost.tx.getRepository(UserEntity);
+        return this.repository;
     }
 }

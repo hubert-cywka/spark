@@ -1,6 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 import dayjs from "dayjs";
 import { IsNull, Repository } from "typeorm";
 
@@ -18,8 +17,8 @@ export abstract class BaseSingleUseTokenService implements ISingleUseTokenServic
     private readonly EXPIRATION_TIME = 15 * 60;
 
     protected constructor(
-        @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
+        @InjectRepository(SingleUseTokenEntity, IDENTITY_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<SingleUseTokenEntity>
     ) {}
 
     public abstract issue(ownerId: string): Promise<string>;
@@ -97,6 +96,6 @@ export abstract class BaseSingleUseTokenService implements ISingleUseTokenServic
     }
 
     private getRepository(): Repository<SingleUseTokenEntity> {
-        return this.txHost.tx.getRepository(SingleUseTokenEntity);
+        return this.repository;
     }
 }

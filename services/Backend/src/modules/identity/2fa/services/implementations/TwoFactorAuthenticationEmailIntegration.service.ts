@@ -1,9 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 import { TOTP } from "otpauth";
+import { Repository } from "typeorm";
 
+import { TwoFactorAuthenticationIntegrationEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationIntegration.entity";
 import { TwoFactorAuthenticationIntegrationService } from "@/modules/identity/2fa/services/implementations/TwoFactorAuthenticationIntegration.service";
 import {
     type ITwoFactorAuthenticationEmailIntegrationPublisherService,
@@ -20,13 +21,13 @@ export class TwoFactorAuthenticationEmailIntegrationService
     implements ITwoFactorAuthenticationIntegrationService
 {
     constructor(
-        @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
-        txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        @InjectRepository(TwoFactorAuthenticationIntegrationEntity, IDENTITY_MODULE_DATA_SOURCE)
+        repository: Repository<TwoFactorAuthenticationIntegrationEntity>,
         @Inject(TwoFactorAuthenticationEmailIntegrationPublisherServiceToken)
         private readonly publisher: ITwoFactorAuthenticationEmailIntegrationPublisherService,
         configService: ConfigService
     ) {
-        super(txHost, configService);
+        super(repository, configService);
     }
 
     protected canIssueCode(): boolean {

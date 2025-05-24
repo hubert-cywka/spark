@@ -1,9 +1,9 @@
 import { Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Secret, TOTP } from "otpauth";
 import { IsNull, Not, Repository } from "typeorm";
+import { Transactional } from "typeorm-transactional";
 
 import { TOTP_LENGTH } from "@/modules/identity/2fa/constants";
 import { TwoFactorAuthenticationIntegrationEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationIntegration.entity";
@@ -13,6 +13,7 @@ import { NotEnoughIntegrationsEnabledError } from "@/modules/identity/2fa/errors
 import { TOTPInvalidError } from "@/modules/identity/2fa/errors/TOTPInvalid.error";
 import { type ITwoFactorAuthenticationIntegrationService } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationIntegration.service";
 import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
+import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 import { type User } from "@/types/User";
 
 const DEFAULT_VERIFICATION_WINDOW = 3;
@@ -22,123 +23,119 @@ export abstract class TwoFactorAuthenticationIntegrationService implements ITwoF
     private readonly appName: string;
 
     protected constructor(
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        @InjectRepository(TwoFactorAuthenticationIntegrationEntity, IDENTITY_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<TwoFactorAuthenticationIntegrationEntity>,
         configService: ConfigService
     ) {
         this.appName = configService.getOrThrow<string>("appName");
     }
 
+    @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })
     public async issueTOTP(user: User): Promise<void> {
         if (!this.canIssueCode()) {
             this.logger.log({ method: this.get2FAMethod() }, "Method doesn't support issuing codes on demand.");
             return;
         }
 
-        await this.txHost.withTransaction(async () => {
-            const method = await this.findMethodByAccountId(user.id);
+        const method = await this.findMethodByAccountId(user.id);
 
-            if (!method?.enabledAt) {
-                this.logger.warn({ accountId: user.id, method: this.get2FAMethod() }, "2FA integration not found.");
-                throw new IntegrationNotFoundError();
-            }
+        if (!method?.enabledAt) {
+            this.logger.warn({ accountId: user.id, method: this.get2FAMethod() }, "2FA integration not found.");
+            throw new IntegrationNotFoundError();
+        }
 
-            const otpProvider = this.createOtpProvider(user, method.secret, method.totpTTL);
-            const code = otpProvider.generate();
-            await this.onCodeIssued(user, code);
-        });
+        const otpProvider = this.createOtpProvider(user, method.secret, method.totpTTL);
+        const code = otpProvider.generate();
+        await this.onCodeIssued(user, code);
     }
 
+    @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })
     public async createMethodIntegration(user: User) {
-        return await this.txHost.withTransaction(async () => {
-            const method = await this.findMethodByAccountId(user.id);
+        const method = await this.findMethodByAccountId(user.id);
 
-            if (method?.enabledAt) {
-                this.logger.warn({ accountId: user.id, method: this.get2FAMethod() }, "2FA method is already enabled.");
-                throw new IntegrationAlreadyEnabledError();
-            }
+        if (method?.enabledAt) {
+            this.logger.warn({ accountId: user.id, method: this.get2FAMethod() }, "2FA method is already enabled.");
+            throw new IntegrationAlreadyEnabledError();
+        }
 
-            let secret: string;
+        let secret: string;
 
-            if (method) {
-                secret = await this.overwrite2FAMethodSecret(method.id);
-            } else {
-                secret = await this.createNew2FAMethod(user.id);
-            }
+        if (method) {
+            secret = await this.overwrite2FAMethodSecret(method.id);
+        } else {
+            secret = await this.createNew2FAMethod(user.id);
+        }
 
-            const totpTTL = method?.totpTTL ?? this.getTOTPDefaultTimeToLive();
-            const otpProvider = this.createOtpProvider(user, secret, totpTTL);
-            await this.onMethodCreated(user, otpProvider);
+        const totpTTL = method?.totpTTL ?? this.getTOTPDefaultTimeToLive();
+        const otpProvider = this.createOtpProvider(user, secret, totpTTL);
+        await this.onMethodCreated(user, otpProvider);
 
-            return otpProvider.toString();
-        });
+        return otpProvider.toString();
     }
 
+    @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })
     public async deleteMethodIntegration(user: User) {
-        return await this.txHost.withTransaction(async () => {
-            const method = await this.findMethodByAccountId(user.id);
+        const method = await this.findMethodByAccountId(user.id);
 
-            if (!method?.enabledAt) {
-                this.logger.warn({ accountId: user.id, method: this.get2FAMethod() }, "2FA method not found.");
-                throw new IntegrationNotFoundError();
-            }
+        if (!method?.enabledAt) {
+            this.logger.warn({ accountId: user.id, method: this.get2FAMethod() }, "2FA method not found.");
+            throw new IntegrationNotFoundError();
+        }
 
-            const repository = this.getRepository();
-            const otherMethods = await repository.find({
-                where: {
-                    owner: { id: user.id },
-                    method: Not(method.method),
-                    enabledAt: Not(IsNull()),
-                },
-            });
-
-            if (!otherMethods.length) {
-                this.logger.warn({ accountId: user.id, method: this.get2FAMethod() }, "At least 1 2FA method needs to be enabled.");
-                throw new NotEnoughIntegrationsEnabledError();
-            }
-
-            await repository.delete({ id: method.id });
+        const repository = this.getRepository();
+        const otherMethods = await repository.find({
+            where: {
+                owner: { id: user.id },
+                method: Not(method.method),
+                enabledAt: Not(IsNull()),
+            },
         });
+
+        if (!otherMethods.length) {
+            this.logger.warn({ accountId: user.id, method: this.get2FAMethod() }, "At least 1 2FA method needs to be enabled.");
+            throw new NotEnoughIntegrationsEnabledError();
+        }
+
+        await repository.delete({ id: method.id });
     }
 
+    @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })
     public async confirmMethodIntegration(user: User, code: string) {
-        return await this.txHost.withTransaction(async () => {
-            const method = await this.findMethodByAccountId(user.id);
+        const method = await this.findMethodByAccountId(user.id);
 
-            if (!method) {
-                this.logger.warn({ accountId: user.id, method: this.get2FAMethod() }, "2FA method not found.");
-                throw new IntegrationNotFoundError();
-            }
+        if (!method) {
+            this.logger.warn({ accountId: user.id, method: this.get2FAMethod() }, "2FA method not found.");
+            throw new IntegrationNotFoundError();
+        }
 
-            if (method.enabledAt) {
-                this.logger.warn({ accountId: user.id, method: this.get2FAMethod() }, "2FA method is already enabled.");
-                throw new IntegrationAlreadyEnabledError();
-            }
+        if (method.enabledAt) {
+            this.logger.warn({ accountId: user.id, method: this.get2FAMethod() }, "2FA method is already enabled.");
+            throw new IntegrationAlreadyEnabledError();
+        }
 
-            const verificationResult = this.verifyCodeSync(user, code, method.secret, method.totpTTL);
+        const verificationResult = this.verifyCodeSync(user, code, method.secret, method.totpTTL);
 
-            if (!verificationResult) {
-                this.logger.warn({ accountId: user.id, method: this.get2FAMethod() }, "Invalid TOTP.");
-                throw new TOTPInvalidError();
-            }
+        if (!verificationResult) {
+            this.logger.warn({ accountId: user.id, method: this.get2FAMethod() }, "Invalid TOTP.");
+            throw new TOTPInvalidError();
+        }
 
-            const repository = this.getRepository();
-            await repository.save({ ...method, enabledAt: new Date() });
+        const repository = this.getRepository();
+        await repository.save({ ...method, enabledAt: new Date() });
 
-            return true;
-        });
+        return true;
     }
 
+    @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })
     public async validateTOTP(user: User, code: string): Promise<boolean> {
-        return await this.txHost.withTransaction(async () => {
-            const method = await this.findMethodByAccountId(user.id);
+        const method = await this.findMethodByAccountId(user.id);
 
-            if (!method?.enabledAt) {
-                this.logger.warn({ accountId: user.id, method: this.get2FAMethod() }, "2FA method not found.");
-                throw new IntegrationNotFoundError();
-            }
+        if (!method?.enabledAt) {
+            this.logger.warn({ accountId: user.id, method: this.get2FAMethod() }, "2FA method not found.");
+            throw new IntegrationNotFoundError();
+        }
 
-            return this.verifyCodeSync(user, code, method.secret, method.totpTTL);
-        });
+        return this.verifyCodeSync(user, code, method.secret, method.totpTTL);
     }
 
     private verifyCodeSync(user: User, code: string, secret: string, totpTTL: number): boolean {
@@ -193,7 +190,7 @@ export abstract class TwoFactorAuthenticationIntegrationService implements ITwoF
     }
 
     private getRepository(): Repository<TwoFactorAuthenticationIntegrationEntity> {
-        return this.txHost.tx.getRepository(TwoFactorAuthenticationIntegrationEntity);
+        return this.repository;
     }
 
     private generateSecret() {

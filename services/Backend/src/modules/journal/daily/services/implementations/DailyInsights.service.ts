@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 import dayjs from "dayjs";
 import { Repository } from "typeorm";
 
@@ -17,8 +16,8 @@ import { type ISODateStringRange } from "@/types/Date";
 @Injectable()
 export class DailyInsightsService implements IDailyInsightsService {
     public constructor(
-        @InjectTransactionHost(JOURNAL_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
+        @InjectRepository(DailyEntity, JOURNAL_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<DailyEntity>
     ) {}
 
     public async findMetricsByDateRange(authorId: string, dateRange: ISODateStringRange, timezone: string = "UTC"): Promise<DailyMetrics> {
@@ -136,6 +135,6 @@ export class DailyInsightsService implements IDailyInsightsService {
     }
 
     private getRepository(): Repository<DailyEntity> {
-        return this.txHost.tx.getRepository(DailyEntity);
+        return this.repository;
     }
 }

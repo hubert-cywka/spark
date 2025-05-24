@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { InjectTransactionHost, Transactional, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { Transactional } from "typeorm-transactional";
 
 import { AuthorEntity } from "@/modules/journal/authors/entities/Author.entity";
 import { AuthorAlreadyExistsError } from "@/modules/journal/authors/errors/AuthorAlreadyExists.error";
@@ -16,26 +16,25 @@ export class AuthorService implements IAuthorService {
     private readonly logger = new Logger(AuthorService.name);
 
     public constructor(
-        @InjectTransactionHost(JOURNAL_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        @InjectRepository(AuthorEntity, JOURNAL_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<AuthorEntity>,
         @Inject(AuthorMapperToken) private readonly authorMapper: IAuthorMapper
     ) {}
 
+    @Transactional({ connectionName: JOURNAL_MODULE_DATA_SOURCE })
     public async create(id: string): Promise<Author> {
-        return await this.txHost.withTransaction(async () => {
-            const repository = this.getRepository();
-            const exists = await repository.exists({ where: { id } });
+        const repository = this.getRepository();
+        const exists = await repository.exists({ where: { id } });
 
-            if (exists) {
-                throw new AuthorAlreadyExistsError();
-            }
+        if (exists) {
+            throw new AuthorAlreadyExistsError();
+        }
 
-            const result = await repository.save({ id });
-            return this.authorMapper.fromEntityToModel(result);
-        });
+        const result = await repository.save({ id });
+        return this.authorMapper.fromEntityToModel(result);
     }
 
-    @Transactional(JOURNAL_MODULE_DATA_SOURCE)
+    @Transactional({ connectionName: JOURNAL_MODULE_DATA_SOURCE })
     public async remove(id: string): Promise<void> {
         const repository = this.getRepository();
         const author = await repository.findOne({ where: { id } });
@@ -49,6 +48,6 @@ export class AuthorService implements IAuthorService {
     }
 
     private getRepository(): Repository<AuthorEntity> {
-        return this.txHost.tx.getRepository(AuthorEntity);
+        return this.repository;
     }
 }

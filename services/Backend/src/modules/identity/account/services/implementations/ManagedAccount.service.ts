@@ -1,9 +1,9 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { InjectTransactionHost, Transactional, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 import argon2 from "argon2";
 import dayjs from "dayjs";
 import { Repository } from "typeorm";
+import { Transactional } from "typeorm-transactional";
 
 import { ManagedAccountEntity } from "@/modules/identity/account/entities/ManagedAccountEntity";
 import { AccountAlreadyActivatedError } from "@/modules/identity/account/errors/AccountAlreadyActivated.error";
@@ -35,8 +35,8 @@ export class ManagedAccountService implements IManagedAccountService {
     private fakePasswordHash: string | null = null;
 
     constructor(
-        @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        @InjectRepository(ManagedAccountEntity, IDENTITY_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<ManagedAccountEntity>,
         @Inject(AccountPublisherServiceToken)
         private readonly publisher: IAccountPublisherService,
         @Inject(AccountMapperToken)
@@ -82,7 +82,7 @@ export class ManagedAccountService implements IManagedAccountService {
         return this.accountMapper.fromEntityToModel(account);
     }
 
-    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
+    @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })
     public async createAccountWithCredentials(email: string, password: string): Promise<Account> {
         const repository = this.getRepository();
 
@@ -117,7 +117,7 @@ export class ManagedAccountService implements IManagedAccountService {
         return this.accountMapper.fromEntityToModel(account);
     }
 
-    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
+    @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })
     public async requestPasswordChange(email: string, clientRedirectUrl: string): Promise<void> {
         const account = await this.findOne(email);
         const passwordResetToken = await this.passwordChangeTokenService.issue(account.id);
@@ -126,7 +126,7 @@ export class ManagedAccountService implements IManagedAccountService {
         await this.publisher.onPasswordResetRequested(account.id, passwordResetRedirectUrl);
     }
 
-    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
+    @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })
     public async updatePassword(passwordChangeToken: string, password: string): Promise<void> {
         const { ownerId } = await this.passwordChangeTokenService.redeem(passwordChangeToken);
         const account = await this.getRepository().findOne({
@@ -148,7 +148,7 @@ export class ManagedAccountService implements IManagedAccountService {
         await this.publisher.onPasswordUpdated(account.id);
     }
 
-    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
+    @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })
     public async activate(activationToken: string): Promise<void> {
         const { ownerId } = await this.accountActivationTokenService.redeem(activationToken);
         const account = await this.getRepository().findOne({
@@ -169,7 +169,7 @@ export class ManagedAccountService implements IManagedAccountService {
         await this.publisher.onAccountActivated(account.id, account.email);
     }
 
-    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
+    @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })
     public async requestActivation(email: string, clientRedirectUrl: string): Promise<void> {
         const account = await this.findOne(email);
         this.assertEligibilityForActivation(account);
@@ -222,6 +222,6 @@ export class ManagedAccountService implements IManagedAccountService {
     }
 
     private getRepository(): Repository<ManagedAccountEntity> {
-        return this.txHost.tx.getRepository(ManagedAccountEntity);
+        return this.repository;
     }
 }

@@ -9,8 +9,6 @@ import {
     IntegrationEventStreams,
     IntegrationEventTopics,
 } from "@/common/events";
-import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
-import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -36,7 +34,6 @@ import { AddRecipient1748032112854 } from "@/modules/mail/infrastructure/databas
 import { RecipientMapperToken } from "@/modules/mail/mappers/IRecipient.mapper";
 import { RecipientMapper } from "@/modules/mail/mappers/Recipient.mapper";
 import { EmailLookupService } from "@/modules/mail/services/implementations/EmailLookup.service";
-import { MailEventBoxFactory } from "@/modules/mail/services/implementations/MailEventBox.factory";
 import { RecipientService } from "@/modules/mail/services/implementations/Recipient.service";
 import { SendGridMailerService } from "@/modules/mail/services/implementations/SendGridMailer.service";
 import { EmailLookupServiceToken } from "@/modules/mail/services/interfaces/IEmailLookup.service";
@@ -115,7 +112,7 @@ import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/
         },
     ],
     imports: [
-        DatabaseModule.forRootAsync(MAIL_MODULE_DATA_SOURCE, [OutboxEventEntity, InboxEventEntity, RecipientEntity], {
+        DatabaseModule.forRootAsync(MAIL_MODULE_DATA_SOURCE, {
             useFactory: (configService: ConfigService) => ({
                 logging: configService.getOrThrow<boolean>("modules.mail.database.logging"),
                 port: configService.getOrThrow<number>("modules.mail.database.port"),
@@ -132,11 +129,10 @@ import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/
             }),
             inject: [ConfigService],
         }),
+        DatabaseModule.forFeature(MAIL_MODULE_DATA_SOURCE, [RecipientEntity]),
         IntegrationEventsModule.forFeature({
             context: MailModule.name,
-            eventBoxFactory: {
-                useClass: MailEventBoxFactory,
-            },
+            connectionName: MAIL_MODULE_DATA_SOURCE,
         }),
     ],
     controllers: [],

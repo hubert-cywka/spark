@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { Transactional } from "typeorm-transactional";
 
 import { AlertEntity } from "@/modules/alerts/entities/Alert.entity";
 import { AlertLimitReachedError } from "@/modules/alerts/errors/AlertLimitReached.error";
@@ -19,8 +20,8 @@ export class AlertService implements IAlertService {
     private readonly logger = new Logger(AlertService.name);
 
     public constructor(
-        @InjectTransactionHost(ALERTS_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        @InjectRepository(AlertEntity, ALERTS_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<AlertEntity>,
         @Inject(AlertMapperToken) private readonly alertMapper: IAlertMapper,
         @Inject(AlertSchedulerServiceToken)
         private readonly alertScheduler: IAlertSchedulerService
@@ -33,26 +34,26 @@ export class AlertService implements IAlertService {
         });
         return this.alertMapper.fromEntityToModelBulk(result);
     }
+
+    @Transactional({ connectionName: ALERTS_MODULE_DATA_SOURCE })
     public async create(recipientId: string, time: string, daysOfWeek: UTCDay[]): Promise<Alert> {
-        return await this.txHost.withTransaction(async () => {
-            await this.assertEligibilityToCreate(recipientId);
+        await this.assertEligibilityToCreate(recipientId);
 
-            const result = await this.getRepository()
-                .createQueryBuilder()
-                .insert()
-                .into(AlertEntity)
-                .values({
-                    recipient: { id: recipientId },
-                    nextTriggerAt: this.alertScheduler.scheduleNextTrigger(time, daysOfWeek),
-                    daysOfWeek,
-                    time,
-                    enabled: true,
-                })
-                .returning("*")
-                .execute();
+        const result = await this.getRepository()
+            .createQueryBuilder()
+            .insert()
+            .into(AlertEntity)
+            .values({
+                recipient: { id: recipientId },
+                nextTriggerAt: this.alertScheduler.scheduleNextTrigger(time, daysOfWeek),
+                daysOfWeek,
+                time,
+                enabled: true,
+            })
+            .returning("*")
+            .execute();
 
-            return this.alertMapper.fromEntityToModel(result.raw[0]);
-        });
+        return this.alertMapper.fromEntityToModel(result.raw[0]);
     }
 
     public async delete(recipientId: string, alertId: string): Promise<void> {
@@ -129,6 +130,6 @@ export class AlertService implements IAlertService {
     }
 
     private getRepository() {
-        return this.txHost.tx.getRepository(AlertEntity);
+        return this.repository;
     }
 }

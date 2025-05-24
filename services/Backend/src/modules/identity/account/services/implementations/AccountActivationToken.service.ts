@@ -1,7 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 
+import { SingleUseTokenEntity } from "@/modules/identity/account/entities/SingleUseTokenEntity";
 import { BaseSingleUseTokenService } from "@/modules/identity/account/services/implementations/BaseSingleUseToken.service";
 import { ISingleUseTokenService } from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
 import { SingleUseTokenRedeemData } from "@/modules/identity/account/types/SingleUseToken";
@@ -10,10 +11,10 @@ import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/d
 @Injectable()
 export class AccountActivationTokenService extends BaseSingleUseTokenService implements ISingleUseTokenService {
     public constructor(
-        @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
-        txHost: TransactionHost<TransactionalAdapterTypeOrm>
+        @InjectRepository(SingleUseTokenEntity, IDENTITY_MODULE_DATA_SOURCE)
+        repository: Repository<SingleUseTokenEntity>
     ) {
-        super(txHost);
+        super(repository);
     }
 
     public async invalidateAll(ownerId: string): Promise<void> {

@@ -1,6 +1,5 @@
 import { Logger } from "@nestjs/common";
-import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 import { EntryEntity } from "@/modules/journal/entries/entities/Entry.entity";
@@ -14,8 +13,8 @@ export class GoalEntryLinkService implements IGoalEntryLinkService {
     private readonly logger = new Logger(GoalEntryLinkService.name);
 
     public constructor(
-        @InjectTransactionHost(JOURNAL_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
+        @InjectRepository(GoalEntity, JOURNAL_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<GoalEntity>
     ) {}
 
     public async createLink(authorId: string, goalId: string, entryId: string): Promise<void> {
@@ -54,6 +53,6 @@ export class GoalEntryLinkService implements IGoalEntryLinkService {
     }
 
     private getRepository(): Repository<GoalEntity> {
-        return this.txHost.tx.getRepository(GoalEntity);
+        return this.repository;
     }
 }

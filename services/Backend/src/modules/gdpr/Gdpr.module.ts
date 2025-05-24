@@ -9,8 +9,6 @@ import {
     IntegrationEventStreams,
     IntegrationEventTopics,
 } from "@/common/events";
-import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
-import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -36,7 +34,6 @@ import { TenantMapperToken } from "@/modules/gdpr/mappers/ITenant.mapper";
 import { TenantMapper } from "@/modules/gdpr/mappers/Tenant.mapper";
 import { DataPurgeService } from "@/modules/gdpr/services/implementations/DataPurge.service";
 import { DataPurgePublisherService } from "@/modules/gdpr/services/implementations/DataPurgePublisher.service";
-import { GdprEventBoxFactory } from "@/modules/gdpr/services/implementations/GdprEventBox.factory";
 import { TenantService } from "@/modules/gdpr/services/implementations/Tenant.service";
 import { DataPurgeServiceToken } from "@/modules/gdpr/services/interfaces/IDataPurge.service";
 import { DataPurgePublisherServiceToken } from "@/modules/gdpr/services/interfaces/IDataPurgePublisher.service";
@@ -70,7 +67,7 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
         },
     ],
     imports: [
-        DatabaseModule.forRootAsync(GDPR_MODULE_DATA_SOURCE, [OutboxEventEntity, InboxEventEntity, TenantEntity, DataPurgePlanEntity], {
+        DatabaseModule.forRootAsync(GDPR_MODULE_DATA_SOURCE, {
             useFactory: (configService: ConfigService) => ({
                 logging: configService.getOrThrow<boolean>("modules.gdpr.database.logging"),
                 port: configService.getOrThrow<number>("modules.gdpr.database.port"),
@@ -90,11 +87,10 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
             }),
             inject: [ConfigService],
         }),
+        DatabaseModule.forFeature(GDPR_MODULE_DATA_SOURCE, [TenantEntity, DataPurgePlanEntity]),
         IntegrationEventsModule.forFeature({
             context: GdprModule.name,
-            eventBoxFactory: {
-                useClass: GdprEventBoxFactory,
-            },
+            connectionName: GDPR_MODULE_DATA_SOURCE,
         }),
     ],
     controllers: [],

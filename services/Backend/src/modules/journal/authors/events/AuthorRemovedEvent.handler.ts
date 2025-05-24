@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { Transactional } from "@nestjs-cls/transactional";
+import { Transactional } from "typeorm-transactional";
 
 import {
     type IEventInbox,
@@ -29,7 +29,7 @@ export class AuthorRemovedEventHandler implements IInboxEventHandler {
         return topic === IntegrationEventTopics.account.removal.completed;
     }
 
-    @Transactional(JOURNAL_MODULE_DATA_SOURCE)
+    @Transactional({ connectionName: JOURNAL_MODULE_DATA_SOURCE })
     async handle(event: IntegrationEvent): Promise<void> {
         const payload = event.getPayload() as AccountRemovalCompletedEventPayload;
         await this.outbox.clearTenantEvents(payload.account.id);

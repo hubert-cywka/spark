@@ -1,6 +1,5 @@
 import { Inject, Logger } from "@nestjs/common";
-import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Secret } from "otpauth";
 import { IsNull, Not, Repository } from "typeorm";
 
@@ -17,8 +16,8 @@ export class TwoFactorAuthenticationIntegrationsProviderService implements ITwoF
     private readonly logger = new Logger(TwoFactorAuthenticationIntegrationsProviderService.name);
 
     public constructor(
-        @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        @InjectRepository(TwoFactorAuthenticationIntegrationEntity, IDENTITY_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<TwoFactorAuthenticationIntegrationEntity>,
         @Inject(TwoFactorAuthenticationIntegrationMapperToken)
         private readonly mapper: ITwoFactorAuthenticationIntegrationMapper
     ) {}
@@ -46,6 +45,6 @@ export class TwoFactorAuthenticationIntegrationsProviderService implements ITwoF
     }
 
     private getRepository(): Repository<TwoFactorAuthenticationIntegrationEntity> {
-        return this.txHost.tx.getRepository(TwoFactorAuthenticationIntegrationEntity);
+        return this.repository;
     }
 }

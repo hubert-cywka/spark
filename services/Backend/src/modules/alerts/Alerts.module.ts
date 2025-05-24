@@ -9,8 +9,6 @@ import {
     IntegrationEventStreams,
     IntegrationEventTopics,
 } from "@/common/events";
-import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
-import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -43,7 +41,6 @@ import { RecipientMapper } from "@/modules/alerts/mappers/Recipient.mapper";
 import { AlertService } from "@/modules/alerts/services/implementations/Alert.service";
 import { AlertPublisherService } from "@/modules/alerts/services/implementations/AlertPublisher.service";
 import { AlertSchedulerService } from "@/modules/alerts/services/implementations/AlertScheduler.service";
-import { AlertsEventBoxFactory } from "@/modules/alerts/services/implementations/AlertsEventBox.factory";
 import { AlertsProcessorService } from "@/modules/alerts/services/implementations/AlertsProcessor.service";
 import { RecipientService } from "@/modules/alerts/services/implementations/Recipient.service";
 import { AlertServiceToken } from "@/modules/alerts/services/interfaces/IAlert.service";
@@ -85,7 +82,7 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
         },
     ],
     imports: [
-        DatabaseModule.forRootAsync(ALERTS_MODULE_DATA_SOURCE, [OutboxEventEntity, InboxEventEntity, AlertEntity, RecipientEntity], {
+        DatabaseModule.forRootAsync(ALERTS_MODULE_DATA_SOURCE, {
             useFactory: (configService: ConfigService) => ({
                 logging: configService.getOrThrow<boolean>("modules.alerts.database.logging"),
                 port: configService.getOrThrow<number>("modules.alerts.database.port"),
@@ -109,11 +106,10 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
             }),
             inject: [ConfigService],
         }),
+        DatabaseModule.forFeature(ALERTS_MODULE_DATA_SOURCE, [AlertEntity, RecipientEntity]),
         IntegrationEventsModule.forFeature({
             context: AlertsModule.name,
-            eventBoxFactory: {
-                useClass: AlertsEventBoxFactory,
-            },
+            connectionName: ALERTS_MODULE_DATA_SOURCE,
         }),
     ],
     controllers: [AlertsController],

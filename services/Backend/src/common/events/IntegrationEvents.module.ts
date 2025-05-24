@@ -1,18 +1,19 @@
 import { type DynamicModule, Module } from "@nestjs/common";
-import { ClassConstructor } from "class-transformer";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 
+import { DatabaseModule } from "@/common/database/Database.module";
 import { NatsJetStreamModule, NatsJetStreamModuleOptions } from "@/common/events/brokers/NatsJetStream.module";
+import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
+import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { EventInbox } from "@/common/events/services/implementations/EventInbox";
 import { EventOutbox } from "@/common/events/services/implementations/EventOutbox";
 import { EventsRemover } from "@/common/events/services/implementations/EventsRemover";
 import { IntegrationEventsEncryptionService } from "@/common/events/services/implementations/IntegrationEventsEncryption.service";
 import { IntegrationEventsJobsOrchestrator } from "@/common/events/services/implementations/IntegrationEventsJobsOrchestrator";
 import { IntegrationEventsSubscriber } from "@/common/events/services/implementations/IntegrationEventsSubscriber";
-import { type IEventBoxFactory, EventBoxFactoryToken } from "@/common/events/services/interfaces/IEventBox.factory";
 import { EventInboxToken } from "@/common/events/services/interfaces/IEventInbox";
-import { EventInboxOptionsToken } from "@/common/events/services/interfaces/IEventInboxOptions";
 import { EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
-import { EventOutboxOptionsToken, IEventOutboxOptions } from "@/common/events/services/interfaces/IEventOutboxOptions";
 import { type IEventsRemover, EventsRemoverToken } from "@/common/events/services/interfaces/IEventsRemover";
 import {
     IIntegrationEventsEncryptionService,
@@ -48,60 +49,46 @@ export class IntegrationEventsModule {
         };
     }
 
-    static forFeature({
-        eventBoxFactory,
-        context,
-    }: {
-        context: string;
-        eventBoxFactory: {
-            useClass: ClassConstructor<IEventBoxFactory>;
-        };
-    }): DynamicModule {
+    static forFeature({ context, connectionName }: { context: string; connectionName: string }): DynamicModule {
         return {
             module: IntegrationEventsModule,
+            imports: [DatabaseModule.forFeature(connectionName, [InboxEventEntity, OutboxEventEntity])],
             providers: [
-                {
-                    provide: EventBoxFactoryToken,
-                    useClass: eventBoxFactory.useClass,
-                },
-
                 {
                     provide: EventsRemoverToken,
                     useClass: EventsRemover,
                 },
 
                 {
-                    provide: EventOutboxOptionsToken,
-                    useFactory: (factory: IEventBoxFactory) => factory.createOutboxOptions(`${context}_Outbox`),
-                    inject: [EventBoxFactoryToken],
-                },
-
-                {
-                    provide: EventInboxOptionsToken,
-                    useFactory: (factory: IEventBoxFactory) => factory.createInboxOptions(`${context}_Inbox`),
-                    inject: [EventBoxFactoryToken],
-                },
-
-                {
                     provide: EventOutboxToken,
-                    useFactory: (
-                        options: IEventOutboxOptions,
+                    useFactory: async (
                         producer: IPubSubProducer,
                         eventsRemover: IEventsRemover,
-                        encryptionService: IIntegrationEventsEncryptionService
-                    ) => new EventOutbox(options, producer, eventsRemover, encryptionService),
-                    inject: [EventBoxFactoryToken, PubSubProducerToken, EventsRemoverToken, IntegrationEventsEncryptionServiceToken],
+                        encryptionService: IIntegrationEventsEncryptionService,
+                        repository: Repository<OutboxEventEntity>
+                    ) => new EventOutbox({ connectionName, context }, repository, producer, eventsRemover, encryptionService),
+                    inject: [
+                        PubSubProducerToken,
+                        EventsRemoverToken,
+                        IntegrationEventsEncryptionServiceToken,
+                        getRepositoryToken(OutboxEventEntity, connectionName),
+                    ],
                 },
 
                 {
                     provide: EventInboxToken,
-                    useFactory: (
-                        options: IEventOutboxOptions,
+                    useFactory: async (
                         producer: IPubSubProducer,
                         eventsRemover: IEventsRemover,
-                        encryptionService: IIntegrationEventsEncryptionService
-                    ) => new EventInbox(options, producer, eventsRemover, encryptionService),
-                    inject: [EventBoxFactoryToken, PubSubProducerToken, EventsRemoverToken, IntegrationEventsEncryptionServiceToken],
+                        encryptionService: IIntegrationEventsEncryptionService,
+                        repository: Repository<InboxEventEntity>
+                    ) => new EventInbox({ connectionName, context }, repository, producer, eventsRemover, encryptionService),
+                    inject: [
+                        PubSubProducerToken,
+                        EventsRemoverToken,
+                        IntegrationEventsEncryptionServiceToken,
+                        getRepositoryToken(InboxEventEntity, connectionName),
+                    ],
                 },
 
                 {

@@ -9,8 +9,6 @@ import {
     IntegrationEventStreams,
     IntegrationEventTopics,
 } from "@/common/events";
-import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
-import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -33,7 +31,6 @@ import { UserMapperToken } from "@/modules/users/mappers/IUser.mapper";
 import { UserMapper } from "@/modules/users/mappers/User.mapper";
 import { UserPublisherService } from "@/modules/users/services/implementations/UserPublisher.service";
 import { UsersService } from "@/modules/users/services/implementations/Users.service";
-import { UsersEventBoxFactory } from "@/modules/users/services/implementations/UsersEventBox.factory";
 import { UserPublisherServiceToken } from "@/modules/users/services/interfaces/IUserPublisher.service";
 import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
 
@@ -58,7 +55,7 @@ import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.se
         },
     ],
     imports: [
-        DatabaseModule.forRootAsync(USERS_MODULE_DATA_SOURCE, [UserEntity, OutboxEventEntity, InboxEventEntity], {
+        DatabaseModule.forRootAsync(USERS_MODULE_DATA_SOURCE, {
             useFactory: (configService: ConfigService) => ({
                 logging: configService.getOrThrow<boolean>("modules.users.database.logging"),
                 port: configService.getOrThrow<number>("modules.users.database.port"),
@@ -75,11 +72,10 @@ import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.se
             }),
             inject: [ConfigService],
         }),
+        DatabaseModule.forFeature(USERS_MODULE_DATA_SOURCE, [UserEntity]),
         IntegrationEventsModule.forFeature({
             context: UsersModule.name,
-            eventBoxFactory: {
-                useClass: UsersEventBoxFactory,
-            },
+            connectionName: USERS_MODULE_DATA_SOURCE,
         }),
     ],
     controllers: [UserController],
