@@ -1,29 +1,34 @@
 import { Injectable } from "@nestjs/common";
-import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 
 import { IEventBoxFactory } from "@/common/events";
+import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
+import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
 
 @Injectable()
 export class JournalEventBoxFactory implements IEventBoxFactory {
     public constructor(
-        @InjectTransactionHost(JOURNAL_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
+        @InjectRepository(InboxEventEntity, JOURNAL_MODULE_DATA_SOURCE)
+        private readonly inboxRepository: Repository<InboxEventEntity>,
+        @InjectRepository(OutboxEventEntity, JOURNAL_MODULE_DATA_SOURCE)
+        private readonly outboxRepository: Repository<OutboxEventEntity>
     ) {}
 
     public createOutboxOptions(context: string) {
-        return this.createOptions(context);
+        return {
+            context,
+            repository: this.outboxRepository,
+            connectionName: JOURNAL_MODULE_DATA_SOURCE,
+        };
     }
 
     public createInboxOptions(context: string) {
-        return this.createOptions(context);
-    }
-
-    private createOptions(context: string) {
         return {
-            txHost: this.txHost,
             context,
+            repository: this.inboxRepository,
+            connectionName: JOURNAL_MODULE_DATA_SOURCE,
         };
     }
 }

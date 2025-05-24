@@ -1,8 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 
+import { TwoFactorAuthenticationIntegrationEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationIntegration.entity";
 import { TwoFactorAuthenticationIntegrationService } from "@/modules/identity/2fa/services/implementations/TwoFactorAuthenticationIntegration.service";
 import { type ITwoFactorAuthenticationIntegrationService } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationIntegration.service";
 import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
@@ -14,11 +15,11 @@ export class TwoFactorAuthenticationAppIntegrationService
     implements ITwoFactorAuthenticationIntegrationService
 {
     constructor(
-        @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
-        txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        @InjectRepository(TwoFactorAuthenticationIntegrationEntity, IDENTITY_MODULE_DATA_SOURCE)
+        repository: Repository<TwoFactorAuthenticationIntegrationEntity>,
         configService: ConfigService
     ) {
-        super(txHost, configService);
+        super(repository, configService);
     }
 
     protected canIssueCode(): boolean {

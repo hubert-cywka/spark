@@ -1,5 +1,4 @@
 import { type DynamicModule, Module } from "@nestjs/common";
-import { ClassConstructor } from "class-transformer";
 
 import { NatsJetStreamModule, NatsJetStreamModuleOptions } from "@/common/events/brokers/NatsJetStream.module";
 import { EventInbox } from "@/common/events/services/implementations/EventInbox";
@@ -8,9 +7,9 @@ import { EventsRemover } from "@/common/events/services/implementations/EventsRe
 import { IntegrationEventsEncryptionService } from "@/common/events/services/implementations/IntegrationEventsEncryption.service";
 import { IntegrationEventsJobsOrchestrator } from "@/common/events/services/implementations/IntegrationEventsJobsOrchestrator";
 import { IntegrationEventsSubscriber } from "@/common/events/services/implementations/IntegrationEventsSubscriber";
-import { type IEventBoxFactory, EventBoxFactoryToken } from "@/common/events/services/interfaces/IEventBox.factory";
+import { EventBoxFactoryToken, IEventBoxFactory } from "@/common/events/services/interfaces/IEventBox.factory";
 import { EventInboxToken } from "@/common/events/services/interfaces/IEventInbox";
-import { EventInboxOptionsToken } from "@/common/events/services/interfaces/IEventInboxOptions";
+import { EventInboxOptionsToken, IEventInboxOptions } from "@/common/events/services/interfaces/IEventInboxOptions";
 import { EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
 import { EventOutboxOptionsToken, IEventOutboxOptions } from "@/common/events/services/interfaces/IEventOutboxOptions";
 import { type IEventsRemover, EventsRemoverToken } from "@/common/events/services/interfaces/IEventsRemover";
@@ -22,6 +21,7 @@ import { IntegrationEventsJobsOrchestratorToken } from "@/common/events/services
 import { IntegrationEventsSubscriberToken } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
 import { IPubSubProducer, PubSubProducerToken } from "@/common/events/services/interfaces/IPubSubProducer";
 import { IntegrationEventsModuleOptions } from "@/common/events/types";
+import { ClassConstructor } from "@/types/Class";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 
 const IntegrationEventsModuleOptionsToken = Symbol("IntegrationEventsModuleOptions");
@@ -90,18 +90,18 @@ export class IntegrationEventsModule {
                         eventsRemover: IEventsRemover,
                         encryptionService: IIntegrationEventsEncryptionService
                     ) => new EventOutbox(options, producer, eventsRemover, encryptionService),
-                    inject: [EventBoxFactoryToken, PubSubProducerToken, EventsRemoverToken, IntegrationEventsEncryptionServiceToken],
+                    inject: [EventOutboxOptionsToken, PubSubProducerToken, EventsRemoverToken, IntegrationEventsEncryptionServiceToken],
                 },
 
                 {
                     provide: EventInboxToken,
                     useFactory: (
-                        options: IEventOutboxOptions,
+                        options: IEventInboxOptions,
                         producer: IPubSubProducer,
                         eventsRemover: IEventsRemover,
                         encryptionService: IIntegrationEventsEncryptionService
                     ) => new EventInbox(options, producer, eventsRemover, encryptionService),
-                    inject: [EventBoxFactoryToken, PubSubProducerToken, EventsRemoverToken, IntegrationEventsEncryptionServiceToken],
+                    inject: [EventInboxOptionsToken, PubSubProducerToken, EventsRemoverToken, IntegrationEventsEncryptionServiceToken],
                 },
 
                 {

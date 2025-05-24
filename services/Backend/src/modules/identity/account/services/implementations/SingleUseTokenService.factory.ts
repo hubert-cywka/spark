@@ -1,7 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 
+import { SingleUseTokenEntity } from "@/modules/identity/account/entities/SingleUseTokenEntity";
 import { VariantNotSupportedError } from "@/modules/identity/account/errors/VariantNotSupported.error";
 import { AccountActivationTokenService } from "@/modules/identity/account/services/implementations/AccountActivationToken.service";
 import { PasswordResetTokenService } from "@/modules/identity/account/services/implementations/PasswordResetToken.service";
@@ -15,16 +16,16 @@ export class SingleUseTokenServiceFactory implements ISingleUseTokenServiceFacto
     private readonly logger = new Logger(SingleUseTokenServiceFactory.name);
 
     public constructor(
-        @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
+        @InjectRepository(SingleUseTokenEntity, IDENTITY_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<SingleUseTokenEntity>
     ) {}
 
     public create(variant: SingleUseTokenType): ISingleUseTokenService {
         switch (variant) {
             case "accountActivation":
-                return new AccountActivationTokenService(this.txHost);
+                return new AccountActivationTokenService(this.repository);
             case "passwordChange":
-                return new PasswordResetTokenService(this.txHost);
+                return new PasswordResetTokenService(this.repository);
             default:
                 this.logger.error({ variant }, "Unsupported variant of single use token service.");
                 throw new VariantNotSupportedError(variant);

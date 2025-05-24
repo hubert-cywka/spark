@@ -1,9 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { Transactional, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import dayjs from "dayjs";
 import { firstValueFrom, timeout } from "rxjs";
-import { EntitySubscriberInterface, InsertEvent, Repository } from "typeorm";
+import { Repository } from "typeorm";
 
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
@@ -20,7 +18,8 @@ const PUBLISH_TIMEOUT = 3000;
 // TODO: Implement better retry mechanism
 @Injectable()
 export class EventOutbox implements IEventOutbox {
-    private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>;
+    private readonly repository: Repository<OutboxEventEntity>;
+    private readonly connectionName: string;
     private readonly logger;
 
     public constructor(
@@ -30,10 +29,10 @@ export class EventOutbox implements IEventOutbox {
         private readonly encryptionService: IIntegrationEventsEncryptionService
     ) {
         this.logger = new Logger(options.context);
-        this.txHost = options.txHost;
+        this.connectionName = options.connectionName;
+        this.repository = options.repository;
     }
 
-    @Transactional()
     public async enqueue(event: IntegrationEvent, options?: { encrypt: boolean }): Promise<void> {
         const preparedEvent = await this.prepareEventToStore(event, options);
         const repository = this.getRepository();
@@ -102,61 +101,57 @@ export class EventOutbox implements IEventOutbox {
     }
 
     private async processBatch(pageSize: number, offset: number) {
-        return await this.txHost.withTransaction(async () => {
-            const repository = this.getRepository();
+        const repository = this.getRepository();
 
-            const entities = await repository
-                .createQueryBuilder("event")
-                .setLock("pessimistic_write")
-                .setOnLocked("skip_locked")
-                .where("event.processedAt IS NULL")
-                .andWhere("event.attempts < :maxAttempts", {
-                    maxAttempts: MAX_ATTEMPTS,
-                })
-                .orderBy("event.createdAt", "ASC")
-                .take(pageSize)
-                .skip(offset)
-                .getMany();
+        const entities = await repository
+            .createQueryBuilder("event")
+            .setLock("pessimistic_write")
+            .setOnLocked("skip_locked")
+            .where("event.processedAt IS NULL")
+            .andWhere("event.attempts < :maxAttempts", {
+                maxAttempts: MAX_ATTEMPTS,
+            })
+            .orderBy("event.createdAt", "ASC")
+            .take(pageSize)
+            .skip(offset)
+            .getMany();
 
-            if (!entities.length) {
-                return { successful: 0, total: 0 };
-            }
+        if (!entities.length) {
+            return { successful: 0, total: 0 };
+        }
 
-            const publishPromises = entities.map((event) => this.publish(event));
-            const processedEvents = await Promise.all(publishPromises);
-            const processedSuccessfully = processedEvents.filter((event) => !!event.processedAt);
-            await repository.save(processedEvents);
+        const publishPromises = entities.map((event) => this.publish(event));
+        const processedEvents = await Promise.all(publishPromises);
+        const processedSuccessfully = processedEvents.filter((event) => !!event.processedAt);
+        await repository.save(processedEvents);
 
-            return {
-                total: processedEvents.length,
-                successful: processedSuccessfully.length,
-            };
-        });
+        return {
+            total: processedEvents.length,
+            successful: processedSuccessfully.length,
+        };
     }
 
     private async processSingle(id: string) {
-        return await this.txHost.withTransaction(async () => {
-            const repository = this.getRepository();
+        const repository = this.getRepository();
 
-            const entity = await repository
-                .createQueryBuilder("event")
-                .setLock("pessimistic_write")
-                .setOnLocked("skip_locked")
-                .where("event.processedAt IS NULL")
-                .andWhere("event.attempts < :maxAttempts", {
-                    maxAttempts: MAX_ATTEMPTS,
-                })
-                .andWhere("event.id = :id", { id })
-                .getOne();
+        const entity = await repository
+            .createQueryBuilder("event")
+            .setLock("pessimistic_write")
+            .setOnLocked("skip_locked")
+            .where("event.processedAt IS NULL")
+            .andWhere("event.attempts < :maxAttempts", {
+                maxAttempts: MAX_ATTEMPTS,
+            })
+            .andWhere("event.id = :id", { id })
+            .getOne();
 
-            if (!entity) {
-                this.logger.error({ id }, "Couldn't find event to publish.");
-                return;
-            }
+        if (!entity) {
+            this.logger.error({ id }, "Couldn't find event to publish.");
+            return;
+        }
 
-            const processedEvent = await this.publish(entity);
-            await repository.save(processedEvent);
-        });
+        const processedEvent = await this.publish(entity);
+        await repository.save(processedEvent);
     }
 
     private async publish(entity: OutboxEventEntity): Promise<OutboxEventEntity> {
@@ -175,18 +170,6 @@ export class EventOutbox implements IEventOutbox {
     }
 
     private getRepository(): Repository<OutboxEventEntity> {
-        return this.txHost.tx.getRepository(OutboxEventEntity);
-    }
-}
-
-export class OutboxEventEnqueuedSubscriber implements EntitySubscriberInterface<OutboxEventEntity> {
-    public constructor() {}
-
-    listenTo() {
-        return OutboxEventEntity;
-    }
-
-    afterInsert(event: InsertEvent<OutboxEventEntity>) {
-        event.entityId;
+        return this.repository;
     }
 }

@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
-import { Transactional } from "@nestjs-cls/transactional";
+import { Transactional } from "typeorm-transactional";
 
 import { type AccessScopes, AccessScope } from "@/common/types/AccessScope";
 import type { Account } from "@/modules/identity/account/models/Account.model";
@@ -59,7 +59,7 @@ export class AuthenticationService implements IAuthenticationService {
         return await this.createAuthenticationResult(account, this.scopesService.getByAccountId(account.id));
     }
 
-    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
+    @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })
     public async registerWithCredentials({ email, password }: Credentials, clientRedirectUrl: string): Promise<void> {
         await this.managedAccountService.createAccountWithCredentials(email, password);
         await this.managedAccountService.requestActivation(email, clientRedirectUrl);
@@ -70,7 +70,7 @@ export class AuthenticationService implements IAuthenticationService {
         return await this.createAuthenticationResult(account, this.scopesService.getByAccountId(account.id));
     }
 
-    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
+    @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })
     public async registerWithExternalIdentity(identity: ExternalIdentity): Promise<AuthenticationResult> {
         const account = await this.federatedAccountService.createAccountWithExternalIdentity(identity);
         await this.federatedAccountService.activateByInternalId(account.id);

@@ -1,8 +1,8 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { InjectTransactionHost, Transactional, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 import dayjs from "dayjs";
 import { Repository } from "typeorm";
+import { Transactional } from "typeorm-transactional";
 
 import { FederatedAccountEntity } from "@/modules/identity/account/entities/FederatedAccountEntity";
 import { AccountAlreadyExistsError } from "@/modules/identity/account/errors/AccountAlreadyExists.error";
@@ -23,8 +23,8 @@ export class FederatedAccountService implements IFederatedAccountService {
     private readonly logger = new Logger(FederatedAccountService.name);
 
     constructor(
-        @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        @InjectRepository(FederatedAccountEntity, IDENTITY_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<FederatedAccountEntity>,
         @Inject(AccountMapperToken)
         private readonly accountMapper: IAccountMapper,
         @Inject(AccountPublisherServiceToken)
@@ -65,7 +65,7 @@ export class FederatedAccountService implements IFederatedAccountService {
         return this.accountMapper.fromEntityToModel(account);
     }
 
-    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
+    @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })
     public async createAccountWithExternalIdentity(identity: ExternalIdentity): Promise<Account> {
         const repository = this.getRepository();
         const existingAccount = await repository.findOne({
@@ -107,7 +107,7 @@ export class FederatedAccountService implements IFederatedAccountService {
         return this.accountMapper.fromEntityToModel(account);
     }
 
-    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
+    @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })
     public async activateByInternalId(id: string): Promise<void> {
         const repository = this.getRepository();
         const account = await repository.findOne({ where: { id } });
@@ -122,6 +122,6 @@ export class FederatedAccountService implements IFederatedAccountService {
     }
 
     private getRepository(): Repository<FederatedAccountEntity> {
-        return this.txHost.tx.getRepository(FederatedAccountEntity);
+        return this.repository;
     }
 }

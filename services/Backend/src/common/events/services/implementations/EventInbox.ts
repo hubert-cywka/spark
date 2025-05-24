@@ -1,13 +1,11 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import dayjs from "dayjs";
 import { Repository } from "typeorm";
 
 import { type IInboxEventHandler } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { type IEventInbox } from "@/common/events/services/interfaces/IEventInbox";
-import { type IEventOutboxOptions } from "@/common/events/services/interfaces/IEventOutboxOptions";
+import { type IEventInboxOptions } from "@/common/events/services/interfaces/IEventInboxOptions";
 import { type IEventsRemover } from "@/common/events/services/interfaces/IEventsRemover";
 import { type IIntegrationEventsEncryptionService } from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
 import { type IPubSubProducer } from "@/common/events/services/interfaces/IPubSubProducer";
@@ -33,42 +31,42 @@ const MAX_ATTEMPTS = 10;
  */
 @Injectable()
 export class EventInbox implements IEventInbox {
-    private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>;
+    private readonly repository: Repository<InboxEventEntity>;
+    private readonly connectionName: string;
     private readonly logger;
 
     public constructor(
-        options: IEventOutboxOptions,
+        options: IEventInboxOptions,
         private readonly client: IPubSubProducer,
         private readonly eventsRemover: IEventsRemover,
         private readonly encryptionService: IIntegrationEventsEncryptionService
     ) {
         this.logger = new Logger(options.context);
-        this.txHost = options.txHost;
+        this.connectionName = options.connectionName;
+        this.repository = options.repository;
     }
 
     public async enqueue(event: IntegrationEvent): Promise<void> {
         const repository = this.getRepository();
 
-        await this.txHost.withTransaction(async () => {
-            const exists = await repository.existsBy({ id: event.getId() });
+        const exists = await repository.existsBy({ id: event.getId() });
 
-            if (exists) {
-                this.logger.log(event, "Event already in inbox.");
-                return;
-            }
+        if (exists) {
+            this.logger.log(event, "Event already in inbox.");
+            return;
+        }
 
-            await repository.save({
-                id: event.getId(),
-                tenantId: event.getTenantId(),
-                topic: event.getTopic(),
-                payload: event.getRawPayload(),
-                isEncrypted: event.isEncrypted(),
-                createdAt: event.getCreatedAt(),
-                receivedAt: dayjs(),
-            });
-
-            this.logger.log(event, "Event added to inbox.");
+        await repository.save({
+            id: event.getId(),
+            tenantId: event.getTenantId(),
+            topic: event.getTopic(),
+            payload: event.getRawPayload(),
+            isEncrypted: event.isEncrypted(),
+            createdAt: event.getCreatedAt(),
+            receivedAt: dayjs(),
         });
+
+        this.logger.log(event, "Event added to inbox.");
     }
 
     public async clearProcessedEvents(processedBefore: Date): Promise<void> {
@@ -99,47 +97,45 @@ export class EventInbox implements IEventInbox {
     }
 
     private async processBatch(handlers: IInboxEventHandler[], pageSize: number, offset: number): Promise<number> {
-        return await this.txHost.withTransaction(async () => {
-            const repository = this.getRepository();
+        const repository = this.getRepository();
 
-            const entities = await repository
-                .createQueryBuilder("event")
-                .setLock("pessimistic_write")
-                .setOnLocked("skip_locked")
-                .where(`event.processedAt IS NULL AND event.attempts < ${MAX_ATTEMPTS}`)
-                .orderBy("event.createdAt", "ASC")
-                .take(pageSize)
-                .skip(offset)
-                .getMany();
+        const entities = await repository
+            .createQueryBuilder("event")
+            .setLock("pessimistic_write")
+            .setOnLocked("skip_locked")
+            .where(`event.processedAt IS NULL AND event.attempts < ${MAX_ATTEMPTS}`)
+            .orderBy("event.createdAt", "ASC")
+            .take(pageSize)
+            .skip(offset)
+            .getMany();
 
-            if (entities.length === 0) {
-                return 0;
-            }
+        if (entities.length === 0) {
+            return 0;
+        }
 
-            const processedEvents: InboxEventEntity[] = [];
+        const processedEvents: InboxEventEntity[] = [];
 
-            for (const entity of entities) {
-                const event = IntegrationEvent.fromEntity(entity);
-                const handler = handlers.find((h) => h.canHandle(event.getTopic()));
+        for (const entity of entities) {
+            const event = IntegrationEvent.fromEntity(entity);
+            const handler = handlers.find((h) => h.canHandle(event.getTopic()));
 
-                try {
-                    if (handler) {
-                        await this.processSingle(event, handler);
-                        entity.processedAt = new Date();
-                    } else {
-                        this.logger.warn(event, "Event cannot be processed - no handler found.");
-                    }
-                } catch (error) {
-                    this.logger.error({ event, error }, "Failed to process event.");
-                } finally {
-                    entity.attempts++;
-                    processedEvents.push(entity);
+            try {
+                if (handler) {
+                    await this.processSingle(event, handler);
+                    entity.processedAt = new Date();
+                } else {
+                    this.logger.warn(event, "Event cannot be processed - no handler found.");
                 }
+            } catch (error) {
+                this.logger.error({ event, error }, "Failed to process event.");
+            } finally {
+                entity.attempts++;
+                processedEvents.push(entity);
             }
+        }
 
-            await repository.save(processedEvents);
-            return entities.length;
-        });
+        await repository.save(processedEvents);
+        return entities.length;
     }
 
     private async processSingle(event: IntegrationEvent, handler: IInboxEventHandler) {
@@ -148,6 +144,6 @@ export class EventInbox implements IEventInbox {
     }
 
     private getRepository(): Repository<InboxEventEntity> {
-        return this.txHost.tx.getRepository(InboxEventEntity);
+        return this.repository;
     }
 }

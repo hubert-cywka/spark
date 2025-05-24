@@ -1,6 +1,5 @@
 import { Inject, Logger } from "@nestjs/common";
-import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 import { type PageOptions } from "@/common/pagination/types/PageOptions";
@@ -17,8 +16,8 @@ export class EntryService implements IEntryService {
     private readonly logger = new Logger(EntryService.name);
 
     public constructor(
-        @InjectTransactionHost(JOURNAL_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        @InjectRepository(EntryEntity, JOURNAL_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<EntryEntity>,
         @Inject(EntryMapperToken) private readonly entryMapper: IEntryMapper
     ) {}
 
@@ -143,6 +142,6 @@ export class EntryService implements IEntryService {
     }
 
     private getRepository(): Repository<EntryEntity> {
-        return this.txHost.tx.getRepository(EntryEntity);
+        return this.repository;
     }
 }

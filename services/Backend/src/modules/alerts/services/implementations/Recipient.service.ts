@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { InjectTransactionHost, Transactional, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { Transactional } from "typeorm-transactional";
 
 import { RecipientEntity } from "@/modules/alerts/entities/Recipient.entity";
 import { RecipientAlreadyExistsError } from "@/modules/alerts/errors/RecipientAlreadyExists.error";
@@ -16,27 +16,26 @@ export class RecipientService implements IRecipientService {
     private readonly logger = new Logger(RecipientService.name);
 
     public constructor(
-        @InjectTransactionHost(ALERTS_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        @InjectRepository(RecipientEntity, ALERTS_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<RecipientEntity>,
         @Inject(RecipientMapperToken)
         private readonly recipientMapper: IRecipientMapper
     ) {}
 
+    @Transactional({ connectionName: ALERTS_MODULE_DATA_SOURCE })
     public async create(id: string): Promise<Recipient> {
-        return await this.txHost.withTransaction(async () => {
-            const repository = this.getRepository();
-            const exists = await repository.exists({ where: { id } });
+        const repository = this.getRepository();
+        const exists = await repository.exists({ where: { id } });
 
-            if (exists) {
-                throw new RecipientAlreadyExistsError();
-            }
+        if (exists) {
+            throw new RecipientAlreadyExistsError();
+        }
 
-            const result = await repository.save({ id });
-            return this.recipientMapper.fromEntityToModel(result);
-        });
+        const result = await repository.save({ id });
+        return this.recipientMapper.fromEntityToModel(result);
     }
 
-    @Transactional(ALERTS_MODULE_DATA_SOURCE)
+    @Transactional({ connectionName: ALERTS_MODULE_DATA_SOURCE })
     public async remove(id: string): Promise<void> {
         const repository = this.getRepository();
         const recipient = await repository.findOne({ where: { id } });
@@ -50,6 +49,6 @@ export class RecipientService implements IRecipientService {
     }
 
     private getRepository(): Repository<RecipientEntity> {
-        return this.txHost.tx.getRepository(RecipientEntity);
+        return this.repository;
     }
 }

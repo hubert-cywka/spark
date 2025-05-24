@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { InjectTransactionHost, Transactional, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { Transactional } from "typeorm-transactional";
 
 import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccountEntity";
 import { AccountNotFoundError } from "@/modules/identity/account/errors/AccountNotFound.error";
@@ -17,13 +17,13 @@ export class AccountRemovalService implements IAccountRemovalService {
     private readonly logger = new Logger(AccountRemovalService.name);
 
     constructor(
-        @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        @InjectRepository(BaseAccountEntity, IDENTITY_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<BaseAccountEntity>,
         @Inject(AccountPublisherServiceToken)
         private readonly publisher: IAccountPublisherService
     ) {}
 
-    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
+    @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })
     public async removeByInternalId(id: string): Promise<void> {
         const repository = this.getRepository();
         const account = await repository.findOne({ where: { id } });
@@ -36,7 +36,7 @@ export class AccountRemovalService implements IAccountRemovalService {
         await repository.remove([account]);
     }
 
-    @Transactional(IDENTITY_MODULE_DATA_SOURCE)
+    @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })
     public async suspendByInternalId(id: string): Promise<void> {
         const repository = this.getRepository();
         const account = await repository.findOne({ where: { id } });
@@ -51,6 +51,6 @@ export class AccountRemovalService implements IAccountRemovalService {
     }
 
     private getRepository(): Repository<BaseAccountEntity> {
-        return this.txHost.tx.getRepository(BaseAccountEntity);
+        return this.repository;
     }
 }

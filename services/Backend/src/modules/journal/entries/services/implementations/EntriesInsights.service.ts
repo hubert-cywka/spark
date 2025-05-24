@@ -1,5 +1,4 @@
-import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 import { EntryEntity } from "@/modules/journal/entries/entities/Entry.entity";
@@ -9,8 +8,8 @@ import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/dat
 
 export class EntriesInsightsService implements IEntriesInsightsService {
     public constructor(
-        @InjectTransactionHost(JOURNAL_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>
+        @InjectRepository(EntryEntity, JOURNAL_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<EntryEntity>
     ) {}
 
     public async findMetricsByDateRange(authorId: string, from: string, to: string): Promise<EntriesInsights> {
@@ -84,6 +83,6 @@ export class EntriesInsightsService implements IEntriesInsightsService {
     }
 
     private getRepository(): Repository<EntryEntity> {
-        return this.txHost.tx.getRepository(EntryEntity);
+        return this.repository;
     }
 }

@@ -1,9 +1,11 @@
-import { TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { Repository } from "typeorm";
+
+import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 
 export const EventInboxOptionsToken = Symbol("EventInboxOptions");
 
 export interface IEventInboxOptions {
-    txHost: TransactionHost<TransactionalAdapterTypeOrm>;
+    repository: Repository<InboxEventEntity>;
+    connectionName: string;
     context: string;
 }

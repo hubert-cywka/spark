@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone.js";
 import utc from "dayjs/plugin/utc.js";
 import { Logger } from "nestjs-pino";
+import { initializeTransactionalContext } from "typeorm-transactional";
 
 import { AppModule } from "@/App.module";
 import { AppConfig } from "@/config/configuration";
@@ -25,6 +26,8 @@ process.on("unhandledRejection", (error) => {
 });
 
 async function bootstrap() {
+    initializeTransactionalContext();
+
     const config = new ConfigService(AppConfig());
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
         logger,

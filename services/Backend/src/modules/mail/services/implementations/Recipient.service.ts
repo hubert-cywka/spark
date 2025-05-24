@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { InjectTransactionHost, Transactional, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { Transactional } from "typeorm-transactional";
 
 import { RecipientEntity } from "@/modules/mail/entities/Recipient.entity";
 import { RecipientAlreadyExistsError } from "@/modules/mail/errors/RecipientAlreadyExists.error";
@@ -16,13 +16,13 @@ export class RecipientService implements IRecipientService {
     private readonly logger = new Logger(RecipientService.name);
 
     public constructor(
-        @InjectTransactionHost(MAIL_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        @InjectRepository(RecipientEntity, MAIL_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<RecipientEntity>,
         @Inject(RecipientMapperToken)
         private readonly recipientMapper: IRecipientMapper
     ) {}
 
-    @Transactional(MAIL_MODULE_DATA_SOURCE)
+    @Transactional({ connectionName: MAIL_MODULE_DATA_SOURCE })
     public async create(id: string, email: string): Promise<Recipient> {
         const repository = this.getRepository();
         const exists = await repository.exists({ where: { id } });
@@ -47,13 +47,13 @@ export class RecipientService implements IRecipientService {
         return this.recipientMapper.fromEntityToModel(recipient);
     }
 
-    @Transactional(MAIL_MODULE_DATA_SOURCE)
+    @Transactional({ connectionName: MAIL_MODULE_DATA_SOURCE })
     public async remove(id: string): Promise<void> {
         const recipient = await this.find(id);
         await this.getRepository().remove([recipient]);
     }
 
     private getRepository(): Repository<RecipientEntity> {
-        return this.txHost.tx.getRepository(RecipientEntity);
+        return this.repository;
     }
 }

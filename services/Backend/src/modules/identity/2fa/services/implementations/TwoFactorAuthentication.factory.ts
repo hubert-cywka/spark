@@ -1,8 +1,9 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 
+import { TwoFactorAuthenticationIntegrationEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationIntegration.entity";
 import { IntegrationMethodNotSupportedError } from "@/modules/identity/2fa/errors/IntegrationMethodNotSupported.error";
 import { TwoFactorAuthenticationAppIntegrationService } from "@/modules/identity/2fa/services/implementations/TwoFactorAuthenticationAppIntegration.service";
 import { TwoFactorAuthenticationEmailIntegrationService } from "@/modules/identity/2fa/services/implementations/TwoFactorAuthenticationEmailIntegration.service";
@@ -20,8 +21,8 @@ export class TwoFactorAuthenticationFactory implements ITwoFactorAuthenticationF
     private readonly logger = new Logger(TwoFactorAuthenticationFactory.name);
 
     constructor(
-        @InjectTransactionHost(IDENTITY_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        @InjectRepository(TwoFactorAuthenticationIntegrationEntity, IDENTITY_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<TwoFactorAuthenticationIntegrationEntity>,
         @Inject(TwoFactorAuthenticationEmailIntegrationPublisherServiceToken)
         private readonly publisher: ITwoFactorAuthenticationEmailIntegrationPublisherService,
         private readonly configService: ConfigService
@@ -30,9 +31,9 @@ export class TwoFactorAuthenticationFactory implements ITwoFactorAuthenticationF
     public createIntegrationService(method: TwoFactorAuthenticationMethod): ITwoFactorAuthenticationIntegrationService {
         switch (method) {
             case TwoFactorAuthenticationMethod.AUTHENTICATOR:
-                return new TwoFactorAuthenticationAppIntegrationService(this.txHost, this.configService);
+                return new TwoFactorAuthenticationAppIntegrationService(this.repository, this.configService);
             case TwoFactorAuthenticationMethod.EMAIL:
-                return new TwoFactorAuthenticationEmailIntegrationService(this.txHost, this.publisher, this.configService);
+                return new TwoFactorAuthenticationEmailIntegrationService(this.repository, this.publisher, this.configService);
             default:
                 this.logger.error({ method }, "Unsupported 2FA method.");
                 throw new IntegrationMethodNotSupportedError(method);

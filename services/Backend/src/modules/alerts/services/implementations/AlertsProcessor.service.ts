@@ -1,8 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { Cron } from "@nestjs/schedule";
-import { InjectTransactionHost, TransactionHost } from "@nestjs-cls/transactional";
-import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 import dayjs from "dayjs";
+import { Repository } from "typeorm";
+import { Transactional } from "typeorm-transactional";
 
 import { AlertEntity } from "@/modules/alerts/entities/Alert.entity";
 import { ALERTS_MODULE_DATA_SOURCE } from "@/modules/alerts/infrastructure/database/constants";
@@ -13,8 +14,8 @@ import { type IAlertsProcessorService } from "@/modules/alerts/services/interfac
 @Injectable()
 export class AlertsProcessorService implements IAlertsProcessorService {
     public constructor(
-        @InjectTransactionHost(ALERTS_MODULE_DATA_SOURCE)
-        private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+        @InjectRepository(AlertEntity, ALERTS_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<AlertEntity>,
         @Inject(AlertPublisherServiceToken)
         private readonly alertPublisher: IAlertPublisherService,
         @Inject(AlertSchedulerServiceToken)
@@ -25,7 +26,7 @@ export class AlertsProcessorService implements IAlertsProcessorService {
     public async triggerPendingAlerts() {
         const now = dayjs().utc();
 
-        const alertsToProcess = await this.getRepository()
+        const alertsToProcess = await this.repository
             .createQueryBuilder("alert")
             .leftJoinAndSelect("alert.recipient", "recipient")
             .where(":now >= alert.nextTriggerAt", { now })
@@ -34,17 +35,16 @@ export class AlertsProcessorService implements IAlertsProcessorService {
             .getMany();
 
         for (const alert of alertsToProcess) {
-            await this.txHost.withTransaction(async () => {
-                await this.alertPublisher.onReminderTriggered(alert.recipient.id);
-                await this.getRepository().save({
-                    ...alert,
-                    nextTriggerAt: this.alertScheduler.scheduleNextTrigger(alert.time, alert.daysOfWeek),
-                });
-            });
+            await this.triggerAlert(alert);
         }
     }
 
-    private getRepository() {
-        return this.txHost.tx.getRepository(AlertEntity);
+    @Transactional({ connectionName: ALERTS_MODULE_DATA_SOURCE })
+    private async triggerAlert(alert: AlertEntity) {
+        await this.alertPublisher.onReminderTriggered(alert.recipient.id);
+        await this.repository.save({
+            ...alert,
+            nextTriggerAt: this.alertScheduler.scheduleNextTrigger(alert.time, alert.daysOfWeek),
+        });
     }
 }
