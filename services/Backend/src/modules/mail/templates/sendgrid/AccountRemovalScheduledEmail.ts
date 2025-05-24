@@ -4,7 +4,7 @@ export class AccountRemovalScheduledEmail implements ISendGridEmailTemplate {
     public constructor(
         private readonly appName: string,
         private readonly appUrl: string,
-        private readonly toBeRemovedAt: Date
+        private readonly toBeRemovedAt: string
     ) {}
 
     public getTemplateId(): string {
@@ -15,7 +15,7 @@ export class AccountRemovalScheduledEmail implements ISendGridEmailTemplate {
         return {
             appName: this.appName,
             appUrl: this.appUrl,
-            toBeRemovedAt: this.toBeRemovedAt.toISOString(),
+            toBeRemovedAt: this.toBeRemovedAt,
             currentYear: new Date().getFullYear(),
         };
     }

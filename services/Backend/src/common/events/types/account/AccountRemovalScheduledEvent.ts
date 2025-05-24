@@ -1,7 +1,7 @@
 import { IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 
 export type AccountRemovalScheduledEventPayload = {
-    toBeRemovedAt: Date;
+    toBeRemovedAt: string;
     account: {
         id: string;
     };

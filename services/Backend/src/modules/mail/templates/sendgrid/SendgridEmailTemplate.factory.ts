@@ -21,7 +21,7 @@ export class SendgridEmailTemplateFactory implements IEmailTemplateFactory<ISend
         this.appName = this.configService.getOrThrow<string>("appName");
     }
 
-    createAccountRemovalScheduledEmail(toBeRemovedAt: Date): ISendGridEmailTemplate {
+    createAccountRemovalScheduledEmail(toBeRemovedAt: string): ISendGridEmailTemplate {
         return new AccountRemovalScheduledEmail(this.appName, this.appUrl, toBeRemovedAt);
     }
 

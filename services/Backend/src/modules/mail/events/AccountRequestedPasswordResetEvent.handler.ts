@@ -1,8 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { whenError } from "@/common/errors/whenError";
 import { AccountRequestedPasswordResetEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
-import { EmailDeliveryError } from "@/modules/mail/errors/EmailDelivery.error";
 import { type IEmailLookupService, EmailLookupServiceToken } from "@/modules/mail/services/interfaces/IEmailLookup.service";
 import { type IMailerService, MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
 import { type IEmailTemplateFactory, EmailTemplateFactoryToken } from "@/modules/mail/templates/IEmailTemplate.factory";
@@ -23,11 +21,7 @@ export class AccountRequestedPasswordResetEventHandler<T> implements IInboxEvent
 
     public async handle(event: IntegrationEvent): Promise<void> {
         const payload = event.getPayload() as AccountRequestedPasswordResetEventPayload;
-        try {
-            const email = await this.emailLookup.findByRecipientId(payload.account.id);
-            await this.mailer.send(email, this.emailFactory.createPasswordResetRequestedEmail(payload.redirectUrl));
-        } catch (e) {
-            whenError(e).is(EmailDeliveryError).throwRpcException("Email couldn't be delivered.").elseRethrow();
-        }
+        const email = await this.emailLookup.findByRecipientId(payload.account.id);
+        await this.mailer.send(email, this.emailFactory.createPasswordResetRequestedEmail(payload.redirectUrl));
     }
 }

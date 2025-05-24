@@ -48,7 +48,7 @@ export class DataPurgeService implements IDataPurgeService {
 
         await this.publisher.onPurgePlanScheduled(newPlan.tenantId, {
             account: { id: newPlan.tenantId },
-            toBeRemovedAt: removeAt,
+            toBeRemovedAt: removeAt.toISOString(),
         });
 
         this.logger.log({ tenantId, planId: newPlan.id }, "Purge plan created.");
