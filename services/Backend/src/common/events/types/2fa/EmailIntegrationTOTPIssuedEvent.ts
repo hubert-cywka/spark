@@ -1,7 +1,9 @@
 import { IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 
 export type EmailIntegrationTOTPIssuedEventPayload = {
-    email: string;
+    account: {
+        id: string;
+    };
     code: string;
 };
 

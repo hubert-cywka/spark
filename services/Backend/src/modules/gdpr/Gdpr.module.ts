@@ -31,6 +31,7 @@ import { AddDataPurgePlans1743151982101 } from "@/modules/gdpr/infrastructure/da
 import { AddProcessedAtTimestamp1743153555989 } from "@/modules/gdpr/infrastructure/database/migrations/1743153555989-addProcessedAtTimestamp";
 import { DeleteOnCascade1743158769846 } from "@/modules/gdpr/infrastructure/database/migrations/1743158769846-deleteOnCascade";
 import { EncryptedEvents1746293676452 } from "@/modules/gdpr/infrastructure/database/migrations/1746293676452-encryptedEvents";
+import { AddRemoveAtTimestampToPurgePlan1747944544022 } from "@/modules/gdpr/infrastructure/database/migrations/1747944544022-addRemoveAtTimestampToPurgePlan";
 import { TenantMapperToken } from "@/modules/gdpr/mappers/ITenant.mapper";
 import { TenantMapper } from "@/modules/gdpr/mappers/Tenant.mapper";
 import { DataPurgeService } from "@/modules/gdpr/services/implementations/DataPurge.service";
@@ -84,6 +85,7 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
                     AddProcessedAtTimestamp1743153555989,
                     DeleteOnCascade1743158769846,
                     EncryptedEvents1746293676452,
+                    AddRemoveAtTimestampToPurgePlan1747944544022,
                 ],
             }),
             inject: [ConfigService],

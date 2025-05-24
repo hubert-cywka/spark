@@ -17,8 +17,8 @@ export class UserCreatedEventHandler implements IInboxEventHandler {
         const payload = event.getPayload() as AccountCreatedEventPayload;
         try {
             await this.usersService.create({
-                id: payload.id,
-                email: payload.email,
+                id: payload.account.id,
+                email: payload.account.email,
             });
         } catch (e) {
             whenError(e).is(EntityConflictError).throwRpcException("User already exists.").elseRethrow();

@@ -19,7 +19,7 @@ export class RecipientCreatedEventHandler implements IInboxEventHandler {
     async handle(event: IntegrationEvent): Promise<void> {
         const payload = event.getPayload() as AccountCreatedEventPayload;
         try {
-            await this.recipientService.create(payload.id, payload.email);
+            await this.recipientService.create(payload.account.id);
         } catch (e) {
             whenError(e).is(EntityConflictError).throwRpcException("Recipient already exists.").elseRethrow();
         }

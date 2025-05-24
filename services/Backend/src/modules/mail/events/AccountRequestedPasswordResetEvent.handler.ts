@@ -1,14 +1,19 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { whenError } from "@/common/errors/whenError";
 import { AccountRequestedPasswordResetEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
-import { EmailDeliveryError } from "@/modules/mail/errors/EmailDelivery.error";
+import { type IEmailLookupService, EmailLookupServiceToken } from "@/modules/mail/services/interfaces/IEmailLookup.service";
 import { type IMailerService, MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
-import { PasswordResetRequestedEmail } from "@/modules/mail/templates/PasswordResetRequestedEmail";
+import { type IEmailTemplateFactory, EmailTemplateFactoryToken } from "@/modules/mail/templates/IEmailTemplate.factory";
 
 @Injectable()
 export class AccountRequestedPasswordResetEventHandler implements IInboxEventHandler {
-    constructor(@Inject(MailerServiceToken) private mailer: IMailerService) {}
+    constructor(
+        @Inject(MailerServiceToken) private mailer: IMailerService,
+        @Inject(EmailLookupServiceToken)
+        private emailLookup: IEmailLookupService,
+        @Inject(EmailTemplateFactoryToken)
+        private emailFactory: IEmailTemplateFactory
+    ) {}
 
     public canHandle(topic: string): boolean {
         return topic === IntegrationEventTopics.account.password.resetRequested;
@@ -16,10 +21,7 @@ export class AccountRequestedPasswordResetEventHandler implements IInboxEventHan
 
     public async handle(event: IntegrationEvent): Promise<void> {
         const payload = event.getPayload() as AccountRequestedPasswordResetEventPayload;
-        try {
-            await this.mailer.send(payload.email, new PasswordResetRequestedEmail(payload.redirectUrl));
-        } catch (e) {
-            whenError(e).is(EmailDeliveryError).throwRpcException("Email couldn't be delivered.").elseRethrow();
-        }
+        const email = await this.emailLookup.findByRecipientId(payload.account.id);
+        await this.mailer.send(email, this.emailFactory.createPasswordResetRequestedEmail(payload.redirectUrl));
     }
 }

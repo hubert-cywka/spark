@@ -1,7 +1,9 @@
 import { IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 
 export type AccountSuspendedEventPayload = {
-    id: string;
+    account: {
+        id: string;
+    };
 };
 
 export class AccountSuspendedEvent extends IntegrationEvent<AccountSuspendedEventPayload> {

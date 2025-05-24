@@ -10,21 +10,18 @@ export class RecipientMapper extends BaseModelDTOEntityMapper<Recipient, Recipie
     fromDtoToModel(dto: RecipientDto): Recipient {
         return {
             id: dto.id,
-            email: dto.email,
         };
     }
 
     fromEntityToModel(entity: RecipientEntity): Recipient {
         return {
             id: entity.id,
-            email: entity.email,
         };
     }
 
     fromModelToDto(model: Recipient): RecipientDto {
         return plainToClass(RecipientDto, {
             id: model.id,
-            email: model.email,
         });
     }
 }

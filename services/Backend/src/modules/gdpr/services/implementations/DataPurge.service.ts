@@ -14,7 +14,7 @@ import {
 } from "@/modules/gdpr/services/interfaces/IDataPurgePublisher.service";
 
 const PURGE_PROCESSING_INTERVAL = 1000 * 60 * 60;
-const DATA_RETENTION_PERIOD = 1000 * 60 * 60 * 24 * 7;
+const DATA_RETENTION_PERIOD_IN_DAYS = 7;
 
 @Injectable()
 export class DataPurgeService implements IDataPurgeService {
@@ -36,13 +36,22 @@ export class DataPurgeService implements IDataPurgeService {
 
         if (existingPlan) {
             this.logger.warn({ tenantId, planId: existingPlan.id }, "Purge plan already exists.");
-        } else {
-            const newPlan = await repository.save({
-                tenantId,
-                scheduledAt: new Date(),
-            });
-            this.logger.log({ tenantId, planId: newPlan.id }, "Purge plan created.");
+            return;
         }
+
+        const removeAt = dayjs().add(DATA_RETENTION_PERIOD_IN_DAYS, "days").toDate();
+        const newPlan = await repository.save({
+            tenantId,
+            scheduledAt: new Date(),
+            removeAt,
+        });
+
+        await this.publisher.onPurgePlanScheduled(newPlan.tenantId, {
+            account: { id: newPlan.tenantId },
+            toBeRemovedAt: removeAt.toISOString(),
+        });
+
+        this.logger.log({ tenantId, planId: newPlan.id }, "Purge plan created.");
     }
 
     @Transactional(GDPR_MODULE_DATA_SOURCE)
@@ -79,11 +88,11 @@ export class DataPurgeService implements IDataPurgeService {
     @Interval(PURGE_PROCESSING_INTERVAL)
     @Transactional(GDPR_MODULE_DATA_SOURCE)
     private async processDataPurgePlans(): Promise<void> {
-        const scheduledBefore = dayjs().subtract(DATA_RETENTION_PERIOD, "milliseconds");
+        const now = dayjs();
 
         const plansToProcess = await this.getRepository()
             .createQueryBuilder("plan")
-            .where(":scheduledBefore >= plan.scheduledAt", { scheduledBefore })
+            .where(":now >= plan.removeAt", { now })
             .andWhere("plan.cancelledAt IS NULL")
             .andWhere("plan.processedAt IS NULL")
             .getMany();

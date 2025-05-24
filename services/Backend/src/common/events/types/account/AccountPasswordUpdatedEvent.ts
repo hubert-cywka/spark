@@ -1,8 +1,7 @@
 import { IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 
 export type AccountPasswordUpdatedEventPayload = {
-    email: string;
-    id: string;
+    account: { id: string };
 };
 
 export class AccountPasswordUpdatedEvent extends IntegrationEvent<AccountPasswordUpdatedEventPayload> {

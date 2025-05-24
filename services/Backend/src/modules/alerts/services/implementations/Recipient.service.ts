@@ -22,7 +22,7 @@ export class RecipientService implements IRecipientService {
         private readonly recipientMapper: IRecipientMapper
     ) {}
 
-    public async create(id: string, email: string): Promise<Recipient> {
+    public async create(id: string): Promise<Recipient> {
         return await this.txHost.withTransaction(async () => {
             const repository = this.getRepository();
             const exists = await repository.exists({ where: { id } });
@@ -31,7 +31,7 @@ export class RecipientService implements IRecipientService {
                 throw new RecipientAlreadyExistsError();
             }
 
-            const result = await repository.save({ id, email });
+            const result = await repository.save({ id });
             return this.recipientMapper.fromEntityToModel(result);
         });
     }

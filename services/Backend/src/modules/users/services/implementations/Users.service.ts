@@ -76,7 +76,6 @@ export class UsersService implements IUsersService {
 
         await this.publisher.onDataRemovalRequested(result.id, {
             account: {
-                email: result.email,
                 id: result.id,
             },
         });

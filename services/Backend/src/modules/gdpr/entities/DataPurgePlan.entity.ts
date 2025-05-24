@@ -10,6 +10,9 @@ export class DataPurgePlanEntity {
     @Column({ type: "timestamptz" })
     scheduledAt!: Date;
 
+    @Column({ type: "timestamptz" })
+    removeAt!: Date;
+
     @Column({ type: "timestamptz", nullable: true })
     cancelledAt!: Date | null;
 

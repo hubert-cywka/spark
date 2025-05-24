@@ -123,7 +123,7 @@ export class ManagedAccountService implements IManagedAccountService {
         const passwordResetToken = await this.passwordChangeTokenService.issue(account.id);
 
         const passwordResetRedirectUrl = `${clientRedirectUrl}?token=${passwordResetToken}`;
-        await this.publisher.onPasswordResetRequested(account.id, account.email, passwordResetRedirectUrl);
+        await this.publisher.onPasswordResetRequested(account.id, passwordResetRedirectUrl);
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
@@ -145,7 +145,7 @@ export class ManagedAccountService implements IManagedAccountService {
             password: hashedPassword,
         });
 
-        await this.publisher.onPasswordUpdated(account.id, account.email);
+        await this.publisher.onPasswordUpdated(account.id);
     }
 
     @Transactional(IDENTITY_MODULE_DATA_SOURCE)
@@ -176,7 +176,7 @@ export class ManagedAccountService implements IManagedAccountService {
 
         const activationToken = await this.accountActivationTokenService.issue(account.id);
         const accountActivationRedirectUrl = `${clientRedirectUrl}?token=${activationToken}`;
-        await this.publisher.onAccountActivationTokenRequested(account.id, email, accountActivationRedirectUrl);
+        await this.publisher.onAccountActivationTokenRequested(account.id, accountActivationRedirectUrl);
     }
 
     private async findOne(providerAccountId: string): Promise<ManagedAccountEntity> {

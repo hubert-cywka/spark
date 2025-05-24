@@ -19,7 +19,7 @@ export class TenantCreatedEventHandler implements IInboxEventHandler {
     async handle(event: IntegrationEvent): Promise<void> {
         const payload = event.getPayload() as AccountCreatedEventPayload;
         try {
-            await this.tenantService.create(payload.id);
+            await this.tenantService.create(payload.account.id);
         } catch (e) {
             whenError(e).is(EntityConflictError).throwRpcException("Tenant already exists.").elseRethrow();
         }

@@ -35,18 +35,14 @@ export class TwoFactorAuthenticationEmailIntegrationService
 
     protected async onCodeIssued(user: User, code: string): Promise<void> {
         await this.publisher.onTOTPIssued(user.id, {
-            email: user.email,
+            account: { id: user.id },
             code,
         });
     }
 
     protected async onMethodCreated(user: User, provider: TOTP): Promise<void> {
         const code = provider.generate();
-
-        await this.publisher.onTOTPIssued(user.id, {
-            email: user.email,
-            code,
-        });
+        await this.onCodeIssued(user, code);
     }
 
     protected get2FAMethod(): TwoFactorAuthenticationMethod {
