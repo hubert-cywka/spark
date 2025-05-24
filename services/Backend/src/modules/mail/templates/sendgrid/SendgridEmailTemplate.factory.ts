@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
-import { IEmailTemplate } from "@/modules/mail/templates/IEmailTemplate";
 import { IEmailTemplateFactory } from "@/modules/mail/templates/IEmailTemplate.factory";
 import { AccountRemovalScheduledEmail } from "@/modules/mail/templates/sendgrid/AccountRemovalScheduledEmail";
 import { DailyReminderEmail } from "@/modules/mail/templates/sendgrid/DailyReminderEmail";
@@ -21,31 +20,31 @@ export class SendgridEmailTemplateFactory implements IEmailTemplateFactory {
         this.appName = this.configService.getOrThrow<string>("appName");
     }
 
-    createAccountRemovalScheduledEmail(toBeRemovedAt: string): IEmailTemplate {
+    createAccountRemovalScheduledEmail(toBeRemovedAt: string) {
         return new AccountRemovalScheduledEmail(this.appName, this.appUrl, toBeRemovedAt);
     }
 
-    createDailyReminderEmail(): IEmailTemplate {
+    createDailyReminderEmail() {
         return new DailyReminderEmail(this.appName, this.appUrl);
     }
 
-    createPasswordResetRequestedEmail(redirectUrl: string): IEmailTemplate {
+    createPasswordResetRequestedEmail(redirectUrl: string) {
         return new PasswordResetRequestedEmail(this.appName, this.appUrl, redirectUrl);
     }
 
-    createPasswordUpdatedEmail(): IEmailTemplate {
+    createPasswordUpdatedEmail() {
         return new PasswordUpdatedEmail(this.appName, this.appUrl);
     }
 
-    createTwoFactorAuthCodeIssuedEmail(code: string): IEmailTemplate {
+    createTwoFactorAuthCodeIssuedEmail(code: string) {
         return new TwoFactorAuthCodeIssuedEmail(this.appName, this.appUrl, code);
     }
 
-    createUserActivatedEmail(): IEmailTemplate {
+    createUserActivatedEmail() {
         return new UserActivatedEmail(this.appName, this.appUrl);
     }
 
-    createUserActivationEmail(redirectUrl: string): IEmailTemplate {
+    createUserActivationEmail(redirectUrl: string) {
         return new UserActivationEmail(this.appName, this.appUrl, redirectUrl);
     }
 }

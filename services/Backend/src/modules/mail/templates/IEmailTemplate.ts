@@ -1,4 +1,4 @@
-export interface IEmailTemplate {
+export interface IEmailTemplate<T = Record<string, unknown>> {
     getTemplateId(): string;
-    getTemplateVariables(): Record<string, unknown>;
+    getTemplateVariables(): T;
 }

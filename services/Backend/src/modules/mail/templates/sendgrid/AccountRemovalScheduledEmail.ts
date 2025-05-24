@@ -1,6 +1,13 @@
 import { IEmailTemplate } from "@/modules/mail/templates/IEmailTemplate";
 
-export class AccountRemovalScheduledEmail implements IEmailTemplate {
+type TemplateVariables = {
+    appName: string;
+    appUrl: string;
+    toBeRemovedAt: string;
+    currentYear: number;
+};
+
+export class AccountRemovalScheduledEmail implements IEmailTemplate<TemplateVariables> {
     public constructor(
         private readonly appName: string,
         private readonly appUrl: string,
@@ -11,7 +18,7 @@ export class AccountRemovalScheduledEmail implements IEmailTemplate {
         return "d-327d877ff67c4f90a93773aa1a86acf9";
     }
 
-    public getTemplateVariables(): Record<string, unknown> {
+    public getTemplateVariables() {
         return {
             appName: this.appName,
             appUrl: this.appUrl,
