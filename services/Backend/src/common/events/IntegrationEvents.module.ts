@@ -2,15 +2,25 @@ import { type DynamicModule, Module } from "@nestjs/common";
 import { ClassConstructor } from "class-transformer";
 
 import { NatsJetStreamModule, NatsJetStreamModuleOptions } from "@/common/events/brokers/NatsJetStream.module";
+import { EventInbox } from "@/common/events/services/implementations/EventInbox";
+import { EventOutbox } from "@/common/events/services/implementations/EventOutbox";
+import { EventsRemover } from "@/common/events/services/implementations/EventsRemover";
 import { IntegrationEventsEncryptionService } from "@/common/events/services/implementations/IntegrationEventsEncryption.service";
 import { IntegrationEventsJobsOrchestrator } from "@/common/events/services/implementations/IntegrationEventsJobsOrchestrator";
 import { IntegrationEventsSubscriber } from "@/common/events/services/implementations/IntegrationEventsSubscriber";
 import { type IEventBoxFactory, EventBoxFactoryToken } from "@/common/events/services/interfaces/IEventBox.factory";
 import { EventInboxToken } from "@/common/events/services/interfaces/IEventInbox";
+import { EventInboxOptionsToken } from "@/common/events/services/interfaces/IEventInboxOptions";
 import { EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
-import { IntegrationEventsEncryptionServiceToken } from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
+import { EventOutboxOptionsToken, IEventOutboxOptions } from "@/common/events/services/interfaces/IEventOutboxOptions";
+import { type IEventsRemover, EventsRemoverToken } from "@/common/events/services/interfaces/IEventsRemover";
+import {
+    IIntegrationEventsEncryptionService,
+    IntegrationEventsEncryptionServiceToken,
+} from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
 import { IntegrationEventsJobsOrchestratorToken } from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
 import { IntegrationEventsSubscriberToken } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
+import { IPubSubProducer, PubSubProducerToken } from "@/common/events/services/interfaces/IPubSubProducer";
 import { IntegrationEventsModuleOptions } from "@/common/events/types";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 
@@ -56,15 +66,42 @@ export class IntegrationEventsModule {
                 },
 
                 {
-                    provide: EventOutboxToken,
-                    useFactory: (factory: IEventBoxFactory) => factory.createOutbox(`${context}_Outbox`),
+                    provide: EventsRemoverToken,
+                    useClass: EventsRemover,
+                },
+
+                {
+                    provide: EventOutboxOptionsToken,
+                    useFactory: (factory: IEventBoxFactory) => factory.createOutboxOptions(`${context}_Outbox`),
                     inject: [EventBoxFactoryToken],
                 },
 
                 {
-                    provide: EventInboxToken,
-                    useFactory: (factory: IEventBoxFactory) => factory.createInbox(`${context}_Inbox`),
+                    provide: EventInboxOptionsToken,
+                    useFactory: (factory: IEventBoxFactory) => factory.createInboxOptions(`${context}_Inbox`),
                     inject: [EventBoxFactoryToken],
+                },
+
+                {
+                    provide: EventOutboxToken,
+                    useFactory: (
+                        options: IEventOutboxOptions,
+                        producer: IPubSubProducer,
+                        eventsRemover: IEventsRemover,
+                        encryptionService: IIntegrationEventsEncryptionService
+                    ) => new EventOutbox(options, producer, eventsRemover, encryptionService),
+                    inject: [EventBoxFactoryToken, PubSubProducerToken, EventsRemoverToken, IntegrationEventsEncryptionServiceToken],
+                },
+
+                {
+                    provide: EventInboxToken,
+                    useFactory: (
+                        options: IEventOutboxOptions,
+                        producer: IPubSubProducer,
+                        eventsRemover: IEventsRemover,
+                        encryptionService: IIntegrationEventsEncryptionService
+                    ) => new EventInbox(options, producer, eventsRemover, encryptionService),
+                    inject: [EventBoxFactoryToken, PubSubProducerToken, EventsRemoverToken, IntegrationEventsEncryptionServiceToken],
                 },
 
                 {
@@ -82,13 +119,7 @@ export class IntegrationEventsModule {
                 },
             ],
 
-            exports: [
-                EventOutboxToken,
-                EventInboxToken,
-                IntegrationEventsSubscriberToken,
-                IntegrationEventsJobsOrchestratorToken,
-                IntegrationEventsEncryptionServiceToken,
-            ],
+            exports: [EventOutboxToken, EventInboxToken, IntegrationEventsSubscriberToken, IntegrationEventsJobsOrchestratorToken],
         };
     }
 }

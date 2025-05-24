@@ -1,9 +1,9 @@
-import { IEventInbox } from "@/common/events/services/interfaces/IEventInbox";
-import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
+import { IEventInboxOptions } from "@/common/events/services/interfaces/IEventInboxOptions";
+import { type IEventOutboxOptions } from "@/common/events/services/interfaces/IEventOutboxOptions";
 
 export const EventBoxFactoryToken = Symbol("EventBoxFactory");
 
 export interface IEventBoxFactory {
-    createOutbox(context?: string): IEventOutbox;
-    createInbox(context?: string): IEventInbox;
+    createOutboxOptions(context: string): IEventOutboxOptions;
+    createInboxOptions(context: string): IEventInboxOptions;
 }
