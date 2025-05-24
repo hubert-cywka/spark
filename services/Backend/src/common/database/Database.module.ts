@@ -21,8 +21,7 @@ type DatabaseModuleOptions = {
 @Module({})
 export class DatabaseModule {
     static forRootAsync(
-        dataSource: string,
-        entities: EntityConstructor[],
+        connectionName: string,
         options: {
             useFactory: UseFactory<DatabaseModuleOptions>;
             inject?: UseFactoryArgs;
@@ -32,13 +31,16 @@ export class DatabaseModule {
             module: DatabaseModule,
             imports: [
                 TypeOrmModule.forRootAsync({
-                    name: dataSource,
+                    name: connectionName,
                     async dataSourceFactory(options) {
                         if (!options) {
                             throw new Error();
                         }
 
-                        return addTransactionalDataSource(new DataSource(options));
+                        return addTransactionalDataSource({
+                            name: connectionName,
+                            dataSource: new DataSource(options),
+                        });
                     },
                     useFactory: async (...args: UseFactoryArgs) => {
                         const dbOptions = await options.useFactory(...args);
@@ -54,7 +56,7 @@ export class DatabaseModule {
 
                         return {
                             ...dbOptions,
-                            name: dataSource,
+                            name: connectionName,
                             type: "postgres",
                             logging: dbOptions.logging,
                             autoLoadEntities: true,
@@ -65,9 +67,15 @@ export class DatabaseModule {
                     },
                     inject: options.inject || [],
                 }),
-
-                TypeOrmModule.forFeature(entities, dataSource),
             ],
+            exports: [TypeOrmModule],
+        };
+    }
+
+    static forFeature(connectionName: string, entities: EntityConstructor[]): DynamicModule {
+        return {
+            module: DatabaseModule,
+            imports: [TypeOrmModule.forFeature(entities, connectionName)],
             exports: [TypeOrmModule],
         };
     }

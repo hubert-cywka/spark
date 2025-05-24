@@ -1,6 +1,5 @@
 import { EventInbox } from "./services/implementations/EventInbox";
 import { EventOutbox } from "./services/implementations/EventOutbox";
-import { EventBoxFactoryToken, IEventBoxFactory } from "./services/interfaces/IEventBox.factory";
 import { EventInboxToken, IEventInbox } from "./services/interfaces/IEventInbox";
 import { EventOutboxToken, IEventOutbox } from "./services/interfaces/IEventOutbox";
 import { type IInboxEventHandler, InboxEventHandlersToken } from "./services/interfaces/IInboxEventHandler";
@@ -11,11 +10,9 @@ import { IntegrationEventsModule } from "./IntegrationEvents.module";
 
 export { IntegrationEventsModule };
 export {
-    type IEventBoxFactory,
     type IEventInbox,
     type IEventOutbox,
     type IInboxEventHandler,
-    EventBoxFactoryToken,
     EventInbox,
     EventInboxToken,
     EventOutbox,

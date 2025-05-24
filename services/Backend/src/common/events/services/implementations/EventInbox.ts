@@ -1,6 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import dayjs from "dayjs";
 import { Repository } from "typeorm";
+import { runInTransaction } from "typeorm-transactional";
 
 import { type IInboxEventHandler } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
@@ -31,42 +32,46 @@ const MAX_ATTEMPTS = 10;
  */
 @Injectable()
 export class EventInbox implements IEventInbox {
-    private readonly repository: Repository<InboxEventEntity>;
     private readonly connectionName: string;
     private readonly logger;
 
     public constructor(
         options: IEventInboxOptions,
+        private readonly repository: Repository<InboxEventEntity>,
         private readonly client: IPubSubProducer,
         private readonly eventsRemover: IEventsRemover,
         private readonly encryptionService: IIntegrationEventsEncryptionService
     ) {
         this.logger = new Logger(options.context);
         this.connectionName = options.connectionName;
-        this.repository = options.repository;
     }
 
     public async enqueue(event: IntegrationEvent): Promise<void> {
         const repository = this.getRepository();
 
-        const exists = await repository.existsBy({ id: event.getId() });
+        await runInTransaction(
+            async () => {
+                const exists = await repository.existsBy({ id: event.getId() });
 
-        if (exists) {
-            this.logger.log(event, "Event already in inbox.");
-            return;
-        }
+                if (exists) {
+                    this.logger.log(event, "Event already in inbox.");
+                    return;
+                }
 
-        await repository.save({
-            id: event.getId(),
-            tenantId: event.getTenantId(),
-            topic: event.getTopic(),
-            payload: event.getRawPayload(),
-            isEncrypted: event.isEncrypted(),
-            createdAt: event.getCreatedAt(),
-            receivedAt: dayjs(),
-        });
+                await repository.save({
+                    id: event.getId(),
+                    tenantId: event.getTenantId(),
+                    topic: event.getTopic(),
+                    payload: event.getRawPayload(),
+                    isEncrypted: event.isEncrypted(),
+                    createdAt: event.getCreatedAt(),
+                    receivedAt: dayjs(),
+                });
 
-        this.logger.log(event, "Event added to inbox.");
+                this.logger.log(event, "Event added to inbox.");
+            },
+            { connectionName: this.connectionName }
+        );
     }
 
     public async clearProcessedEvents(processedBefore: Date): Promise<void> {
@@ -97,45 +102,50 @@ export class EventInbox implements IEventInbox {
     }
 
     private async processBatch(handlers: IInboxEventHandler[], pageSize: number, offset: number): Promise<number> {
-        const repository = this.getRepository();
+        return await runInTransaction(
+            async () => {
+                const repository = this.getRepository();
 
-        const entities = await repository
-            .createQueryBuilder("event")
-            .setLock("pessimistic_write")
-            .setOnLocked("skip_locked")
-            .where(`event.processedAt IS NULL AND event.attempts < ${MAX_ATTEMPTS}`)
-            .orderBy("event.createdAt", "ASC")
-            .take(pageSize)
-            .skip(offset)
-            .getMany();
+                const entities = await repository
+                    .createQueryBuilder("event")
+                    .setLock("pessimistic_write")
+                    .setOnLocked("skip_locked")
+                    .where(`event.processedAt IS NULL AND event.attempts < ${MAX_ATTEMPTS}`)
+                    .orderBy("event.createdAt", "ASC")
+                    .take(pageSize)
+                    .skip(offset)
+                    .getMany();
 
-        if (entities.length === 0) {
-            return 0;
-        }
-
-        const processedEvents: InboxEventEntity[] = [];
-
-        for (const entity of entities) {
-            const event = IntegrationEvent.fromEntity(entity);
-            const handler = handlers.find((h) => h.canHandle(event.getTopic()));
-
-            try {
-                if (handler) {
-                    await this.processSingle(event, handler);
-                    entity.processedAt = new Date();
-                } else {
-                    this.logger.warn(event, "Event cannot be processed - no handler found.");
+                if (entities.length === 0) {
+                    return 0;
                 }
-            } catch (error) {
-                this.logger.error({ event, error }, "Failed to process event.");
-            } finally {
-                entity.attempts++;
-                processedEvents.push(entity);
-            }
-        }
 
-        await repository.save(processedEvents);
-        return entities.length;
+                const processedEvents: InboxEventEntity[] = [];
+
+                for (const entity of entities) {
+                    const event = IntegrationEvent.fromEntity(entity);
+                    const handler = handlers.find((h) => h.canHandle(event.getTopic()));
+
+                    try {
+                        if (handler) {
+                            await this.processSingle(event, handler);
+                            entity.processedAt = new Date();
+                        } else {
+                            this.logger.warn(event, "Event cannot be processed - no handler found.");
+                        }
+                    } catch (error) {
+                        this.logger.error({ event, error }, "Failed to process event.");
+                    } finally {
+                        entity.attempts++;
+                        processedEvents.push(entity);
+                    }
+                }
+
+                await repository.save(processedEvents);
+                return entities.length;
+            },
+            { connectionName: this.connectionName }
+        );
     }
 
     private async processSingle(event: IntegrationEvent, handler: IInboxEventHandler) {
