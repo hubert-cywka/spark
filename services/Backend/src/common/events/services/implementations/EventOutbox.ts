@@ -1,9 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { TransactionHost } from "@nestjs-cls/transactional";
+import { Transactional, TransactionHost } from "@nestjs-cls/transactional";
 import { TransactionalAdapterTypeOrm } from "@nestjs-cls/transactional-adapter-typeorm";
 import dayjs from "dayjs";
 import { firstValueFrom, timeout } from "rxjs";
-import { Repository } from "typeorm";
+import { EntitySubscriberInterface, InsertEvent, Repository } from "typeorm";
 
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
@@ -15,10 +15,9 @@ import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 
 const MAX_PAGE_SIZE = 10;
 const MAX_ATTEMPTS = 10;
-const PUBLISH_TIMEOUT = 1000;
+const PUBLISH_TIMEOUT = 3000;
 
 // TODO: Implement better retry mechanism
-// TODO: CDC instead of polling?
 @Injectable()
 export class EventOutbox implements IEventOutbox {
     private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>;
@@ -34,6 +33,7 @@ export class EventOutbox implements IEventOutbox {
         this.txHost = options.txHost;
     }
 
+    @Transactional()
     public async enqueue(event: IntegrationEvent, options?: { encrypt: boolean }): Promise<void> {
         const preparedEvent = await this.prepareEventToStore(event, options);
         const repository = this.getRepository();
@@ -49,6 +49,8 @@ export class EventOutbox implements IEventOutbox {
 
         await repository.save(entity);
         this.logger.log(preparedEvent, "Event added to outbox.");
+
+        void this.processSingle(preparedEvent.getId());
     }
 
     public async clearProcessedEvents(processedBefore: Date): Promise<void> {
@@ -107,7 +109,10 @@ export class EventOutbox implements IEventOutbox {
                 .createQueryBuilder("event")
                 .setLock("pessimistic_write")
                 .setOnLocked("skip_locked")
-                .where(`event.processedAt IS NULL AND event.attempts < ${MAX_ATTEMPTS}`)
+                .where("event.processedAt IS NULL")
+                .andWhere("event.attempts < :maxAttempts", {
+                    maxAttempts: MAX_ATTEMPTS,
+                })
                 .orderBy("event.createdAt", "ASC")
                 .take(pageSize)
                 .skip(offset)
@@ -129,6 +134,31 @@ export class EventOutbox implements IEventOutbox {
         });
     }
 
+    private async processSingle(id: string) {
+        return await this.txHost.withTransaction(async () => {
+            const repository = this.getRepository();
+
+            const entity = await repository
+                .createQueryBuilder("event")
+                .setLock("pessimistic_write")
+                .setOnLocked("skip_locked")
+                .where("event.processedAt IS NULL")
+                .andWhere("event.attempts < :maxAttempts", {
+                    maxAttempts: MAX_ATTEMPTS,
+                })
+                .andWhere("event.id = :id", { id })
+                .getOne();
+
+            if (!entity) {
+                this.logger.error({ id }, "Couldn't find event to publish.");
+                return;
+            }
+
+            const processedEvent = await this.publish(entity);
+            await repository.save(processedEvent);
+        });
+    }
+
     private async publish(entity: OutboxEventEntity): Promise<OutboxEventEntity> {
         const event = IntegrationEvent.fromEntity(entity);
 
@@ -146,5 +176,17 @@ export class EventOutbox implements IEventOutbox {
 
     private getRepository(): Repository<OutboxEventEntity> {
         return this.txHost.tx.getRepository(OutboxEventEntity);
+    }
+}
+
+export class OutboxEventEnqueuedSubscriber implements EntitySubscriberInterface<OutboxEventEntity> {
+    public constructor() {}
+
+    listenTo() {
+        return OutboxEventEntity;
+    }
+
+    afterInsert(event: InsertEvent<OutboxEventEntity>) {
+        event.entityId;
     }
 }

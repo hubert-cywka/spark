@@ -6,8 +6,9 @@ import { type IEventInbox, type IEventOutbox, type IInboxEventHandler, EventInbo
 import { type IIntegrationEventsJobsOrchestrator } from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
 
 const EVENTS_RETENTION_PERIOD_IN_DAYS = 7;
-const PROCESSING_INTERVAL_IN_MS = 1000;
-const CLEARING_INTERVAL_IN_MS = 1000 * 60 * 60 * 3;
+const OUTBOX_PROCESSING_INTERVAL_IN_MS = 1000 * 30;
+const INBOX_PROCESSING_INTERVAL_IN_MS = 1000;
+const CLEARING_INTERVAL_IN_MS = 1000 * 60 * 60 * 12;
 
 export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobsOrchestrator {
     private readonly logger = new Logger(IntegrationEventsJobsOrchestrator.name);
@@ -37,7 +38,7 @@ export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobs
     private startProcessingInbox(handlers: IInboxEventHandler[]) {
         const job = setInterval(async () => {
             await this.inbox.processPendingEvents(handlers);
-        }, PROCESSING_INTERVAL_IN_MS);
+        }, INBOX_PROCESSING_INTERVAL_IN_MS);
 
         const jobId = this.createJobId();
         this.registry.addInterval(jobId, job);
@@ -46,7 +47,7 @@ export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobs
     private startProcessingOutbox() {
         const job = setInterval(async () => {
             await this.outbox.processPendingEvents();
-        }, PROCESSING_INTERVAL_IN_MS);
+        }, OUTBOX_PROCESSING_INTERVAL_IN_MS);
 
         const jobId = this.createJobId();
         this.registry.addInterval(jobId, job);
