@@ -34,6 +34,7 @@ import { AddTenantIdToOutboxAndInbox1743101730316 } from "@/modules/alerts/infra
 import { DeleteAlertsOnCascade1743158723835 } from "@/modules/alerts/infrastructure/database/migrations/1743158723835-deleteAlertsOnCascade";
 import { EncryptedEvents1746293664099 } from "@/modules/alerts/infrastructure/database/migrations/1746293664099-encryptedEvents";
 import { RemoveRecipientEmail1748031512732 } from "@/modules/alerts/infrastructure/database/migrations/1748031512732-RemoveRecipientEmail";
+import { AddProcessAfterTimestampToEvent1748202978923 } from "@/modules/alerts/infrastructure/database/migrations/1748202978923-addProcessAfterTimestampToEvent";
 import { AlertMapper } from "@/modules/alerts/mappers/Alert.mapper";
 import { AlertMapperToken } from "@/modules/alerts/mappers/IAlert.mapper";
 import { RecipientMapperToken } from "@/modules/alerts/mappers/IRecipient.mapper";
@@ -102,6 +103,7 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
                     DeleteAlertsOnCascade1743158723835,
                     EncryptedEvents1746293664099,
                     RemoveRecipientEmail1748031512732,
+                    AddProcessAfterTimestampToEvent1748202978923,
                 ],
             }),
             inject: [ConfigService],

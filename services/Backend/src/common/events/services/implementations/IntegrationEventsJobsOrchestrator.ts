@@ -3,10 +3,12 @@ import { SchedulerRegistry } from "@nestjs/schedule";
 import dayjs from "dayjs";
 
 import { type IEventInbox, type IEventOutbox, type IInboxEventHandler, EventInboxToken, EventOutboxToken } from "@/common/events";
+import { type IEventInboxProcessor, EventInboxProcessorToken } from "@/common/events/services/interfaces/IEventInboxProcessor";
+import { type IEventOutboxProcessor, EventOutboxProcessorToken } from "@/common/events/services/interfaces/IEventOutboxProcessor";
 import { type IIntegrationEventsJobsOrchestrator } from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
 
 const EVENTS_RETENTION_PERIOD_IN_DAYS = 7;
-const OUTBOX_PROCESSING_INTERVAL_IN_MS = 1000 * 30;
+const OUTBOX_PROCESSING_INTERVAL_IN_MS = 1000 * 10;
 const INBOX_PROCESSING_INTERVAL_IN_MS = 1000;
 const CLEARING_INTERVAL_IN_MS = 1000 * 60 * 60 * 12;
 
@@ -17,6 +19,10 @@ export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobs
     public constructor(
         @Inject(EventInboxToken) private readonly inbox: IEventInbox,
         @Inject(EventOutboxToken) private readonly outbox: IEventOutbox,
+        @Inject(EventInboxProcessorToken)
+        private readonly inboxProcessor: IEventInboxProcessor,
+        @Inject(EventOutboxProcessorToken)
+        private readonly outboxProcessor: IEventOutboxProcessor,
         private readonly registry: SchedulerRegistry
     ) {}
 
@@ -36,8 +42,11 @@ export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobs
     }
 
     private startProcessingInbox(handlers: IInboxEventHandler[]) {
+        this.inboxProcessor.setEventHandlers(handlers);
+        this.inbox.subscribe(this.inboxProcessor);
+
         const job = setInterval(async () => {
-            await this.inbox.processPendingEvents(handlers);
+            await this.inboxProcessor.processPendingEvents();
         }, INBOX_PROCESSING_INTERVAL_IN_MS);
 
         const jobId = this.createJobId();
@@ -45,8 +54,10 @@ export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobs
     }
 
     private startProcessingOutbox() {
+        this.outbox.subscribe(this.outboxProcessor);
+
         const job = setInterval(async () => {
-            await this.outbox.processPendingEvents();
+            await this.outboxProcessor.processPendingEvents();
         }, OUTBOX_PROCESSING_INTERVAL_IN_MS);
 
         const jobId = this.createJobId();

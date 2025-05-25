@@ -26,6 +26,9 @@ export class InboxEventEntity<T = unknown> {
     @Column({ type: "timestamptz" })
     receivedAt!: Date;
 
+    @Column({ type: "timestamptz" })
+    processAfter!: Date;
+
     @Column({ type: "timestamptz", nullable: true })
     processedAt!: Date | null;
 }
