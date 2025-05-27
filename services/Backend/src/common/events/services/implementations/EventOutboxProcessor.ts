@@ -21,8 +21,7 @@ const DEFAULT_MAX_BATCH_SIZE = 50;
 const DEFAULT_MAX_ATTEMPTS = 10_000;
 const DEFAULT_PUBLISH_TIMEOUT = 3000;
 
-// TODO: Enable scaling (e.g. by using a lease mechanism),
-//  remember about maintaining correct order (e.g. partition by tenantId)
+// TODO: Enable scaling (use lease mechanism?), remember about maintaining correct order (partition by tenantId)
 
 export class EventOutboxProcessor implements IEventOutboxProcessor {
     private readonly logger;

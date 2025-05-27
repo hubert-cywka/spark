@@ -5,10 +5,14 @@ import { runInTransaction, runOnTransactionCommit } from "typeorm-transactional"
 
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { type IEventInbox } from "@/common/events/services/interfaces/IEventInbox";
-import { type IEventInboxOptions } from "@/common/events/services/interfaces/IEventInboxOptions";
 import { type IEventsQueueSubscriber } from "@/common/events/services/interfaces/IEventsQueueSubscriber";
 import { type IEventsRemover } from "@/common/events/services/interfaces/IEventsRemover";
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
+
+interface EventInboxOptions {
+    connectionName: string;
+    context: string;
+}
 
 @Injectable()
 export class EventInbox implements IEventInbox {
@@ -17,7 +21,7 @@ export class EventInbox implements IEventInbox {
     private readonly logger;
 
     public constructor(
-        options: IEventInboxOptions,
+        options: EventInboxOptions,
         private readonly repository: Repository<InboxEventEntity>,
         private readonly eventsRemover: IEventsRemover
     ) {

@@ -3,12 +3,16 @@ import { Repository } from "typeorm";
 import { runInTransaction, runOnTransactionCommit } from "typeorm-transactional";
 
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
-import { type EventOutboxOptions } from "@/common/events/services/interfaces/EventOutboxOptions";
 import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
 import { type IEventsQueueSubscriber } from "@/common/events/services/interfaces/IEventsQueueSubscriber";
 import { type IEventsRemover } from "@/common/events/services/interfaces/IEventsRemover";
 import { type IIntegrationEventsEncryptionService } from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
+
+interface EventOutboxOptions {
+    connectionName: string;
+    context: string;
+}
 
 @Injectable()
 export class EventOutbox implements IEventOutbox {

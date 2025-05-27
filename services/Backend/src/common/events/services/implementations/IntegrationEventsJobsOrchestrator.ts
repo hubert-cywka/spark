@@ -9,7 +9,7 @@ import { type IIntegrationEventsJobsOrchestrator } from "@/common/events/service
 
 const EVENTS_RETENTION_PERIOD_IN_DAYS = 7;
 const OUTBOX_PROCESSING_INTERVAL_IN_MS = 1000 * 10;
-const INBOX_PROCESSING_INTERVAL_IN_MS = 1000;
+const INBOX_PROCESSING_INTERVAL_IN_MS = 1000 * 10;
 const CLEARING_INTERVAL_IN_MS = 1000 * 60 * 60 * 12;
 
 export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobsOrchestrator {

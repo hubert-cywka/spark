@@ -22,9 +22,8 @@ const DEFAULT_MAX_BATCH_SIZE = 5;
 const DEFAULT_MAX_ATTEMPTS = 7;
 
 /*
-    > TODO: Enable scaling (multiple instancess processing in parallel), remember about order of processing
-        (partition by tenantId).
-    > TODO: Handling poison messages.
+    > TODO: Enable scaling (use leasing?), remember about order of processing (partition by tenantId).
+    > TODO: Handle poison messages.
  */
 
 export class EventInboxProcessor implements IEventInboxProcessor {
@@ -89,9 +88,8 @@ export class EventInboxProcessor implements IEventInboxProcessor {
 
     private async processNextEventsBatch({ tenantId }: { tenantId?: string }) {
         const repository = this.getRepository();
-        const processedEvents: InboxEventEntity[] = [];
 
-        await runInTransaction(
+        return await runInTransaction(
             async () => {
                 const query = repository
                     .createQueryBuilder("event")
@@ -110,28 +108,32 @@ export class EventInboxProcessor implements IEventInboxProcessor {
                 }
 
                 const entities = await query.orderBy("event.createdAt", "ASC").take(this.maxBatchSize).getMany();
-
-                if (entities.length === 0) {
-                    return 0;
-                }
-
-                for (const { event, entity, handler } of this.mapToEventsWithHandler(entities)) {
-                    try {
-                        await this.handleEvent(event, handler);
-                        entity.processedAt = new Date();
-                    } catch (error) {
-                        this.logger.error({ event, error }, "Failed to process event.");
-                    } finally {
-                        entity.attempts++;
-                        entity.processAfter = this.retryPolicy.getNextAttemptDate(entity.attempts);
-                        processedEvents.push(entity);
-                    }
-                }
-
-                await repository.save(processedEvents);
+                return await this.bulkHandleAndUpdate(entities);
             },
             { connectionName: this.connectionName }
         );
+    }
+
+    private async bulkHandleAndUpdate(entities: InboxEventEntity[]) {
+        const repository = this.getRepository();
+        const processedEvents: InboxEventEntity[] = [];
+
+        for (const { event, entity, handler } of this.mapToEventsWithHandler(entities)) {
+            try {
+                await this.handleEvent(event, handler);
+                entity.processedAt = new Date();
+            } catch (error) {
+                this.logger.error({ event, error }, "Failed to process event.");
+            } finally {
+                entity.attempts++;
+                entity.processAfter = this.retryPolicy.getNextAttemptDate(entity.attempts);
+                processedEvents.push(entity);
+            }
+        }
+
+        if (processedEvents.length) {
+            await repository.save(processedEvents);
+        }
 
         return {
             total: processedEvents.length,
