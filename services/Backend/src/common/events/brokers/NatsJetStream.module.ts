@@ -23,6 +23,10 @@ type NatsJetStreamConnectionOptions = {
     port: number;
 };
 
+// TODO: Things to consider:
+// partitioning by tenantId,
+// clustering.
+
 @Module({})
 export class NatsJetStreamModule implements OnApplicationShutdown {
     private static readonly logger = new Logger(NatsJetStreamModule.name);
@@ -38,7 +42,7 @@ export class NatsJetStreamModule implements OnApplicationShutdown {
             return;
         }
 
-        if (this.connection.isDraining() || this.connection.isClosed()) {
+        if (this.connection.isDraining() ?? this.connection.isClosed()) {
             NatsJetStreamModule.logger.log("Connection is already draining or closed. Skipping close.");
             return;
         }
