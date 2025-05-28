@@ -1,4 +1,4 @@
-export type IntegrationEventsModuleOptions<T> = T & {};
+export type IntegrationEventsModuleOptions<T> = T;
 
 export type IntegrationEventsStream = {
     name: string;

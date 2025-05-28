@@ -25,6 +25,7 @@ import { DeleteOnCascade1743158742983 } from "@/modules/journal/infrastructure/d
 import { DeleteGoalsOnCascade1743159095911 } from "@/modules/journal/infrastructure/database/migrations/1743159095911-deleteGoalsOnCascade";
 import { DeleteOnCascadeFix1743159586254 } from "@/modules/journal/infrastructure/database/migrations/1743159586254-deleteOnCascadeFix";
 import { EncryptedEvents1746293695291 } from "@/modules/journal/infrastructure/database/migrations/1746293695291-encryptedEvents";
+import { AddProcessAfterTimestampToEvent1748202970932 } from "@/modules/journal/infrastructure/database/migrations/1748202970932-addProcessAfterTimestampToEvent";
 
 @Module({
     providers: [],
@@ -55,6 +56,7 @@ import { EncryptedEvents1746293695291 } from "@/modules/journal/infrastructure/d
                     DeleteGoalsOnCascade1743159095911,
                     DeleteOnCascadeFix1743159586254,
                     EncryptedEvents1746293695291,
+                    AddProcessAfterTimestampToEvent1748202970932,
                 ],
             }),
             inject: [ConfigService],

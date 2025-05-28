@@ -27,6 +27,7 @@ import { InitializeUsersModule1735737579670 } from "@/modules/users/infrastructu
 import { AddTenantIdToOutboxAndInbox1743101796654 } from "@/modules/users/infrastructure/database/migrations/1743101796654-addTenantIdToOutboxAndInbox";
 import { RemoveUserPersonalInfo1746284981052 } from "@/modules/users/infrastructure/database/migrations/1746284981052-removeUserPersonalInfo";
 import { EncryptedEvents1746293623196 } from "@/modules/users/infrastructure/database/migrations/1746293623196-encryptedEvents";
+import { AddProcessAfterTimestampToEvent1748202889222 } from "@/modules/users/infrastructure/database/migrations/1748202889222-addProcessAfterTimestampToEvent";
 import { UserMapperToken } from "@/modules/users/mappers/IUser.mapper";
 import { UserMapper } from "@/modules/users/mappers/User.mapper";
 import { UserPublisherService } from "@/modules/users/services/implementations/UserPublisher.service";
@@ -68,6 +69,7 @@ import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.se
                     AddTenantIdToOutboxAndInbox1743101796654,
                     RemoveUserPersonalInfo1746284981052,
                     EncryptedEvents1746293623196,
+                    AddProcessAfterTimestampToEvent1748202889222,
                 ],
             }),
             inject: [ConfigService],
@@ -91,7 +93,10 @@ export class UsersModule implements OnModuleInit {
     ) {}
 
     public onModuleInit() {
-        this.orchestrator.start(this.handlers);
+        this.orchestrator.startProcessingInbox(this.handlers);
+        this.orchestrator.startProcessingOutbox();
+        this.orchestrator.startClearingInbox();
+        this.orchestrator.startClearingOutbox();
 
         void this.subscriber.listen([
             {

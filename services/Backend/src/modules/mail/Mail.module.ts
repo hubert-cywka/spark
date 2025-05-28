@@ -31,6 +31,7 @@ import { InitializeMailModule1735737562761 } from "@/modules/mail/infrastructure
 import { AddTenantIdToOutboxAndInbox1743101783697 } from "@/modules/mail/infrastructure/database/migrations/1743101783697-addTenantIdToOutboxAndInbox";
 import { EncryptedEvents1746294905909 } from "@/modules/mail/infrastructure/database/migrations/1746294905909-encryptedEvents";
 import { AddRecipient1748032112854 } from "@/modules/mail/infrastructure/database/migrations/1748032112854-AddRecipient";
+import { AddProcessAfterTimestampToEvent1748202987491 } from "@/modules/mail/infrastructure/database/migrations/1748202987491-addProcessAfterTimestampToEvent";
 import { RecipientMapperToken } from "@/modules/mail/mappers/IRecipient.mapper";
 import { RecipientMapper } from "@/modules/mail/mappers/Recipient.mapper";
 import { EmailLookupService } from "@/modules/mail/services/implementations/EmailLookup.service";
@@ -125,6 +126,7 @@ import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/
                     AddTenantIdToOutboxAndInbox1743101783697,
                     EncryptedEvents1746294905909,
                     AddRecipient1748032112854,
+                    AddProcessAfterTimestampToEvent1748202987491,
                 ],
             }),
             inject: [ConfigService],
@@ -148,7 +150,11 @@ export class MailModule implements OnModuleInit {
     ) {}
 
     public onModuleInit() {
-        this.orchestrator.start(this.handlers);
+        this.orchestrator.startProcessingInbox(this.handlers);
+        this.orchestrator.startProcessingOutbox();
+        this.orchestrator.startClearingInbox();
+        this.orchestrator.startClearingOutbox();
+
         void this.subscriber.listen([
             {
                 name: "codename_mail_account",

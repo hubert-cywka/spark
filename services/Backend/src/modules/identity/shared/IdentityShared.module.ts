@@ -16,6 +16,7 @@ import { DeleteOnCascade1743158756974 } from "@/modules/identity/infrastructure/
 import { AddOptionToSuspendAccounts1743167408668 } from "@/modules/identity/infrastructure/database/migrations/1743167408668-addOptionToSuspendAccounts";
 import { AddTTLFor2FAIntegrations1743713719361 } from "@/modules/identity/infrastructure/database/migrations/1743713719361-addTTLFor2FAIntegrations";
 import { EncryptedEvents1746293636231 } from "@/modules/identity/infrastructure/database/migrations/1746293636231-encryptedEvents";
+import { AddProcessAfterTimestampToEvent1748202961809 } from "@/modules/identity/infrastructure/database/migrations/1748202961809-addProcessAfterTimestampToEvent";
 
 @Module({
     imports: [
@@ -34,6 +35,7 @@ import { EncryptedEvents1746293636231 } from "@/modules/identity/infrastructure/
                     AddOptionToSuspendAccounts1743167408668,
                     AddTTLFor2FAIntegrations1743713719361,
                     EncryptedEvents1746293636231,
+                    AddProcessAfterTimestampToEvent1748202961809,
                 ],
             }),
             inject: [ConfigService],

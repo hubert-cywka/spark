@@ -1,28 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Entity } from "typeorm";
+
+import { IntegrationEventEntity } from "@/common/events/entities/IntegrationEvent.entity";
 
 @Entity("outbox_event")
-export class OutboxEventEntity<T = unknown> {
-    @PrimaryGeneratedColumn("uuid")
-    id!: string;
-
-    @Column({ type: "uuid" })
-    tenantId!: string;
-
-    @Column({ type: "varchar" })
-    topic!: string;
-
-    @Column({ type: "boolean", default: false })
-    isEncrypted!: boolean;
-
-    @Column({ type: "jsonb" })
-    payload!: T;
-
-    @Column({ type: "int", default: 0 })
-    attempts!: number;
-
-    @Column({ type: "timestamptz" })
-    createdAt!: Date;
-
-    @Column({ type: "timestamptz", nullable: true })
-    processedAt!: Date | null;
-}
+export class OutboxEventEntity<T = unknown> extends IntegrationEventEntity<T> {}
