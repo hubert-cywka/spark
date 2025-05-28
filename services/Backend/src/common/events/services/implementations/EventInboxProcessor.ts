@@ -1,4 +1,5 @@
 import { Logger } from "@nestjs/common";
+import { Mutex } from "async-mutex";
 import { Repository } from "typeorm";
 import { runInTransaction } from "typeorm-transactional";
 
@@ -21,17 +22,17 @@ export interface EventInboxProcessorOptions {
 const DEFAULT_MAX_BATCH_SIZE = 5;
 const DEFAULT_MAX_ATTEMPTS = 7;
 
-/*
-    > TODO: Enable scaling (use leasing?), remember about order of processing (partition by tenantId).
-    > TODO: Handle poison messages.
- */
-
+// TODO: Enable scaling (use lease mechanism?)
+// TODO: Ensure correct order (partition by tenantId)
+// TODO: Handle poison messages.
 export class EventInboxProcessor implements IEventInboxProcessor {
-    private readonly logger;
+    private readonly logger: Logger;
     private readonly connectionName: string;
 
     private handlers: IInboxEventHandler[];
+    private readonly processingMutex: Mutex;
     private readonly retryPolicy: RetryBackoffPolicy;
+
     private readonly maxAttempts: number;
     private readonly maxBatchSize: number;
 
@@ -40,6 +41,7 @@ export class EventInboxProcessor implements IEventInboxProcessor {
         private readonly encryptionService: IIntegrationEventsEncryptionService,
         options: EventInboxProcessorOptions
     ) {
+        this.processingMutex = new Mutex();
         this.logger = new Logger(options.context);
         this.connectionName = options.connectionName;
 
@@ -54,28 +56,30 @@ export class EventInboxProcessor implements IEventInboxProcessor {
     }
 
     public async processPendingEvents(options: { tenantId?: string } = {}): Promise<void> {
-        if (!this.isInitialized()) {
-            this.logger.warn("Processor is not initialized.");
-            return;
-        }
-
-        try {
-            const { total, successful } = await this.processNextEventsBatch(options);
-
-            if (total === 0) {
+        await this.processingMutex.runExclusive(async () => {
+            if (!this.isInitialized()) {
+                this.logger.warn("Processor is not initialized.");
                 return;
             }
 
-            if (total !== 0) {
-                this.logger.log({ processed: { total, successful } }, "Processed events.");
-            }
+            try {
+                const { total, successful } = await this.processNextEventsBatch(options);
 
-            if (total === this.maxBatchSize) {
-                await this.processPendingEvents(options);
+                if (total === 0) {
+                    return;
+                }
+
+                if (total !== 0) {
+                    this.logger.log({ processed: { total, successful } }, "Processed events.");
+                }
+
+                if (total === this.maxBatchSize) {
+                    await this.processPendingEvents(options);
+                }
+            } catch (error) {
+                this.logger.error({ error }, "Failed to process pending events.");
             }
-        } catch (error) {
-            this.logger.error({ error }, "Failed to process pending events.");
-        }
+        });
     }
 
     public setEventHandlers(handlers: IInboxEventHandler[]) {

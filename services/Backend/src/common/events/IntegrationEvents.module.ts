@@ -10,7 +10,7 @@ import { EventInbox } from "@/common/events/services/implementations/EventInbox"
 import { EventInboxProcessor, EventInboxProcessorOptions } from "@/common/events/services/implementations/EventInboxProcessor";
 import { EventOutbox } from "@/common/events/services/implementations/EventOutbox";
 import { EventOutboxProcessor, EventOutboxProcessorOptions } from "@/common/events/services/implementations/EventOutboxProcessor";
-import { EventsRemover } from "@/common/events/services/implementations/EventsRemover";
+import { EventsRemovalService } from "@/common/events/services/implementations/EventsRemoval.service";
 import { IntegrationEventsEncryptionService } from "@/common/events/services/implementations/IntegrationEventsEncryption.service";
 import { IntegrationEventsJobsOrchestrator } from "@/common/events/services/implementations/IntegrationEventsJobsOrchestrator";
 import { IntegrationEventsSubscriber } from "@/common/events/services/implementations/IntegrationEventsSubscriber";
@@ -18,7 +18,10 @@ import { EventInboxToken } from "@/common/events/services/interfaces/IEventInbox
 import { EventInboxProcessorToken } from "@/common/events/services/interfaces/IEventInboxProcessor";
 import { EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
 import { EventOutboxProcessorToken } from "@/common/events/services/interfaces/IEventOutboxProcessor";
-import { type IEventsRemover, EventsRemoverToken } from "@/common/events/services/interfaces/IEventsRemover";
+import {
+    InboxEventsRemovalServiceToken,
+    OutboxEventsRemovalServiceToken,
+} from "@/common/events/services/interfaces/IEventsRemoval.service";
 import {
     IIntegrationEventsEncryptionService,
     IntegrationEventsEncryptionServiceToken,
@@ -76,13 +79,20 @@ export class IntegrationEventsModule {
             imports: [DatabaseModule.forFeature(connectionName, [InboxEventEntity, OutboxEventEntity])],
             providers: [
                 {
-                    provide: EventsRemoverToken,
-                    useClass: EventsRemover,
+                    provide: InboxRetryPolicyToken,
+                    useFactory: () => new ExponentialRetryBackoffPolicy(INBOX_RETRY_BACKOFF_POLICY_BASE_INTERVAL_IN_MS),
                 },
 
                 {
-                    provide: InboxRetryPolicyToken,
-                    useFactory: () => new ExponentialRetryBackoffPolicy(INBOX_RETRY_BACKOFF_POLICY_BASE_INTERVAL_IN_MS),
+                    provide: InboxEventsRemovalServiceToken,
+                    useFactory: (repository: Repository<InboxEventEntity>) => new EventsRemovalService(repository),
+                    inject: [getRepositoryToken(InboxEventEntity, connectionName)],
+                },
+
+                {
+                    provide: OutboxEventsRemovalServiceToken,
+                    useFactory: (repository: Repository<OutboxEventEntity>) => new EventsRemovalService(repository),
+                    inject: [getRepositoryToken(OutboxEventEntity, connectionName)],
                 },
 
                 {
@@ -118,11 +128,7 @@ export class IntegrationEventsModule {
 
                 {
                     provide: EventOutboxToken,
-                    useFactory: (
-                        eventsRemover: IEventsRemover,
-                        encryptionService: IIntegrationEventsEncryptionService,
-                        repository: Repository<OutboxEventEntity>
-                    ) =>
+                    useFactory: (encryptionService: IIntegrationEventsEncryptionService, repository: Repository<OutboxEventEntity>) =>
                         new EventOutbox(
                             {
                                 ...outboxProcessorOptions,
@@ -130,21 +136,15 @@ export class IntegrationEventsModule {
                                 context,
                             },
                             repository,
-                            eventsRemover,
                             encryptionService
                         ),
-                    inject: [
-                        EventsRemoverToken,
-                        IntegrationEventsEncryptionServiceToken,
-                        getRepositoryToken(OutboxEventEntity, connectionName),
-                    ],
+                    inject: [IntegrationEventsEncryptionServiceToken, getRepositoryToken(OutboxEventEntity, connectionName)],
                 },
 
                 {
                     provide: EventInboxToken,
-                    useFactory: (eventsRemover: IEventsRemover, repository: Repository<InboxEventEntity>) =>
-                        new EventInbox({ connectionName, context }, repository, eventsRemover),
-                    inject: [EventsRemoverToken, getRepositoryToken(InboxEventEntity, connectionName)],
+                    useFactory: (repository: Repository<InboxEventEntity>) => new EventInbox({ connectionName, context }, repository),
+                    inject: [getRepositoryToken(InboxEventEntity, connectionName)],
                 },
 
                 {
@@ -162,7 +162,14 @@ export class IntegrationEventsModule {
                 },
             ],
 
-            exports: [EventOutboxToken, EventInboxToken, IntegrationEventsSubscriberToken, IntegrationEventsJobsOrchestratorToken],
+            exports: [
+                EventOutboxToken,
+                EventInboxToken,
+                IntegrationEventsSubscriberToken,
+                IntegrationEventsJobsOrchestratorToken,
+                InboxEventsRemovalServiceToken,
+                OutboxEventsRemovalServiceToken,
+            ],
         };
     }
 }

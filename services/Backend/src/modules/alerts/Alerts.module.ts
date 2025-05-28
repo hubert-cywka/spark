@@ -127,7 +127,10 @@ export class AlertsModule implements OnModuleInit {
     ) {}
 
     public onModuleInit() {
-        this.orchestrator.start(this.handlers);
+        this.orchestrator.startProcessingInbox(this.handlers);
+        this.orchestrator.startProcessingOutbox();
+        this.orchestrator.startClearingInbox();
+        this.orchestrator.startClearingOutbox();
 
         void this.subscriber.listen([
             {

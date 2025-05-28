@@ -5,6 +5,4 @@ export const EventOutboxToken = Symbol("Outbox");
 
 export interface IEventOutbox extends IEventsQueueObserver {
     enqueue(event: IntegrationEvent, options?: { encrypt: boolean }): Promise<void>;
-    clearProcessedEvents(processedBefore: Date): Promise<void>;
-    clearTenantEvents(tenantId: string): Promise<void>;
 }

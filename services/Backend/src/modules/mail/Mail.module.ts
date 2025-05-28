@@ -150,7 +150,11 @@ export class MailModule implements OnModuleInit {
     ) {}
 
     public onModuleInit() {
-        this.orchestrator.start(this.handlers);
+        this.orchestrator.startProcessingInbox(this.handlers);
+        this.orchestrator.startProcessingOutbox();
+        this.orchestrator.startClearingInbox();
+        this.orchestrator.startClearingOutbox();
+
         void this.subscriber.listen([
             {
                 name: "codename_mail_account",

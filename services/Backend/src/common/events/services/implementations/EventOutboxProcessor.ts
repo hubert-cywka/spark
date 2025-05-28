@@ -1,4 +1,5 @@
 import { Logger } from "@nestjs/common";
+import { Mutex } from "async-mutex";
 import dayjs from "dayjs";
 import { firstValueFrom, timeout } from "rxjs";
 import { Repository } from "typeorm";
@@ -21,10 +22,23 @@ const DEFAULT_MAX_BATCH_SIZE = 50;
 const DEFAULT_MAX_ATTEMPTS = 10_000;
 const DEFAULT_PUBLISH_TIMEOUT = 3000;
 
-// TODO: Enable scaling (use lease mechanism?), remember about maintaining correct order (partition by tenantId)
-
+/*
+  Key decisions:
+  1. No handling of poison messages + unlimited retries - if message cannot be published, it's either a problem with
+   network or with broker. No point in trying to publish another message.
+  2. After first publish failure stop processing. Same reason as above.
+  3. When new messages is enqueued, start processing. This reduces the delay between receiving and processing the
+   message.
+  4. Poll messages with reasonable interval. This will ensure that messages will get finally delivered. 
+  
+  Known issues:
+  1. Horizontal scaling may break order of processing. This could be solved by using a distributed lock,
+   partitioning messages by tenantId, adding sequence number (and forcing consumers to handle ordering).
+  2. Immediate publish after the message is enqueued may break order of processing. Current solution is to use mutex.
+ */
 export class EventOutboxProcessor implements IEventOutboxProcessor {
-    private readonly logger;
+    private readonly logger: Logger;
+    private readonly processingMutex: Mutex;
     private readonly maxAttempts: number;
     private readonly maxBatchSize: number;
     private readonly publishTimeout: number;
@@ -35,6 +49,7 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
         private readonly repository: Repository<OutboxEventEntity>,
         options: EventOutboxProcessorOptions
     ) {
+        this.processingMutex = new Mutex();
         this.logger = new Logger(options.context);
         this.connectionName = options.connectionName;
 
@@ -48,24 +63,29 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
     }
 
     public async processPendingEvents(options: { tenantId?: string } = {}) {
-        try {
-            const { total, successful } = await this.processNextBatchOfPendingEvents(options);
+        await this.processingMutex.runExclusive(async () => {
+            try {
+                const { total, successful } = await this.processNextBatchOfPendingEvents(options);
 
-            if (total !== successful) {
-                this.logger.error({ processed: { total, successful }, options }, "Some events in batch couldn't be processed, abandoning.");
-                return;
-            }
+                if (total !== successful) {
+                    this.logger.error(
+                        { processed: { total, successful }, options },
+                        "Some events in batch couldn't be processed, abandoning."
+                    );
+                    return;
+                }
 
-            if (total !== 0) {
-                this.logger.log({ processed: { total, successful } }, "Processed events.");
-            }
+                if (total !== 0) {
+                    this.logger.log({ processed: { total, successful } }, "Processed events.");
+                }
 
-            if (total === this.maxBatchSize) {
-                await this.processPendingEvents(options);
+                if (total === this.maxBatchSize) {
+                    await this.processPendingEvents(options);
+                }
+            } catch (error) {
+                this.logger.error({ error }, "Failed to process pending events.");
             }
-        } catch (error) {
-            this.logger.error({ error }, "Failed to process pending events.");
-        }
+        });
     }
 
     private async processNextBatchOfPendingEvents({ tenantId }: { tenantId?: string } = {}) {

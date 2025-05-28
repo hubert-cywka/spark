@@ -5,7 +5,6 @@ import { runInTransaction, runOnTransactionCommit } from "typeorm-transactional"
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
 import { type IEventsQueueSubscriber } from "@/common/events/services/interfaces/IEventsQueueSubscriber";
-import { type IEventsRemover } from "@/common/events/services/interfaces/IEventsRemover";
 import { type IIntegrationEventsEncryptionService } from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 
@@ -23,7 +22,6 @@ export class EventOutbox implements IEventOutbox {
     public constructor(
         options: EventOutboxOptions,
         private readonly repository: Repository<OutboxEventEntity>,
-        private readonly eventsRemover: IEventsRemover,
         private readonly encryptionService: IIntegrationEventsEncryptionService
     ) {
         this.logger = new Logger(options.context);
@@ -73,14 +71,6 @@ export class EventOutbox implements IEventOutbox {
         }
 
         return event.copy();
-    }
-
-    public async clearProcessedEvents(processedBefore: Date): Promise<void> {
-        await this.eventsRemover.removeProcessedBefore(processedBefore, this.getRepository());
-    }
-
-    public async clearTenantEvents(tenantId: string): Promise<void> {
-        await this.eventsRemover.removeByTenant(tenantId, this.getRepository());
     }
 
     private getRepository(): Repository<OutboxEventEntity> {
