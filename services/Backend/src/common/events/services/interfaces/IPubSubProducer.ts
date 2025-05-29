@@ -1,10 +1,8 @@
-import { PubAck } from "nats";
-import { Observable } from "rxjs";
-
 import { IntegrationEvent } from "@/common/events";
+import { PublishAck } from "@/common/events/types";
 
-export const PubSubProducerToken = Symbol("PubSubProducer");
+export const getPubSubProducerToken = (context: string) => Symbol(context + "_PubSubProducer");
 
 export interface IPubSubProducer {
-    publish(event: IntegrationEvent): Observable<PubAck>;
+    publish(event: IntegrationEvent): Promise<PublishAck>;
 }

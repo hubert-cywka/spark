@@ -5,8 +5,6 @@ export type IntegrationEventsStream = {
     subjects: string[];
 };
 
-export type IntegrationEventsConsumer = {
-    name: string;
-    stream: string;
-    subjects: string[];
+export type PublishAck = {
+    ack: boolean;
 };

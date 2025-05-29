@@ -20,13 +20,53 @@ services:
         depends_on:
             - db
 
-    pubsub:
-        image: nats:2.10.24-alpine3.21
+    controller-1:
+        image: apache/kafka:3.9.1
         restart: always
-        volumes:
-            - pubsub_cache:/data
         networks:
             - services_network
+
+    controller-2:
+        image: apache/kafka:3.9.1
+        restart: always
+        networks:
+            - services_network
+
+    controller-3:
+        image: apache/kafka:3.9.1
+        restart: always
+        networks:
+            - services_network
+
+    broker-1:
+        image: apache/kafka:3.9.1
+        restart: always
+        networks:
+            - services_network
+        depends_on:
+            - controller-1
+            - controller-2
+            - controller-3
+
+    broker-2:
+        image: apache/kafka:3.9.1
+        restart: always
+        networks:
+            - services_network
+        depends_on:
+            - controller-1
+            - controller-2
+            - controller-3
+                
+    broker-3:
+        image: apache/kafka:3.9.1
+        restart: always
+        networks:
+            - services_network
+        depends_on:
+            - controller-1
+            - controller-2
+            - controller-3
 
     identity-service:
         build:
@@ -36,7 +76,9 @@ services:
         networks:
             - services_network
         depends_on:
-            - pubsub
+            - broker-1
+            - broker-2
+            - broker-3
             - pooler
 
     journal-service:
@@ -47,7 +89,9 @@ services:
         networks:
             - services_network
         depends_on:
-            - pubsub
+            - broker-1
+            - broker-2
+            - broker-3
             - pooler
     
     alerts-service:
@@ -58,7 +102,9 @@ services:
         networks:
             - services_network
         depends_on:
-            - pubsub
+            - broker-1
+            - broker-2
+            - broker-3            
             - pooler
     
     gdpr-service:
@@ -69,7 +115,9 @@ services:
         networks:
             - services_network
         depends_on:
-            - pubsub
+            - broker-1
+            - broker-2
+            - broker-3            
             - pooler
     
     users-service:
@@ -80,7 +128,9 @@ services:
         networks:
             - services_network
         depends_on:
-            - pubsub
+            - broker-1
+            - broker-2
+            - broker-3
             - pooler
                 
     mail-service:
@@ -91,7 +141,9 @@ services:
         networks:
             - services_network
         depends_on:
-            - pubsub
+            - broker-1
+            - broker-2
+            - broker-3
             - pooler
 
     frontend:
@@ -116,6 +168,4 @@ networks:
 
 volumes:
     postgres:
-        external: false
-    pubsub_cache:
         external: false

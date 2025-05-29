@@ -11,10 +11,6 @@
         "port": 6432,
         "detachable": false
     },
-    "pubsub": {
-        "port": 4222,
-        "detachable": false
-    },
     "gateway": {
         "port": 5000,
         "detachable": true
@@ -46,5 +42,23 @@
     "mail-service": {
         "port": 5200,
         "detachable": true
+    },
+    "broker-1": {
+        "detachable": false
+    },
+    "broker-2": {
+        "detachable": false
+    },
+    "broker-3": {
+        "detachable": false
+    },
+    "controller-1": {
+        "detachable": false
+    },
+    "controller-2": {
+        "detachable": false
+    },
+    "controller-3": {
+        "detachable": false
     }
 }

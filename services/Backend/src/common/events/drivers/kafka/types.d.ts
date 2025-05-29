@@ -1,0 +1,3 @@
+type KafkaConsumerMetadata = {
+    topics: string[];
+};

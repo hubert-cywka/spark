@@ -3,12 +3,12 @@ import { Injectable, Logger } from "@nestjs/common";
 import { type NatsConnection } from "nats";
 
 import { IntegrationEvent } from "@/common/events";
+import { NatsConsumerMetadata } from "@/common/events/drivers/nats/types";
 import { type IPubSubConsumer, OnEventReceivedHandler } from "@/common/events/services/interfaces/IPubSubConsumer";
-import { IntegrationEventsConsumer } from "@/common/events/types";
 import { logger } from "@/lib/logger";
 
 @Injectable()
-export class NatsJetStreamConsumer implements IPubSubConsumer {
+export class NatsJetStreamConsumer implements IPubSubConsumer<NatsConsumerMetadata[]> {
     private readonly logger = new Logger(NatsJetStreamConsumer.name);
     private readonly jetStreamClient: JetStreamClient;
     private jetStreamManager: JetStreamManager | null = null;
@@ -17,7 +17,7 @@ export class NatsJetStreamConsumer implements IPubSubConsumer {
         this.jetStreamClient = jetstream(connection);
     }
 
-    public async listen(consumers: IntegrationEventsConsumer[], onEventReceived: OnEventReceivedHandler): Promise<void> {
+    public async listen(consumers: NatsConsumerMetadata[], onEventReceived: OnEventReceivedHandler): Promise<void> {
         await this.registerConsumers(consumers);
         const streams = await this.getMessagesStreams(consumers);
 
@@ -43,7 +43,7 @@ export class NatsJetStreamConsumer implements IPubSubConsumer {
         }
     }
 
-    private async getMessagesStreams(consumers: IntegrationEventsConsumer[]) {
+    private async getMessagesStreams(consumers: NatsConsumerMetadata[]) {
         const consumerMessagesList: Promise<ConsumerMessages>[] = [];
 
         for await (const consumer of consumers) {
@@ -59,7 +59,7 @@ export class NatsJetStreamConsumer implements IPubSubConsumer {
         return consumerMessagesList;
     }
 
-    private async registerConsumers(consumers: IntegrationEventsConsumer[]): Promise<void> {
+    private async registerConsumers(consumers: NatsConsumerMetadata[]): Promise<void> {
         const streams = [...new Set(consumers.map((consumer) => consumer.stream))];
         const registeredConsumers = await this.getRegisteredConsumers(streams);
 
@@ -76,8 +76,8 @@ export class NatsJetStreamConsumer implements IPubSubConsumer {
         }
     }
 
-    private async getRegisteredConsumers(streams: string[]): Promise<IntegrationEventsConsumer[]> {
-        const existingConsumers: IntegrationEventsConsumer[] = [];
+    private async getRegisteredConsumers(streams: string[]): Promise<NatsConsumerMetadata[]> {
+        const existingConsumers: NatsConsumerMetadata[] = [];
         const manager = await this.getManager();
 
         for (const stream of streams) {
@@ -95,7 +95,7 @@ export class NatsJetStreamConsumer implements IPubSubConsumer {
         return existingConsumers;
     }
 
-    private async createConsumer(consumer: IntegrationEventsConsumer): Promise<void> {
+    private async createConsumer(consumer: NatsConsumerMetadata): Promise<void> {
         const manager = await this.getManager();
 
         await manager.consumers.add(consumer.stream, {
@@ -107,7 +107,7 @@ export class NatsJetStreamConsumer implements IPubSubConsumer {
         });
     }
 
-    private async updateConsumer(consumer: IntegrationEventsConsumer): Promise<void> {
+    private async updateConsumer(consumer: NatsConsumerMetadata): Promise<void> {
         const manager = await this.getManager();
 
         await manager.consumers.update(consumer.stream, consumer.name, {

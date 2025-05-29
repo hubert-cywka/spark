@@ -67,6 +67,16 @@ export class IntegrationEvent<T = unknown> {
         return classToPlain(this);
     }
 
+    public static fromString<T = unknown>(bytes: string): IntegrationEvent<T> {
+        const plainObject: IntegrationEventFields<T> = JSON.parse(bytes);
+        return IntegrationEvent.fromPlain(plainObject);
+    }
+
+    public toString(): string {
+        const plainObject = this.toPlain();
+        return JSON.stringify(plainObject);
+    }
+
     public getTopic(): string {
         return this.topic;
     }

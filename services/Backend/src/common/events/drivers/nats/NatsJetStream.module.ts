@@ -2,8 +2,8 @@ import { jetstreamManager } from "@nats-io/jetstream";
 import { DynamicModule, Inject, Logger, Module, OnApplicationShutdown } from "@nestjs/common";
 import { type NatsConnection, connect, DiscardPolicy, RetentionPolicy } from "nats";
 
-import { NatsJetStreamConsumer } from "@/common/events/brokers/services/NatsJetStreamConsumer";
-import { NatsJetStreamProducer } from "@/common/events/brokers/services/NatsJetStreamProducer";
+import { NatsJetStreamConsumer } from "@/common/events/drivers/nats/services/NatsJetStreamConsumer";
+import { NatsJetStreamProducer } from "@/common/events/drivers/nats/services/NatsJetStreamProducer";
 import { PubSubConsumerToken } from "@/common/events/services/interfaces/IPubSubConsumer";
 import { PubSubProducerToken } from "@/common/events/services/interfaces/IPubSubProducer";
 import { IntegrationEventsStream } from "@/common/events/types";

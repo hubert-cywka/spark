@@ -3,7 +3,7 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { NatsJetStreamModule, NatsJetStreamModuleOptions } from "@/common/events/brokers/NatsJetStream.module";
+import { KafkaModule, KafkaModuleOptions } from "@/common/events/drivers/kafka/Kafka.module";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { EventInbox } from "@/common/events/services/implementations/EventInbox";
@@ -28,7 +28,8 @@ import {
 } from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
 import { IntegrationEventsJobsOrchestratorToken } from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
 import { IntegrationEventsSubscriberToken } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
-import { IPubSubProducer, PubSubProducerToken } from "@/common/events/services/interfaces/IPubSubProducer";
+import { getPubSubConsumerToken } from "@/common/events/services/interfaces/IPubSubConsumer";
+import { getPubSubProducerToken, IPubSubProducer } from "@/common/events/services/interfaces/IPubSubProducer";
 import { IntegrationEventsModuleOptions } from "@/common/events/types";
 import { ExponentialRetryBackoffPolicy } from "@/common/retry/ExponentialRetryBackoffPolicy";
 import { RetryBackoffPolicy } from "@/common/retry/RetryBackoffPolicy";
@@ -43,13 +44,13 @@ type IntegrationEventsModuleForFeatureOptions = {
     context: string;
     connectionName: string;
     inboxProcessorOptions?: Pick<EventInboxProcessorOptions, "maxAttempts" | "maxBatchSize">;
-    outboxProcessorOptions?: Pick<EventOutboxProcessorOptions, "maxAttempts" | "maxBatchSize" | "publishTimeout">;
+    outboxProcessorOptions?: Pick<EventOutboxProcessorOptions, "maxAttempts" | "maxBatchSize">;
 };
 
 @Module({})
 export class IntegrationEventsModule {
     static forRootAsync(options: {
-        useFactory: UseFactory<IntegrationEventsModuleOptions<NatsJetStreamModuleOptions>>;
+        useFactory: UseFactory<IntegrationEventsModuleOptions<KafkaModuleOptions>>;
         inject?: UseFactoryArgs;
         global?: boolean;
     }): DynamicModule {
@@ -62,7 +63,6 @@ export class IntegrationEventsModule {
                     inject: options.inject ?? [],
                 },
             ],
-            imports: [NatsJetStreamModule.forRootAsync(options)],
             exports: [IntegrationEventsModuleOptionsToken],
             global: options.global,
         };
@@ -74,9 +74,22 @@ export class IntegrationEventsModule {
         outboxProcessorOptions = {},
         inboxProcessorOptions = {},
     }: IntegrationEventsModuleForFeatureOptions): DynamicModule {
+        const PubSubProducerToken = getPubSubProducerToken(context);
+        const PubSubConsumerToken = getPubSubConsumerToken(context);
+
         return {
             module: IntegrationEventsModule,
-            imports: [DatabaseModule.forFeature(connectionName, [InboxEventEntity, OutboxEventEntity])],
+            imports: [
+                KafkaModule.forFeatureAsync(context, {
+                    useFactory: (options: IntegrationEventsModuleOptions<KafkaModuleOptions>) => ({
+                        groupId: `${context}-consumer-group`,
+                        brokers: options.brokers,
+                        clientId: options.clientId,
+                    }),
+                    inject: [IntegrationEventsModuleOptionsToken],
+                }),
+                DatabaseModule.forFeature(connectionName, [InboxEventEntity, OutboxEventEntity]),
+            ],
             providers: [
                 {
                     provide: InboxRetryPolicyToken,
@@ -149,7 +162,7 @@ export class IntegrationEventsModule {
 
                 {
                     provide: IntegrationEventsSubscriberToken,
-                    useClass: IntegrationEventsSubscriber,
+                    useFactory: ,
                 },
 
                 {
