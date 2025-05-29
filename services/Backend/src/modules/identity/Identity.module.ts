@@ -1,6 +1,7 @@
 import { Inject, Module, OnModuleInit } from "@nestjs/common";
 
 import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventTopics } from "@/common/events";
+import { KafkaConsumerMetadata } from "@/common/events/drivers/kafka/types";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,

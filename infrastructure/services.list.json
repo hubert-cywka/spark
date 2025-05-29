@@ -43,22 +43,22 @@
         "port": 5200,
         "detachable": true
     },
-    "broker-1": {
+    "kafka-broker-1": {
         "detachable": false
     },
-    "broker-2": {
+    "kafka-broker-2": {
         "detachable": false
     },
-    "broker-3": {
+    "kafka-broker-3": {
         "detachable": false
     },
-    "controller-1": {
+    "kafka-controller-1": {
         "detachable": false
     },
-    "controller-2": {
+    "kafka-controller-2": {
         "detachable": false
     },
-    "controller-3": {
+    "kafka-controller-3": {
         "detachable": false
     }
 }

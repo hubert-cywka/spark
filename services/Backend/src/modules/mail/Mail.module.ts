@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule, IntegrationEventTopics } from "@/common/events";
+import { KafkaConsumerMetadata } from "@/common/events/drivers/kafka/types";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -128,6 +129,7 @@ import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/
         DatabaseModule.forFeature(MAIL_MODULE_DATA_SOURCE, [RecipientEntity]),
         IntegrationEventsModule.forFeature({
             context: MailModule.name,
+            consumerGroupId: "mail",
             connectionName: MAIL_MODULE_DATA_SOURCE,
         }),
     ],

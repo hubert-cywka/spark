@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule, IntegrationEventTopics } from "@/common/events";
+import { KafkaConsumerMetadata } from "@/common/events/drivers/kafka/types";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -71,6 +72,7 @@ import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.se
         DatabaseModule.forFeature(USERS_MODULE_DATA_SOURCE, [UserEntity]),
         IntegrationEventsModule.forFeature({
             context: UsersModule.name,
+            consumerGroupId: "users",
             connectionName: USERS_MODULE_DATA_SOURCE,
         }),
     ],

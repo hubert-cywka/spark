@@ -50,6 +50,7 @@ import { AddProcessAfterTimestampToEvent1748202961809 } from "@/modules/identity
         ]),
         IntegrationEventsModule.forFeature({
             context: IdentitySharedModule.name,
+            consumerGroupId: "identity",
             connectionName: IDENTITY_MODULE_DATA_SOURCE,
         }),
     ],

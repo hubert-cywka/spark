@@ -2,6 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { type Consumer } from "kafkajs";
 
 import { IntegrationEvent } from "@/common/events";
+import { KafkaConsumerMetadata } from "@/common/events/drivers/kafka/types";
 import { type IPubSubConsumer, OnEventReceivedHandler } from "@/common/events/services/interfaces/IPubSubConsumer";
 
 @Injectable()

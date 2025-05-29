@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule, IntegrationEventTopics } from "@/common/events";
+import { KafkaConsumerMetadata } from "@/common/events/drivers/kafka/types";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -86,6 +87,7 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
         DatabaseModule.forFeature(GDPR_MODULE_DATA_SOURCE, [TenantEntity, DataPurgePlanEntity]),
         IntegrationEventsModule.forFeature({
             context: GdprModule.name,
+            consumerGroupId: "gdpr",
             connectionName: GDPR_MODULE_DATA_SOURCE,
         }),
     ],

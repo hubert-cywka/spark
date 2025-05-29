@@ -3,7 +3,7 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { KafkaModule, KafkaModuleOptions } from "@/common/events/drivers/kafka/Kafka.module";
+import { KafkaForFeatureOptions, KafkaModule, KafkaModuleOptions } from "@/common/events/drivers/kafka/Kafka.module";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { EventInbox } from "@/common/events/services/implementations/EventInbox";
@@ -28,8 +28,7 @@ import {
 } from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
 import { IntegrationEventsJobsOrchestratorToken } from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
 import { IntegrationEventsSubscriberToken } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
-import { getPubSubConsumerToken } from "@/common/events/services/interfaces/IPubSubConsumer";
-import { getPubSubProducerToken, IPubSubProducer } from "@/common/events/services/interfaces/IPubSubProducer";
+import { IPubSubProducer, PubSubProducerToken } from "@/common/events/services/interfaces/IPubSubProducer";
 import { IntegrationEventsModuleOptions } from "@/common/events/types";
 import { ExponentialRetryBackoffPolicy } from "@/common/retry/ExponentialRetryBackoffPolicy";
 import { RetryBackoffPolicy } from "@/common/retry/RetryBackoffPolicy";
@@ -42,6 +41,7 @@ const InboxRetryPolicyToken = Symbol("InboxRetryPolicy");
 
 type IntegrationEventsModuleForFeatureOptions = {
     context: string;
+    consumerGroupId: string;
     connectionName: string;
     inboxProcessorOptions?: Pick<EventInboxProcessorOptions, "maxAttempts" | "maxBatchSize">;
     outboxProcessorOptions?: Pick<EventOutboxProcessorOptions, "maxAttempts" | "maxBatchSize">;
@@ -50,7 +50,7 @@ type IntegrationEventsModuleForFeatureOptions = {
 @Module({})
 export class IntegrationEventsModule {
     static forRootAsync(options: {
-        useFactory: UseFactory<IntegrationEventsModuleOptions<KafkaModuleOptions>>;
+        useFactory: UseFactory<IntegrationEventsModuleOptions<KafkaForFeatureOptions>>;
         inject?: UseFactoryArgs;
         global?: boolean;
     }): DynamicModule {
@@ -70,19 +70,17 @@ export class IntegrationEventsModule {
 
     static forFeature({
         context,
+        consumerGroupId,
         connectionName,
         outboxProcessorOptions = {},
         inboxProcessorOptions = {},
     }: IntegrationEventsModuleForFeatureOptions): DynamicModule {
-        const PubSubProducerToken = getPubSubProducerToken(context);
-        const PubSubConsumerToken = getPubSubConsumerToken(context);
-
         return {
             module: IntegrationEventsModule,
             imports: [
                 KafkaModule.forFeatureAsync(context, {
                     useFactory: (options: IntegrationEventsModuleOptions<KafkaModuleOptions>) => ({
-                        groupId: `${context}-consumer-group`,
+                        groupId: consumerGroupId,
                         brokers: options.brokers,
                         clientId: options.clientId,
                     }),
@@ -116,7 +114,7 @@ export class IntegrationEventsModule {
                             connectionName,
                             ...outboxProcessorOptions,
                         }),
-                    inject: [PubSubProducerToken, getRepositoryToken(OutboxEventEntity, connectionName)],
+                    inject: [PubSubProducerToken, getRepositoryToken(OutboxEventEntity, connectionName)], // <--- Używasz stałego tokena!
                 },
 
                 {
@@ -162,7 +160,7 @@ export class IntegrationEventsModule {
 
                 {
                     provide: IntegrationEventsSubscriberToken,
-                    useFactory: ,
+                    useClass: IntegrationEventsSubscriber,
                 },
 
                 {

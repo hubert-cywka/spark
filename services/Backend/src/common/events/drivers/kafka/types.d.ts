@@ -1,3 +1,3 @@
-type KafkaConsumerMetadata = {
+export type KafkaConsumerMetadata = {
     topics: string[];
 };

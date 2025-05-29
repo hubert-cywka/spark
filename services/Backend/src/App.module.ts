@@ -49,7 +49,7 @@ const getAppBaseImports = (): ModuleImport[] => {
         IntegrationEventsModule.forRootAsync({
             useFactory: (config: ConfigService) => {
                 return {
-                    clientId: "codename",
+                    clientId: config.getOrThrow<string>("appName"),
                     brokers: config.getOrThrow<string>("pubsub.brokers").split(","),
                 };
             },

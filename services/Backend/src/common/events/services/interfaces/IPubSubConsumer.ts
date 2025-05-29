@@ -1,6 +1,6 @@
 import { IntegrationEvent } from "@/common/events";
 
-export const getPubSubConsumerToken = (context: string) => Symbol(context + "_PubSubConsumer");
+export const PubSubConsumerToken = Symbol("PubSubConsumer");
 
 export interface IPubSubConsumer<T> {
     listen(metadata: T, onEventReceived: OnEventReceivedHandler): Promise<void>;
