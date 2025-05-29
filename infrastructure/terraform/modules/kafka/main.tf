@@ -1,5 +1,5 @@
 locals {
-  kafka_namespace_name = "kafka-cluster"
+  kafka_namespace_name = var.namespace
   kafka_image          = "apache/kafka:3.9.1"
   fs_group_id          = 1000
 
@@ -19,25 +19,14 @@ locals {
   kafka_controller_pvc_storage   = "1Gi"
   kafka_controller_quorum_voters = join(",", [for id, config in local.kafka_controllers : "${config.node_id}@kafka-controller-${id}:${var.controller_internal_port}"])
 
-  PUBSUB_BROKERS = join(",", [for ordinal, config in local.kafka_brokers : "kafka-broker-${ordinal}.kafka-broker-headless.${local.kafka_namespace_name}.svc.cluster.local:${var.broker_internal_port}"])
-}
-
-output "pubsub_brokers" {
-  description = "Addresses of Kafka brokers for backend services to connect to."
-  value       = local.PUBSUB_BROKERS
-}
-
-resource "kubernetes_namespace" "kafka_namespace" {
-  metadata {
-    name = local.kafka_namespace_name
-  }
+  PUBSUB_BROKERS = join(",", [for ordinal, config in local.kafka_brokers : "kafka-broker-${ordinal}.kafka-broker-headless.${var.namespace}.svc.cluster.local:${var.broker_internal_port}"])
 }
 
 resource "kubernetes_persistent_volume_claim" "kafka_controller_pvc" {
   for_each = local.kafka_controllers
   metadata {
     name      = "kafka-controller-${each.key}-data-pvc"
-    namespace = kubernetes_namespace.kafka_namespace.metadata[0].name
+    namespace = var.namespace
   }
   spec {
     access_modes = ["ReadWriteOnce"]
@@ -53,7 +42,7 @@ resource "kubernetes_deployment" "kafka_controller" {
   for_each = local.kafka_controllers
   metadata {
     name      = "kafka-controller-${each.key}"
-    namespace = kubernetes_namespace.kafka_namespace.metadata[0].name
+    namespace = var.namespace
     labels = {
       app = "kafka-controller"
       id  = each.key
@@ -149,7 +138,7 @@ resource "kubernetes_service" "kafka_controller_service" {
   for_each = local.kafka_controllers
   metadata {
     name      = "kafka-controller-${each.key}"
-    namespace = kubernetes_namespace.kafka_namespace.metadata[0].name
+    namespace = var.namespace
   }
   spec {
     selector = {
@@ -168,7 +157,7 @@ resource "kubernetes_service" "kafka_controller_service" {
 resource "kubernetes_stateful_set" "kafka_broker" {
   metadata {
     name      = "kafka-broker"
-    namespace = kubernetes_namespace.kafka_namespace.metadata[0].name
+    namespace = var.namespace
     labels = {
       app = "kafka-broker"
     }
@@ -215,8 +204,9 @@ resource "kubernetes_stateful_set" "kafka_broker" {
             value = "PLAINTEXT://:${var.broker_internal_port}"
           }
           env {
-            name  = "KAFKA_ADVERTISED_LISTENERS"
-            value = "PLAINTEXT://$(POD_NAME).kafka-broker-headless.${local.kafka_namespace_name}.svc.cluster.local:${var.broker_internal_port}"
+            name = "KAFKA_ADVERTISED_LISTENERS"
+            value = "PLAINTEXT://$(POD_NAME).kafka-broker-headless.${var.namespace}.svc.cluster.local:${var
+            .broker_internal_port}"
           }
           env {
             name  = "KAFKA_INTER_BROKER_LISTENER_NAME"
@@ -309,7 +299,7 @@ resource "kubernetes_stateful_set" "kafka_broker" {
 resource "kubernetes_service" "kafka_broker_headless_service" {
   metadata {
     name      = "kafka-broker-headless"
-    namespace = kubernetes_namespace.kafka_namespace.metadata[0].name
+    namespace = var.namespace
     labels = {
       app = "kafka-broker"
     }

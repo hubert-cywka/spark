@@ -27,7 +27,8 @@ variable "DATABASE_USERNAME" {
 }
 
 variable "DATABASE_PASSWORD" {
-  type = string
+  sensitive = true
+  type      = string
 }
 
 variable "CLIENT_URL_BASE" {
@@ -55,7 +56,8 @@ variable "AUTH_DATABASE_NAME" {
 }
 
 variable "JWT_SIGNING_SECRET" {
-  type = string
+  sensitive = true
+  type      = string
 }
 
 variable "OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS" {
@@ -67,7 +69,8 @@ variable "JWT_EXPIRATION_TIME_IN_SECONDS" {
 }
 
 variable "REFRESH_TOKEN_SIGNING_SECRET" {
-  type = string
+  sensitive = true
+  type      = string
 }
 
 variable "REFRESH_TOKEN_EXPIRATION_TIME_IN_SECONDS" {
@@ -115,7 +118,8 @@ variable "MAIL_SENDER_USER" {
 }
 
 variable "MAIL_SENDER_PASSWORD" {
-  type = string
+  sensitive = true
+  type      = string
 }
 
 variable "MAIL_SENDER_HOST" {
@@ -135,7 +139,8 @@ variable "GOOGLE_CLIENT_ID" {
 }
 
 variable "GOOGLE_CLIENT_SECRET" {
-  type = string
+  sensitive = true
+  type      = string
 }
 
 variable "GOOGLE_OIDC_REDIRECT_URL" {
@@ -143,7 +148,8 @@ variable "GOOGLE_OIDC_REDIRECT_URL" {
 }
 
 variable "COOKIES_SECRET" {
-  type = string
+  sensitive = true
+  type      = string
 }
 
 variable "PGBOUNCER_POOL_MODE" {

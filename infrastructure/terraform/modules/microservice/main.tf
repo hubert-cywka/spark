@@ -2,7 +2,10 @@ resource "kubernetes_deployment" "this" {
   metadata {
     name      = var.service_name
     namespace = var.namespace
-    labels    = { app_project = "codename" }
+    labels = {
+      app_project = "codename"
+      app         = var.service_name
+    }
   }
 
   spec {
@@ -26,42 +29,50 @@ resource "kubernetes_deployment" "this" {
           name  = var.service_name
           image = var.image
 
-          liveness_probe {
-            http_get {
-              path = "/api/healthz/liveness"
-              port = var.container_port
+          dynamic "liveness_probe" {
+            for_each = var.enable_liveness_probe ? [1] : []
+            content {
+              http_get {
+                path = var.liveness_path
+                port = var.container_port
+              }
+              initial_delay_seconds = var.liveness_initial_delay_seconds
+              period_seconds        = var.liveness_period_seconds
+              timeout_seconds       = var.liveness_timeout_seconds
+              success_threshold     = var.liveness_success_threshold
+              failure_threshold     = var.liveness_failure_threshold
             }
-            initial_delay_seconds = 15
-            period_seconds        = 20
-            timeout_seconds       = 5
-            success_threshold     = 1
-            failure_threshold     = 3
           }
 
-          readiness_probe {
-            http_get {
-              path = "/api/healthz/readiness"
-              port = var.container_port
+          dynamic "readiness_probe" {
+            for_each = var.enable_readiness_probe ? [1] : []
+            content {
+              http_get {
+                path = var.readiness_path
+                port = var.container_port
+              }
+              initial_delay_seconds = var.readiness_initial_delay_seconds
+              period_seconds        = var.readiness_period_seconds
+              timeout_seconds       = var.readiness_timeout_seconds
+              success_threshold     = var.readiness_success_threshold
+              failure_threshold     = var.readiness_failure_threshold
             }
-            initial_delay_seconds = 20
-            period_seconds        = 15
-            timeout_seconds       = 5
-            success_threshold     = 1
-            failure_threshold     = 3
           }
 
-          startup_probe {
-            http_get {
-              path = "/api/healthz/startup"
-              port = var.container_port
+          dynamic "startup_probe" {
+            for_each = var.enable_startup_probe ? [1] : []
+            content {
+              http_get {
+                path = var.startup_path
+                port = var.container_port
+              }
+              initial_delay_seconds = var.startup_initial_delay_seconds
+              period_seconds        = var.startup_period_seconds
+              timeout_seconds       = var.startup_timeout_seconds
+              success_threshold     = var.startup_success_threshold
+              failure_threshold     = var.startup_failure_threshold
             }
-            initial_delay_seconds = 0
-            period_seconds        = 10
-            timeout_seconds       = 5
-            success_threshold     = 1
-            failure_threshold     = 15
           }
-
 
           port {
             container_port = var.container_port
@@ -75,6 +86,12 @@ resource "kubernetes_deployment" "this" {
               value = env.value
             }
           }
+
+          env_from {
+            secret_ref {
+              name = var.secret_name
+            }
+          }
         }
       }
     }
@@ -85,7 +102,10 @@ resource "kubernetes_service" "this" {
   metadata {
     name      = var.service_name
     namespace = var.namespace
-    labels    = { app_project = "codename" }
+    labels = {
+      app_project = "codename"
+      app         = var.service_name
+    }
   }
 
   spec {
