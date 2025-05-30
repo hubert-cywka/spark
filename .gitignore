@@ -15,9 +15,8 @@ dist-ssr
 
 # Secrets
 **/.env  
-**/.env.kafka
-.npmrc
-.tfvars
+**/.npmrc
+**/.tfvars
 
 # Editor directories and files
 .vscode/*

@@ -4,16 +4,16 @@ export const ACCOUNT_TOPICS = {
     created: "account.created",
 
     activation: {
-        completed: "account.activation_completed",
-        requested: "account.activation_requested",
+        completed: "account.activation.completed",
+        requested: "account.activation.requested",
     },
     password: {
-        resetRequested: "account.password_reset_requested",
-        updated: "account.password_updated",
+        resetRequested: "account.password_reset.requested",
+        updated: "account.password.updated",
     },
     removal: {
-        requested: "account.removal_requested",
-        scheduled: "account.removal_scheduled",
-        completed: "account.removal_completed",
+        requested: "account.removal.requested",
+        scheduled: "account.removal.scheduled",
+        completed: "account.removal.completed",
     },
 };

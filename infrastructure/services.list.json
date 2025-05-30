@@ -1,14 +1,11 @@
 {
     "tunnel": {
-        "port": 4040,
         "detachable": false
     },
     "db": {
-        "port": 5432,
         "detachable": false
     },
     "pooler": {
-        "port": 6432,
         "detachable": false
     },
     "gateway": {

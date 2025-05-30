@@ -1,4 +1,4 @@
-import { DynamicModule, Inject, Logger, Module, OnModuleDestroy } from "@nestjs/common";
+import { DynamicModule, Logger, Module, OnApplicationShutdown } from "@nestjs/common";
 import { type Consumer, type Producer, Kafka } from "kafkajs";
 
 import { KafkaConsumer } from "@/common/events/drivers/kafka/services/KafkaConsumer";
@@ -6,11 +6,15 @@ import { KafkaLoggerAdapter } from "@/common/events/drivers/kafka/services/Kafka
 import { KafkaProducer } from "@/common/events/drivers/kafka/services/KafkaProducer";
 import { PubSubConsumerToken } from "@/common/events/services/interfaces/IPubSubConsumer";
 import { PubSubProducerToken } from "@/common/events/services/interfaces/IPubSubProducer";
+import { pollResource } from "@/common/utils/pollResource";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 
-export const KafkaOptionsToken = Symbol("KafkaOptionsToken");
-export const KafkaProducerToken = Symbol("KafkaProducerToken");
-export const KafkaConsumerToken = Symbol("KafkaConsumerToken");
+const KAFKA_CONNECTION_INITIALIZATION_MAX_RETRIES = 15;
+const KAFKA_CONNECTION_INITIALIZATION_INTERVAL = 10_000;
+
+const KafkaOptionsToken = Symbol("KafkaOptionsToken");
+const KafkaProducerToken = Symbol("KafkaProducerToken");
+const KafkaConsumerToken = Symbol("KafkaConsumerToken");
 
 export type KafkaModuleOptions = {
     groupId: string;
@@ -21,16 +25,46 @@ export type KafkaModuleOptions = {
 export type KafkaForFeatureOptions = Pick<KafkaModuleOptions, "brokers" | "clientId">;
 
 @Module({})
-export class KafkaModule implements OnModuleDestroy {
-    constructor(
-        @Inject(KafkaConsumerToken)
-        private readonly consumer: Consumer,
-        @Inject(KafkaProducerToken)
-        private readonly producer: Producer
-    ) {}
+export class KafkaModule implements OnApplicationShutdown {
+    private static readonly logger = new Logger(KafkaModule.name);
+    private static readonly consumers: Consumer[] = [];
+    private static readonly producers: Producer[] = [];
 
-    async onModuleDestroy() {
-        await Promise.all([await this.consumer.disconnect(), await this.producer.disconnect()]);
+    async onApplicationShutdown() {
+        KafkaModule.logger.log("Disconnecting kafka consumers and producers.");
+
+        try {
+            await Promise.all([
+                ...KafkaModule.consumers.map((consumer) => consumer.disconnect()),
+                ...KafkaModule.producers.map((producer) => producer.disconnect()),
+            ]);
+            KafkaModule.logger.log("Disconnected all kafka consumers and producers.");
+        } catch (error) {
+            KafkaModule.logger.error(error, "Error occurred when disconnecting kafka consumers and producers.");
+        }
+    }
+
+    private static trackConsumer(consumer: Consumer) {
+        KafkaModule.consumers.push(consumer);
+    }
+
+    private static trackProducer(producer: Producer) {
+        KafkaModule.producers.push(producer);
+    }
+
+    private static async initializeConnection(client: Kafka) {
+        await pollResource({
+            resourceName: "Kafka",
+            pollingFn: async (attempt) => {
+                KafkaModule.logger.log({ attempt }, "Trying to connect to kafka.");
+                await client.admin().connect();
+                await client.admin().disconnect();
+                KafkaModule.logger.log({ attempt }, "Connected to kafka.");
+                return true;
+            },
+            maxAttempts: KAFKA_CONNECTION_INITIALIZATION_MAX_RETRIES,
+            intervalInMilliseconds: KAFKA_CONNECTION_INITIALIZATION_INTERVAL,
+        });
     }
 
     static forFeatureAsync(
@@ -62,17 +96,7 @@ export class KafkaModule implements OnModuleDestroy {
                             logCreator: (level) => (entry) => loggerAdapter.log(level, entry),
                         });
 
-                        let ok = false;
-
-                        while (!ok) {
-                            try {
-                                await client.admin().connect();
-                                ok = true;
-                            } catch (err) {
-                                // TODO: Improve it
-                            }
-                        }
-
+                        await KafkaModule.initializeConnection(client);
                         return client;
                     },
                     inject: [KafkaOptionsToken],
@@ -85,6 +109,8 @@ export class KafkaModule implements OnModuleDestroy {
                             allowAutoTopicCreation: true,
                         });
                         await producer.connect();
+                        KafkaModule.trackProducer(producer);
+
                         logger.log("Producer connected.");
                         return producer;
                     },
@@ -99,6 +125,8 @@ export class KafkaModule implements OnModuleDestroy {
                             allowAutoTopicCreation: true,
                         });
                         await consumer.connect();
+                        KafkaModule.trackConsumer(consumer);
+
                         logger.log("Consumer connected.");
                         return consumer;
                     },
