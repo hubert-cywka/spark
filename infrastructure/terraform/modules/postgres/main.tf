@@ -216,7 +216,7 @@ resource "kubernetes_deployment" "pooler" {
           }
           env {
             name  = "PGBOUNCER_DATABASE"
-            value = var.database_name
+            value = var.pgbouncer_database
           }
           env {
             name  = "POSTGRESQL_HOST"
