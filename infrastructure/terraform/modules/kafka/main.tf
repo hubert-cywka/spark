@@ -247,6 +247,7 @@ resource "kubernetes_stateful_set" "kafka_broker" {
           export KAFKA_NODE_ID=$(echo $KAFKA_POD_NAME | sed 's/kafka-broker-//');
           echo "KAFKA_NODE_ID: $KAFKA_NODE_ID";
           echo "CLUSTER_ID: $CLUSTER_ID";
+          
           KAFKA_CONFIG_FILE="/opt/kafka/config/kraft/server.properties";
           
            if [ ! -f "$KAFKA_LOG_DIRS/meta.properties" ]; then
