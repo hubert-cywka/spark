@@ -1,3 +1,7 @@
+variable "namespace" {
+  type = string
+}
+
 variable "cluster_id" {
   type = string
 }

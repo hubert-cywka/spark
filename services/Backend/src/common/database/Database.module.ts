@@ -1,7 +1,7 @@
 import { DynamicModule, Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
-import { addTransactionalDataSource } from "typeorm-transactional";
+import { addTransactionalDataSource, getDataSourceByName } from "typeorm-transactional";
 
 import { initializeDatabase } from "@/common/utils/initializeDatabase";
 import { logger } from "@/lib/logger";
@@ -35,6 +35,12 @@ export class DatabaseModule {
                     async dataSourceFactory(options) {
                         if (!options) {
                             throw new Error();
+                        }
+
+                        const existing = getDataSourceByName(connectionName);
+
+                        if (existing) {
+                            return existing;
                         }
 
                         return addTransactionalDataSource({
