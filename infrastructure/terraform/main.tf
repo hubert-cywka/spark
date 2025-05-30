@@ -29,8 +29,6 @@ resource "kubernetes_config_map" "app_config" {
 
     CLIENT_URL_BASE = var.CLIENT_URL_BASE
 
-    PUBSUB_PORT = var.PUBSUB_PORT
-
     BACKEND_PORT                             = var.BACKEND_PORT
     JWT_SIGNING_SECRET                       = var.JWT_SIGNING_SECRET
     OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS   = var.OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS
@@ -78,7 +76,23 @@ resource "kubernetes_config_map" "app_config" {
     PGBOUNCER_STATS_USERS        = var.PGBOUNCER_STATS_USERS
     PGBOUNCER_DATABASE           = var.PGBOUNCER_DATABASE
     POSTGRESQL_PORT              = var.POSTGRESQL_PORT
+
+    KAFKA_CLUSTER_ID               = var.KAFKA_CLUSTER_ID
+    KAFKA_NUM_PARTITIONS           = var.KAFKA_NUM_PARTITIONS
+    KAFKA_BROKER_INTERNAL_PORT     = var.KAFKA_BROKER_INTERNAL_PORT
+    KAFKA_CONTROLLER_INTERNAL_PORT = var.KAFKA_CONTROLLER_INTERNAL_PORT
+    KAFKA_LOG_SEGMENT_BYTES        = var.KAFKA_LOG_SEGMENT_BYTES
   }
+}
+
+module "kafka_cluster" {
+  source = "./modules/kafka"
+
+  cluster_id               = var.KAFKA_CLUSTER_ID
+  num_partitions           = var.KAFKA_NUM_PARTITIONS
+  broker_internal_port     = var.KAFKA_BROKER_INTERNAL_PORT
+  controller_internal_port = var.KAFKA_CONTROLLER_INTERNAL_PORT
+  log_segment_bytes        = var.KAFKA_LOG_SEGMENT_BYTES
 }
 
 module "journal-service" {
@@ -102,8 +116,7 @@ module "journal-service" {
     "DATABASE_USERNAME"                        = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                        = var.DATABASE_PASSWORD
     "DATABASE_HOST"                            = "${kubernetes_service.pooler.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
-    "PUBSUB_HOST"                              = "${kubernetes_service.pubsub.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
-    "PUBSUB_PORT"                              = var.PUBSUB_PORT
+    "PUBSUB_BROKERS"                           = module.kafka_cluster.pubsub_brokers
     "JWT_SIGNING_SECRET"                       = var.JWT_SIGNING_SECRET
     "OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS"   = var.OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS
     "JWT_EXPIRATION_TIME_IN_SECONDS"           = var.JWT_EXPIRATION_TIME_IN_SECONDS
@@ -133,7 +146,7 @@ module "journal-service" {
 
   depends_on = [
     kubernetes_service.pooler,
-    kubernetes_service.pubsub,
+    module.kafka_cluster,
   ]
 }
 
@@ -158,8 +171,7 @@ module "mail-service" {
     "DATABASE_USERNAME"                        = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                        = var.DATABASE_PASSWORD
     "DATABASE_HOST"                            = "${kubernetes_service.pooler.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
-    "PUBSUB_HOST"                              = "${kubernetes_service.pubsub.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
-    "PUBSUB_PORT"                              = var.PUBSUB_PORT
+    "PUBSUB_BROKERS"                           = module.kafka_cluster.pubsub_brokers
     "JWT_SIGNING_SECRET"                       = var.JWT_SIGNING_SECRET
     "OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS"   = var.OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS
     "JWT_EXPIRATION_TIME_IN_SECONDS"           = var.JWT_EXPIRATION_TIME_IN_SECONDS
@@ -189,7 +201,7 @@ module "mail-service" {
 
   depends_on = [
     kubernetes_service.pooler,
-    kubernetes_service.pubsub,
+    module.kafka_cluster,
   ]
 }
 
@@ -214,8 +226,7 @@ module "identity-service" {
     "DATABASE_USERNAME"                        = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                        = var.DATABASE_PASSWORD
     "DATABASE_HOST"                            = "${kubernetes_service.pooler.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
-    "PUBSUB_HOST"                              = "${kubernetes_service.pubsub.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
-    "PUBSUB_PORT"                              = var.PUBSUB_PORT
+    "PUBSUB_BROKERS"                           = module.kafka_cluster.pubsub_brokers
     "JWT_SIGNING_SECRET"                       = var.JWT_SIGNING_SECRET
     "OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS"   = var.OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS
     "JWT_EXPIRATION_TIME_IN_SECONDS"           = var.JWT_EXPIRATION_TIME_IN_SECONDS
@@ -245,7 +256,7 @@ module "identity-service" {
 
   depends_on = [
     kubernetes_service.pooler,
-    kubernetes_service.pubsub,
+    module.kafka_cluster,
   ]
 }
 
@@ -270,8 +281,7 @@ module "gdpr-service" {
     "DATABASE_USERNAME"                        = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                        = var.DATABASE_PASSWORD
     "DATABASE_HOST"                            = "${kubernetes_service.pooler.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
-    "PUBSUB_HOST"                              = "${kubernetes_service.pubsub.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
-    "PUBSUB_PORT"                              = var.PUBSUB_PORT
+    "PUBSUB_BROKERS"                           = module.kafka_cluster.pubsub_brokers
     "JWT_SIGNING_SECRET"                       = var.JWT_SIGNING_SECRET
     "OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS"   = var.OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS
     "JWT_EXPIRATION_TIME_IN_SECONDS"           = var.JWT_EXPIRATION_TIME_IN_SECONDS
@@ -301,7 +311,7 @@ module "gdpr-service" {
 
   depends_on = [
     kubernetes_service.pooler,
-    kubernetes_service.pubsub,
+    module.kafka_cluster,
   ]
 }
 
@@ -326,8 +336,7 @@ module "users-service" {
     "DATABASE_USERNAME"                        = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                        = var.DATABASE_PASSWORD
     "DATABASE_HOST"                            = "${kubernetes_service.pooler.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
-    "PUBSUB_HOST"                              = "${kubernetes_service.pubsub.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
-    "PUBSUB_PORT"                              = var.PUBSUB_PORT
+    "PUBSUB_BROKERS"                           = module.kafka_cluster.pubsub_brokers
     "JWT_SIGNING_SECRET"                       = var.JWT_SIGNING_SECRET
     "OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS"   = var.OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS
     "JWT_EXPIRATION_TIME_IN_SECONDS"           = var.JWT_EXPIRATION_TIME_IN_SECONDS
@@ -357,7 +366,7 @@ module "users-service" {
 
   depends_on = [
     kubernetes_service.pooler,
-    kubernetes_service.pubsub,
+    module.kafka_cluster,
   ]
 }
 
@@ -382,8 +391,7 @@ module "alerts-service" {
     "DATABASE_USERNAME"                        = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                        = var.DATABASE_PASSWORD
     "DATABASE_HOST"                            = "${kubernetes_service.pooler.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
-    "PUBSUB_HOST"                              = "${kubernetes_service.pubsub.metadata[0].name}.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local"
-    "PUBSUB_PORT"                              = var.PUBSUB_PORT
+    "PUBSUB_BROKERS"                           = module.kafka_cluster.pubsub_brokers
     "JWT_SIGNING_SECRET"                       = var.JWT_SIGNING_SECRET
     "OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS"   = var.OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS
     "JWT_EXPIRATION_TIME_IN_SECONDS"           = var.JWT_EXPIRATION_TIME_IN_SECONDS
@@ -413,6 +421,6 @@ module "alerts-service" {
 
   depends_on = [
     kubernetes_service.pooler,
-    kubernetes_service.pubsub,
+    module.kafka_cluster,
   ]
 }
