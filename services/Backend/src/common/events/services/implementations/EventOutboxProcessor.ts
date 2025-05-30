@@ -1,7 +1,6 @@
 import { Logger } from "@nestjs/common";
 import { Mutex } from "async-mutex";
 import dayjs from "dayjs";
-import { firstValueFrom, timeout } from "rxjs";
 import { Repository } from "typeorm";
 import { runInTransaction } from "typeorm-transactional";
 
@@ -15,12 +14,10 @@ export interface EventOutboxProcessorOptions {
     context: string;
     maxAttempts?: number;
     maxBatchSize?: number;
-    publishTimeout?: number;
 }
 
 const DEFAULT_MAX_BATCH_SIZE = 50;
 const DEFAULT_MAX_ATTEMPTS = 10_000;
-const DEFAULT_PUBLISH_TIMEOUT = 3000;
 
 /*
   Key decisions:
@@ -41,7 +38,6 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
     private readonly processingMutex: Mutex;
     private readonly maxAttempts: number;
     private readonly maxBatchSize: number;
-    private readonly publishTimeout: number;
     private readonly connectionName: string;
 
     public constructor(
@@ -55,7 +51,6 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
 
         this.maxBatchSize = options.maxBatchSize ?? DEFAULT_MAX_BATCH_SIZE;
         this.maxAttempts = options.maxAttempts ?? DEFAULT_MAX_ATTEMPTS;
-        this.publishTimeout = options.publishTimeout ?? DEFAULT_PUBLISH_TIMEOUT;
     }
 
     public notifyOnEnqueued(event: IntegrationEvent) {
@@ -83,7 +78,7 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
                     await this.processPendingEvents(options);
                 }
             } catch (error) {
-                this.logger.error({ error }, "Failed to process pending events.");
+                this.logger.error(error, "Failed to process pending events.");
             }
         });
     }
@@ -141,8 +136,8 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
         const event = IntegrationEvent.fromEntity(entity);
 
         try {
-            const ack = await firstValueFrom(this.client.publish(event).pipe(timeout(this.publishTimeout)));
-            this.logger.log({ event, ack }, "Published event");
+            await this.client.publish(event);
+            this.logger.log({ event }, "Published event");
             entity.processedAt = dayjs().toDate();
         } catch (e) {
             this.logger.error({ event, e }, "Failed to publish event in time - ACK not received.");

@@ -34,10 +34,6 @@ variable "CLIENT_URL_BASE" {
   type = string
 }
 
-variable "PUBSUB_PORT" {
-  type = number
-}
-
 variable "BACKEND_PORT" {
   type = number
 }
@@ -175,5 +171,25 @@ variable "PGBOUNCER_DATABASE" {
 }
 
 variable "POSTGRESQL_PORT" {
+  type = number
+}
+
+variable "KAFKA_CLUSTER_ID" {
+  type = string
+}
+
+variable "KAFKA_NUM_PARTITIONS" {
+  type = number
+}
+
+variable "KAFKA_BROKER_INTERNAL_PORT" {
+  type = number
+}
+
+variable "KAFKA_CONTROLLER_INTERNAL_PORT" {
+  type = number
+}
+
+variable "KAFKA_LOG_SEGMENT_BYTES" {
   type = number
 }

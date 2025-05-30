@@ -64,6 +64,7 @@ import { AddProcessAfterTimestampToEvent1748202970932 } from "@/modules/journal/
         DatabaseModule.forFeature(JOURNAL_MODULE_DATA_SOURCE, [EntryEntity, DailyEntity, AuthorEntity, GoalEntity]),
         IntegrationEventsModule.forFeature({
             context: JournalSharedModule.name,
+            consumerGroupId: "journal",
             connectionName: JOURNAL_MODULE_DATA_SOURCE,
         }),
     ],

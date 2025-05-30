@@ -18,11 +18,13 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 process.on("uncaughtException", (error) => {
-    logger.fatal({ error }, "Uncaught exception.");
+    logger.fatal(error, "Uncaught exception.");
+    process.exit(1);
 });
 
 process.on("unhandledRejection", (error) => {
-    logger.fatal({ error }, "Unhandled rejection");
+    logger.fatal(error, "Unhandled rejection");
+    process.exit(1);
 });
 
 async function bootstrap() {

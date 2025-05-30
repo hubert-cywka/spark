@@ -1,6 +1,7 @@
 import { Inject, Module, OnModuleInit } from "@nestjs/common";
 
-import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventStreams, IntegrationEventTopics } from "@/common/events";
+import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventTopics } from "@/common/events";
+import { KafkaConsumerMetadata } from "@/common/events/drivers/kafka/types";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -31,7 +32,7 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
 export class JournalModule implements OnModuleInit {
     public constructor(
         @Inject(IntegrationEventsSubscriberToken)
-        private readonly subscriber: IIntegrationEventsSubscriber,
+        private readonly subscriber: IIntegrationEventsSubscriber<KafkaConsumerMetadata>,
         @Inject(IntegrationEventsJobsOrchestratorToken)
         private readonly orchestrator: IIntegrationEventsJobsOrchestrator,
         @Inject(InboxEventHandlersToken)
@@ -44,12 +45,8 @@ export class JournalModule implements OnModuleInit {
         this.orchestrator.startClearingInbox();
         this.orchestrator.startClearingOutbox();
 
-        void this.subscriber.listen([
-            {
-                name: "codename_journal_account",
-                stream: IntegrationEventStreams.account,
-                subjects: [IntegrationEventTopics.account.created, IntegrationEventTopics.account.removal.completed],
-            },
-        ]);
+        void this.subscriber.listen({
+            topics: [IntegrationEventTopics.account.created, IntegrationEventTopics.account.removal.completed],
+        });
     }
 }

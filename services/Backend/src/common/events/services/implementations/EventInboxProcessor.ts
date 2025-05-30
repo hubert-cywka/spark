@@ -77,7 +77,7 @@ export class EventInboxProcessor implements IEventInboxProcessor {
                     await this.processPendingEvents(options);
                 }
             } catch (error) {
-                this.logger.error({ error }, "Failed to process pending events.");
+                this.logger.error(error, "Failed to process pending events.");
             }
         });
     }

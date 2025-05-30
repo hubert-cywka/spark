@@ -24,8 +24,7 @@ export const AppConfig = () => ({
     },
 
     pubsub: {
-        host: process.env.PUBSUB_HOST,
-        port: parseInt(process.env.PUBSUB_PORT ?? ""),
+        brokers: process.env.PUBSUB_BROKERS,
     },
 
     auth: {

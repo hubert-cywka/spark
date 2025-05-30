@@ -15,8 +15,8 @@ dist-ssr
 
 # Secrets
 **/.env  
-.npmrc
-.tfvars
+**/.npmrc
+**/.tfvars
 
 # Editor directories and files
 .vscode/*

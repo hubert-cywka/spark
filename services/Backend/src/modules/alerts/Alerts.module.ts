@@ -2,13 +2,8 @@ import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import {
-    type IInboxEventHandler,
-    InboxEventHandlersToken,
-    IntegrationEventsModule,
-    IntegrationEventStreams,
-    IntegrationEventTopics,
-} from "@/common/events";
+import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule, IntegrationEventTopics } from "@/common/events";
+import { KafkaConsumerMetadata } from "@/common/events/drivers/kafka/types";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -111,6 +106,7 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
         DatabaseModule.forFeature(ALERTS_MODULE_DATA_SOURCE, [AlertEntity, RecipientEntity]),
         IntegrationEventsModule.forFeature({
             context: AlertsModule.name,
+            consumerGroupId: "alerts",
             connectionName: ALERTS_MODULE_DATA_SOURCE,
         }),
     ],
@@ -119,7 +115,7 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
 export class AlertsModule implements OnModuleInit {
     public constructor(
         @Inject(IntegrationEventsSubscriberToken)
-        private readonly subscriber: IIntegrationEventsSubscriber,
+        private readonly subscriber: IIntegrationEventsSubscriber<KafkaConsumerMetadata>,
         @Inject(IntegrationEventsJobsOrchestratorToken)
         private readonly orchestrator: IIntegrationEventsJobsOrchestrator,
         @Inject(InboxEventHandlersToken)
@@ -132,12 +128,8 @@ export class AlertsModule implements OnModuleInit {
         this.orchestrator.startClearingInbox();
         this.orchestrator.startClearingOutbox();
 
-        void this.subscriber.listen([
-            {
-                name: "codename_alerts_account",
-                stream: IntegrationEventStreams.account,
-                subjects: [IntegrationEventTopics.account.created, IntegrationEventTopics.account.removal.completed],
-            },
-        ]);
+        void this.subscriber.listen({
+            topics: [IntegrationEventTopics.account.created, IntegrationEventTopics.account.removal.completed],
+        });
     }
 }

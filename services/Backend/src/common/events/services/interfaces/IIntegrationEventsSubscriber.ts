@@ -1,7 +1,5 @@
-import { IntegrationEventsConsumer } from "@/common/events/types";
-
 export const IntegrationEventsSubscriberToken = Symbol("IntegrationEventsSubscriber");
 
-export interface IIntegrationEventsSubscriber {
-    listen(consumers: IntegrationEventsConsumer[]): Promise<void>;
+export interface IIntegrationEventsSubscriber<T> {
+    listen(metadata: T): Promise<void>;
 }

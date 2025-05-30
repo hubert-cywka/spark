@@ -2,13 +2,8 @@ import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import {
-    type IInboxEventHandler,
-    InboxEventHandlersToken,
-    IntegrationEventsModule,
-    IntegrationEventStreams,
-    IntegrationEventTopics,
-} from "@/common/events";
+import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule, IntegrationEventTopics } from "@/common/events";
+import { KafkaConsumerMetadata } from "@/common/events/drivers/kafka/types";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -134,6 +129,7 @@ import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/
         DatabaseModule.forFeature(MAIL_MODULE_DATA_SOURCE, [RecipientEntity]),
         IntegrationEventsModule.forFeature({
             context: MailModule.name,
+            consumerGroupId: "mail",
             connectionName: MAIL_MODULE_DATA_SOURCE,
         }),
     ],
@@ -142,7 +138,7 @@ import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/
 export class MailModule implements OnModuleInit {
     public constructor(
         @Inject(IntegrationEventsSubscriberToken)
-        private readonly subscriber: IIntegrationEventsSubscriber,
+        private readonly subscriber: IIntegrationEventsSubscriber<KafkaConsumerMetadata>,
         @Inject(IntegrationEventsJobsOrchestratorToken)
         private readonly orchestrator: IIntegrationEventsJobsOrchestrator,
         @Inject(InboxEventHandlersToken)
@@ -155,29 +151,17 @@ export class MailModule implements OnModuleInit {
         this.orchestrator.startClearingInbox();
         this.orchestrator.startClearingOutbox();
 
-        void this.subscriber.listen([
-            {
-                name: "codename_mail_account",
-                stream: IntegrationEventStreams.account,
-                subjects: [
-                    IntegrationEventTopics.account.activation.requested,
-                    IntegrationEventTopics.account.password.resetRequested,
-                    IntegrationEventTopics.account.password.updated,
-                    IntegrationEventTopics.account.activation.completed,
-                    IntegrationEventTopics.account.removal.completed,
-                    IntegrationEventTopics.account.removal.scheduled,
-                ],
-            },
-            {
-                name: "codename_mail_alert",
-                stream: IntegrationEventStreams.alert,
-                subjects: [IntegrationEventTopics.alert.daily.reminder.triggered],
-            },
-            {
-                name: "codename_mail_2fa",
-                stream: IntegrationEventStreams.twoFactorAuth,
-                subjects: [IntegrationEventTopics.twoFactorAuth.email.issued],
-            },
-        ]);
+        void this.subscriber.listen({
+            topics: [
+                IntegrationEventTopics.account.activation.requested,
+                IntegrationEventTopics.account.password.resetRequested,
+                IntegrationEventTopics.account.password.updated,
+                IntegrationEventTopics.account.activation.completed,
+                IntegrationEventTopics.account.removal.completed,
+                IntegrationEventTopics.account.removal.scheduled,
+                IntegrationEventTopics.alert.daily.reminder.triggered,
+                IntegrationEventTopics.twoFactorAuth.email.issued,
+            ],
+        });
     }
 }

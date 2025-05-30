@@ -1,18 +1,11 @@
 {
     "tunnel": {
-        "port": 4040,
         "detachable": false
     },
     "db": {
-        "port": 5432,
         "detachable": false
     },
     "pooler": {
-        "port": 6432,
-        "detachable": false
-    },
-    "pubsub": {
-        "port": 4222,
         "detachable": false
     },
     "gateway": {
@@ -46,5 +39,23 @@
     "mail-service": {
         "port": 5200,
         "detachable": true
+    },
+    "kafka-broker-1": {
+        "detachable": false
+    },
+    "kafka-broker-2": {
+        "detachable": false
+    },
+    "kafka-broker-3": {
+        "detachable": false
+    },
+    "kafka-controller-1": {
+        "detachable": false
+    },
+    "kafka-controller-2": {
+        "detachable": false
+    },
+    "kafka-controller-3": {
+        "detachable": false
     }
 }
