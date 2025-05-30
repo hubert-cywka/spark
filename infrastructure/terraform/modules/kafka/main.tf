@@ -207,10 +207,6 @@ resource "kubernetes_stateful_set" "kafka_broker" {
             value = tostring(var.log_segment_bytes)
           }
           env {
-            name  = "KAFKA_NODE_ID"
-            value = tostring(each.value.node_id)
-          }
-          env {
             name  = "KAFKA_PROCESS_ROLES"
             value = "broker"
           }
@@ -247,17 +243,38 @@ resource "kubernetes_stateful_set" "kafka_broker" {
             value = "/kafka/data"
           }
           env {
-            name = "POD_NAME"
+            name = "KAFKA_POD_NAME"
             value_from {
               field_ref {
                 field_path = "metadata.name"
               }
             }
           }
+
+          command = ["/bin/bash", "-c"]
+          args = [
+            <<EOF
+          export KAFKA_NODE_ID=$(echo $KAFKA_POD_NAME | sed 's/kafka-broker-//');
+          echo "KAFKA_NODE_ID: $KAFKA_NODE_ID";
+          echo "CLUSTER_ID: $CLUSTER_ID";
+          KAFKA_CONFIG_FILE="/opt/kafka/config/kraft/server.properties";
+          
+           if [ ! -f "$KAFKA_LOG_DIRS/meta.properties" ]; then
+            /opt/kafka/bin/kafka-storage.sh format --config "$KAFKA_CONFIG_FILE" --cluster-id "$CLUSTER_ID"
+            echo "Formatted..";
+          else
+            echo "Found meta.properties.";
+          fi
+          
+          exec /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/kraft/server.properties
+          EOF
+          ]
+
           port {
             container_port = var.broker_internal_port
             name           = "broker-internal"
           }
+
           readiness_probe {
             tcp_socket {
               port = var.broker_internal_port
