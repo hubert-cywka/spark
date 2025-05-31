@@ -28,6 +28,28 @@ resource "kubernetes_deployment" "envoy" {
             container_port = var.envoy_port
           }
 
+          liveness_probe {
+            http_get {
+              path = "/ready"
+              port = 9901
+            }
+            initial_delay_seconds = 5
+            period_seconds        = 10
+            timeout_seconds       = 3
+            failure_threshold     = 3
+          }
+
+          readiness_probe {
+            http_get {
+              path = "/ready"
+              port = 9901
+            }
+            initial_delay_seconds = 15
+            period_seconds        = 5
+            timeout_seconds       = 3
+            failure_threshold     = 3
+          }
+
           env {
             name  = "IDENTITY_SERVICE_ADDRESS"
             value = "${var.identity_service_name}.${var.namespace_name}.svc.cluster.local"

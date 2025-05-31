@@ -67,20 +67,25 @@ static_resources:
                                               status: 204
 
                                         - match:
+                                              prefix: /gateway/healthz
+                                          direct_response:
+                                              status: 200
+
+                                        - match:
                                               prefix: /api/alert
                                           route:
                                               cluster: alerts
-                                              
+
                                         -   match:
                                                 prefix: /api/user
                                             route:
                                                 cluster: users
-                                                
+
                                         -   match:
                                                 prefix: /api/alert
                                             route:
                                                 cluster: alerts
-                                                
+
                                         -   match:
                                                 prefix: /api/daily
                                             route:
@@ -90,12 +95,12 @@ static_resources:
                                                 prefix: /api/entry
                                             route:
                                                 cluster: journal
-                                                
+
                                         -   match:
                                                 prefix: /api/goal
                                             route:
                                                 cluster: journal
-                                                
+
                                         -   match:
                                                 prefix: /api/2fa
                                             route:
@@ -105,17 +110,17 @@ static_resources:
                                                 prefix: /api/2fa
                                             route:
                                                 cluster: identity
-                                                
+
                                         -   match:
                                                 prefix: /api/account
                                             route:
                                                 cluster: identity
-                                                
+
                                         -   match:
                                                 prefix: /api/scopes
                                             route:
                                                 cluster: identity
-                                                
+
                                         -   match:
                                                 prefix: /api/auth
                                             route:
@@ -180,7 +185,7 @@ static_resources:
                                   socket_address:
                                       address: '${JOURNAL_SERVICE_ADDRESS}'
                                       port_value: '${JOURNAL_SERVICE_PORT}'
-                                      
+
         - name: alerts
           connect_timeout: 5s
           type: STRICT_DNS

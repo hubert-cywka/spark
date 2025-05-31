@@ -52,6 +52,24 @@ resource "kubernetes_stateful_set" "kafka_controller" {
             EOF
           ]
 
+          startup_probe {
+            tcp_socket {
+              port = var.controller_internal_port
+            }
+            initial_delay_seconds = 20
+            period_seconds        = 10
+            failure_threshold     = 30
+          }
+
+          liveness_probe {
+            tcp_socket {
+              port = var.controller_internal_port
+            }
+            period_seconds    = 15
+            timeout_seconds   = 5
+            failure_threshold = 3
+          }
+
           env {
             name  = "CLUSTER_ID"
             value = var.cluster_id
@@ -159,6 +177,24 @@ resource "kubernetes_stateful_set" "kafka_broker" {
             exec /etc/kafka/docker/run
             EOF
           ]
+
+          startup_probe {
+            tcp_socket {
+              port = var.broker_internal_port
+            }
+            initial_delay_seconds = 20
+            period_seconds        = 10
+            failure_threshold     = 30
+          }
+
+          liveness_probe {
+            tcp_socket {
+              port = var.broker_internal_port
+            }
+            period_seconds    = 15
+            timeout_seconds   = 5
+            failure_threshold = 3
+          }
 
           env {
             name  = "CLUSTER_ID"

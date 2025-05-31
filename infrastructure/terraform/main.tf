@@ -111,7 +111,7 @@ module "journal-service" {
   service_name   = "journal-service"
   namespace      = kubernetes_namespace.codename.metadata[0].name
   image          = "hejs22/codename-backend:latest"
-  replicas       = 1
+  replicas       = 2
   service_port   = var.BACKEND_PORT
   container_port = var.BACKEND_PORT
 
@@ -181,7 +181,7 @@ module "identity-service" {
   service_name   = "identity-service"
   namespace      = kubernetes_namespace.codename.metadata[0].name
   image          = "hejs22/codename-backend:latest"
-  replicas       = 1
+  replicas       = 2
   service_port   = var.BACKEND_PORT
   container_port = var.BACKEND_PORT
 
