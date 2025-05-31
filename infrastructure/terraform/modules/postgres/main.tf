@@ -103,7 +103,7 @@ resource "kubernetes_persistent_volume_claim" "db_pvc" {
     access_modes = ["ReadWriteOnce"]
     resources {
       requests = {
-        storage = "2Gi"
+        storage = var.volume_size_request
       }
     }
     storage_class_name = "standard"

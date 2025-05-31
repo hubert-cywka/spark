@@ -1,6 +1,6 @@
-resource "kubernetes_deployment" "gateway" {
+resource "kubernetes_deployment" "envoy" {
   metadata {
-    name      = "gateway"
+    name      = "envoy"
     namespace = var.namespace_name
   }
 
@@ -8,24 +8,24 @@ resource "kubernetes_deployment" "gateway" {
     replicas = 1
     selector {
       match_labels = {
-        app = "gateway"
+        app = "envoy"
       }
     }
 
     template {
       metadata {
         labels = {
-          app = "gateway"
+          app = "envoy"
         }
       }
 
       spec {
         container {
-          name  = "gateway"
-          image = var.gateway_image
+          name  = "envoy"
+          image = var.envoy_image
 
           port {
-            container_port = var.gateway_port
+            container_port = var.envoy_port
           }
 
           env {
@@ -82,19 +82,19 @@ resource "kubernetes_deployment" "gateway" {
   }
 }
 
-resource "kubernetes_service" "gateway" {
+resource "kubernetes_service" "envoy" {
   metadata {
-    name      = "gateway"
+    name      = "envoy"
     namespace = var.namespace_name
   }
 
   spec {
     selector = {
-      app = kubernetes_deployment.gateway.spec[0].template[0].metadata[0].labels.app
+      app = kubernetes_deployment.envoy.spec[0].template[0].metadata[0].labels.app
     }
 
     port {
-      port = var.gateway_port
+      port = var.envoy_port
     }
 
     type = "ClusterIP"

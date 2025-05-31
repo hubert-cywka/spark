@@ -1,4 +1,5 @@
 import { classToPlain } from "class-transformer";
+import { deserialize, serialize } from "v8";
 
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
@@ -52,6 +53,10 @@ export class IntegrationEvent<T = unknown> {
         });
     }
 
+    public toPlain(): object {
+        return classToPlain(this);
+    }
+
     public copy(overrides: Partial<RequiredIntegrationEventFields<T>> = {}) {
         return new IntegrationEvent<T>({
             id: this.id,
@@ -63,18 +68,12 @@ export class IntegrationEvent<T = unknown> {
         });
     }
 
-    public toPlain(): object {
-        return classToPlain(this);
+    public static fromBuffer<T = unknown>(buffer: Buffer): IntegrationEvent<T> {
+        return IntegrationEvent.fromPlain(deserialize(buffer));
     }
 
-    public static fromString<T = unknown>(bytes: string): IntegrationEvent<T> {
-        const plainObject: IntegrationEventFields<T> = JSON.parse(bytes);
-        return IntegrationEvent.fromPlain(plainObject);
-    }
-
-    public toString(): string {
-        const plainObject = this.toPlain();
-        return JSON.stringify(plainObject);
+    public toBuffer(): Buffer {
+        return serialize(this);
     }
 
     public getTopic(): string {
@@ -86,7 +85,7 @@ export class IntegrationEvent<T = unknown> {
             throw new PayloadEncryptedError();
         }
 
-        return this.payload as T;
+        return this.payload;
     }
 
     public getRawPayload(): string | T {

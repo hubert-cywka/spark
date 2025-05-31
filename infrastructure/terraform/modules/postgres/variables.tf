@@ -65,3 +65,7 @@ variable "pgbouncer_database" {
   type    = string
   default = "*"
 }
+
+variable "volume_size_request" {
+  type = string
+}

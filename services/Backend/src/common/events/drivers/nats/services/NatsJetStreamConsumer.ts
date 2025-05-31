@@ -5,7 +5,6 @@ import { type NatsConnection } from "nats";
 import { IntegrationEvent } from "@/common/events";
 import { NatsConsumerMetadata } from "@/common/events/drivers/nats/types";
 import { type IPubSubConsumer, OnEventReceivedHandler } from "@/common/events/services/interfaces/IPubSubConsumer";
-import { logger } from "@/lib/logger";
 
 @Injectable()
 export class NatsJetStreamConsumer implements IPubSubConsumer<NatsConsumerMetadata[]> {
@@ -29,17 +28,8 @@ export class NatsJetStreamConsumer implements IPubSubConsumer<NatsConsumerMetada
     private async readMessagesStream(messages: ConsumerMessages, onEventReceived: OnEventReceivedHandler) {
         for await (const message of messages) {
             const event = IntegrationEvent.fromPlain(message.json());
-
-            try {
-                await onEventReceived(
-                    event,
-                    () => message.ack(),
-                    () => message.nak()
-                );
-            } catch (error) {
-                logger.log({ error }, "Couldn't receive event.");
-                message.nak();
-            }
+            await onEventReceived(event);
+            message.ack();
         }
     }
 

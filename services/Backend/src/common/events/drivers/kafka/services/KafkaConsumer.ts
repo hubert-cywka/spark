@@ -22,7 +22,7 @@ export class KafkaConsumer implements IPubSubConsumer<KafkaConsumerMetadata> {
                     return;
                 }
 
-                const event = IntegrationEvent.fromString(message.value.toString());
+                const event = IntegrationEvent.fromBuffer(message.value);
                 await onEventReceived(event);
             },
         });

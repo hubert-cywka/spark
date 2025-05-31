@@ -6,4 +6,5 @@ export interface IPubSubConsumer<T> {
     listen(metadata: T, onEventReceived: OnEventReceivedHandler): Promise<void>;
 }
 
-export type OnEventReceivedHandler = (event: IntegrationEvent, ack?: () => void, nack?: () => void) => Promise<void>;
+// TODO: Verify what happens when this fails
+export type OnEventReceivedHandler = (event: IntegrationEvent) => Promise<void>;

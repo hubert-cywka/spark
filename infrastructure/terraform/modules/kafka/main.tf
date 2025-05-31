@@ -1,31 +1,26 @@
 locals {
-  kafka_namespace_name = var.namespace
-  kafka_image          = "apache/kafka:3.9.1"
-  fs_group_id          = 1000
-
-  kafka_controller_replicas = 3
-  kafka_broker_replicas     = 3
+  kafka_image = "apache/kafka:3.9.1"
+  fs_group_id = 1000
 
   kafka_broker_node_id_base     = 1
   kafka_controller_node_id_base = 1001
 
   kafka_controller_quorum_voters = join(",", [
-    for i in range(local.kafka_controller_replicas) : "${local.kafka_controller_node_id_base + i}@kafka-controller-${i}.kafka-controller-headless.${var.namespace}.svc.cluster.local:${var.controller_internal_port}"
+    for i in range(var.controller_replicas) : "${local.kafka_controller_node_id_base + i}@kafka-controller-${i}.kafka-controller-headless.${var.namespace}.svc.cluster.local:${var.controller_internal_port}"
   ])
 
-  PUBSUB_BROKERS = join(",", [
-    for i in range(local.kafka_broker_replicas) : "kafka-broker-${i}.kafka-broker-headless.${var.namespace}.svc.cluster.local:${var.broker_internal_port}"
+  brokers = join(",", [
+    for i in range(var.broker_replicas) : "kafka-broker-${i}.kafka-broker-headless.${var.namespace}.svc.cluster.local:${var.broker_internal_port}"
   ])
 }
 
-# --- Konfiguracja Kontrolerów ---
 resource "kubernetes_stateful_set" "kafka_controller" {
   metadata {
     name      = "kafka-controller"
     namespace = var.namespace
   }
   spec {
-    replicas     = local.kafka_controller_replicas
+    replicas     = var.controller_replicas
     service_name = "kafka-controller-headless"
     selector {
       match_labels = {
@@ -47,19 +42,16 @@ resource "kubernetes_stateful_set" "kafka_controller" {
           image = local.kafka_image
 
           command = ["/bin/bash", "-c"]
-          # ZMIANA: Skrypt ustawia KAFKA_NODE_ID, a następnie uruchamia domyślny skrypt z obrazu.
+
           args = [
             <<-EOF
             set -e
             ORDINAL=$(echo $HOSTNAME | awk -F'-' '{print $NF}')
             export KAFKA_NODE_ID=$((ORDINAL + ${local.kafka_controller_node_id_base}))
-            
-            # Uruchamiamy oryginalny skrypt z obrazu, który przetworzy wszystkie zmienne KAFKA_*
             exec /etc/kafka/docker/run
             EOF
           ]
 
-          # Te zmienne są odczytywane przez skrypt /etc/kafka/docker/run
           env {
             name  = "CLUSTER_ID"
             value = var.cluster_id
@@ -104,7 +96,7 @@ resource "kubernetes_stateful_set" "kafka_controller" {
         access_modes = ["ReadWriteOnce"]
         resources {
           requests = {
-            storage = "1Gi"
+            storage = var.controller_volume_size_request
           }
         }
       }
@@ -130,14 +122,13 @@ resource "kubernetes_service" "kafka_controller_headless" {
   }
 }
 
-# --- Konfiguracja Brokerów ---
 resource "kubernetes_stateful_set" "kafka_broker" {
   metadata {
     name      = "kafka-broker"
     namespace = var.namespace
   }
   spec {
-    replicas     = local.kafka_broker_replicas
+    replicas     = var.broker_replicas
     service_name = "kafka-broker-headless"
     selector {
       match_labels = {
@@ -159,23 +150,16 @@ resource "kubernetes_stateful_set" "kafka_broker" {
           image = local.kafka_image
 
           command = ["/bin/bash", "-c"]
-          # ZMIANA: Skrypt dynamicznie ustawia KAFKA_NODE_ID oraz KAFKA_ADVERTISED_LISTENERS,
-          # a następnie uruchamia domyślny skrypt z obrazu.
           args = [
             <<-EOF
             set -e
             ORDINAL=$(echo $HOSTNAME | awk -F'-' '{print $NF}')
             export KAFKA_NODE_ID=$((ORDINAL + ${local.kafka_broker_node_id_base}))
-            
-            # DODANE: Dynamiczne tworzenie advertised.listeners na podstawie hostname poda.
             export KAFKA_ADVERTISED_LISTENERS="PLAINTEXT://$HOSTNAME.kafka-broker-headless.${var.namespace}.svc.cluster.local:${var.broker_internal_port}"
-
-            # Uruchamiamy oryginalny skrypt z obrazu, który przetworzy wszystkie zmienne KAFKA_*
             exec /etc/kafka/docker/run
             EOF
           ]
 
-          # Te zmienne są odczytywane przez skrypt /etc/kafka/docker/run
           env {
             name  = "CLUSTER_ID"
             value = var.cluster_id
@@ -210,7 +194,7 @@ resource "kubernetes_stateful_set" "kafka_broker" {
           }
           env {
             name  = "KAFKA_NUM_PARTITIONS"
-            value = tostring(var.num_partitions)
+            value = var.num_partitions
           }
           env {
             name  = "KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS"
@@ -221,7 +205,6 @@ resource "kubernetes_stateful_set" "kafka_broker" {
             container_port = var.broker_internal_port
             name           = "broker-internal"
           }
-          # DODAJ volumeMounts JEŚLI POTRZEBNE (tak jak w kontrolerach)
           volume_mount {
             mount_path = "/kafka/data"
             name       = "kafka-broker-data"
@@ -237,7 +220,7 @@ resource "kubernetes_stateful_set" "kafka_broker" {
         access_modes = ["ReadWriteOnce"]
         resources {
           requests = {
-            storage = "2Gi"
+            storage = var.broker_volume_size_request
           }
         }
       }
