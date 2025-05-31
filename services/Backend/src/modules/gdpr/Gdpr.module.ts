@@ -3,7 +3,6 @@ import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule, IntegrationEventTopics } from "@/common/events";
-import { KafkaConsumerMetadata } from "@/common/events/drivers/kafka/types";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -96,7 +95,7 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
 export class GdprModule implements OnModuleInit {
     public constructor(
         @Inject(IntegrationEventsSubscriberToken)
-        private readonly subscriber: IIntegrationEventsSubscriber<KafkaConsumerMetadata>,
+        private readonly subscriber: IIntegrationEventsSubscriber,
         @Inject(IntegrationEventsJobsOrchestratorToken)
         private readonly orchestrator: IIntegrationEventsJobsOrchestrator,
         @Inject(InboxEventHandlersToken)
@@ -109,12 +108,10 @@ export class GdprModule implements OnModuleInit {
         this.orchestrator.startClearingInbox();
         this.orchestrator.startClearingOutbox();
 
-        void this.subscriber.listen({
-            topics: [
-                IntegrationEventTopics.account.created,
-                IntegrationEventTopics.account.removal.completed,
-                IntegrationEventTopics.account.removal.requested,
-            ],
-        });
+        void this.subscriber.listen([
+            IntegrationEventTopics.account.created,
+            IntegrationEventTopics.account.removal.completed,
+            IntegrationEventTopics.account.removal.requested,
+        ]);
     }
 }

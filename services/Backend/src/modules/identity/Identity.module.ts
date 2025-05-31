@@ -1,7 +1,6 @@
 import { Inject, Module, OnModuleInit } from "@nestjs/common";
 
 import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventTopics } from "@/common/events";
-import { KafkaConsumerMetadata } from "@/common/events/drivers/kafka/types";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -41,7 +40,7 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
 export class IdentityModule implements OnModuleInit {
     public constructor(
         @Inject(IntegrationEventsSubscriberToken)
-        private readonly subscriber: IIntegrationEventsSubscriber<KafkaConsumerMetadata>,
+        private readonly subscriber: IIntegrationEventsSubscriber,
         @Inject(IntegrationEventsJobsOrchestratorToken)
         private readonly orchestrator: IIntegrationEventsJobsOrchestrator,
         @Inject(InboxEventHandlersToken)
@@ -54,14 +53,12 @@ export class IdentityModule implements OnModuleInit {
         this.orchestrator.startClearingInbox();
         this.orchestrator.startClearingOutbox();
 
-        void this.subscriber.listen({
-            topics: [
-                IntegrationEventTopics.account.password.updated,
-                IntegrationEventTopics.account.activation.completed,
-                IntegrationEventTopics.account.removal.completed,
-                IntegrationEventTopics.account.removal.requested,
-                IntegrationEventTopics.account.suspended,
-            ],
-        });
+        void this.subscriber.listen([
+            IntegrationEventTopics.account.password.updated,
+            IntegrationEventTopics.account.activation.completed,
+            IntegrationEventTopics.account.removal.completed,
+            IntegrationEventTopics.account.removal.requested,
+            IntegrationEventTopics.account.suspended,
+        ]);
     }
 }

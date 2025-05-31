@@ -7,7 +7,7 @@ import { NatsConsumerMetadata } from "@/common/events/drivers/nats/types";
 import { type IPubSubConsumer, OnEventReceivedHandler } from "@/common/events/services/interfaces/IPubSubConsumer";
 
 @Injectable()
-export class NatsJetStreamConsumer implements IPubSubConsumer<NatsConsumerMetadata[]> {
+export class NatsJetStreamConsumer implements IPubSubConsumer {
     private readonly logger = new Logger(NatsJetStreamConsumer.name);
     private readonly jetStreamClient: JetStreamClient;
     private jetStreamManager: JetStreamManager | null = null;
@@ -16,9 +16,12 @@ export class NatsJetStreamConsumer implements IPubSubConsumer<NatsConsumerMetada
         this.jetStreamClient = jetstream(connection);
     }
 
-    public async listen(consumers: NatsConsumerMetadata[], onEventReceived: OnEventReceivedHandler): Promise<void> {
-        await this.registerConsumers(consumers);
-        const streams = await this.getMessagesStreams(consumers);
+    public async listen(topics: string[], onEventReceived: OnEventReceivedHandler): Promise<void> {
+        // TODO: Implement
+        const mockConsumers: NatsConsumerMetadata[] = [];
+
+        await this.registerConsumers(mockConsumers);
+        const streams = await this.getMessagesStreams(mockConsumers);
 
         for await (const stream of streams) {
             void this.readMessagesStream(stream, onEventReceived);
