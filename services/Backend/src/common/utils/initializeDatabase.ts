@@ -1,7 +1,8 @@
-import { type LoggerService } from "@nestjs/common";
+import { Logger } from "@nestjs/common";
 import pg from "pg";
 
-import { pollResource } from "@/common/utils/pollResource";
+import { LinearRetryBackoffPolicy } from "@/common/retry/LinearRetryBackoffPolicy";
+import { withRetry } from "@/common/retry/withRetry";
 
 type DBConnectionOptions = {
     port: number;
@@ -13,44 +14,23 @@ type DBConnectionOptions = {
 
 type RetryOptions = {
     maxAttempts: number;
-    intervalInMilliseconds: number;
+    baseInterval: number;
 };
 
-export async function initializeDatabase(
-    dbOptions: DBConnectionOptions,
-    { maxAttempts = 100, intervalInMilliseconds = 3000 }: RetryOptions,
-    logger?: LoggerService
-): Promise<void> {
-    let client = createClient(dbOptions);
-    const { database, host, port } = dbOptions;
+export async function initializeDatabase(dbOptions: DBConnectionOptions, retryOptions: RetryOptions): Promise<void> {
+    const { database } = dbOptions;
+    const client = createClient(dbOptions);
+    const logger = new Logger(database);
 
-    await pollResource(
-        {
-            pollingFn: async () => {
-                try {
-                    await client.connect();
-                } catch (e) {
-                    await client.end();
-                    client = createClient(dbOptions);
-                    throw e;
-                }
-                return true;
-            },
-            resourceName: `Database @ ${host}:${port}`,
-            maxAttempts,
-            intervalInMilliseconds,
-        },
-        logger
-    );
-
+    await assertConnection(client, logger, retryOptions);
     const res = await client.query("SELECT 1 FROM pg_database WHERE datname = $1", [database]);
 
     if (res.rowCount === 0) {
-        logger?.log("Database does not exist, creating...", { database });
+        logger.log("Database does not exist, creating...", { database });
         await client.query(`CREATE DATABASE ${database}`);
-        logger?.log("Database created.", { database });
+        logger.log("Database created.", { database });
     } else {
-        logger?.log("Database already exists.", { database });
+        logger.log("Database already exists.", { database });
     }
 
     await client.end();
@@ -64,4 +44,21 @@ function createClient({ password, host, username, port }: DBConnectionOptions): 
         host,
         port,
     });
+}
+
+async function assertConnection(client: pg.Client, logger: Logger, { baseInterval, maxAttempts }: RetryOptions) {
+    const retryPolicy = new LinearRetryBackoffPolicy(baseInterval);
+
+    await withRetry(
+        async (attempt) => {
+            logger.log({ attempt }, "Trying to connect to DB.");
+            await client.connect();
+        },
+        {
+            maxAttempts,
+            retryPolicy,
+            onSuccess: (attempt) => logger.log({ attempt }, "Connected to DB."),
+            onFailure: (error) => logger.warn(error, "Failed to connect to DB."),
+        }
+    );
 }
