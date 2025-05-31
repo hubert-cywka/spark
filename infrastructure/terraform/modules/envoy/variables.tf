@@ -2,7 +2,7 @@ variable "namespace_name" {
   type = string
 }
 
-variable "gateway_port" {
+variable "envoy_port" {
   type = number
 }
 
@@ -38,7 +38,7 @@ variable "alerts_service_name" {
   type = string
 }
 
-variable "gateway_image" {
+variable "envoy_image" {
   type    = string
   default = "hejs22/codename-gateway:latest"
 }

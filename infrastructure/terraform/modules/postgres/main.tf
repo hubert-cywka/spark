@@ -103,7 +103,7 @@ resource "kubernetes_persistent_volume_claim" "db_pvc" {
     access_modes = ["ReadWriteOnce"]
     resources {
       requests = {
-        storage = "2Gi"
+        storage = var.volume_size_request
       }
     }
     storage_class_name = "standard"
@@ -216,7 +216,7 @@ resource "kubernetes_deployment" "pooler" {
           }
           env {
             name  = "PGBOUNCER_DATABASE"
-            value = var.database_name
+            value = var.pgbouncer_database
           }
           env {
             name  = "POSTGRESQL_HOST"

@@ -24,7 +24,7 @@ export const AppConfig = () => ({
     },
 
     pubsub: {
-        brokers: process.env.PUBSUB_BROKERS,
+        brokers: process.env.PUBSUB_BROKERS?.split(","),
     },
 
     auth: {

@@ -21,3 +21,19 @@ variable "controller_internal_port" {
 variable "log_segment_bytes" {
   type = number
 }
+
+variable "broker_replicas" {
+  type = number
+}
+
+variable "controller_replicas" {
+  type = number
+}
+
+variable "controller_volume_size_request" {
+  type = string
+}
+
+variable "broker_volume_size_request" {
+  type = string
+}

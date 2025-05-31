@@ -130,7 +130,7 @@ export class EventInboxProcessor implements IEventInboxProcessor {
                 this.logger.error({ event, error }, "Failed to process event.");
             } finally {
                 entity.attempts++;
-                entity.processAfter = this.retryPolicy.getNextAttemptDate(entity.attempts);
+                entity.processAfter = this.retryPolicy.getNextAttemptDate(entity.attempts + 1);
                 processedEvents.push(entity);
             }
         }

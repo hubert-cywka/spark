@@ -2,18 +2,17 @@ import { Injectable, Logger } from "@nestjs/common";
 import { type Consumer } from "kafkajs";
 
 import { IntegrationEvent } from "@/common/events";
-import { KafkaConsumerMetadata } from "@/common/events/drivers/kafka/types";
 import { type IPubSubConsumer, OnEventReceivedHandler } from "@/common/events/services/interfaces/IPubSubConsumer";
 
 @Injectable()
-export class KafkaConsumer implements IPubSubConsumer<KafkaConsumerMetadata> {
+export class KafkaConsumer implements IPubSubConsumer {
     private readonly logger = new Logger(KafkaConsumer.name);
 
     public constructor(private readonly consumer: Consumer) {}
 
-    public async listen(metadata: KafkaConsumerMetadata, onEventReceived: OnEventReceivedHandler): Promise<void> {
-        await this.consumer.subscribe(metadata);
-        this.logger.log({ topics: metadata.topics }, "Subscribed to topics.");
+    public async listen(topics: string[], onEventReceived: OnEventReceivedHandler): Promise<void> {
+        await this.consumer.subscribe({ topics, fromBeginning: true });
+        this.logger.log({ topics }, "Subscribed to topics.");
 
         await this.consumer.run({
             eachMessage: async ({ message, topic }) => {
@@ -22,8 +21,7 @@ export class KafkaConsumer implements IPubSubConsumer<KafkaConsumerMetadata> {
                     return;
                 }
 
-                const event = IntegrationEvent.fromString(message.value.toString());
-                await onEventReceived(event);
+                await onEventReceived(IntegrationEvent.fromBuffer(message.value));
             },
         });
     }

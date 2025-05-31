@@ -4,9 +4,11 @@ import { DataSource } from "typeorm";
 import { addTransactionalDataSource, getDataSourceByName } from "typeorm-transactional";
 
 import { initializeDatabase } from "@/common/utils/initializeDatabase";
-import { logger } from "@/lib/logger";
 import { EntityConstructor, MigrationConstructor } from "@/types/Database";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
+
+const CONNECTION_INITIALIZATION_MAX_ATTEMPTS = 15;
+const CONNECTION_INITIALIZATION_BASE_INTERVAL = 1_000;
 
 type DatabaseModuleOptions = {
     port: number;
@@ -51,14 +53,10 @@ export class DatabaseModule {
                     useFactory: async (...args: UseFactoryArgs) => {
                         const dbOptions = await options.useFactory(...args);
 
-                        await initializeDatabase(
-                            dbOptions,
-                            {
-                                maxAttempts: 100,
-                                intervalInMilliseconds: 5000,
-                            },
-                            logger
-                        );
+                        await initializeDatabase(dbOptions, {
+                            maxAttempts: CONNECTION_INITIALIZATION_MAX_ATTEMPTS,
+                            baseInterval: CONNECTION_INITIALIZATION_BASE_INTERVAL,
+                        });
 
                         return {
                             ...dbOptions,

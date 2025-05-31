@@ -6,11 +6,12 @@ import { KafkaLoggerAdapter } from "@/common/events/drivers/kafka/services/Kafka
 import { KafkaProducer } from "@/common/events/drivers/kafka/services/KafkaProducer";
 import { PubSubConsumerToken } from "@/common/events/services/interfaces/IPubSubConsumer";
 import { PubSubProducerToken } from "@/common/events/services/interfaces/IPubSubProducer";
-import { pollResource } from "@/common/utils/pollResource";
+import { LinearRetryBackoffPolicy } from "@/common/retry/LinearRetryBackoffPolicy";
+import { withRetry } from "@/common/retry/withRetry";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 
-const KAFKA_CONNECTION_INITIALIZATION_MAX_RETRIES = 15;
-const KAFKA_CONNECTION_INITIALIZATION_INTERVAL = 10_000;
+const CONNECTION_INITIALIZATION_MAX_ATTEMPTS = 15;
+const CONNECTION_INITIALIZATION_BASE_INTERVAL = 1_000;
 
 const KafkaOptionsToken = Symbol("KafkaOptionsToken");
 const KafkaProducerToken = Symbol("KafkaProducerToken");
@@ -52,19 +53,23 @@ export class KafkaModule implements OnApplicationShutdown {
         KafkaModule.producers.push(producer);
     }
 
-    private static async initializeConnection(client: Kafka) {
-        await pollResource({
-            resourceName: "Kafka",
-            pollingFn: async (attempt) => {
-                KafkaModule.logger.log({ attempt }, "Trying to connect to kafka.");
-                await client.admin().connect();
-                await client.admin().disconnect();
-                KafkaModule.logger.log({ attempt }, "Connected to kafka.");
-                return true;
+    private static async initializeConnection(client: Kafka, context: string) {
+        const retryPolicy = new LinearRetryBackoffPolicy(CONNECTION_INITIALIZATION_BASE_INTERVAL);
+
+        await withRetry(
+            async (attempt) => {
+                KafkaModule.logger.log({ attempt, context }, "Trying to connect to kafka.");
+                const admin = client.admin();
+                await admin.connect();
+                await admin.disconnect();
             },
-            maxAttempts: KAFKA_CONNECTION_INITIALIZATION_MAX_RETRIES,
-            intervalInMilliseconds: KAFKA_CONNECTION_INITIALIZATION_INTERVAL,
-        });
+            {
+                retryPolicy,
+                maxAttempts: CONNECTION_INITIALIZATION_MAX_ATTEMPTS,
+                onSuccess: (attempt) => KafkaModule.logger.log({ attempt, context }, "Connected to kafka."),
+                onFailure: (error) => KafkaModule.logger.warn(error, "Failed to connect to kafka."),
+            }
+        );
     }
 
     static forFeatureAsync(
@@ -96,7 +101,7 @@ export class KafkaModule implements OnApplicationShutdown {
                             logCreator: (level) => (entry) => loggerAdapter.log(level, entry),
                         });
 
-                        await KafkaModule.initializeConnection(client);
+                        await KafkaModule.initializeConnection(client, context);
                         return client;
                     },
                     inject: [KafkaOptionsToken],

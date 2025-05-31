@@ -16,7 +16,7 @@ export class KafkaProducer implements IPubSubProducer {
     public publish(event: IntegrationEvent): Promise<PublishAck> {
         const message = {
             key: event.getTenantId(),
-            value: event.toString(),
+            value: event.toBuffer(),
         };
 
         const publishPromise = this.producer.send({

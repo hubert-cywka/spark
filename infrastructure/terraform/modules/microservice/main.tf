@@ -2,6 +2,7 @@ resource "kubernetes_deployment" "this" {
   metadata {
     name      = var.service_name
     namespace = var.namespace
+
     labels = {
       app_project = "codename"
       app         = var.service_name
@@ -10,6 +11,15 @@ resource "kubernetes_deployment" "this" {
 
   spec {
     replicas = var.replicas
+
+    strategy {
+      type = "RollingUpdate"
+
+      rolling_update {
+        max_surge       = "25%"
+        max_unavailable = "0"
+      }
+    }
 
     selector {
       match_labels = {

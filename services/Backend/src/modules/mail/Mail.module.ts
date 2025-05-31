@@ -3,7 +3,6 @@ import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule, IntegrationEventTopics } from "@/common/events";
-import { KafkaConsumerMetadata } from "@/common/events/drivers/kafka/types";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -138,7 +137,7 @@ import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/
 export class MailModule implements OnModuleInit {
     public constructor(
         @Inject(IntegrationEventsSubscriberToken)
-        private readonly subscriber: IIntegrationEventsSubscriber<KafkaConsumerMetadata>,
+        private readonly subscriber: IIntegrationEventsSubscriber,
         @Inject(IntegrationEventsJobsOrchestratorToken)
         private readonly orchestrator: IIntegrationEventsJobsOrchestrator,
         @Inject(InboxEventHandlersToken)
@@ -151,17 +150,15 @@ export class MailModule implements OnModuleInit {
         this.orchestrator.startClearingInbox();
         this.orchestrator.startClearingOutbox();
 
-        void this.subscriber.listen({
-            topics: [
-                IntegrationEventTopics.account.activation.requested,
-                IntegrationEventTopics.account.password.resetRequested,
-                IntegrationEventTopics.account.password.updated,
-                IntegrationEventTopics.account.activation.completed,
-                IntegrationEventTopics.account.removal.completed,
-                IntegrationEventTopics.account.removal.scheduled,
-                IntegrationEventTopics.alert.daily.reminder.triggered,
-                IntegrationEventTopics.twoFactorAuth.email.issued,
-            ],
-        });
+        void this.subscriber.listen([
+            IntegrationEventTopics.account.activation.requested,
+            IntegrationEventTopics.account.password.resetRequested,
+            IntegrationEventTopics.account.password.updated,
+            IntegrationEventTopics.account.activation.completed,
+            IntegrationEventTopics.account.removal.completed,
+            IntegrationEventTopics.account.removal.scheduled,
+            IntegrationEventTopics.alert.daily.reminder.triggered,
+            IntegrationEventTopics.twoFactorAuth.email.issued,
+        ]);
     }
 }

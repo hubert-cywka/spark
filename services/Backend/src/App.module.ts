@@ -50,7 +50,7 @@ const getAppBaseImports = (): ModuleImport[] => {
             useFactory: (config: ConfigService) => {
                 return {
                     clientId: config.getOrThrow<string>("appName"),
-                    brokers: config.getOrThrow<string>("pubsub.brokers").split(","),
+                    brokers: config.getOrThrow<string[]>("pubsub.brokers"),
                 };
             },
             inject: [ConfigService],
