@@ -27,6 +27,7 @@ import { AddRemoveAtTimestampToPurgePlan1747944544022 } from "@/modules/gdpr/inf
 import { AddProcessAfterTimestampToEvent1748202952829 } from "@/modules/gdpr/infrastructure/database/migrations/1748202952829-addProcessAfterTimestampToEvent";
 import { ImproveOutboxProcessing1748764641595 } from "@/modules/gdpr/infrastructure/database/migrations/1748764641595-ImproveOutboxProcessing";
 import { Cleanup1748765396552 } from "@/modules/gdpr/infrastructure/database/migrations/1748765396552-Cleanup";
+import { OutboxIndices1748773002753 } from "@/modules/gdpr/infrastructure/database/migrations/1748773002753-OutboxIndices";
 import { TenantMapperToken } from "@/modules/gdpr/mappers/ITenant.mapper";
 import { TenantMapper } from "@/modules/gdpr/mappers/Tenant.mapper";
 import { DataPurgeService } from "@/modules/gdpr/services/implementations/DataPurge.service";
@@ -83,6 +84,7 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
                     AddProcessAfterTimestampToEvent1748202952829,
                     ImproveOutboxProcessing1748764641595,
                     Cleanup1748765396552,
+                    OutboxIndices1748773002753,
                 ],
             }),
             inject: [ConfigService],

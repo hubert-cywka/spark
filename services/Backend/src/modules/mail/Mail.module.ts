@@ -28,6 +28,7 @@ import { AddRecipient1748032112854 } from "@/modules/mail/infrastructure/databas
 import { AddProcessAfterTimestampToEvent1748202987491 } from "@/modules/mail/infrastructure/database/migrations/1748202987491-addProcessAfterTimestampToEvent";
 import { ImproveOutboxProcessing1748764641598 } from "@/modules/mail/infrastructure/database/migrations/1748764641598-ImproveOutboxProcessing";
 import { Cleanup1748765396555 } from "@/modules/mail/infrastructure/database/migrations/1748765396555-Cleanup";
+import { OutboxIndices1748773002755 } from "@/modules/mail/infrastructure/database/migrations/1748773002755-OutboxIndices";
 import { RecipientMapperToken } from "@/modules/mail/mappers/IRecipient.mapper";
 import { RecipientMapper } from "@/modules/mail/mappers/Recipient.mapper";
 import { EmailLookupService } from "@/modules/mail/services/implementations/EmailLookup.service";
@@ -125,6 +126,7 @@ import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/
                     AddProcessAfterTimestampToEvent1748202987491,
                     ImproveOutboxProcessing1748764641598,
                     Cleanup1748765396555,
+                    OutboxIndices1748773002755,
                 ],
             }),
             inject: [ConfigService],

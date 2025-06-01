@@ -19,6 +19,7 @@ import { EncryptedEvents1746293636231 } from "@/modules/identity/infrastructure/
 import { AddProcessAfterTimestampToEvent1748202961809 } from "@/modules/identity/infrastructure/database/migrations/1748202961809-addProcessAfterTimestampToEvent";
 import { ImproveOutboxProcessing1748764641596 } from "@/modules/identity/infrastructure/database/migrations/1748764641596-ImproveOutboxProcessing";
 import { Cleanup1748765396553 } from "@/modules/identity/infrastructure/database/migrations/1748765396553-Cleanup";
+import { OutboxIndices1748773002754 } from "@/modules/identity/infrastructure/database/migrations/1748773002754-OutboxIndices";
 
 @Module({
     imports: [
@@ -40,6 +41,7 @@ import { Cleanup1748765396553 } from "@/modules/identity/infrastructure/database
                     AddProcessAfterTimestampToEvent1748202961809,
                     ImproveOutboxProcessing1748764641596,
                     Cleanup1748765396553,
+                    OutboxIndices1748773002754,
                 ],
             }),
             inject: [ConfigService],

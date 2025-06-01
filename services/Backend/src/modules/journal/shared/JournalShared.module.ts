@@ -28,6 +28,7 @@ import { EncryptedEvents1746293695291 } from "@/modules/journal/infrastructure/d
 import { AddProcessAfterTimestampToEvent1748202970932 } from "@/modules/journal/infrastructure/database/migrations/1748202970932-addProcessAfterTimestampToEvent";
 import { ImproveOutboxProcessing1748764641597 } from "@/modules/journal/infrastructure/database/migrations/1748764641597-ImproveOutboxProcessing";
 import { Cleanup1748765396554 } from "@/modules/journal/infrastructure/database/migrations/1748765396554-Cleanup";
+import { OutboxIndices1748773002756 } from "@/modules/journal/infrastructure/database/migrations/1748773002756-OutboxIndices";
 
 @Module({
     providers: [],
@@ -61,6 +62,7 @@ import { Cleanup1748765396554 } from "@/modules/journal/infrastructure/database/
                     AddProcessAfterTimestampToEvent1748202970932,
                     ImproveOutboxProcessing1748764641597,
                     Cleanup1748765396554,
+                    OutboxIndices1748773002756,
                 ],
             }),
             inject: [ConfigService],

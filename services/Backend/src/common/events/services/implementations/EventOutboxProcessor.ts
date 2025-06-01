@@ -12,8 +12,7 @@ import { type IPubSubProducer } from "@/common/events/services/interfaces/IPubSu
 
 const DEFAULT_MAX_BATCH_SIZE = 50;
 const DEFAULT_MAX_ATTEMPTS = 10_000;
-const TOTAL_NUMBER_OF_PARTITIONS = 16; // TODO: Move to config
-const DEFAULT_STALE_PARTITION_THRESHOLD_MILLISECONDS = 10_000;
+const DEFAULT_STALE_PARTITION_THRESHOLD_MILLISECONDS = 30_000;
 
 export interface EventOutboxProcessorOptions {
     connectionName: string;
@@ -24,14 +23,14 @@ export interface EventOutboxProcessorOptions {
 }
 
 /*
-  Kluczowe decyzje projektowe (nowa wersja):
-  1. Gwarancja kolejności w ramach partycji jest najważniejsza.
-  2. Przetwarzanie partycji jest atomowe z perspektywy innych instancji serwisu dzięki blokadzie pesymistycznej.
-  3. Operacje sieciowe (publikacja) są wykonywane POZA transakcją bazodanową, aby nie blokować zasobów bazy danych na długo.
-  4. Aktualizacja stanu zdarzeń i partycji odbywa się w krótkiej, wydajnej transakcji.
-  5. Dwa mechanizmy wyzwalania:
-     - Natychmiastowy (`notifyOnEnqueued`): dla niskiego opóźnienia.
-     - Polling (`pollAndProcessStalePartitions`): dla gwarancji dostarczenia (gdyby powiadomienie zawiodło lub instancja padła).
+  Key decisions:
+  1. Guaranteed order of processing within given partition.
+  2. Poison messages are not handled. It is assumed, that publishing messages can fail only due to DB, broker or network issues.
+  Trying to publish more messages would only worsen the issue. If processing 1 message withing partition fails, processing whole
+  partition is cancelled. It also cancels processing of all other partitions.
+  3. Two processing mechanisms:
+     - push-based, after message is enqueued.
+     - polling-based, to deliver all failed events.
 */
 export class EventOutboxProcessor implements IEventOutboxProcessor {
     private readonly logger: Logger;
@@ -58,15 +57,16 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
 
     public notifyOnEnqueued(event: IntegrationEvent): void {
         const partition = this.partitionAssigner.assign(event.getPartitionKey());
-        void this.processPartition(partition);
+        void this.processPartition(partition, new Date());
     }
 
     public async processPendingEvents(): Promise<void> {
-        this.logger.log("Polling for stale partitions to process...");
         const staleThreshold = dayjs().subtract(this.stalePartitionThreshold, "milliseconds").toDate();
+        let stalePartitions: OutboxEventPartitionEntity[] = [];
+        const processedPartitions: OutboxEventPartitionEntity[] = [];
 
         try {
-            const stalePartitions = await this.partitionsRepository
+            stalePartitions = await this.partitionsRepository
                 .createQueryBuilder("partition")
                 .select("partition.id")
                 .where("partition.lastProcessedAt < :staleThreshold", {
@@ -76,35 +76,46 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
                 .getMany();
 
             if (stalePartitions.length === 0) {
-                this.logger.log("No stale partitions found.");
+                this.logger.debug("No stale partitions found.");
                 return;
             }
 
-            this.logger.log({ count: stalePartitions.length }, "Found stale partitions. Processing...");
+            this.logger.debug({ count: stalePartitions.length }, "Found stale partitions. Processing...");
 
             for (const partition of stalePartitions) {
-                await this.processPartition(partition.id);
-            }
+                const { ok } = await this.processPartition(partition.id, staleThreshold);
 
-            this.logger.log({ count: stalePartitions.length }, "Processed stale partitions.");
+                if (ok) {
+                    processedPartitions.push(partition);
+                } else {
+                    break;
+                }
+            }
         } catch (error) {
             this.logger.error(error, "Failed to poll and process stale partitions.");
         }
+
+        this.logger.debug(
+            {
+                total: stalePartitions.length,
+                processed: processedPartitions.length,
+            },
+            "Finished processing stale partitions."
+        );
     }
 
-    private async processPartition(partitionId: number): Promise<void> {
-        let process = true;
-
-        await runInTransaction(
+    private async processPartition(partitionId: number, processedNoLaterThan: Date) {
+        return await runInTransaction(
             async () => {
-                const partition = await this.acquirePartitionLock(partitionId);
+                const partition = await this.acquirePartitionLock(partitionId, processedNoLaterThan);
 
                 if (!partition) {
-                    return;
+                    return { ok: true };
                 }
 
-                while (process) {
-                    const events = await this.fetchNextBatchOfEvents(partitionId);
+                // eslint-disable-next-line no-constant-condition
+                while (true) {
+                    const events = await this.getNextBatchOfEvents(partitionId);
                     const { successfulEvents, failedEvent } = await this.publishEvents(events);
                     await this.updateEventsAndPartition(partition, successfulEvents, events);
 
@@ -113,13 +124,11 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
                             { partitionId, failedEventId: failedEvent.id },
                             "Stopped processing partition due to publish failure."
                         );
-                        process = false;
-                        break;
+                        return { ok: false };
                     }
 
                     if (events.length < this.maxBatchSize) {
-                        process = false;
-                        break;
+                        return { ok: true };
                     }
                 }
             },
@@ -127,13 +136,16 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
         );
     }
 
-    private async acquirePartitionLock(partitionId: number): Promise<OutboxEventPartitionEntity | null> {
+    private async acquirePartitionLock(partitionId: number, processedNoLaterThan: Date): Promise<OutboxEventPartitionEntity | null> {
         try {
             return await this.partitionsRepository
                 .createQueryBuilder("partition")
                 .setLock("pessimistic_write")
                 .setOnLocked("skip_locked")
                 .where("partition.id = :partitionId", { partitionId })
+                .where("partition.lastProcessedAt < :processedNoLaterThan", {
+                    processedNoLaterThan,
+                })
                 .getOne();
         } catch (error) {
             this.logger.error(`Failed to acquire lock for partition ${partitionId}`, error);
@@ -141,7 +153,7 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
         }
     }
 
-    private async fetchNextBatchOfEvents(partitionId: number): Promise<OutboxEventEntity[]> {
+    private async getNextBatchOfEvents(partitionId: number): Promise<OutboxEventEntity[]> {
         return this.eventsRepository.find({
             where: {
                 partition: partitionId,
@@ -197,9 +209,11 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
             });
         }
 
-        await partitionRepository.update(partition.id, {
-            lastProcessedAt: new Date(),
-        });
+        if (allAttemptedEventIds.length === successfulEventIds.length) {
+            await partitionRepository.update(partition.id, {
+                lastProcessedAt: new Date(),
+            });
+        }
     }
 
     private getEventRepository(): Repository<OutboxEventEntity> {
