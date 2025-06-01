@@ -144,11 +144,13 @@ export class IntegrationEventsModule {
                 {
                     provide: EventInboxProcessorToken,
                     useFactory: (
-                        repository: Repository<InboxEventEntity>,
+                        eventRepository: Repository<InboxEventEntity>,
+                        partitionRepository: Repository<InboxEventPartitionEntity>,
+                        assigner: IPartitionAssigner,
                         encryptionService: IIntegrationEventsEncryptionService,
                         retryPolicy: RetryBackoffPolicy
                     ) =>
-                        new EventInboxProcessor(repository, encryptionService, {
+                        new EventInboxProcessor(eventRepository, partitionRepository, assigner, encryptionService, {
                             context,
                             connectionName,
                             retryPolicy,
@@ -156,6 +158,8 @@ export class IntegrationEventsModule {
                         }),
                     inject: [
                         getRepositoryToken(InboxEventEntity, connectionName),
+                        getRepositoryToken(InboxEventPartitionEntity, connectionName),
+                        PartitionAssignerToken,
                         IntegrationEventsEncryptionServiceToken,
                         InboxRetryPolicyToken,
                     ],

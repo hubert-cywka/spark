@@ -76,11 +76,11 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
                 .getMany();
 
             if (stalePartitions.length === 0) {
-                this.logger.debug("No stale partitions found.");
+                this.logger.debug("No stale outbox partitions found.");
                 return;
             }
 
-            this.logger.debug({ count: stalePartitions.length }, "Found stale partitions. Processing...");
+            this.logger.debug({ count: stalePartitions.length }, "Found stale outbox partitions. Processing...");
 
             for (const partition of stalePartitions) {
                 const { ok } = await this.processPartition(partition.id, staleThreshold);
@@ -92,7 +92,7 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
                 }
             }
         } catch (error) {
-            this.logger.error(error, "Failed to poll and process stale partitions.");
+            this.logger.error(error, "Failed to poll and process stale outbox partitions.");
         }
 
         this.logger.debug(
@@ -100,7 +100,7 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
                 total: stalePartitions.length,
                 processed: processedPartitions.length,
             },
-            "Finished processing stale partitions."
+            "Finished processing stale outbox partitions."
         );
     }
 
@@ -143,7 +143,7 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
                 .setLock("pessimistic_write")
                 .setOnLocked("skip_locked")
                 .where("partition.id = :partitionId", { partitionId })
-                .where("partition.lastProcessedAt < :processedNoLaterThan", {
+                .andWhere("partition.lastProcessedAt < :processedNoLaterThan OR partition.lastProcessedAt IS NULL", {
                     processedNoLaterThan,
                 })
                 .getOne();
