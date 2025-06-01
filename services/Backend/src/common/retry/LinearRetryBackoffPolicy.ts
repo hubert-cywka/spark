@@ -3,13 +3,10 @@ import dayjs from "dayjs";
 import { RetryBackoffPolicy } from "@/common/retry/RetryBackoffPolicy";
 
 export class LinearRetryBackoffPolicy implements RetryBackoffPolicy {
-    public constructor(
-        private readonly baseInterval: number,
-        private readonly multiplier: number = 1
-    ) {}
+    public constructor(private readonly baseInterval: number) {}
 
     public getNextAttemptDelayInMs(attempt: number): number {
-        return this.baseInterval * attempt * this.multiplier;
+        return this.baseInterval * attempt;
     }
 
     public getNextAttemptDate(attempt: number): Date {

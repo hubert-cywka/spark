@@ -2,18 +2,17 @@ import { LinearRetryBackoffPolicy } from "@/common/retry/LinearRetryBackoffPolic
 
 describe("LinearRetryBackoffPolicy", () => {
     const baseInterval = 10_000;
-    const multiplier = 3;
     let policy: LinearRetryBackoffPolicy;
 
     beforeEach(() => {
-        policy = new LinearRetryBackoffPolicy(baseInterval, multiplier);
+        policy = new LinearRetryBackoffPolicy(baseInterval);
     });
 
     describe("getNextAttemptDelayInMs", () => {
         const delayTestCases = [
-            [1, 10_000 * multiplier],
-            [2, 20_000 * multiplier],
-            [3, 30_000 * multiplier],
+            [1, 10_000],
+            [2, 20_000],
+            [3, 30_000],
         ];
 
         it.each(delayTestCases)("should return %p ms delay for attempt %p", (attempt, expectedDelay) => {
