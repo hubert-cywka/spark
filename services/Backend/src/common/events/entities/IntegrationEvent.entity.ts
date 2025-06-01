@@ -8,6 +8,12 @@ export class IntegrationEventEntity<T = unknown> {
     tenantId!: string;
 
     @Column({ type: "varchar" })
+    partitionKey!: string;
+
+    @Column({ type: "int" })
+    partition!: number;
+
+    @Column({ type: "varchar" })
     topic!: string;
 
     @Column({ type: "boolean", default: false })

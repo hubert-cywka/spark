@@ -12,6 +12,7 @@ export class AccountCreatedEvent extends IntegrationEvent<AccountCreatedEventPay
         super({
             topic: IntegrationEventTopics.account.created,
             payload,
+            partitionKey: tenantId,
             tenantId,
         });
     }

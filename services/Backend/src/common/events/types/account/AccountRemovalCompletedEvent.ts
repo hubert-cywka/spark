@@ -11,6 +11,7 @@ export class AccountRemovalCompletedEvent extends IntegrationEvent<AccountRemova
         super({
             topic: IntegrationEventTopics.account.removal.completed,
             payload,
+            partitionKey: tenantId,
             tenantId,
         });
     }

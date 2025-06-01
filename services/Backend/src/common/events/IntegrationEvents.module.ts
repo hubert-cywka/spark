@@ -5,7 +5,9 @@ import { Repository } from "typeorm";
 import { DatabaseModule } from "@/common/database/Database.module";
 import { KafkaForFeatureOptions, KafkaModule, KafkaModuleOptions } from "@/common/events/drivers/kafka/Kafka.module";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
+import { InboxEventPartitionEntity } from "@/common/events/entities/InboxEventPartition.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import { OutboxEventPartitionEntity } from "@/common/events/entities/OutboxEventPartition.entity";
 import { EventInbox } from "@/common/events/services/implementations/EventInbox";
 import { EventInboxProcessor, EventInboxProcessorOptions } from "@/common/events/services/implementations/EventInboxProcessor";
 import { EventOutbox } from "@/common/events/services/implementations/EventOutbox";
@@ -86,7 +88,12 @@ export class IntegrationEventsModule {
                     }),
                     inject: [IntegrationEventsModuleOptionsToken],
                 }),
-                DatabaseModule.forFeature(connectionName, [InboxEventEntity, OutboxEventEntity]),
+                DatabaseModule.forFeature(connectionName, [
+                    InboxEventEntity,
+                    InboxEventPartitionEntity,
+                    OutboxEventEntity,
+                    OutboxEventPartitionEntity,
+                ]),
             ],
             providers: [
                 {
@@ -108,13 +115,21 @@ export class IntegrationEventsModule {
 
                 {
                     provide: EventOutboxProcessorToken,
-                    useFactory: (producer: IPubSubProducer, repository: Repository<OutboxEventEntity>) =>
-                        new EventOutboxProcessor(producer, repository, {
+                    useFactory: (
+                        producer: IPubSubProducer,
+                        eventsRepository: Repository<OutboxEventEntity>,
+                        partitionsRepository: Repository<OutboxEventPartitionEntity>
+                    ) =>
+                        new EventOutboxProcessor(producer, eventsRepository, partitionsRepository, {
                             context,
                             connectionName,
                             ...outboxProcessorOptions,
                         }),
-                    inject: [PubSubProducerToken, getRepositoryToken(OutboxEventEntity, connectionName)], // <--- Używasz stałego tokena!
+                    inject: [
+                        PubSubProducerToken,
+                        getRepositoryToken(OutboxEventEntity, connectionName),
+                        getRepositoryToken(OutboxEventPartitionEntity, connectionName),
+                    ],
                 },
 
                 {

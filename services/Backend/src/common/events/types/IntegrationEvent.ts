@@ -13,6 +13,7 @@ type IntegrationEventMetadata = {
 type RequiredIntegrationEventFields<T = unknown> = {
     topic: string;
     tenantId: string;
+    partitionKey: string;
     payload: T;
 };
 
@@ -20,17 +21,26 @@ type IntegrationEventFields<T = unknown> = IntegrationEventMetadata & RequiredIn
 
 export class IntegrationEvent<T = unknown> {
     private readonly id: string;
+    private readonly partitionKey: string;
     private readonly tenantId: string;
     private readonly topic: string;
     private readonly payload: T;
     private readonly createdAt: Date;
 
-    public constructor({ tenantId, topic, payload, id = crypto.randomUUID(), createdAt = new Date() }: IntegrationEventFields<T>) {
+    public constructor({
+        tenantId,
+        partitionKey,
+        topic,
+        payload,
+        id = crypto.randomUUID(),
+        createdAt = new Date(),
+    }: IntegrationEventFields<T>) {
         this.id = id;
         this.topic = topic;
         this.payload = payload;
         this.createdAt = createdAt;
         this.tenantId = tenantId;
+        this.partitionKey = partitionKey;
     }
 
     public static fromEntity<T = unknown>(entity: OutboxEventEntity<T> | InboxEventEntity<T>): IntegrationEvent<T> {
@@ -38,6 +48,7 @@ export class IntegrationEvent<T = unknown> {
             createdAt: entity.createdAt,
             payload: entity.payload,
             tenantId: entity.tenantId,
+            partitionKey: entity.partitionKey,
             topic: entity.topic,
             id: entity.id,
         });
@@ -48,6 +59,7 @@ export class IntegrationEvent<T = unknown> {
             createdAt: plain.createdAt,
             payload: plain.payload,
             tenantId: plain.tenantId,
+            partitionKey: plain.partitionKey,
             topic: plain.topic,
             id: plain.id,
         });
@@ -64,6 +76,7 @@ export class IntegrationEvent<T = unknown> {
             payload: this.payload,
             topic: this.topic,
             tenantId: this.tenantId,
+            partitionKey: this.partitionKey,
             ...overrides,
         });
     }
@@ -102,6 +115,10 @@ export class IntegrationEvent<T = unknown> {
 
     public getTenantId(): string {
         return this.tenantId;
+    }
+
+    public getPartitionKey(): string {
+        return this.partitionKey;
     }
 
     public getCreatedAt(): Date {
