@@ -21,7 +21,12 @@ export class KafkaConsumer implements IPubSubConsumer {
                     return;
                 }
 
-                await onEventReceived(IntegrationEvent.fromBuffer(message.value));
+                try {
+                    await onEventReceived(IntegrationEvent.fromBuffer(message.value));
+                } catch (error) {
+                    this.logger.error(error, "Couldn't consume message.");
+                    throw error;
+                }
             },
         });
     }

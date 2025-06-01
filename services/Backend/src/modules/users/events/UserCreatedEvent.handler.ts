@@ -1,7 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { EntityConflictError } from "@/common/errors/EntityConflict.error";
-import { whenError } from "@/common/errors/whenError";
 import { AccountCreatedEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 import { type IUsersService, UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
 
@@ -15,13 +13,9 @@ export class UserCreatedEventHandler implements IInboxEventHandler {
 
     async handle(event: IntegrationEvent): Promise<void> {
         const payload = event.getPayload() as AccountCreatedEventPayload;
-        try {
-            await this.usersService.create({
-                id: payload.account.id,
-                email: payload.account.email,
-            });
-        } catch (e) {
-            whenError(e).is(EntityConflictError).throwRpcException("User already exists.").elseRethrow();
-        }
+        await this.usersService.create({
+            id: payload.account.id,
+            email: payload.account.email,
+        });
     }
 }

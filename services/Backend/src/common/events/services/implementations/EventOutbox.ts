@@ -6,6 +6,7 @@ import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
 import { type IEventsQueueSubscriber } from "@/common/events/services/interfaces/IEventsQueueSubscriber";
 import { type IIntegrationEventsEncryptionService } from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
+import { type IPartitionAssigner } from "@/common/events/services/interfaces/IPartitionAssigner";
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 
 interface EventOutboxOptions {
@@ -22,6 +23,7 @@ export class EventOutbox implements IEventOutbox {
     public constructor(
         options: EventOutboxOptions,
         private readonly repository: Repository<OutboxEventEntity>,
+        private readonly partitionAssigner: IPartitionAssigner,
         private readonly encryptionService: IIntegrationEventsEncryptionService
     ) {
         this.logger = new Logger(options.context);
@@ -31,6 +33,7 @@ export class EventOutbox implements IEventOutbox {
 
     public async enqueue(event: IntegrationEvent, options?: { encrypt: boolean }): Promise<void> {
         const preparedEvent = await this.prepareEventToStore(event, options);
+        const partition = this.partitionAssigner.assign(preparedEvent.getPartitionKey());
         const repository = this.getRepository();
 
         await runInTransaction(
@@ -38,6 +41,8 @@ export class EventOutbox implements IEventOutbox {
                 const entity = repository.create({
                     id: preparedEvent.getId(),
                     tenantId: preparedEvent.getTenantId(),
+                    partitionKey: preparedEvent.getPartitionKey(),
+                    partition,
                     topic: preparedEvent.getTopic(),
                     payload: preparedEvent.getRawPayload(),
                     isEncrypted: preparedEvent.isEncrypted(),

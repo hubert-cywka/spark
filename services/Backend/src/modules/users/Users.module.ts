@@ -22,6 +22,8 @@ import { AddTenantIdToOutboxAndInbox1743101796654 } from "@/modules/users/infras
 import { RemoveUserPersonalInfo1746284981052 } from "@/modules/users/infrastructure/database/migrations/1746284981052-removeUserPersonalInfo";
 import { EncryptedEvents1746293623196 } from "@/modules/users/infrastructure/database/migrations/1746293623196-encryptedEvents";
 import { AddProcessAfterTimestampToEvent1748202889222 } from "@/modules/users/infrastructure/database/migrations/1748202889222-addProcessAfterTimestampToEvent";
+import { ImproveOutboxProcessing1748764641599 } from "@/modules/users/infrastructure/database/migrations/1748764641599-ImproveOutboxProcessing";
+import { Cleanup1748765396556 } from "@/modules/users/infrastructure/database/migrations/1748765396556-Cleanup";
 import { UserMapperToken } from "@/modules/users/mappers/IUser.mapper";
 import { UserMapper } from "@/modules/users/mappers/User.mapper";
 import { UserPublisherService } from "@/modules/users/services/implementations/UserPublisher.service";
@@ -64,6 +66,8 @@ import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.se
                     RemoveUserPersonalInfo1746284981052,
                     EncryptedEvents1746293623196,
                     AddProcessAfterTimestampToEvent1748202889222,
+                    ImproveOutboxProcessing1748764641599,
+                    Cleanup1748765396556,
                 ],
             }),
             inject: [ConfigService],

@@ -18,6 +18,9 @@ export const AppConfig = () => ({
     },
 
     events: {
+        partitioning: {
+            numberOfPartitions: 16, // TODO
+        },
         encryption: {
             secret: process.env.EVENTS_ENCRYPTION_SECRET_64_BYTES,
         },

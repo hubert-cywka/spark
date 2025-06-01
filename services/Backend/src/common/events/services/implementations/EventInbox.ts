@@ -6,6 +6,7 @@ import { runInTransaction, runOnTransactionCommit } from "typeorm-transactional"
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { type IEventInbox } from "@/common/events/services/interfaces/IEventInbox";
 import { type IEventsQueueSubscriber } from "@/common/events/services/interfaces/IEventsQueueSubscriber";
+import { type IPartitionAssigner } from "@/common/events/services/interfaces/IPartitionAssigner";
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 
 interface EventInboxOptions {
@@ -21,7 +22,8 @@ export class EventInbox implements IEventInbox {
 
     public constructor(
         options: EventInboxOptions,
-        private readonly repository: Repository<InboxEventEntity>
+        private readonly repository: Repository<InboxEventEntity>,
+        private readonly partitionAssigner: IPartitionAssigner
     ) {
         this.logger = new Logger(options.context);
         this.connectionName = options.connectionName;
@@ -41,10 +43,13 @@ export class EventInbox implements IEventInbox {
                 }
 
                 const now = dayjs();
+                const partition = this.partitionAssigner.assign(event.getPartitionKey());
 
                 await repository.save({
                     id: event.getId(),
                     tenantId: event.getTenantId(),
+                    partition,
+                    partitionKey: event.getPartitionKey(),
                     topic: event.getTopic(),
                     payload: event.getRawPayload(),
                     isEncrypted: event.isEncrypted(),

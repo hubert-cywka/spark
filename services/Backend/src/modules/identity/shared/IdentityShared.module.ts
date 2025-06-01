@@ -17,6 +17,8 @@ import { AddOptionToSuspendAccounts1743167408668 } from "@/modules/identity/infr
 import { AddTTLFor2FAIntegrations1743713719361 } from "@/modules/identity/infrastructure/database/migrations/1743713719361-addTTLFor2FAIntegrations";
 import { EncryptedEvents1746293636231 } from "@/modules/identity/infrastructure/database/migrations/1746293636231-encryptedEvents";
 import { AddProcessAfterTimestampToEvent1748202961809 } from "@/modules/identity/infrastructure/database/migrations/1748202961809-addProcessAfterTimestampToEvent";
+import { ImproveOutboxProcessing1748764641596 } from "@/modules/identity/infrastructure/database/migrations/1748764641596-ImproveOutboxProcessing";
+import { Cleanup1748765396553 } from "@/modules/identity/infrastructure/database/migrations/1748765396553-Cleanup";
 
 @Module({
     imports: [
@@ -36,6 +38,8 @@ import { AddProcessAfterTimestampToEvent1748202961809 } from "@/modules/identity
                     AddTTLFor2FAIntegrations1743713719361,
                     EncryptedEvents1746293636231,
                     AddProcessAfterTimestampToEvent1748202961809,
+                    ImproveOutboxProcessing1748764641596,
+                    Cleanup1748765396553,
                 ],
             }),
             inject: [ConfigService],

@@ -1,169 +1,205 @@
 import { Logger } from "@nestjs/common";
 import dayjs from "dayjs";
-import { Repository } from "typeorm";
+import { In, IsNull, LessThan, Repository } from "typeorm";
 import { runInTransaction } from "typeorm-transactional";
 
 import { IntegrationEvent } from "@/common/events";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { OutboxEventPartitionEntity } from "@/common/events/entities/OutboxEventPartition.entity";
 import { type IEventOutboxProcessor } from "@/common/events/services/interfaces/IEventOutboxProcessor";
+import { type IPartitionAssigner } from "@/common/events/services/interfaces/IPartitionAssigner";
 import { type IPubSubProducer } from "@/common/events/services/interfaces/IPubSubProducer";
-import { numberFromString } from "@/common/utils/hashUtils";
 
 const DEFAULT_MAX_BATCH_SIZE = 50;
 const DEFAULT_MAX_ATTEMPTS = 10_000;
-
-const TOTAL_NUMBER_OF_PARTITIONS = 128; // TODO: Move to configuration.
-const PARTITIONS_PER_BATCH = 32; // TODO: Move to configuration.
+const TOTAL_NUMBER_OF_PARTITIONS = 16; // TODO: Move to config
+const DEFAULT_STALE_PARTITION_THRESHOLD_MILLISECONDS = 10_000;
 
 export interface EventOutboxProcessorOptions {
     connectionName: string;
     context: string;
+    stalePartitionThreshold?: number;
     maxAttempts?: number;
     maxBatchSize?: number;
 }
 
 /*
-  Key decisions:
-  1. No handling of poison messages + unlimited retries - if message cannot be published, it's either a problem with
-   network or with broker. No point in trying to publish another message.
-  2. After first publish failure stop processing. Same reason as above.
-  3. When new messages is enqueued, start processing. This reduces the delay between receiving and processing the
-   message.
-  4. Poll messages with reasonable interval. This will ensure that messages will get finally delivered.
-
-  Known issues:
-  1. Horizontal scaling may break order of processing. This could be solved by using a distributed lock,
-   partitioning messages by tenantId, adding sequence number (and forcing consumers to handle ordering).
-  2. Immediate publish after the message is enqueued may break order of processing. Current solution is to use mutex.
- */
+  Kluczowe decyzje projektowe (nowa wersja):
+  1. Gwarancja kolejności w ramach partycji jest najważniejsza.
+  2. Przetwarzanie partycji jest atomowe z perspektywy innych instancji serwisu dzięki blokadzie pesymistycznej.
+  3. Operacje sieciowe (publikacja) są wykonywane POZA transakcją bazodanową, aby nie blokować zasobów bazy danych na długo.
+  4. Aktualizacja stanu zdarzeń i partycji odbywa się w krótkiej, wydajnej transakcji.
+  5. Dwa mechanizmy wyzwalania:
+     - Natychmiastowy (`notifyOnEnqueued`): dla niskiego opóźnienia.
+     - Polling (`pollAndProcessStalePartitions`): dla gwarancji dostarczenia (gdyby powiadomienie zawiodło lub instancja padła).
+*/
 export class EventOutboxProcessor implements IEventOutboxProcessor {
     private readonly logger: Logger;
+    private readonly connectionName: string;
+
+    private readonly stalePartitionThreshold: number;
     private readonly maxAttempts: number;
     private readonly maxBatchSize: number;
-    private readonly connectionName: string;
 
     public constructor(
         private readonly client: IPubSubProducer,
         private readonly eventsRepository: Repository<OutboxEventEntity>,
         private readonly partitionsRepository: Repository<OutboxEventPartitionEntity>,
+        private readonly partitionAssigner: IPartitionAssigner,
         options: EventOutboxProcessorOptions
     ) {
         this.logger = new Logger(options.context);
         this.connectionName = options.connectionName;
 
+        this.stalePartitionThreshold = options.stalePartitionThreshold ?? DEFAULT_STALE_PARTITION_THRESHOLD_MILLISECONDS;
         this.maxBatchSize = options.maxBatchSize ?? DEFAULT_MAX_BATCH_SIZE;
         this.maxAttempts = options.maxAttempts ?? DEFAULT_MAX_ATTEMPTS;
     }
 
-    public notifyOnEnqueued(event: IntegrationEvent) {
-        const now = new Date();
-        const partition = numberFromString(event.getPartitionKey(), TOTAL_NUMBER_OF_PARTITIONS); // TODO: Dependency injection instead?
-        void this.processPendingEventsInternal({
-            partitions: [partition],
-            processedBefore: now,
-        });
+    public notifyOnEnqueued(event: IntegrationEvent): void {
+        const partition = this.partitionAssigner.assign(event.getPartitionKey());
+        void this.processPartition(partition);
     }
 
-    public async processPendingEvents() {
-        const now = new Date();
-        await this.processPendingEventsInternal({ processedBefore: now });
-    }
+    public async processPendingEvents(): Promise<void> {
+        this.logger.log("Polling for stale partitions to process...");
+        const staleThreshold = dayjs().subtract(this.stalePartitionThreshold, "milliseconds").toDate();
 
-    private async processPendingEventsInternal(options: { processedBefore: Date; partitions?: number[] }) {
         try {
-            const { ok, hasMore } = await this.processNextBatchOfPartitions(options);
+            const stalePartitions = await this.partitionsRepository
+                .createQueryBuilder("partition")
+                .select("partition.id")
+                .where("partition.lastProcessedAt < :staleThreshold", {
+                    staleThreshold,
+                })
+                .orWhere("partition.lastProcessedAt IS NULL")
+                .getMany();
 
-            if (!ok) {
-                this.logger.error(options, "Some events in batch couldn't be processed, abandoning.");
+            if (stalePartitions.length === 0) {
+                this.logger.log("No stale partitions found.");
                 return;
             }
 
-            if (hasMore) {
-                await this.processPendingEventsInternal(options);
+            this.logger.log({ count: stalePartitions.length }, "Found stale partitions. Processing...");
+
+            for (const partition of stalePartitions) {
+                await this.processPartition(partition.id);
             }
+
+            this.logger.log({ count: stalePartitions.length }, "Processed stale partitions.");
         } catch (error) {
-            this.logger.error(error, "Failed to process pending events.");
+            this.logger.error(error, "Failed to poll and process stale partitions.");
         }
     }
 
-    public async processPendingEventsByPartitions(options: { partitions: number[] }): Promise<{ ok: boolean }> {
+    private async processPartition(partitionId: number): Promise<void> {
+        let process = true;
+
+        await runInTransaction(
+            async () => {
+                const partition = await this.acquirePartitionLock(partitionId);
+
+                if (!partition) {
+                    return;
+                }
+
+                while (process) {
+                    const events = await this.fetchNextBatchOfEvents(partitionId);
+                    const { successfulEvents, failedEvent } = await this.publishEvents(events);
+                    await this.updateEventsAndPartition(partition, successfulEvents, events);
+
+                    if (failedEvent) {
+                        this.logger.warn(
+                            { partitionId, failedEventId: failedEvent.id },
+                            "Stopped processing partition due to publish failure."
+                        );
+                        process = false;
+                        break;
+                    }
+
+                    if (events.length < this.maxBatchSize) {
+                        process = false;
+                        break;
+                    }
+                }
+            },
+            { connectionName: this.connectionName }
+        );
+    }
+
+    private async acquirePartitionLock(partitionId: number): Promise<OutboxEventPartitionEntity | null> {
         try {
-            const { total, successful } = await this.processNextBatchOfPendingEvents(options);
-
-            if (total !== successful) {
-                this.logger.error({ processed: { total, successful }, options }, "Some events in batch couldn't be processed, abandoning.");
-                return { ok: false };
-            }
-
-            if (total !== 0) {
-                this.logger.log({ processed: { total, successful } }, "Processed events.");
-            }
-
-            if (total === this.maxBatchSize) {
-                return await this.processPendingEventsByPartitions(options);
-            }
-
-            return { ok: true };
+            return await this.partitionsRepository
+                .createQueryBuilder("partition")
+                .setLock("pessimistic_write")
+                .setOnLocked("skip_locked")
+                .where("partition.id = :partitionId", { partitionId })
+                .getOne();
         } catch (error) {
-            this.logger.error(error, "Failed to process pending events.");
-            return { ok: false };
+            this.logger.error(`Failed to acquire lock for partition ${partitionId}`, error);
+            return null;
         }
     }
 
-    private async processNextBatchOfPendingEvents({ partitions }: { partitions: number[] }) {
-        const events = await this.getEventRepository()
-            .createQueryBuilder("event")
-            .where("event.processedAt IS NULL")
-            .andWhere("event.partition IN (:...partitions)", { partitions })
-            .andWhere("event.attempts < :maxAttempts", {
-                maxAttempts: this.maxAttempts,
-            })
-            .orderBy("event.createdAt", "ASC")
-            .take(this.maxBatchSize)
-            .getMany();
-
-        return await this.bulkPublishAndUpdate(events);
+    private async fetchNextBatchOfEvents(partitionId: number): Promise<OutboxEventEntity[]> {
+        return this.eventsRepository.find({
+            where: {
+                partition: partitionId,
+                processedAt: IsNull(),
+                attempts: LessThan(this.maxAttempts),
+            },
+            order: {
+                createdAt: "ASC",
+            },
+            take: this.maxBatchSize,
+        });
     }
 
-    private async bulkPublishAndUpdate(events: OutboxEventEntity[]) {
-        const processed: OutboxEventEntity[] = [];
-        const repository = this.getEventRepository();
+    private async publishEvents(events: OutboxEventEntity[]) {
+        const successfulEvents: OutboxEventEntity[] = [];
+        let failedEvent: OutboxEventEntity | null = null;
 
-        if (!events.length) {
-            return { successful: 0, total: 0 };
-        }
+        for (const eventEntity of events) {
+            const event = IntegrationEvent.fromEntity(eventEntity);
 
-        for (const event of events) {
-            const processedEvent = await this.publish(event);
-            processed.push(processedEvent);
-
-            if (!processedEvent.processedAt) {
+            try {
+                await this.client.publish(event);
+                successfulEvents.push(eventEntity);
+                this.logger.log({ eventId: event.getId() }, "Published event");
+            } catch (error) {
+                this.logger.error(error, "Failed to publish event. ACK not received.");
+                failedEvent = eventEntity;
                 break;
             }
         }
 
-        await repository.save(processed);
-
-        return {
-            total: processed.length,
-            successful: processed.filter((event) => !!event.processedAt).length,
-        };
+        return { successfulEvents, failedEvent };
     }
 
-    private async publish(entity: OutboxEventEntity): Promise<OutboxEventEntity> {
-        const event = IntegrationEvent.fromEntity(entity);
+    private async updateEventsAndPartition(
+        partition: OutboxEventPartitionEntity,
+        successfulEvents: OutboxEventEntity[],
+        allAttemptedEvents: OutboxEventEntity[]
+    ) {
+        const eventRepository = this.getEventRepository();
+        const partitionRepository = this.getPartitionRepository();
 
-        try {
-            await this.client.publish(event);
-            this.logger.log({ event }, "Published event");
-            entity.processedAt = dayjs().toDate();
-        } catch (e) {
-            this.logger.error({ event, e }, "Failed to publish event in time - ACK not received.");
+        const allAttemptedEventIds = allAttemptedEvents.map((e) => e.id);
+        const successfulEventIds = successfulEvents.map((e) => e.id);
+
+        if (allAttemptedEventIds.length > 0) {
+            await eventRepository.increment({ id: In(allAttemptedEventIds) }, "attempts", 1);
         }
 
-        entity.attempts++;
-        return entity;
+        if (successfulEventIds.length > 0) {
+            await eventRepository.update(successfulEventIds, {
+                processedAt: new Date(),
+            });
+        }
+
+        await partitionRepository.update(partition.id, {
+            lastProcessedAt: new Date(),
+        });
     }
 
     private getEventRepository(): Repository<OutboxEventEntity> {
@@ -172,51 +208,5 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
 
     private getPartitionRepository(): Repository<OutboxEventPartitionEntity> {
         return this.partitionsRepository;
-    }
-
-    private async processNextBatchOfPartitions(options: { processedBefore: Date; partitions?: number[] }) {
-        return await runInTransaction(
-            async () => {
-                const batch = await this.getNextBatchOfPartitions(options);
-                const partitionsIds = batch.map((partition) => partition.id);
-                const { ok } = await this.processPendingEventsByPartitions({
-                    partitions: partitionsIds,
-                });
-
-                if (ok) {
-                    await this.updatePartitions(batch);
-                } else {
-                    // TODO
-                }
-
-                return { ok, hasMore: batch.length === PARTITIONS_PER_BATCH };
-            },
-            { connectionName: this.connectionName }
-        );
-    }
-
-    private async updatePartitions(partitions: OutboxEventPartitionEntity[]) {
-        const now = new Date();
-        const updatedPartitions = partitions.map((partition) => ({
-            ...partition,
-            lastProcessedAt: now,
-        }));
-        await this.getPartitionRepository().save(updatedPartitions);
-    }
-
-    private async getNextBatchOfPartitions({ partitions, processedBefore }: { processedBefore: Date; partitions?: number[] }) {
-        const query = this.getPartitionRepository()
-            .createQueryBuilder("partition")
-            .setLock("pessimistic_write")
-            .setOnLocked("skip_locked")
-            .where("partition.lastProcessedAt < :processedBefore", {
-                processedBefore,
-            });
-
-        if (partitions) {
-            query.andWhere("partition.id IN (:...partitions)", { partitions });
-        }
-
-        return await query.orderBy("partition.lastProcessedAt", "ASC", "NULLS FIRST").take(this.maxBatchSize).getMany();
     }
 }
