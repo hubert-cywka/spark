@@ -1,9 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
-import dayjs from "dayjs";
-import { Repository } from "typeorm";
 import { runInTransaction, runOnTransactionCommit } from "typeorm-transactional";
 
-import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
+import { type IInboxEventRepository } from "@/common/events/repositories/interfaces/IInboxEvent.repository";
 import { type IEventInbox } from "@/common/events/services/interfaces/IEventInbox";
 import { type IEventsQueueSubscriber } from "@/common/events/services/interfaces/IEventsQueueSubscriber";
 import { type IPartitionAssigner } from "@/common/events/services/interfaces/IPartitionAssigner";
@@ -22,7 +20,7 @@ export class EventInbox implements IEventInbox {
 
     public constructor(
         options: EventInboxOptions,
-        private readonly repository: Repository<InboxEventEntity>,
+        private readonly repository: IInboxEventRepository,
         private readonly partitionAssigner: IPartitionAssigner
     ) {
         this.logger = new Logger(options.context);
@@ -31,21 +29,19 @@ export class EventInbox implements IEventInbox {
     }
 
     public async enqueue(event: IntegrationEvent): Promise<void> {
-        const repository = this.getRepository();
-
         await runInTransaction(
             async () => {
-                const exists = await repository.existsBy({ id: event.getId() });
+                const exists = await this.repository.exists(event.getId());
 
                 if (exists) {
                     this.logger.log(event, "Event already in inbox.");
                     return;
                 }
 
-                const now = dayjs();
+                const now = new Date();
                 const partition = this.partitionAssigner.assign(event.getPartitionKey());
 
-                await repository.save({
+                await this.repository.save({
                     id: event.getId(),
                     tenantId: event.getTenantId(),
                     partition,
@@ -76,9 +72,5 @@ export class EventInbox implements IEventInbox {
 
     private onEventEnqueued(event: IntegrationEvent) {
         this.subscribers.forEach((subscriber) => subscriber.notifyOnEnqueued(event));
-    }
-
-    private getRepository(): Repository<InboxEventEntity> {
-        return this.repository;
     }
 }

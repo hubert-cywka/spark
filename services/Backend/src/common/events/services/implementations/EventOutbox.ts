@@ -1,8 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { Repository } from "typeorm";
 import { runInTransaction, runOnTransactionCommit } from "typeorm-transactional";
 
-import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import { type IOutboxEventRepository } from "@/common/events/repositories/interfaces/IOutboxEvent.repository";
 import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
 import { type IEventsQueueSubscriber } from "@/common/events/services/interfaces/IEventsQueueSubscriber";
 import { type IIntegrationEventsEncryptionService } from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
@@ -22,7 +21,7 @@ export class EventOutbox implements IEventOutbox {
 
     public constructor(
         options: EventOutboxOptions,
-        private readonly repository: Repository<OutboxEventEntity>,
+        private readonly repository: IOutboxEventRepository,
         private readonly partitionAssigner: IPartitionAssigner,
         private readonly encryptionService: IIntegrationEventsEncryptionService
     ) {
@@ -34,11 +33,10 @@ export class EventOutbox implements IEventOutbox {
     public async enqueue(event: IntegrationEvent, options?: { encrypt: boolean }): Promise<void> {
         const preparedEvent = await this.prepareEventToStore(event, options);
         const partition = this.partitionAssigner.assign(preparedEvent.getPartitionKey());
-        const repository = this.getRepository();
 
         await runInTransaction(
             async () => {
-                const entity = repository.create({
+                await this.repository.save({
                     id: preparedEvent.getId(),
                     tenantId: preparedEvent.getTenantId(),
                     partitionKey: preparedEvent.getPartitionKey(),
@@ -49,7 +47,6 @@ export class EventOutbox implements IEventOutbox {
                     createdAt: preparedEvent.getCreatedAt(),
                 });
 
-                await repository.save(entity);
                 this.logger.log(preparedEvent, "Event added to outbox.");
 
                 runOnTransactionCommit(async () => {
@@ -76,9 +73,5 @@ export class EventOutbox implements IEventOutbox {
         }
 
         return event.copy();
-    }
-
-    private getRepository(): Repository<OutboxEventEntity> {
-        return this.repository;
     }
 }

@@ -1,12 +1,13 @@
 import { Logger } from "@nestjs/common";
 import dayjs from "dayjs";
-import { In, IsNull, LessThan, LessThanOrEqual, Not, Repository } from "typeorm";
 import { runInTransaction } from "typeorm-transactional";
 
 import { type IInboxEventHandler, IntegrationEvent } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { InboxEventPartitionEntity } from "@/common/events/entities/InboxEventPartition.entity";
 import { EventHandlersNotFoundError } from "@/common/events/errors/EventHandlersNotFound.error";
+import { type IInboxEventRepository } from "@/common/events/repositories/interfaces/IInboxEvent.repository";
+import { type IInboxPartitionRepository } from "@/common/events/repositories/interfaces/IInboxPartition.repository";
 import { type IEventInboxProcessor } from "@/common/events/services/interfaces/IEventInboxProcessor";
 import { type IIntegrationEventsEncryptionService } from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
 import { IPartitionAssigner } from "@/common/events/services/interfaces/IPartitionAssigner";
@@ -26,6 +27,15 @@ const DEFAULT_MAX_BATCH_SIZE = 5;
 const DEFAULT_MAX_ATTEMPTS = 7;
 const DEFAULT_STALE_PARTITION_THRESHOLD_MILLISECONDS = 30_000;
 
+/*
+  Key characteristics:
+  1. Guaranteed order of processing within given partition.
+  2. Poison messages are handled. If message can't be processed, all messages with the same partitionKey will be
+   postponed. Two different partitionKeys, even withing the same partition, don't affect each other.
+  3. Two processing mechanisms:
+     - push-based, after message is enqueued.
+     - polling-based, to deliver all failed events.
+*/
 export class EventInboxProcessor implements IEventInboxProcessor {
     private readonly logger: Logger;
     private readonly connectionName: string;
@@ -38,20 +48,20 @@ export class EventInboxProcessor implements IEventInboxProcessor {
     private readonly maxBatchSize: number;
 
     public constructor(
-        private readonly eventRepository: Repository<InboxEventEntity>,
-        private readonly partitionRepository: Repository<InboxEventPartitionEntity>,
+        private readonly eventsRepository: IInboxEventRepository,
+        private readonly partitionsRepository: IInboxPartitionRepository,
         private readonly partitionAssigner: IPartitionAssigner,
         private readonly encryptionService: IIntegrationEventsEncryptionService,
         options: EventInboxProcessorOptions
     ) {
         this.logger = new Logger(options.context);
         this.connectionName = options.connectionName;
+        this.retryPolicy = options.retryPolicy;
+        this.handlers = [];
 
         this.stalePartitionThreshold = options.stalePartitionThreshold ?? DEFAULT_STALE_PARTITION_THRESHOLD_MILLISECONDS;
-        this.retryPolicy = options.retryPolicy;
         this.maxAttempts = options.maxAttempts ?? DEFAULT_MAX_ATTEMPTS;
         this.maxBatchSize = options.maxBatchSize ?? DEFAULT_MAX_BATCH_SIZE;
-        this.handlers = [];
     }
 
     public notifyOnEnqueued(event: IntegrationEvent): void {
@@ -69,7 +79,7 @@ export class EventInboxProcessor implements IEventInboxProcessor {
 
     public async processPendingEvents(): Promise<void> {
         if (!this.isInitialized()) {
-            this.logger.error("Not initialized."); // TODO
+            this.logger.warn("Processor is not initialized.");
             return;
         }
 
@@ -77,31 +87,74 @@ export class EventInboxProcessor implements IEventInboxProcessor {
         let stalePartitions: InboxEventPartitionEntity[] = [];
 
         try {
-            stalePartitions = await this.getPartitionRepository()
-                .createQueryBuilder("partition")
-                .select("partition.id")
-                .where("partition.lastProcessedAt < :staleThreshold", {
-                    staleThreshold,
-                })
-                .orWhere("partition.lastProcessedAt IS NULL")
-                .getMany();
+            stalePartitions = await this.partitionsRepository.getStalePartitions(staleThreshold);
 
             if (stalePartitions.length === 0) {
-                this.logger.log("No stale inbox partitions found.");
+                this.logger.debug("No stale inbox partitions found.");
                 return;
             }
 
-            this.logger.log({ count: stalePartitions.length }, "Found stale inbox partitions. Processing...");
+            this.logger.debug({ count: stalePartitions.length }, "Found stale inbox partitions. Processing...");
 
             for (const partition of stalePartitions) {
-                console.log("\n\n PARTITION: ", partition.id, "\n\n");
                 await this.processPartition(partition.id, staleThreshold);
             }
         } catch (error) {
             this.logger.error(error, "Failed to poll and process stale inbox partitions.");
         }
 
-        this.logger.log({ total: stalePartitions.length }, "Finished processing stale inbox partitions.");
+        this.logger.debug({ total: stalePartitions.length }, "Finished processing stale inbox partitions.");
+    }
+
+    private async processPartition(partitionId: number, processedNoLaterThan: Date) {
+        const blocked: string[] = [];
+
+        return await runInTransaction(
+            async () => {
+                const partition = await this.partitionsRepository.getStalePartitionWithLock(partitionId, processedNoLaterThan);
+
+                if (!partition) {
+                    return;
+                }
+
+                const stillBlockedPartitionKeys = await this.eventsRepository.getBlockedEventsPartitionKeysByPartition({
+                    partitionId: partition.id,
+                    maxAttempts: this.maxAttempts,
+                });
+
+                blocked.push(...stillBlockedPartitionKeys);
+
+                // eslint-disable-next-line no-constant-condition
+                while (true) {
+                    const events = await this.eventsRepository.getBatchOfUnprocessedEvents({
+                        partitionId,
+                        maxAttempts: this.maxAttempts,
+                        take: this.maxBatchSize,
+                        blockedPartitionKeys: blocked,
+                    });
+
+                    const { successfulEvents, failedEvents, skippedEvents, blockedPartitionKeys } = await this.bulkHandle(events);
+                    blocked.push(...blockedPartitionKeys);
+
+                    if (successfulEvents.length > 0) {
+                        await this.eventsRepository.markAsProcessed(successfulEvents);
+                    }
+
+                    if (failedEvents.length > 0) {
+                        await this.eventsRepository.markAsPostponed(failedEvents, this.retryPolicy.getNextAttemptDate);
+                    }
+
+                    if (!failedEvents.length) {
+                        await this.partitionsRepository.markAsProcessed(partition.id);
+                    }
+
+                    if (events.length < this.maxBatchSize) {
+                        return;
+                    }
+                }
+            },
+            { connectionName: this.connectionName }
+        );
     }
 
     private async bulkHandle(events: InboxEventEntity[]) {
@@ -126,7 +179,12 @@ export class EventInboxProcessor implements IEventInboxProcessor {
             }
         }
 
-        return { successfulEvents, failedEvents, skippedEvents, blockedPartitionKeys };
+        return {
+            successfulEvents,
+            failedEvents,
+            skippedEvents,
+            blockedPartitionKeys,
+        };
     }
 
     private mapToEventsWithHandler(entities: InboxEventEntity[]) {
@@ -150,137 +208,5 @@ export class EventInboxProcessor implements IEventInboxProcessor {
     private async handleEvent(event: IntegrationEvent, handler: IInboxEventHandler) {
         const decryptedEvent = await this.encryptionService.decrypt(event);
         await handler.handle(decryptedEvent);
-    }
-
-    private async processPartition(partitionId: number, processedNoLaterThan: Date) {
-        const blocked: string[] = [];
-
-        return await runInTransaction(
-            async () => {
-                const partition = await this.acquirePartitionLock(partitionId, processedNoLaterThan);
-
-                if (!partition) {
-                    console.log("\n\n NOT FOUND \n\n");
-                    return;
-                }
-
-                const stillBlockedPartitionKeys = await this.getBlockedPartitionKeysByPartition(partition.id);
-                blocked.push(...stillBlockedPartitionKeys);
-
-                // eslint-disable-next-line no-constant-condition
-                while (true) {
-                    const events = await this.getNextBatchOfEvents(partitionId, blocked);
-                    console.log("\n\n DEBUG 2: ", events, "\n\n");
-                    const { successfulEvents, failedEvents, skippedEvents, blockedPartitionKeys } = await this.bulkHandle(events);
-                    blocked.push(...blockedPartitionKeys);
-
-                    await this.updateEventsAndPartition(partition, successfulEvents, failedEvents);
-
-                    if (events.length < this.maxBatchSize) {
-                        return;
-                    }
-                }
-            },
-            { connectionName: this.connectionName }
-        );
-    }
-
-    private async acquirePartitionLock(partitionId: number, processedNoLaterThan: Date): Promise<InboxEventPartitionEntity | null> {
-        try {
-            return await this.getPartitionRepository()
-                .createQueryBuilder("partition")
-                .setLock("pessimistic_write")
-                .setOnLocked("skip_locked")
-                .where("partition.id = :partitionId", { partitionId })
-                .andWhere("partition.lastProcessedAt < :processedNoLaterThan OR partition.lastProcessedAt IS NULL", {
-                    processedNoLaterThan,
-                })
-                .getOne();
-        } catch (error) {
-            this.logger.error(`Failed to acquire lock for partition ${partitionId}`, error);
-            return null;
-        }
-    }
-
-    private async getBlockedPartitionKeysByPartition(partitionId: number): Promise<string[]> {
-        const result = await this.getEventRepository()
-            .createQueryBuilder("event")
-            .select("event.partitionKey")
-            .where("event.partition = :partitionId", { partitionId })
-            .andWhere("event.processAfter > :now", { now: new Date() })
-            .andWhere("event.processedAt IS NULL")
-            .andWhere("event.attempts <= :maxAttempts", { maxAttempts: this.maxAttempts })
-            .getMany();
-
-        console.log("\n\n DEBUG 1: ", result, "\n\n");
-
-        return result.map(({ partitionKey }) => partitionKey);
-    }
-
-    private async getNextBatchOfEvents(partitionId: number, blockedPartitionKeys: string[]): Promise<InboxEventEntity[]> {
-        return this.getEventRepository().find({
-            where: {
-                partition: partitionId,
-                partitionKey: Not(In(blockedPartitionKeys)),
-                processedAt: IsNull(),
-                processAfter: LessThanOrEqual(new Date()),
-                attempts: LessThan(this.maxAttempts),
-            },
-            order: {
-                createdAt: "ASC",
-            },
-            take: this.maxBatchSize,
-        });
-    }
-
-    private async updateEventsAndPartition(
-        partition: InboxEventPartitionEntity,
-        successfulEvents: InboxEventEntity[],
-        failedEvents: InboxEventEntity[]
-    ) {
-        const eventRepository = this.getEventRepository();
-        const partitionRepository = this.getPartitionRepository();
-
-        if (successfulEvents.length > 0) {
-            await eventRepository.save(
-                successfulEvents.map((event) => {
-                    const attempts = event.attempts + 1;
-
-                    return {
-                        ...event,
-                        attempts,
-                        processedAt: new Date(),
-                    };
-                })
-            );
-        }
-
-        if (failedEvents.length > 0) {
-            await eventRepository.save(
-                failedEvents.map((event) => {
-                    const attempts = event.attempts + 1;
-
-                    return {
-                        ...event,
-                        attempts,
-                        processAfter: this.retryPolicy.getNextAttemptDate(attempts),
-                    };
-                })
-            );
-        }
-
-        if (!failedEvents.length) {
-            await partitionRepository.update(partition.id, {
-                lastProcessedAt: new Date(),
-            });
-        }
-    }
-
-    private getEventRepository(): Repository<InboxEventEntity> {
-        return this.eventRepository;
-    }
-
-    private getPartitionRepository(): Repository<InboxEventPartitionEntity> {
-        return this.partitionRepository;
     }
 }

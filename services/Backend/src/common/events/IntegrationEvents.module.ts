@@ -8,6 +8,20 @@ import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { InboxEventPartitionEntity } from "@/common/events/entities/InboxEventPartition.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { OutboxEventPartitionEntity } from "@/common/events/entities/OutboxEventPartition.entity";
+import { InboxEventRepository } from "@/common/events/repositories/implementations/InboxEvent.repository";
+import { InboxPartitionRepository } from "@/common/events/repositories/implementations/InboxPartition.repository";
+import { OutboxEventRepository } from "@/common/events/repositories/implementations/OutboxEvent.repository";
+import { OutboxPartitionRepository } from "@/common/events/repositories/implementations/OutboxPartition.repository";
+import { type IInboxEventRepository, InboxEventRepositoryToken } from "@/common/events/repositories/interfaces/IInboxEvent.repository";
+import {
+    type IInboxPartitionRepository,
+    InboxPartitionRepositoryToken,
+} from "@/common/events/repositories/interfaces/IInboxPartition.repository";
+import { IOutboxEventRepository, OutboxEventRepositoryToken } from "@/common/events/repositories/interfaces/IOutboxEvent.repository";
+import {
+    IOutboxPartitionRepository,
+    OutboxPartitionRepositoryToken,
+} from "@/common/events/repositories/interfaces/IOutboxPartition.repository";
 import { EventInbox } from "@/common/events/services/implementations/EventInbox";
 import { EventInboxProcessor, EventInboxProcessorOptions } from "@/common/events/services/implementations/EventInboxProcessor";
 import { EventOutbox } from "@/common/events/services/implementations/EventOutbox";
@@ -26,13 +40,13 @@ import {
     OutboxEventsRemovalServiceToken,
 } from "@/common/events/services/interfaces/IEventsRemoval.service";
 import {
-    IIntegrationEventsEncryptionService,
+    type IIntegrationEventsEncryptionService,
     IntegrationEventsEncryptionServiceToken,
 } from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
 import { IntegrationEventsJobsOrchestratorToken } from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
 import { IntegrationEventsSubscriberToken } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
-import { IPartitionAssigner, PartitionAssignerToken } from "@/common/events/services/interfaces/IPartitionAssigner";
-import { IPubSubProducer, PubSubProducerToken } from "@/common/events/services/interfaces/IPubSubProducer";
+import { type IPartitionAssigner, PartitionAssignerToken } from "@/common/events/services/interfaces/IPartitionAssigner";
+import { type IPubSubProducer, PubSubProducerToken } from "@/common/events/services/interfaces/IPubSubProducer";
 import { IntegrationEventsModuleOptions } from "@/common/events/types";
 import { ExponentialRetryBackoffPolicy } from "@/common/retry/ExponentialRetryBackoffPolicy";
 import { RetryBackoffPolicy } from "@/common/retry/RetryBackoffPolicy";
@@ -104,6 +118,30 @@ export class IntegrationEventsModule {
                 },
 
                 {
+                    provide: InboxEventRepositoryToken,
+                    useFactory: (repository: Repository<InboxEventEntity>) => new InboxEventRepository(repository),
+                    inject: [getRepositoryToken(InboxEventEntity, connectionName)],
+                },
+
+                {
+                    provide: InboxPartitionRepositoryToken,
+                    useFactory: (repository: Repository<InboxEventPartitionEntity>) => new InboxPartitionRepository(repository),
+                    inject: [getRepositoryToken(InboxEventPartitionEntity, connectionName)],
+                },
+
+                {
+                    provide: OutboxEventRepositoryToken,
+                    useFactory: (repository: Repository<OutboxEventEntity>) => new OutboxEventRepository(repository),
+                    inject: [getRepositoryToken(OutboxEventEntity, connectionName)],
+                },
+
+                {
+                    provide: OutboxPartitionRepositoryToken,
+                    useFactory: (repository: Repository<OutboxEventPartitionEntity>) => new OutboxPartitionRepository(repository),
+                    inject: [getRepositoryToken(OutboxEventPartitionEntity, connectionName)],
+                },
+
+                {
                     provide: InboxRetryPolicyToken,
                     useFactory: () => new ExponentialRetryBackoffPolicy(INBOX_RETRY_BACKOFF_POLICY_BASE_INTERVAL_IN_MS),
                 },
@@ -123,29 +161,24 @@ export class IntegrationEventsModule {
                 {
                     provide: EventOutboxProcessorToken,
                     useFactory: (
+                        eventRepository: IOutboxEventRepository,
+                        partitionRepository: IOutboxPartitionRepository,
                         producer: IPubSubProducer,
-                        assigner: IPartitionAssigner,
-                        eventsRepository: Repository<OutboxEventEntity>,
-                        partitionsRepository: Repository<OutboxEventPartitionEntity>
+                        assigner: IPartitionAssigner
                     ) =>
-                        new EventOutboxProcessor(producer, eventsRepository, partitionsRepository, assigner, {
+                        new EventOutboxProcessor(producer, eventRepository, partitionRepository, assigner, {
                             context,
                             connectionName,
                             ...outboxProcessorOptions,
                         }),
-                    inject: [
-                        PubSubProducerToken,
-                        PartitionAssignerToken,
-                        getRepositoryToken(OutboxEventEntity, connectionName),
-                        getRepositoryToken(OutboxEventPartitionEntity, connectionName),
-                    ],
+                    inject: [OutboxEventRepositoryToken, OutboxPartitionRepositoryToken, PubSubProducerToken, PartitionAssignerToken],
                 },
 
                 {
                     provide: EventInboxProcessorToken,
                     useFactory: (
-                        eventRepository: Repository<InboxEventEntity>,
-                        partitionRepository: Repository<InboxEventPartitionEntity>,
+                        eventRepository: IInboxEventRepository,
+                        partitionRepository: IInboxPartitionRepository,
                         assigner: IPartitionAssigner,
                         encryptionService: IIntegrationEventsEncryptionService,
                         retryPolicy: RetryBackoffPolicy
@@ -157,8 +190,8 @@ export class IntegrationEventsModule {
                             ...inboxProcessorOptions,
                         }),
                     inject: [
-                        getRepositoryToken(InboxEventEntity, connectionName),
-                        getRepositoryToken(InboxEventPartitionEntity, connectionName),
+                        InboxEventRepositoryToken,
+                        InboxPartitionRepositoryToken,
                         PartitionAssignerToken,
                         IntegrationEventsEncryptionServiceToken,
                         InboxRetryPolicyToken,
@@ -170,7 +203,7 @@ export class IntegrationEventsModule {
                     useFactory: (
                         encryptionService: IIntegrationEventsEncryptionService,
                         assigner: IPartitionAssigner,
-                        repository: Repository<OutboxEventEntity>
+                        repository: IOutboxEventRepository
                     ) =>
                         new EventOutbox(
                             {
@@ -182,18 +215,14 @@ export class IntegrationEventsModule {
                             assigner,
                             encryptionService
                         ),
-                    inject: [
-                        IntegrationEventsEncryptionServiceToken,
-                        PartitionAssignerToken,
-                        getRepositoryToken(OutboxEventEntity, connectionName),
-                    ],
+                    inject: [IntegrationEventsEncryptionServiceToken, PartitionAssignerToken, OutboxEventRepositoryToken],
                 },
 
                 {
                     provide: EventInboxToken,
-                    useFactory: (repository: Repository<InboxEventEntity>, assigner: IPartitionAssigner) =>
+                    useFactory: (repository: IInboxEventRepository, assigner: IPartitionAssigner) =>
                         new EventInbox({ connectionName, context }, repository, assigner),
-                    inject: [getRepositoryToken(InboxEventEntity, connectionName), PartitionAssignerToken],
+                    inject: [InboxEventRepositoryToken, PartitionAssignerToken],
                 },
 
                 {

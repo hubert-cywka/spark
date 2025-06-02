@@ -1,11 +1,12 @@
 import { Logger } from "@nestjs/common";
 import dayjs from "dayjs";
-import { In, IsNull, LessThan, Repository } from "typeorm";
 import { runInTransaction } from "typeorm-transactional";
 
 import { IntegrationEvent } from "@/common/events";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { OutboxEventPartitionEntity } from "@/common/events/entities/OutboxEventPartition.entity";
+import { type IOutboxEventRepository } from "@/common/events/repositories/interfaces/IOutboxEvent.repository";
+import { type IOutboxPartitionRepository } from "@/common/events/repositories/interfaces/IOutboxPartition.repository";
 import { type IEventOutboxProcessor } from "@/common/events/services/interfaces/IEventOutboxProcessor";
 import { type IPartitionAssigner } from "@/common/events/services/interfaces/IPartitionAssigner";
 import { type IPubSubProducer } from "@/common/events/services/interfaces/IPubSubProducer";
@@ -23,7 +24,7 @@ export interface EventOutboxProcessorOptions {
 }
 
 /*
-  Key decisions:
+  Key characteristics:
   1. Guaranteed order of processing within given partition.
   2. Poison messages are not handled. It is assumed, that publishing messages can fail only due to DB, broker or network issues.
   Trying to publish more messages would only worsen the issue. If processing 1 message withing partition fails, processing whole
@@ -42,8 +43,8 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
 
     public constructor(
         private readonly client: IPubSubProducer,
-        private readonly eventsRepository: Repository<OutboxEventEntity>,
-        private readonly partitionsRepository: Repository<OutboxEventPartitionEntity>,
+        private readonly eventsRepository: IOutboxEventRepository,
+        private readonly partitionsRepository: IOutboxPartitionRepository,
         private readonly partitionAssigner: IPartitionAssigner,
         options: EventOutboxProcessorOptions
     ) {
@@ -66,14 +67,7 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
         const processedPartitions: OutboxEventPartitionEntity[] = [];
 
         try {
-            stalePartitions = await this.partitionsRepository
-                .createQueryBuilder("partition")
-                .select("partition.id")
-                .where("partition.lastProcessedAt < :staleThreshold", {
-                    staleThreshold,
-                })
-                .orWhere("partition.lastProcessedAt IS NULL")
-                .getMany();
+            stalePartitions = await this.partitionsRepository.getStalePartitions(staleThreshold);
 
             if (stalePartitions.length === 0) {
                 this.logger.debug("No stale outbox partitions found.");
@@ -107,7 +101,7 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
     private async processPartition(partitionId: number, processedNoLaterThan: Date) {
         return await runInTransaction(
             async () => {
-                const partition = await this.acquirePartitionLock(partitionId, processedNoLaterThan);
+                const partition = await this.partitionsRepository.getStalePartitionWithLock(partitionId, processedNoLaterThan);
 
                 if (!partition) {
                     return { ok: true };
@@ -115,7 +109,12 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
 
                 // eslint-disable-next-line no-constant-condition
                 while (true) {
-                    const events = await this.getNextBatchOfEvents(partitionId);
+                    const events = await this.eventsRepository.getBatchOfUnprocessedEvents({
+                        partitionId: partitionId,
+                        maxAttempts: this.maxAttempts,
+                        take: this.maxBatchSize,
+                    });
+
                     const { successfulEvents, failedEvent } = await this.publishEvents(events);
                     await this.updateEventsAndPartition(partition, successfulEvents, events);
 
@@ -134,37 +133,6 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
             },
             { connectionName: this.connectionName }
         );
-    }
-
-    private async acquirePartitionLock(partitionId: number, processedNoLaterThan: Date): Promise<OutboxEventPartitionEntity | null> {
-        try {
-            return await this.partitionsRepository
-                .createQueryBuilder("partition")
-                .setLock("pessimistic_write")
-                .setOnLocked("skip_locked")
-                .where("partition.id = :partitionId", { partitionId })
-                .andWhere("partition.lastProcessedAt < :processedNoLaterThan OR partition.lastProcessedAt IS NULL", {
-                    processedNoLaterThan,
-                })
-                .getOne();
-        } catch (error) {
-            this.logger.error(`Failed to acquire lock for partition ${partitionId}`, error);
-            return null;
-        }
-    }
-
-    private async getNextBatchOfEvents(partitionId: number): Promise<OutboxEventEntity[]> {
-        return this.eventsRepository.find({
-            where: {
-                partition: partitionId,
-                processedAt: IsNull(),
-                attempts: LessThan(this.maxAttempts),
-            },
-            order: {
-                createdAt: "ASC",
-            },
-            take: this.maxBatchSize,
-        });
     }
 
     private async publishEvents(events: OutboxEventEntity[]) {
@@ -193,34 +161,19 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
         successfulEvents: OutboxEventEntity[],
         allAttemptedEvents: OutboxEventEntity[]
     ) {
-        const eventRepository = this.getEventRepository();
-        const partitionRepository = this.getPartitionRepository();
-
         const allAttemptedEventIds = allAttemptedEvents.map((e) => e.id);
         const successfulEventIds = successfulEvents.map((e) => e.id);
 
         if (allAttemptedEventIds.length > 0) {
-            await eventRepository.increment({ id: In(allAttemptedEventIds) }, "attempts", 1);
+            await this.eventsRepository.increaseAttempt(allAttemptedEventIds);
         }
 
         if (successfulEventIds.length > 0) {
-            await eventRepository.update(successfulEventIds, {
-                processedAt: new Date(),
-            });
+            await this.eventsRepository.markAsProcessed(successfulEventIds);
         }
 
         if (allAttemptedEventIds.length === successfulEventIds.length) {
-            await partitionRepository.update(partition.id, {
-                lastProcessedAt: new Date(),
-            });
+            await this.partitionsRepository.markAsProcessed(partition.id);
         }
-    }
-
-    private getEventRepository(): Repository<OutboxEventEntity> {
-        return this.eventsRepository;
-    }
-
-    private getPartitionRepository(): Repository<OutboxEventPartitionEntity> {
-        return this.partitionsRepository;
     }
 }
