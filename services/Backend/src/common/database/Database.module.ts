@@ -3,7 +3,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 import { addTransactionalDataSource, getDataSourceByName } from "typeorm-transactional";
 
-import { initializeDatabase } from "@/common/utils/initializeDatabase";
+import { initializeDatabase } from "@/common/utils/databaseUtils";
 import { EntityConstructor, MigrationConstructor } from "@/types/Database";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 

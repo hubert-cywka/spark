@@ -30,7 +30,7 @@ import { sortCreatedAtTimestamps } from "@/common/events/tests/utils/sortByCreat
 import { TestEvent } from "@/common/events/tests/utils/TestEvent";
 import { TestEventHandler } from "@/common/events/tests/utils/TestEventHandler";
 import { TestEventEnqueueSubscriber } from "@/common/events/tests/utils/TestEventSubscriber";
-import { DBConnectionOptions, dropDatabase } from "@/common/utils/initializeDatabase";
+import { DBConnectionOptions, dropDatabase } from "@/common/utils/databaseUtils";
 import { wait } from "@/common/utils/timeUtils";
 import { TestConfig } from "@/config/testConfiguration";
 import { loggerOptions } from "@/lib/logger";

@@ -96,10 +96,10 @@ export class IntegrationEventsModule {
             module: IntegrationEventsModule,
             imports: [
                 KafkaModule.forFeatureAsync(options.context, {
-                    useFactory: (o: IntegrationEventsModuleOptions<KafkaModuleOptions>) => ({
+                    useFactory: (moduleOptions: IntegrationEventsModuleOptions<KafkaModuleOptions>) => ({
                         groupId: options.consumerGroupId,
-                        brokers: o.brokers,
-                        clientId: o.clientId,
+                        brokers: moduleOptions.brokers,
+                        clientId: moduleOptions.clientId,
                     }),
                     inject: [IntegrationEventsModuleOptionsToken],
                 }),
