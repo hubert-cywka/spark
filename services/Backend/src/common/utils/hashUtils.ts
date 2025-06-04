@@ -7,15 +7,11 @@ export const toSHA256 = async (value: string) => {
 };
 
 export const numberFromString = (input: string, n: number) => {
-    const FNV_PRIME = 0x01000193;
-    let hash = 0x811c9dc5;
-
+    let hash = 0;
     for (let i = 0; i < input.length; i++) {
-        hash ^= input.charCodeAt(i);
-        hash = hash * FNV_PRIME;
-        hash &= 0xffffffff;
+        hash = (hash << 5) - hash + input.charCodeAt(i);
+        hash |= 0;
     }
 
-    hash = hash >>> 0;
-    return (hash % n) + 1;
+    return (Math.abs(hash) % n) + 1;
 };

@@ -4,14 +4,13 @@ import { runInTransaction } from "typeorm-transactional";
 
 import { IntegrationEvent } from "@/common/events";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
-import { OutboxEventPartitionEntity } from "@/common/events/entities/OutboxEventPartition.entity";
 import { type IOutboxEventRepository } from "@/common/events/repositories/interfaces/IOutboxEvent.repository";
 import { type IOutboxPartitionRepository } from "@/common/events/repositories/interfaces/IOutboxPartition.repository";
 import { type IEventOutboxProcessor } from "@/common/events/services/interfaces/IEventOutboxProcessor";
 import { type IPartitionAssigner } from "@/common/events/services/interfaces/IPartitionAssigner";
 import { type IPubSubProducer } from "@/common/events/services/interfaces/IPubSubProducer";
 
-const DEFAULT_MAX_BATCH_SIZE = 50;
+const DEFAULT_MAX_BATCH_SIZE = 1000;
 const DEFAULT_MAX_ATTEMPTS = 10_000;
 const DEFAULT_STALE_PARTITION_THRESHOLD_MILLISECONDS = 30_000;
 
@@ -58,55 +57,41 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
 
     public notifyOnEnqueued(event: IntegrationEvent): void {
         const partition = this.partitionAssigner.assign(event.getPartitionKey());
-        void this.processPartition(partition, new Date());
+        void this.lockAndProcessPartition(partition);
     }
 
     public async processPendingEvents(): Promise<void> {
         const staleThreshold = dayjs().subtract(this.stalePartitionThreshold, "milliseconds").toDate();
-        let stalePartitions: OutboxEventPartitionEntity[] = [];
-        const processedPartitions: OutboxEventPartitionEntity[] = [];
+        this.logger.debug("Polling for stale outbox partitions...");
 
         try {
-            stalePartitions = await this.partitionsRepository.getStalePartitions(staleThreshold);
+            const { hasMore } = await runInTransaction(
+                async () => {
+                    const partitionToProcess = await this.partitionsRepository.getAndLockSingleStalePartition(staleThreshold);
 
-            if (stalePartitions.length === 0) {
-                this.logger.debug("No stale outbox partitions found.");
-                return;
-            }
+                    if (!partitionToProcess) {
+                        this.logger.debug({ staleThreshold }, "No more stale partitions to process.");
+                        return { hasMore: false };
+                    }
 
-            this.logger.debug({ count: stalePartitions.length }, "Found stale outbox partitions. Processing...");
+                    this.logger.debug({ partitionId: partitionToProcess.id }, "Found stale partition. Processing...");
+                    const { ok } = await this.processPartition(partitionToProcess.id);
+                    return { hasMore: ok };
+                },
+                { connectionName: this.connectionName }
+            );
 
-            for (const partition of stalePartitions) {
-                const { ok } = await this.processPartition(partition.id, staleThreshold);
-
-                if (ok) {
-                    processedPartitions.push(partition);
-                } else {
-                    break;
-                }
+            if (hasMore) {
+                await this.processPendingEvents();
             }
         } catch (error) {
             this.logger.error(error, "Failed to poll and process stale outbox partitions.");
         }
-
-        this.logger.debug(
-            {
-                total: stalePartitions.length,
-                processed: processedPartitions.length,
-            },
-            "Finished processing stale outbox partitions."
-        );
     }
 
-    private async processPartition(partitionId: number, processedNoLaterThan: Date) {
+    private async processPartition(partitionId: number) {
         return await runInTransaction(
             async () => {
-                const partition = await this.partitionsRepository.getStalePartitionWithLock(partitionId, processedNoLaterThan);
-
-                if (!partition) {
-                    return { ok: true };
-                }
-
                 // eslint-disable-next-line no-constant-condition
                 while (true) {
                     const events = await this.eventsRepository.getBatchOfUnprocessedEvents({
@@ -116,7 +101,7 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
                     });
 
                     const { successfulEvents, failedEvent } = await this.publishEvents(events);
-                    await this.updateEventsAndPartition(partition, successfulEvents, events);
+                    await this.updateEventsAndPartition(partitionId, successfulEvents, events);
 
                     if (failedEvent) {
                         this.logger.warn(
@@ -130,6 +115,22 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
                         return { ok: true };
                     }
                 }
+            },
+            { connectionName: this.connectionName }
+        );
+    }
+
+    private async lockAndProcessPartition(partitionId: number) {
+        return await runInTransaction(
+            async () => {
+                const partitionToProcess = await this.partitionsRepository.getAndLockPartition(partitionId);
+
+                if (!partitionToProcess) {
+                    this.logger.log({ partitionId }, "Partition already locked.");
+                    return;
+                }
+
+                await this.processPartition(partitionToProcess.id);
             },
             { connectionName: this.connectionName }
         );
@@ -157,7 +158,7 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
     }
 
     private async updateEventsAndPartition(
-        partition: OutboxEventPartitionEntity,
+        partitionId: number,
         successfulEvents: OutboxEventEntity[],
         allAttemptedEvents: OutboxEventEntity[]
     ) {
@@ -173,7 +174,7 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
         }
 
         if (allAttemptedEventIds.length === successfulEventIds.length) {
-            await this.partitionsRepository.markAsProcessed(partition.id);
+            await this.partitionsRepository.markAsProcessed(partitionId);
         }
     }
 }

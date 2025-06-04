@@ -1,6 +1,6 @@
 import { Column, PrimaryGeneratedColumn } from "typeorm";
 
-export class IntegrationEventEntity<T = unknown> {
+export class IntegrationEventEntity<T = string | object> {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 

@@ -109,10 +109,21 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
             inject: [ConfigService],
         }),
         DatabaseModule.forFeature(ALERTS_MODULE_DATA_SOURCE, [AlertEntity, RecipientEntity]),
-        IntegrationEventsModule.forFeature({
+        IntegrationEventsModule.forFeatureAsync({
             context: AlertsModule.name,
             consumerGroupId: "alerts",
             connectionName: ALERTS_MODULE_DATA_SOURCE,
+            useFactory: (configService: ConfigService) => ({
+                inboxProcessorOptions: {
+                    maxAttempts: configService.getOrThrow<number>("events.inbox.processing.maxAttempts"),
+                    maxBatchSize: configService.getOrThrow<number>("events.inbox.processing.maxBatchSize"),
+                },
+                outboxProcessorOptions: {
+                    maxAttempts: configService.getOrThrow<number>("events.outbox.processing.maxAttempts"),
+                    maxBatchSize: configService.getOrThrow<number>("events.outbox.processing.maxBatchSize"),
+                },
+            }),
+            inject: [ConfigService],
         }),
     ],
     controllers: [AlertsController],

@@ -1,4 +1,5 @@
 import { DynamicModule, Logger, Module, OnApplicationShutdown } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { type Consumer, type Producer, Kafka } from "kafkajs";
 
 import { KafkaConsumer } from "@/common/events/drivers/kafka/services/KafkaConsumer";
@@ -25,6 +26,7 @@ export type KafkaModuleOptions = {
 
 export type KafkaForFeatureOptions = Pick<KafkaModuleOptions, "brokers" | "clientId">;
 
+// TODO: Use https://www.npmjs.com/package/@confluentinc/kafka-javascript
 @Module({})
 export class KafkaModule implements OnApplicationShutdown {
     private static readonly logger = new Logger(KafkaModule.name);
@@ -124,10 +126,12 @@ export class KafkaModule implements OnApplicationShutdown {
 
                 {
                     provide: KafkaConsumerToken,
-                    useFactory: async (client: Kafka, options: KafkaModuleOptions) => {
+                    useFactory: async (client: Kafka, options: KafkaModuleOptions, config: ConfigService) => {
                         const consumer = client.consumer({
                             groupId: options.groupId,
                             allowAutoTopicCreation: true,
+                            maxWaitTimeInMs: config.getOrThrow<number>("pubsub.consumer.maxWaitTimeForBatchInMs"),
+                            maxBytes: config.getOrThrow<number>("pubsub.consumer.maxBytesPerBatch"),
                         });
                         await consumer.connect();
                         KafkaModule.trackConsumer(consumer);
@@ -135,7 +139,7 @@ export class KafkaModule implements OnApplicationShutdown {
                         logger.log("Consumer connected.");
                         return consumer;
                     },
-                    inject: [KafkaClientToken, KafkaOptionsToken],
+                    inject: [KafkaClientToken, KafkaOptionsToken, ConfigService],
                 },
 
                 {
@@ -148,13 +152,13 @@ export class KafkaModule implements OnApplicationShutdown {
 
                 {
                     provide: PubSubConsumerToken,
-                    useFactory: async (consumer: Consumer) => {
-                        return new KafkaConsumer(consumer);
+                    useFactory: async (consumer: Consumer, config: ConfigService) => {
+                        return new KafkaConsumer(consumer, config.getOrThrow<number>("pubsub.consumer.concurrentPartitions"));
                     },
-                    inject: [KafkaConsumerToken],
+                    inject: [KafkaConsumerToken, ConfigService],
                 },
             ],
-            exports: [PubSubConsumerToken, PubSubProducerToken],
+            exports: [PubSubConsumerToken, PubSubProducerToken, KafkaClientToken],
         };
     }
 }

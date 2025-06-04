@@ -38,26 +38,29 @@ export class EventInbox implements IEventInbox {
                     return;
                 }
 
-                const now = new Date();
-                const partition = this.partitionAssigner.assign(event.getPartitionKey());
-
-                await this.repository.save({
-                    id: event.getId(),
-                    tenantId: event.getTenantId(),
-                    partition,
-                    partitionKey: event.getPartitionKey(),
-                    topic: event.getTopic(),
-                    payload: event.getRawPayload(),
-                    isEncrypted: event.isEncrypted(),
-                    createdAt: event.getCreatedAt(),
-                    receivedAt: now,
-                    processAfter: now,
-                });
-
+                await this.repository.save(this.mapEventToInput(event));
                 this.logger.log(event, "Event added to inbox.");
 
                 runOnTransactionCommit(async () => {
                     this.onEventEnqueued(event);
+                });
+            },
+            { connectionName: this.connectionName }
+        );
+    }
+
+    public async enqueueMany(events: IntegrationEvent[]): Promise<void> {
+        const inputs = events.map((event) => this.mapEventToInput(event));
+
+        await runInTransaction(
+            async () => {
+                const result = await this.repository.saveManyAndSkipDuplicates(inputs);
+                this.logger.log({ received: events.length, saved: result.length }, "Events added to inbox.");
+
+                runOnTransactionCommit(async () => {
+                    for (const event of events) {
+                        this.onEventEnqueued(event);
+                    }
                 });
             },
             { connectionName: this.connectionName }
@@ -72,5 +75,22 @@ export class EventInbox implements IEventInbox {
 
     private onEventEnqueued(event: IntegrationEvent) {
         this.subscribers.forEach((subscriber) => subscriber.notifyOnEnqueued(event));
+    }
+
+    private mapEventToInput(event: IntegrationEvent) {
+        const now = new Date();
+
+        return {
+            id: event.getId(),
+            tenantId: event.getTenantId(),
+            partition: this.partitionAssigner.assign(event.getPartitionKey()),
+            partitionKey: event.getPartitionKey(),
+            topic: event.getTopic(),
+            payload: event.getRawPayload(),
+            isEncrypted: event.isEncrypted(),
+            createdAt: event.getCreatedAt(),
+            receivedAt: now,
+            processAfter: now,
+        };
     }
 }

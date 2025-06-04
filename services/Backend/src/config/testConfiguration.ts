@@ -1,4 +1,5 @@
-export const AppConfig = () => ({
+// TODO: Strip this config from important values
+export const TestConfig = () => ({
     appName: process.env.APP_NAME,
     port: parseInt(process.env.PORT ?? ""),
 

@@ -5,21 +5,23 @@ import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { PayloadEncryptedError } from "@/common/events/errors/PayloadEncrypted.error";
 
+export type DefaultEventPayload = object | string;
+
 type IntegrationEventMetadata = {
     id?: string;
     createdAt?: Date;
 };
 
-type RequiredIntegrationEventFields<T = unknown> = {
+type RequiredIntegrationEventFields<T = DefaultEventPayload> = {
     topic: string;
     tenantId: string;
     partitionKey: string;
     payload: T;
 };
 
-type IntegrationEventFields<T = unknown> = IntegrationEventMetadata & RequiredIntegrationEventFields<T>;
+type IntegrationEventFields<T = DefaultEventPayload> = IntegrationEventMetadata & RequiredIntegrationEventFields<T>;
 
-export class IntegrationEvent<T = unknown> {
+export class IntegrationEvent<T = DefaultEventPayload> {
     private readonly id: string;
     private readonly partitionKey: string;
     private readonly tenantId: string;
@@ -43,7 +45,7 @@ export class IntegrationEvent<T = unknown> {
         this.partitionKey = partitionKey;
     }
 
-    public static fromEntity<T = unknown>(entity: OutboxEventEntity<T> | InboxEventEntity<T>): IntegrationEvent<T> {
+    public static fromEntity<T = DefaultEventPayload>(entity: OutboxEventEntity<T> | InboxEventEntity<T>): IntegrationEvent<T> {
         return new IntegrationEvent<T>({
             createdAt: entity.createdAt,
             payload: entity.payload,
@@ -54,7 +56,7 @@ export class IntegrationEvent<T = unknown> {
         });
     }
 
-    public static fromPlain<T = unknown>(plain: IntegrationEventFields<T>): IntegrationEvent<T> {
+    public static fromPlain<T = DefaultEventPayload>(plain: IntegrationEventFields<T>): IntegrationEvent<T> {
         return new IntegrationEvent<T>({
             createdAt: plain.createdAt,
             payload: plain.payload,
@@ -81,7 +83,7 @@ export class IntegrationEvent<T = unknown> {
         });
     }
 
-    public static fromBuffer<T = unknown>(buffer: Buffer): IntegrationEvent<T> {
+    public static fromBuffer<T = DefaultEventPayload>(buffer: Buffer): IntegrationEvent<T> {
         return IntegrationEvent.fromPlain(deserialize(buffer));
     }
 

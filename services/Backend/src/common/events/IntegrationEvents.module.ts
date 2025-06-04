@@ -55,14 +55,12 @@ import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 const INBOX_RETRY_BACKOFF_POLICY_BASE_INTERVAL_IN_MS = 10_000;
 
 const IntegrationEventsModuleOptionsToken = Symbol("IntegrationEventsModuleOptions");
+const IntegrationEventsForFeatureOptionsToken = Symbol("IntegrationEventsForFeatureOptions");
 const InboxRetryPolicyToken = Symbol("InboxRetryPolicy");
 
-type IntegrationEventsModuleForFeatureOptions = {
-    context: string;
-    consumerGroupId: string;
-    connectionName: string;
-    inboxProcessorOptions?: Pick<EventInboxProcessorOptions, "maxAttempts" | "maxBatchSize">;
-    outboxProcessorOptions?: Pick<EventOutboxProcessorOptions, "maxAttempts" | "maxBatchSize">;
+type IntegrationEventsModuleForFeatureDynamicOptions = {
+    inboxProcessorOptions: Pick<EventInboxProcessorOptions, "maxAttempts" | "maxBatchSize">;
+    outboxProcessorOptions: Pick<EventOutboxProcessorOptions, "maxAttempts" | "maxBatchSize">;
 };
 
 @Module({})
@@ -86,25 +84,26 @@ export class IntegrationEventsModule {
         };
     }
 
-    static forFeature({
-        context,
-        consumerGroupId,
-        connectionName,
-        outboxProcessorOptions = {},
-        inboxProcessorOptions = {},
-    }: IntegrationEventsModuleForFeatureOptions): DynamicModule {
+    static forFeatureAsync(options: {
+        context: string;
+        consumerGroupId: string;
+        connectionName: string;
+        useFactory: UseFactory<IntegrationEventsModuleForFeatureDynamicOptions>;
+        inject?: UseFactoryArgs;
+        global?: boolean;
+    }): DynamicModule {
         return {
             module: IntegrationEventsModule,
             imports: [
-                KafkaModule.forFeatureAsync(context, {
-                    useFactory: (options: IntegrationEventsModuleOptions<KafkaModuleOptions>) => ({
-                        groupId: consumerGroupId,
-                        brokers: options.brokers,
-                        clientId: options.clientId,
+                KafkaModule.forFeatureAsync(options.context, {
+                    useFactory: (o: IntegrationEventsModuleOptions<KafkaModuleOptions>) => ({
+                        groupId: options.consumerGroupId,
+                        brokers: o.brokers,
+                        clientId: o.clientId,
                     }),
                     inject: [IntegrationEventsModuleOptionsToken],
                 }),
-                DatabaseModule.forFeature(connectionName, [
+                DatabaseModule.forFeature(options.connectionName, [
                     InboxEventEntity,
                     InboxEventPartitionEntity,
                     OutboxEventEntity,
@@ -113,6 +112,12 @@ export class IntegrationEventsModule {
             ],
             providers: [
                 {
+                    provide: IntegrationEventsForFeatureOptionsToken,
+                    useFactory: options.useFactory,
+                    inject: options.inject ?? [],
+                },
+
+                {
                     provide: PartitionAssignerToken,
                     useClass: PartitionAssigner,
                 },
@@ -120,25 +125,25 @@ export class IntegrationEventsModule {
                 {
                     provide: InboxEventRepositoryToken,
                     useFactory: (repository: Repository<InboxEventEntity>) => new InboxEventRepository(repository),
-                    inject: [getRepositoryToken(InboxEventEntity, connectionName)],
+                    inject: [getRepositoryToken(InboxEventEntity, options.connectionName)],
                 },
 
                 {
                     provide: InboxPartitionRepositoryToken,
                     useFactory: (repository: Repository<InboxEventPartitionEntity>) => new InboxPartitionRepository(repository),
-                    inject: [getRepositoryToken(InboxEventPartitionEntity, connectionName)],
+                    inject: [getRepositoryToken(InboxEventPartitionEntity, options.connectionName)],
                 },
 
                 {
                     provide: OutboxEventRepositoryToken,
                     useFactory: (repository: Repository<OutboxEventEntity>) => new OutboxEventRepository(repository),
-                    inject: [getRepositoryToken(OutboxEventEntity, connectionName)],
+                    inject: [getRepositoryToken(OutboxEventEntity, options.connectionName)],
                 },
 
                 {
                     provide: OutboxPartitionRepositoryToken,
                     useFactory: (repository: Repository<OutboxEventPartitionEntity>) => new OutboxPartitionRepository(repository),
-                    inject: [getRepositoryToken(OutboxEventPartitionEntity, connectionName)],
+                    inject: [getRepositoryToken(OutboxEventPartitionEntity, options.connectionName)],
                 },
 
                 {
@@ -149,13 +154,13 @@ export class IntegrationEventsModule {
                 {
                     provide: InboxEventsRemovalServiceToken,
                     useFactory: (repository: Repository<InboxEventEntity>) => new EventsRemovalService(repository),
-                    inject: [getRepositoryToken(InboxEventEntity, connectionName)],
+                    inject: [getRepositoryToken(InboxEventEntity, options.connectionName)],
                 },
 
                 {
                     provide: OutboxEventsRemovalServiceToken,
                     useFactory: (repository: Repository<OutboxEventEntity>) => new EventsRemovalService(repository),
-                    inject: [getRepositoryToken(OutboxEventEntity, connectionName)],
+                    inject: [getRepositoryToken(OutboxEventEntity, options.connectionName)],
                 },
 
                 {
@@ -164,14 +169,21 @@ export class IntegrationEventsModule {
                         eventRepository: IOutboxEventRepository,
                         partitionRepository: IOutboxPartitionRepository,
                         producer: IPubSubProducer,
-                        assigner: IPartitionAssigner
+                        assigner: IPartitionAssigner,
+                        { outboxProcessorOptions }: IntegrationEventsModuleForFeatureDynamicOptions
                     ) =>
                         new EventOutboxProcessor(producer, eventRepository, partitionRepository, assigner, {
-                            context,
-                            connectionName,
+                            context: options.context,
+                            connectionName: options.connectionName,
                             ...outboxProcessorOptions,
                         }),
-                    inject: [OutboxEventRepositoryToken, OutboxPartitionRepositoryToken, PubSubProducerToken, PartitionAssignerToken],
+                    inject: [
+                        OutboxEventRepositoryToken,
+                        OutboxPartitionRepositoryToken,
+                        PubSubProducerToken,
+                        PartitionAssignerToken,
+                        IntegrationEventsForFeatureOptionsToken,
+                    ],
                 },
 
                 {
@@ -181,11 +193,12 @@ export class IntegrationEventsModule {
                         partitionRepository: IInboxPartitionRepository,
                         assigner: IPartitionAssigner,
                         encryptionService: IIntegrationEventsEncryptionService,
-                        retryPolicy: RetryBackoffPolicy
+                        retryPolicy: RetryBackoffPolicy,
+                        { inboxProcessorOptions }: IntegrationEventsModuleForFeatureDynamicOptions
                     ) =>
                         new EventInboxProcessor(eventRepository, partitionRepository, assigner, encryptionService, {
-                            context,
-                            connectionName,
+                            context: options.context,
+                            connectionName: options.connectionName,
                             retryPolicy,
                             ...inboxProcessorOptions,
                         }),
@@ -195,6 +208,7 @@ export class IntegrationEventsModule {
                         PartitionAssignerToken,
                         IntegrationEventsEncryptionServiceToken,
                         InboxRetryPolicyToken,
+                        IntegrationEventsForFeatureOptionsToken,
                     ],
                 },
 
@@ -207,9 +221,8 @@ export class IntegrationEventsModule {
                     ) =>
                         new EventOutbox(
                             {
-                                ...outboxProcessorOptions,
-                                connectionName,
-                                context,
+                                context: options.context,
+                                connectionName: options.connectionName,
                             },
                             repository,
                             assigner,
@@ -221,7 +234,14 @@ export class IntegrationEventsModule {
                 {
                     provide: EventInboxToken,
                     useFactory: (repository: IInboxEventRepository, assigner: IPartitionAssigner) =>
-                        new EventInbox({ connectionName, context }, repository, assigner),
+                        new EventInbox(
+                            {
+                                context: options.context,
+                                connectionName: options.connectionName,
+                            },
+                            repository,
+                            assigner
+                        ),
                     inject: [InboxEventRepositoryToken, PartitionAssignerToken],
                 },
 

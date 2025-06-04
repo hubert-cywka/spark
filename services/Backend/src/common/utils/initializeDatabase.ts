@@ -4,7 +4,7 @@ import pg from "pg";
 import { LinearRetryBackoffPolicy } from "@/common/retry/LinearRetryBackoffPolicy";
 import { withRetry } from "@/common/retry/withRetry";
 
-type DBConnectionOptions = {
+export type DBConnectionOptions = {
     port: number;
     host: string;
     username: string;
@@ -32,6 +32,17 @@ export async function initializeDatabase(dbOptions: DBConnectionOptions, retryOp
     } else {
         logger.log("Database already exists.", { database });
     }
+
+    await client.end();
+}
+
+export async function dropDatabase(dbOptions: DBConnectionOptions, database: string, retryOptions: RetryOptions): Promise<void> {
+    const client = createClient(dbOptions);
+    const logger = new Logger(database);
+
+    await assertConnection(client, logger, retryOptions);
+    await client.query(`DROP DATABASE ${database} WITH (FORCE)`);
+    logger.log("Database dropped.", { database });
 
     await client.end();
 }

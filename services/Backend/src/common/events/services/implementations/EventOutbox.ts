@@ -32,25 +32,39 @@ export class EventOutbox implements IEventOutbox {
 
     public async enqueue(event: IntegrationEvent, options?: { encrypt: boolean }): Promise<void> {
         const preparedEvent = await this.prepareEventToStore(event, options);
-        const partition = this.partitionAssigner.assign(preparedEvent.getPartitionKey());
 
         await runInTransaction(
             async () => {
-                await this.repository.save({
-                    id: preparedEvent.getId(),
-                    tenantId: preparedEvent.getTenantId(),
-                    partitionKey: preparedEvent.getPartitionKey(),
-                    partition,
-                    topic: preparedEvent.getTopic(),
-                    payload: preparedEvent.getRawPayload(),
-                    isEncrypted: preparedEvent.isEncrypted(),
-                    createdAt: preparedEvent.getCreatedAt(),
-                });
-
+                await this.repository.save(this.mapEventToInput(preparedEvent));
                 this.logger.log(preparedEvent, "Event added to outbox.");
 
                 runOnTransactionCommit(async () => {
                     this.onEventEnqueued(event);
+                });
+            },
+            { connectionName: this.connectionName }
+        );
+    }
+
+    public async enqueueMany(events: IntegrationEvent[], options?: { encrypt: boolean }): Promise<void> {
+        const promises: Promise<IntegrationEvent>[] = [];
+
+        for (const event of events) {
+            promises.push(this.prepareEventToStore(event, options));
+        }
+
+        const preparedEvents = await Promise.all(promises);
+        const inputs = preparedEvents.map((event) => this.mapEventToInput(event));
+
+        await runInTransaction(
+            async () => {
+                const result = await this.repository.saveManyAndSkipDuplicates(inputs);
+                this.logger.log({ received: events.length, saved: result.length }, "Events added to outbox.");
+
+                runOnTransactionCommit(async () => {
+                    for (const event of preparedEvents) {
+                        this.onEventEnqueued(event);
+                    }
                 });
             },
             { connectionName: this.connectionName }
@@ -73,5 +87,18 @@ export class EventOutbox implements IEventOutbox {
         }
 
         return event.copy();
+    }
+
+    private mapEventToInput(event: IntegrationEvent) {
+        return {
+            id: event.getId(),
+            tenantId: event.getTenantId(),
+            partitionKey: event.getPartitionKey(),
+            partition: this.partitionAssigner.assign(event.getPartitionKey()),
+            topic: event.getTopic(),
+            payload: event.getRawPayload(),
+            isEncrypted: event.isEncrypted(),
+            createdAt: event.getCreatedAt(),
+        };
     }
 }

@@ -75,10 +75,21 @@ import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.se
             inject: [ConfigService],
         }),
         DatabaseModule.forFeature(USERS_MODULE_DATA_SOURCE, [UserEntity]),
-        IntegrationEventsModule.forFeature({
+        IntegrationEventsModule.forFeatureAsync({
             context: UsersModule.name,
             consumerGroupId: "users",
             connectionName: USERS_MODULE_DATA_SOURCE,
+            useFactory: (configService: ConfigService) => ({
+                inboxProcessorOptions: {
+                    maxAttempts: configService.getOrThrow<number>("events.inbox.processing.maxAttempts"),
+                    maxBatchSize: configService.getOrThrow<number>("events.inbox.processing.maxBatchSize"),
+                },
+                outboxProcessorOptions: {
+                    maxAttempts: configService.getOrThrow<number>("events.outbox.processing.maxAttempts"),
+                    maxBatchSize: configService.getOrThrow<number>("events.outbox.processing.maxBatchSize"),
+                },
+            }),
+            inject: [ConfigService],
         }),
     ],
     controllers: [UserController],

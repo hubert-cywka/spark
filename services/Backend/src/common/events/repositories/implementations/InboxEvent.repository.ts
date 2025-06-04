@@ -1,18 +1,27 @@
-import { Repository } from "typeorm";
+import { And, IsNull, LessThan, Not, Repository } from "typeorm";
 
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
+import { IntegrationEventRepository } from "@/common/events/repositories/implementations/IntegrationEvent.repository";
 import {
     type IInboxEventRepository,
     GetBlockedInboxPartitionKeysQueryOptions,
     GetUnprocessedInboxEventsQueryOptions,
     InboxEventInput,
 } from "@/common/events/repositories/interfaces/IInboxEvent.repository";
+import { RemoveProcessedEventsOptions } from "@/common/events/repositories/interfaces/IIntegrationEvent.repository";
 
-export class InboxEventRepository implements IInboxEventRepository {
-    public constructor(private readonly repository: Repository<InboxEventEntity>) {}
+export class InboxEventRepository extends IntegrationEventRepository<InboxEventEntity> implements IInboxEventRepository {
+    public constructor(repository: Repository<InboxEventEntity>) {
+        super(repository);
+    }
 
-    public async save(fields: InboxEventInput): Promise<InboxEventEntity> {
-        return await this.repository.save(fields);
+    public async save(input: InboxEventInput): Promise<InboxEventEntity> {
+        return await this.repository.save(input);
+    }
+
+    public async saveManyAndSkipDuplicates(inputs: InboxEventInput[]): Promise<InboxEventEntity[]> {
+        const result = await this.repository.createQueryBuilder("events").insert().values(inputs).orIgnore().execute();
+        return result.raw as InboxEventEntity[];
     }
 
     public async exists(id: string): Promise<boolean> {
@@ -81,5 +90,15 @@ export class InboxEventRepository implements IInboxEventRepository {
         }
 
         return await baseQuery.orderBy("event.createdAt", "ASC").take(take).getMany();
+    }
+
+    public async removeProcessed({ processedBefore }: RemoveProcessedEventsOptions) {
+        await this.repository.delete({
+            processedAt: And(LessThan(processedBefore), Not(IsNull())),
+        });
+    }
+
+    public async removeAll() {
+        await this.repository.delete({});
     }
 }

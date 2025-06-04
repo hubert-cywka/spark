@@ -4,7 +4,6 @@ import { runInTransaction } from "typeorm-transactional";
 
 import { type IInboxEventHandler, IntegrationEvent } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
-import { InboxEventPartitionEntity } from "@/common/events/entities/InboxEventPartition.entity";
 import { EventHandlersNotFoundError } from "@/common/events/errors/EventHandlersNotFound.error";
 import { type IInboxEventRepository } from "@/common/events/repositories/interfaces/IInboxEvent.repository";
 import { type IInboxPartitionRepository } from "@/common/events/repositories/interfaces/IInboxPartition.repository";
@@ -66,7 +65,7 @@ export class EventInboxProcessor implements IEventInboxProcessor {
 
     public notifyOnEnqueued(event: IntegrationEvent): void {
         const partition = this.partitionAssigner.assign(event.getPartitionKey());
-        void this.processPartition(partition, new Date());
+        void this.lockAndProcessPartition(partition);
     }
 
     public setEventHandlers(handlers: IInboxEventHandler[]) {
@@ -84,41 +83,40 @@ export class EventInboxProcessor implements IEventInboxProcessor {
         }
 
         const staleThreshold = dayjs().subtract(this.stalePartitionThreshold, "milliseconds").toDate();
-        let stalePartitions: InboxEventPartitionEntity[] = [];
 
         try {
-            stalePartitions = await this.partitionsRepository.getStalePartitions(staleThreshold);
+            const { hasMore } = await runInTransaction(
+                async () => {
+                    const partitionToProcess = await this.partitionsRepository.getAndLockSingleStalePartition(staleThreshold);
 
-            if (stalePartitions.length === 0) {
-                this.logger.debug("No stale inbox partitions found.");
-                return;
-            }
+                    if (!partitionToProcess) {
+                        this.logger.debug({ staleThreshold }, "No more stale partitions to process.");
+                        return { hasMore: false };
+                    }
 
-            this.logger.debug({ count: stalePartitions.length }, "Found stale inbox partitions. Processing...");
+                    this.logger.debug({ partitionId: partitionToProcess.id }, "Found stale partition. Processing...");
+                    await this.processPartition(partitionToProcess.id);
 
-            for (const partition of stalePartitions) {
-                await this.processPartition(partition.id, staleThreshold);
+                    return { hasMore: true };
+                },
+                { connectionName: this.connectionName }
+            );
+
+            if (hasMore) {
+                await this.processPendingEvents();
             }
         } catch (error) {
             this.logger.error(error, "Failed to poll and process stale inbox partitions.");
         }
-
-        this.logger.debug({ total: stalePartitions.length }, "Finished processing stale inbox partitions.");
     }
 
-    private async processPartition(partitionId: number, processedNoLaterThan: Date) {
+    private async processPartition(partitionId: number) {
         const blocked: string[] = [];
 
         return await runInTransaction(
             async () => {
-                const partition = await this.partitionsRepository.getStalePartitionWithLock(partitionId, processedNoLaterThan);
-
-                if (!partition) {
-                    return;
-                }
-
                 const stillBlockedPartitionKeys = await this.eventsRepository.getBlockedEventsPartitionKeysByPartition({
-                    partitionId: partition.id,
+                    partitionId: partitionId,
                     maxAttempts: this.maxAttempts,
                 });
 
@@ -133,7 +131,7 @@ export class EventInboxProcessor implements IEventInboxProcessor {
                         blockedPartitionKeys: blocked,
                     });
 
-                    const { successfulEvents, failedEvents, skippedEvents, blockedPartitionKeys } = await this.bulkHandle(events);
+                    const { successfulEvents, failedEvents, blockedPartitionKeys } = await this.bulkHandle(events);
                     blocked.push(...blockedPartitionKeys);
 
                     if (successfulEvents.length > 0) {
@@ -141,17 +139,35 @@ export class EventInboxProcessor implements IEventInboxProcessor {
                     }
 
                     if (failedEvents.length > 0) {
-                        await this.eventsRepository.markAsPostponed(failedEvents, this.retryPolicy.getNextAttemptDate);
+                        await this.eventsRepository.markAsPostponed(failedEvents, (attempt) =>
+                            this.retryPolicy.getNextAttemptDate(attempt)
+                        );
                     }
 
                     if (!failedEvents.length) {
-                        await this.partitionsRepository.markAsProcessed(partition.id);
+                        await this.partitionsRepository.markAsProcessed(partitionId);
                     }
 
                     if (events.length < this.maxBatchSize) {
                         return;
                     }
                 }
+            },
+            { connectionName: this.connectionName }
+        );
+    }
+
+    private async lockAndProcessPartition(partitionId: number) {
+        return await runInTransaction(
+            async () => {
+                const partitionToProcess = await this.partitionsRepository.getAndLockPartition(partitionId);
+
+                if (!partitionToProcess) {
+                    this.logger.log({ partitionId }, "Partition already locked.");
+                    return;
+                }
+
+                await this.processPartition(partitionToProcess.id);
             },
             { connectionName: this.connectionName }
         );

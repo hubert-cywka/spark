@@ -90,10 +90,21 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
             inject: [ConfigService],
         }),
         DatabaseModule.forFeature(GDPR_MODULE_DATA_SOURCE, [TenantEntity, DataPurgePlanEntity]),
-        IntegrationEventsModule.forFeature({
+        IntegrationEventsModule.forFeatureAsync({
             context: GdprModule.name,
             consumerGroupId: "gdpr",
             connectionName: GDPR_MODULE_DATA_SOURCE,
+            useFactory: (configService: ConfigService) => ({
+                inboxProcessorOptions: {
+                    maxAttempts: configService.getOrThrow<number>("events.inbox.processing.maxAttempts"),
+                    maxBatchSize: configService.getOrThrow<number>("events.inbox.processing.maxBatchSize"),
+                },
+                outboxProcessorOptions: {
+                    maxAttempts: configService.getOrThrow<number>("events.outbox.processing.maxAttempts"),
+                    maxBatchSize: configService.getOrThrow<number>("events.outbox.processing.maxBatchSize"),
+                },
+            }),
+            inject: [ConfigService],
         }),
     ],
     controllers: [],

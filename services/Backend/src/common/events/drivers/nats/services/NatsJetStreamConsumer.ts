@@ -4,7 +4,7 @@ import { type NatsConnection } from "nats";
 
 import { IntegrationEvent } from "@/common/events";
 import { NatsConsumerMetadata } from "@/common/events/drivers/nats/types";
-import { type IPubSubConsumer, OnEventReceivedHandler } from "@/common/events/services/interfaces/IPubSubConsumer";
+import { type IPubSubConsumer, OnEventsReceivedHandler } from "@/common/events/services/interfaces/IPubSubConsumer";
 
 @Injectable()
 export class NatsJetStreamConsumer implements IPubSubConsumer {
@@ -16,7 +16,7 @@ export class NatsJetStreamConsumer implements IPubSubConsumer {
         this.jetStreamClient = jetstream(connection);
     }
 
-    public async listen(topics: string[], onEventReceived: OnEventReceivedHandler): Promise<void> {
+    public async listen(topics: string[], onEventsReceived: OnEventsReceivedHandler): Promise<void> {
         // TODO: Implement
         const mockConsumers: NatsConsumerMetadata[] = [];
 
@@ -24,14 +24,14 @@ export class NatsJetStreamConsumer implements IPubSubConsumer {
         const streams = await this.getMessagesStreams(mockConsumers);
 
         for await (const stream of streams) {
-            void this.readMessagesStream(stream, onEventReceived);
+            void this.readMessagesStream(stream, onEventsReceived);
         }
     }
 
-    private async readMessagesStream(messages: ConsumerMessages, onEventReceived: OnEventReceivedHandler) {
+    private async readMessagesStream(messages: ConsumerMessages, onEventsReceived: OnEventsReceivedHandler) {
         for await (const message of messages) {
             const event = IntegrationEvent.fromPlain(message.json());
-            await onEventReceived(event);
+            await onEventsReceived([event]);
             message.ack();
         }
     }

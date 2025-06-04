@@ -1,10 +1,13 @@
-import { Repository } from "typeorm";
+import { IsNull, Not, Repository } from "typeorm";
 
 import { OutboxEventPartitionEntity } from "@/common/events/entities/OutboxEventPartition.entity";
+import { PartitionRepository } from "@/common/events/repositories/implementations/Partition.repository";
 import { IOutboxPartitionRepository } from "@/common/events/repositories/interfaces/IOutboxPartition.repository";
 
-export class OutboxPartitionRepository implements IOutboxPartitionRepository {
-    public constructor(private readonly repository: Repository<OutboxEventPartitionEntity>) {}
+export class OutboxPartitionRepository extends PartitionRepository<OutboxEventPartitionEntity> implements IOutboxPartitionRepository {
+    public constructor(repository: Repository<OutboxEventPartitionEntity>) {
+        super(repository);
+    }
 
     public async markAsProcessed(partitionId: number) {
         await this.repository.update(partitionId, {
@@ -12,26 +15,7 @@ export class OutboxPartitionRepository implements IOutboxPartitionRepository {
         });
     }
 
-    public async getStalePartitionWithLock(partitionId: number, staleThreshold: Date) {
-        return await this.repository
-            .createQueryBuilder("partition")
-            .setLock("pessimistic_write")
-            .setOnLocked("skip_locked")
-            .where("partition.id = :partitionId", { partitionId })
-            .andWhere("partition.lastProcessedAt < :staleThreshold OR partition.lastProcessedAt IS NULL", {
-                staleThreshold,
-            })
-            .getOne();
-    }
-
-    public async getStalePartitions(staleThreshold: Date) {
-        return await this.repository
-            .createQueryBuilder("partition")
-            .select("partition.id")
-            .where("partition.lastProcessedAt < :staleThreshold", {
-                staleThreshold,
-            })
-            .orWhere("partition.lastProcessedAt IS NULL")
-            .getMany();
+    public async markAllAsUnprocessed() {
+        await this.repository.update({ lastProcessedAt: Not(IsNull()) }, { lastProcessedAt: null });
     }
 }

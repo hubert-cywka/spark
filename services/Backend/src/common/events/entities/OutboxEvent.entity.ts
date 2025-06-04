@@ -4,4 +4,4 @@ import { IntegrationEventEntity } from "@/common/events/entities/IntegrationEven
 
 @Entity("outbox_event")
 @Index("idx_outbox_events_for_processing", ["partition", "processedAt", "attempts", "createdAt"])
-export class OutboxEventEntity<T = unknown> extends IntegrationEventEntity<T> {}
+export class OutboxEventEntity<T = string | object> extends IntegrationEventEntity<T> {}
