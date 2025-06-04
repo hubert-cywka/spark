@@ -24,7 +24,7 @@ services:
         environment:
             - PGBOUNCER_POOL_MODE=transaction
             - PGBOUNCER_QUERY_WAIT_TIMEOUT=60
-            - PGBOUNCER_MAX_CLIENT_CONN=10000
+            - PGBOUNCER_MAX_CLIENT_CONN=1000
             - PGBOUNCER_DEFAULT_POOL_SIZE=20
             - PGBOUNCER_STATS_USERS=${DATABASE_USERNAME}
             - POSTGRESQL_USERNAME=${DATABASE_USERNAME}
