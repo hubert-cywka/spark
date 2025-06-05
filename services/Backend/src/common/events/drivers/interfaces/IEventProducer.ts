@@ -1,8 +1,8 @@
 import { IntegrationEvent } from "@/common/events";
 import { PublishAck } from "@/common/events/types";
 
-export const PubSubProducerToken = Symbol("PubSubProducer");
+export const EventProducerToken = Symbol("EventProducerToken");
 
-export interface IPubSubProducer {
+export interface IEventProducer {
     publish(event: IntegrationEvent): Promise<PublishAck>;
 }

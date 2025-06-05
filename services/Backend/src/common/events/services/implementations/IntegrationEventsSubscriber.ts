@@ -1,14 +1,14 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { type IEventInbox, EventInboxToken } from "@/common/events";
+import { type IEventConsumer, EventConsumerToken } from "@/common/events/drivers/interfaces/IEventConsumer";
 import { type IIntegrationEventsSubscriber } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
-import { type IPubSubConsumer, PubSubConsumerToken } from "@/common/events/services/interfaces/IPubSubConsumer";
 
 @Injectable()
 export class IntegrationEventsSubscriber implements IIntegrationEventsSubscriber {
     public constructor(
-        @Inject(PubSubConsumerToken)
-        private readonly consumer: IPubSubConsumer,
+        @Inject(EventConsumerToken)
+        private readonly consumer: IEventConsumer,
         @Inject(EventInboxToken) private readonly inbox: IEventInbox
     ) {}
 

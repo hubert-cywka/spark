@@ -3,11 +3,11 @@ import { Injectable } from "@nestjs/common";
 import { type NatsConnection, Codec, JSONCodec } from "nats";
 
 import { IntegrationEvent } from "@/common/events";
-import { type IPubSubProducer } from "@/common/events/services/interfaces/IPubSubProducer";
+import { type IEventProducer } from "@/common/events/drivers/interfaces/IEventProducer";
 import { PublishAck } from "@/common/events/types";
 
 @Injectable()
-export class NatsJetStreamProducer implements IPubSubProducer {
+export class NatsJetStreamProducer implements IEventProducer {
     private readonly jetStreamClient: JetStreamClient;
     private readonly codec: Codec<unknown>;
 

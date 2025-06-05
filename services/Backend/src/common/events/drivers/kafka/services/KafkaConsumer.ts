@@ -2,10 +2,10 @@ import { Injectable, Logger } from "@nestjs/common";
 import { type Consumer, Batch } from "kafkajs";
 
 import { IntegrationEvent } from "@/common/events";
-import { type IPubSubConsumer, OnEventsReceivedHandler } from "@/common/events/services/interfaces/IPubSubConsumer";
+import { type IEventConsumer, OnEventsReceivedHandler } from "@/common/events/drivers/interfaces/IEventConsumer";
 
 @Injectable()
-export class KafkaConsumer implements IPubSubConsumer {
+export class KafkaConsumer implements IEventConsumer {
     private readonly logger = new Logger(KafkaConsumer.name);
 
     public constructor(

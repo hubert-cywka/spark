@@ -9,6 +9,8 @@ import { initializeTransactionalContext, runInTransaction } from "typeorm-transa
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import { EventInboxToken, EventOutboxToken, IEventInbox, IEventOutbox, IntegrationEvent, IntegrationEventsModule } from "@/common/events";
+import { EventAdminToken, IEventAdmin } from "@/common/events/drivers/interfaces/IEventAdmin";
+import { EventProducerToken, IEventProducer } from "@/common/events/drivers/interfaces/IEventProducer";
 import { InboxEventPartitionEntity } from "@/common/events/entities/InboxEventPartition.entity";
 import { OutboxEventPartitionEntity } from "@/common/events/entities/OutboxEventPartition.entity";
 import { IInboxEventRepository, InboxEventRepositoryToken } from "@/common/events/repositories/interfaces/IInboxEvent.repository";
@@ -23,7 +25,6 @@ import {
 } from "@/common/events/repositories/interfaces/IOutboxPartition.repository";
 import { EventInboxProcessorToken, IEventInboxProcessor } from "@/common/events/services/interfaces/IEventInboxProcessor";
 import { EventOutboxProcessorToken, IEventOutboxProcessor } from "@/common/events/services/interfaces/IEventOutboxProcessor";
-import { IPubSubProducer, PubSubProducerToken } from "@/common/events/services/interfaces/IPubSubProducer";
 import { generateEvents } from "@/common/events/tests/utils/generateEvents";
 import { groupEventsByPartition } from "@/common/events/tests/utils/groupEventsByPartition";
 import { sortCreatedAtTimestamps } from "@/common/events/tests/utils/sortByCreatedAtTimestamp";
@@ -136,15 +137,21 @@ describe("IntegrationEventsModule", () => {
         const tenantId = crypto.randomUUID();
 
         const setup = () => {
+            const admin = app.get<IEventAdmin>(EventAdminToken);
             const outbox = app.get<IEventOutbox>(EventOutboxToken);
             const repository = app.get<IOutboxEventRepository>(OutboxEventRepositoryToken);
             const subscriber = new TestEventEnqueueSubscriber();
-            return { outbox, repository, subscriber };
+            return { outbox, repository, subscriber, admin };
         };
 
         beforeEach(async () => {
             const { repository } = setup();
             await repository.removeAll();
+        });
+
+        afterEach(async () => {
+            const { admin } = setup();
+            await admin.purgeTopic(EVENT_TOPIC);
         });
 
         it("should save enqueued event in persistent storage", async () => {
@@ -208,15 +215,21 @@ describe("IntegrationEventsModule", () => {
         const tenantId = crypto.randomUUID();
 
         const setup = () => {
+            const admin = app.get<IEventAdmin>(EventAdminToken);
             const inbox = app.get<IEventInbox>(EventInboxToken);
             const repository = app.get<IInboxEventRepository>(InboxEventRepositoryToken);
             const subscriber = new TestEventEnqueueSubscriber();
-            return { inbox, repository, subscriber };
+            return { inbox, repository, subscriber, admin };
         };
 
         beforeEach(async () => {
             const { repository } = setup();
             await repository.removeAll();
+        });
+
+        afterEach(async () => {
+            const { admin } = setup();
+            await admin.purgeTopic(EVENT_TOPIC);
         });
 
         it("should save enqueued event in persistent storage", async () => {
@@ -282,7 +295,8 @@ describe("IntegrationEventsModule", () => {
 
     describe("OutboxProcessor", () => {
         const setup = () => {
-            const producer = app.get<IPubSubProducer>(PubSubProducerToken);
+            const admin = app.get<IEventAdmin>(EventAdminToken);
+            const producer = app.get<IEventProducer>(EventProducerToken);
             const outbox = app.get<IEventOutbox>(EventOutboxToken);
             const processor = app.get<IEventOutboxProcessor>(EventOutboxProcessorToken);
             const eventRepository = app.get<IOutboxEventRepository>(OutboxEventRepositoryToken);
@@ -293,6 +307,7 @@ describe("IntegrationEventsModule", () => {
                 partitionRepository,
                 processor,
                 producer,
+                admin,
             };
         };
 
@@ -310,6 +325,11 @@ describe("IntegrationEventsModule", () => {
             const { eventRepository, partitionRepository } = setup();
             await eventRepository.removeAll();
             await partitionRepository.markAllAsUnprocessed();
+        });
+
+        afterEach(async () => {
+            const { admin } = setup();
+            await admin.purgeTopic(EVENT_TOPIC);
         });
 
         it("should process all enqueued events", async () => {
@@ -399,6 +419,7 @@ describe("IntegrationEventsModule", () => {
 
     describe("InboxProcessor", () => {
         const setup = () => {
+            const admin = app.get<IEventAdmin>(EventAdminToken);
             const inbox = app.get<IEventInbox>(EventInboxToken);
             const processor = app.get<IEventInboxProcessor>(EventInboxProcessorToken);
             const eventRepository = app.get<IInboxEventRepository>(InboxEventRepositoryToken);
@@ -410,6 +431,7 @@ describe("IntegrationEventsModule", () => {
                 partitionRepository,
                 processor,
                 eventHandler,
+                admin,
             };
         };
 
@@ -429,6 +451,11 @@ describe("IntegrationEventsModule", () => {
             const { eventRepository, partitionRepository } = setup();
             await eventRepository.removeAll();
             await partitionRepository.markAllAsUnprocessed();
+        });
+
+        afterEach(async () => {
+            const { admin } = setup();
+            await admin.purgeTopic(EVENT_TOPIC);
         });
 
         it("should process all enqueued events", async () => {
