@@ -113,7 +113,9 @@ describe("IntegrationEventsModule", () => {
         const outboxPartitionsToInsert: OutboxEventPartitionEntity[] = [];
         const inboxPartitionsToInsert: InboxEventPartitionEntity[] = [];
 
-        for (let i = 1; i <= 16; i++) {
+        const initialNumberOfPartitions = 16;
+
+        for (let i = 1; i <= initialNumberOfPartitions; i++) {
             outboxPartitionsToInsert.push({ id: i, lastProcessedAt: null });
             inboxPartitionsToInsert.push({ id: i, lastProcessedAt: null });
         }
@@ -434,8 +436,8 @@ describe("IntegrationEventsModule", () => {
             jest.spyOn(eventHandler, "handle");
             processor.setEventHandlers([eventHandler]);
             const { seededEventsCount } = await seedData({
-                numOfTenants: 20,
-                eventsPerTenant: 10,
+                numOfTenants: 17,
+                eventsPerTenant: 12,
             });
 
             const unprocessedBefore = await eventRepository.countUnprocessed();
@@ -452,8 +454,8 @@ describe("IntegrationEventsModule", () => {
             jest.spyOn(eventHandler, "handle");
             processor.setEventHandlers([eventHandler]);
             const { seededEventsCount } = await seedData({
-                numOfTenants: 20,
-                eventsPerTenant: 10,
+                numOfTenants: 19,
+                eventsPerTenant: 11,
             });
 
             const unprocessedBefore = await eventRepository.countUnprocessed();
@@ -475,8 +477,8 @@ describe("IntegrationEventsModule", () => {
             });
 
             const { seededEventsCount } = await seedData({
-                numOfTenants: 20,
-                eventsPerTenant: 20,
+                numOfTenants: 19,
+                eventsPerTenant: 23,
             });
 
             await Promise.all([
@@ -498,7 +500,7 @@ describe("IntegrationEventsModule", () => {
 
         it("should skip events with the same partition key in current iteration after processing one of them failed", async () => {
             const { processor, eventRepository, eventHandler } = setup();
-            const { seededEventsCount, events, eventsPerTenant } = await seedData({ numOfTenants: 10, eventsPerTenant: 10 });
+            const { seededEventsCount, events, eventsPerTenant } = await seedData({ numOfTenants: 14, eventsPerTenant: 7 });
             processor.setEventHandlers([eventHandler]);
 
             let poisonPartitionKey: string | null = events[10].getPartitionKey();
@@ -528,7 +530,7 @@ describe("IntegrationEventsModule", () => {
             const { processor, eventRepository, eventHandler } = setup();
             const { seededEventsCount, eventsPerTenant } = await seedData({
                 numOfTenants: 1,
-                eventsPerTenant: 10,
+                eventsPerTenant: 11,
             });
             processor.setEventHandlers([eventHandler]);
 

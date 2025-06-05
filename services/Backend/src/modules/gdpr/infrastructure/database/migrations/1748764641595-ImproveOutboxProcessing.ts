@@ -30,7 +30,9 @@ export class ImproveOutboxProcessing1748764641595 implements MigrationInterface 
         const inboxPartitionRepository = queryRunner.manager.getRepository(InboxEventPartitionEntity);
         const inboxPartitionsToInsert: InboxEventPartitionEntity[] = [];
 
-        for (let i = 1; i <= 16; i++) {
+        const initialNumberOfPartitions = 16;
+
+        for (let i = 1; i <= initialNumberOfPartitions; i++) {
             outboxPartitionsToInsert.push({ id: i, lastProcessedAt: null });
             inboxPartitionsToInsert.push({ id: i, lastProcessedAt: null });
         }

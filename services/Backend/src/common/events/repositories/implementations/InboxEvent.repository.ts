@@ -63,10 +63,11 @@ export class InboxEventRepository extends IntegrationEventRepository<InboxEventE
         const result = await this.repository
             .createQueryBuilder("event")
             .select("event.partitionKey")
+            .distinct(true)
             .where("event.partition = :partitionId", { partitionId })
             .andWhere("event.processAfter > :now", { now: new Date() })
             .andWhere("event.processedAt IS NULL")
-            .andWhere("event.attempts <= :maxAttempts", { maxAttempts })
+            .andWhere("event.attempts < :maxAttempts", { maxAttempts })
             .getMany();
 
         return result.map(({ partitionKey }) => partitionKey);

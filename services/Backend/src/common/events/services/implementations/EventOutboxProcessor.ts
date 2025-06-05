@@ -22,16 +22,6 @@ export interface EventOutboxProcessorOptions {
     maxBatchSize?: number;
 }
 
-/*
-  Key characteristics:
-  1. Guaranteed order of processing within given partition.
-  2. Poison messages are not handled. It is assumed, that publishing messages can fail only due to DB, broker or network issues.
-  Trying to publish more messages would only worsen the issue. If processing 1 message withing partition fails, processing whole
-  partition is cancelled. It also cancels processing of all other partitions.
-  3. Two processing mechanisms:
-     - push-based, after message is enqueued.
-     - polling-based, to deliver all failed events.
-*/
 export class EventOutboxProcessor implements IEventOutboxProcessor {
     private readonly logger: Logger;
     private readonly connectionName: string;
@@ -65,23 +55,23 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
         this.logger.debug("Polling for stale outbox partitions...");
 
         try {
-            const { hasMore } = await runInTransaction(
+            const { processed } = await runInTransaction(
                 async () => {
-                    const partitionToProcess = await this.partitionsRepository.getAndLockSingleStalePartition(staleThreshold);
+                    const partitionToProcess = await this.partitionsRepository.getAndLockOldestStalePartition(staleThreshold);
 
                     if (!partitionToProcess) {
                         this.logger.debug({ staleThreshold }, "No more stale partitions to process.");
-                        return { hasMore: false };
+                        return { processed: false };
                     }
 
                     this.logger.debug({ partitionId: partitionToProcess.id }, "Found stale partition. Processing...");
                     const { ok } = await this.processPartition(partitionToProcess.id);
-                    return { hasMore: ok };
+                    return { processed: ok };
                 },
                 { connectionName: this.connectionName }
             );
 
-            if (hasMore) {
+            if (processed) {
                 await this.processPendingEvents();
             }
         } catch (error) {

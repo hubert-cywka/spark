@@ -26,15 +26,6 @@ const DEFAULT_MAX_BATCH_SIZE = 5;
 const DEFAULT_MAX_ATTEMPTS = 7;
 const DEFAULT_STALE_PARTITION_THRESHOLD_MILLISECONDS = 30_000;
 
-/*
-  Key characteristics:
-  1. Guaranteed order of processing within given partition.
-  2. Poison messages are handled. If message can't be processed, all messages with the same partitionKey will be
-   postponed. Two different partitionKeys, even withing the same partition, don't affect each other.
-  3. Two processing mechanisms:
-     - push-based, after message is enqueued.
-     - polling-based, to deliver all failed events.
-*/
 export class EventInboxProcessor implements IEventInboxProcessor {
     private readonly logger: Logger;
     private readonly connectionName: string;
@@ -87,7 +78,7 @@ export class EventInboxProcessor implements IEventInboxProcessor {
         try {
             const { hasMore } = await runInTransaction(
                 async () => {
-                    const partitionToProcess = await this.partitionsRepository.getAndLockSingleStalePartition(staleThreshold);
+                    const partitionToProcess = await this.partitionsRepository.getAndLockOldestStalePartition(staleThreshold);
 
                     if (!partitionToProcess) {
                         this.logger.debug({ staleThreshold }, "No more stale partitions to process.");

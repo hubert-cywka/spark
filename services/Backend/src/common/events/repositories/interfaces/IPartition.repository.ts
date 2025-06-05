@@ -2,5 +2,5 @@ import { IntegrationEventPartitionEntity } from "@/common/events/entities/Integr
 
 export interface IPartitionRepository<T extends IntegrationEventPartitionEntity> {
     getAndLockPartition(partitionId: number): Promise<T | null>;
-    getAndLockSingleStalePartition(staleThreshold: Date): Promise<T | null>;
+    getAndLockOldestStalePartition(staleThreshold: Date): Promise<T | null>;
 }

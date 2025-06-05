@@ -17,7 +17,7 @@ export class PartitionRepository<T extends IntegrationEventPartitionEntity = Int
             .getOne();
     }
 
-    public async getAndLockSingleStalePartition(staleThreshold: Date): Promise<T | null> {
+    public async getAndLockOldestStalePartition(staleThreshold: Date): Promise<T | null> {
         return await this.repository
             .createQueryBuilder("partition")
             .setLock("pessimistic_write")
