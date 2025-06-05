@@ -27,7 +27,7 @@ import { EventInboxProcessorToken, IEventInboxProcessor } from "@/common/events/
 import { EventOutboxProcessorToken, IEventOutboxProcessor } from "@/common/events/services/interfaces/IEventOutboxProcessor";
 import { generateEvents } from "@/common/events/tests/utils/generateEvents";
 import { groupEventsByPartition } from "@/common/events/tests/utils/groupEventsByPartition";
-import { sortCreatedAtTimestamps } from "@/common/events/tests/utils/sortByCreatedAtTimestamp";
+import { sortByCreatedAtTimestamps } from "@/common/events/tests/utils/sortByCreatedAtTimestamp";
 import { TestEvent } from "@/common/events/tests/utils/TestEvent";
 import { TestEventHandler } from "@/common/events/tests/utils/TestEventHandler";
 import { TestEventEnqueueSubscriber } from "@/common/events/tests/utils/TestEventSubscriber";
@@ -126,6 +126,7 @@ describe("IntegrationEventsModule", () => {
     });
 
     afterAll(async () => {
+        jest.clearAllMocks();
         await dropDatabase(dbOptions, DATABASE_NAME, {
             baseInterval: 1000,
             maxAttempts: 10,
@@ -313,8 +314,10 @@ describe("IntegrationEventsModule", () => {
 
         const seedData = async ({ numOfTenants, eventsPerTenant }: { numOfTenants: number; eventsPerTenant: number }) => {
             const { outbox } = setup();
-            await outbox.enqueueMany(generateEvents(numOfTenants, eventsPerTenant, EVENT_TOPIC));
+            const events = generateEvents(numOfTenants, eventsPerTenant, EVENT_TOPIC);
+            await outbox.enqueueMany(events);
             return {
+                events,
                 numOfTenants,
                 eventsPerTenant,
                 seededEventsCount: numOfTenants * eventsPerTenant,
@@ -360,6 +363,38 @@ describe("IntegrationEventsModule", () => {
 
             expect(unprocessedBefore).toBe(seededEventsCount);
             expect(unprocessedAfter).toBe(0);
+        });
+
+        it("should maintain order of events when processing in parallel", async () => {
+            const { processor, producer } = setup();
+
+            const eventsInProcessingOrder: IntegrationEvent[] = [];
+            jest.spyOn(producer, "publish").mockImplementation(async (event) => {
+                eventsInProcessingOrder.push(event);
+                return { ack: true };
+            });
+
+            const { seededEventsCount, events } = await seedData({
+                numOfTenants: 13,
+                eventsPerTenant: 605,
+            });
+
+            await Promise.all([
+                processor.processPendingEvents(),
+                processor.processPendingEvents(),
+                processor.processPendingEvents(),
+                processor.processPendingEvents(),
+                processor.processPendingEvents(),
+            ]);
+
+            expect(eventsInProcessingOrder.length).toBe(seededEventsCount);
+            const inputEventsByPartition = groupEventsByPartition(events);
+            const eventsInProcessingOrderByPartition = groupEventsByPartition(eventsInProcessingOrder);
+
+            for (const [partition, processedEvents] of Object.entries(eventsInProcessingOrderByPartition)) {
+                const inputEvents = sortByCreatedAtTimestamps(inputEventsByPartition[partition]);
+                expect(processedEvents).toEqual(inputEvents);
+            }
         });
 
         it("should stop whole processing on first failure", async () => {
@@ -503,7 +538,7 @@ describe("IntegrationEventsModule", () => {
                 eventsInProcessingOrder.push(event);
             });
 
-            const { seededEventsCount } = await seedData({
+            const { seededEventsCount, events } = await seedData({
                 numOfTenants: 19,
                 eventsPerTenant: 23,
             });
@@ -517,11 +552,12 @@ describe("IntegrationEventsModule", () => {
             ]);
 
             expect(eventsInProcessingOrder.length).toBe(seededEventsCount);
-            const eventsByPartition = groupEventsByPartition(eventsInProcessingOrder);
+            const inputEventsByPartition = groupEventsByPartition(events);
+            const eventsInProcessingOrderByPartition = groupEventsByPartition(eventsInProcessingOrder);
 
-            for (const partitionEvents of Object.values(eventsByPartition)) {
-                const { sorted, original } = sortCreatedAtTimestamps(partitionEvents);
-                expect(original).toEqual(sorted);
+            for (const [partition, processedEvents] of Object.entries(eventsInProcessingOrderByPartition)) {
+                const inputEvents = sortByCreatedAtTimestamps(inputEventsByPartition[partition]);
+                expect(processedEvents).toEqual(inputEvents);
             }
         });
 
