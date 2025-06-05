@@ -1,11 +1,10 @@
 import { Injectable, Logger } from "@nestjs/common";
-import dayjs from "dayjs";
-import { Repository } from "typeorm";
 import { runInTransaction, runOnTransactionCommit } from "typeorm-transactional";
 
-import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
+import { type IInboxEventRepository } from "@/common/events/repositories/interfaces/IInboxEvent.repository";
 import { type IEventInbox } from "@/common/events/services/interfaces/IEventInbox";
 import { type IEventsQueueSubscriber } from "@/common/events/services/interfaces/IEventsQueueSubscriber";
+import { type IPartitionAssigner } from "@/common/events/services/interfaces/IPartitionAssigner";
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 
 interface EventInboxOptions {
@@ -21,7 +20,8 @@ export class EventInbox implements IEventInbox {
 
     public constructor(
         options: EventInboxOptions,
-        private readonly repository: Repository<InboxEventEntity>
+        private readonly repository: IInboxEventRepository,
+        private readonly partitionAssigner: IPartitionAssigner
     ) {
         this.logger = new Logger(options.context);
         this.connectionName = options.connectionName;
@@ -29,34 +29,38 @@ export class EventInbox implements IEventInbox {
     }
 
     public async enqueue(event: IntegrationEvent): Promise<void> {
-        const repository = this.getRepository();
-
         await runInTransaction(
             async () => {
-                const exists = await repository.existsBy({ id: event.getId() });
+                const exists = await this.repository.exists(event.getId());
 
                 if (exists) {
                     this.logger.log(event, "Event already in inbox.");
                     return;
                 }
 
-                const now = dayjs();
-
-                await repository.save({
-                    id: event.getId(),
-                    tenantId: event.getTenantId(),
-                    topic: event.getTopic(),
-                    payload: event.getRawPayload(),
-                    isEncrypted: event.isEncrypted(),
-                    createdAt: event.getCreatedAt(),
-                    receivedAt: now,
-                    processAfter: now,
-                });
-
+                await this.repository.save(this.mapEventToInput(event));
                 this.logger.log(event, "Event added to inbox.");
 
                 runOnTransactionCommit(async () => {
                     this.onEventEnqueued(event);
+                });
+            },
+            { connectionName: this.connectionName }
+        );
+    }
+
+    public async enqueueMany(events: IntegrationEvent[]): Promise<void> {
+        const inputs = events.map((event) => this.mapEventToInput(event));
+
+        await runInTransaction(
+            async () => {
+                const result = await this.repository.saveManyAndSkipDuplicates(inputs);
+                this.logger.log({ received: events.length, saved: result.length }, "Events added to inbox.");
+
+                runOnTransactionCommit(async () => {
+                    for (const event of events) {
+                        this.onEventEnqueued(event);
+                    }
                 });
             },
             { connectionName: this.connectionName }
@@ -73,7 +77,20 @@ export class EventInbox implements IEventInbox {
         this.subscribers.forEach((subscriber) => subscriber.notifyOnEnqueued(event));
     }
 
-    private getRepository(): Repository<InboxEventEntity> {
-        return this.repository;
+    private mapEventToInput(event: IntegrationEvent) {
+        const now = new Date();
+
+        return {
+            id: event.getId(),
+            tenantId: event.getTenantId(),
+            partition: this.partitionAssigner.assign(event.getPartitionKey()),
+            partitionKey: event.getPartitionKey(),
+            topic: event.getTopic(),
+            payload: event.getRawPayload(),
+            isEncrypted: event.isEncrypted(),
+            createdAt: event.getCreatedAt(),
+            receivedAt: now,
+            processAfter: now,
+        };
     }
 }

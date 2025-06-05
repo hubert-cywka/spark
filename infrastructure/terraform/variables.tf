@@ -199,3 +199,55 @@ variable "KAFKA_CONTROLLER_INTERNAL_PORT" {
 variable "KAFKA_LOG_SEGMENT_BYTES" {
   type = number
 }
+
+variable "PUBSUB_OUTBOX_PROCESSOR_POLLING_INTERVAL" {
+  type = number
+}
+
+variable "PUBSUB_INBOX_PROCESSOR_MAX_ATTEMPTS" {
+  type = number
+}
+
+variable "PUBSUB_INBOX_PROCESSOR_CLEARING_INTERVAL" {
+  type = number
+}
+
+variable "PUBSUB_INBOX_PROCESSOR_MAX_BATCH_SIZE" {
+  type = number
+}
+
+variable "PUBSUB_INBOX_PROCESSOR_POLLING_INTERVAL" {
+  type = number
+}
+
+variable "PUBSUB_PARTITIONS_STALE_THRESHOLD_IN_MS" {
+  type = number
+}
+
+variable "PUBSUB_PARTITIONS_NUM_OF_PARTITIONS" {
+  type = number
+}
+
+variable "PUBSUB_CONSUMER_MAX_WAIT_FOR_BATCH_MS" {
+  type = number
+}
+
+variable "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH" {
+  type = number
+}
+
+variable "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS" {
+  type = number
+}
+
+variable "PUBSUB_OUTBOX_PROCESSOR_MAX_BATCH_SIZE" {
+  type = number
+}
+
+variable "PUBSUB_OUTBOX_PROCESSOR_CLEARING_INTERVAL" {
+  type = number
+}
+
+variable "PUBSUB_OUTBOX_PROCESSOR_MAX_ATTEMPTS" {
+  type = number
+}

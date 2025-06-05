@@ -1,4 +1,5 @@
 import { Inject } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import dayjs from "dayjs";
 
@@ -13,9 +14,6 @@ import {
 import { type IIntegrationEventsJobsOrchestrator } from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
 
 const EVENTS_RETENTION_PERIOD_IN_DAYS = 7;
-const OUTBOX_PROCESSING_INTERVAL_IN_MS = 1000 * 10;
-const INBOX_PROCESSING_INTERVAL_IN_MS = 1000 * 10;
-const CLEARING_INTERVAL_IN_MS = 1000 * 60 * 60 * 12;
 
 export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobsOrchestrator {
     public constructor(
@@ -29,7 +27,8 @@ export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobs
         private readonly inboxProcessor: IEventInboxProcessor,
         @Inject(EventOutboxProcessorToken)
         private readonly outboxProcessor: IEventOutboxProcessor,
-        private readonly registry: SchedulerRegistry
+        private readonly registry: SchedulerRegistry,
+        private readonly configService: ConfigService
     ) {}
 
     public startProcessingInbox(handlers: IInboxEventHandler[]) {
@@ -38,7 +37,7 @@ export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobs
 
         const job = setInterval(async () => {
             await this.inboxProcessor.processPendingEvents();
-        }, INBOX_PROCESSING_INTERVAL_IN_MS);
+        }, this.configService.getOrThrow<number>("events.inbox.processing.pollingInterval"));
 
         const jobId = this.createJobId();
         this.registry.addInterval(jobId, job);
@@ -49,7 +48,7 @@ export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobs
 
         const job = setInterval(async () => {
             await this.outboxProcessor.processPendingEvents();
-        }, OUTBOX_PROCESSING_INTERVAL_IN_MS);
+        }, this.configService.getOrThrow<number>("events.outbox.processing.pollingInterval"));
 
         const jobId = this.createJobId();
         this.registry.addInterval(jobId, job);
@@ -59,7 +58,7 @@ export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobs
         const job = setInterval(async () => {
             const processedBefore = dayjs().subtract(EVENTS_RETENTION_PERIOD_IN_DAYS, "days").toDate();
             await this.inboxRemovalService.removeProcessedBefore(processedBefore);
-        }, CLEARING_INTERVAL_IN_MS);
+        }, this.configService.getOrThrow<number>("events.inbox.processing.clearingInterval"));
 
         const jobId = this.createJobId();
         this.registry.addInterval(jobId, job);
@@ -69,7 +68,7 @@ export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobs
         const job = setInterval(async () => {
             const processedBefore = dayjs().subtract(EVENTS_RETENTION_PERIOD_IN_DAYS, "days").toDate();
             await this.outboxRemovalService.removeProcessedBefore(processedBefore);
-        }, CLEARING_INTERVAL_IN_MS);
+        }, this.configService.getOrThrow<number>("events.outbox.processing.clearingInterval"));
 
         const jobId = this.createJobId();
         this.registry.addInterval(jobId, job);

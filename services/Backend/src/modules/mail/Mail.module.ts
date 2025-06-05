@@ -26,6 +26,9 @@ import { AddTenantIdToOutboxAndInbox1743101783697 } from "@/modules/mail/infrast
 import { EncryptedEvents1746294905909 } from "@/modules/mail/infrastructure/database/migrations/1746294905909-encryptedEvents";
 import { AddRecipient1748032112854 } from "@/modules/mail/infrastructure/database/migrations/1748032112854-AddRecipient";
 import { AddProcessAfterTimestampToEvent1748202987491 } from "@/modules/mail/infrastructure/database/migrations/1748202987491-addProcessAfterTimestampToEvent";
+import { ImproveOutboxProcessing1748764641598 } from "@/modules/mail/infrastructure/database/migrations/1748764641598-ImproveOutboxProcessing";
+import { Cleanup1748765396555 } from "@/modules/mail/infrastructure/database/migrations/1748765396555-Cleanup";
+import { OutboxIndices1748773002755 } from "@/modules/mail/infrastructure/database/migrations/1748773002755-OutboxIndices";
 import { RecipientMapperToken } from "@/modules/mail/mappers/IRecipient.mapper";
 import { RecipientMapper } from "@/modules/mail/mappers/Recipient.mapper";
 import { EmailLookupService } from "@/modules/mail/services/implementations/EmailLookup.service";
@@ -121,15 +124,29 @@ import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/
                     EncryptedEvents1746294905909,
                     AddRecipient1748032112854,
                     AddProcessAfterTimestampToEvent1748202987491,
+                    ImproveOutboxProcessing1748764641598,
+                    Cleanup1748765396555,
+                    OutboxIndices1748773002755,
                 ],
             }),
             inject: [ConfigService],
         }),
         DatabaseModule.forFeature(MAIL_MODULE_DATA_SOURCE, [RecipientEntity]),
-        IntegrationEventsModule.forFeature({
+        IntegrationEventsModule.forFeatureAsync({
             context: MailModule.name,
             consumerGroupId: "mail",
             connectionName: MAIL_MODULE_DATA_SOURCE,
+            useFactory: (configService: ConfigService) => ({
+                inboxProcessorOptions: {
+                    maxAttempts: configService.getOrThrow<number>("events.inbox.processing.maxAttempts"),
+                    maxBatchSize: configService.getOrThrow<number>("events.inbox.processing.maxBatchSize"),
+                },
+                outboxProcessorOptions: {
+                    maxAttempts: configService.getOrThrow<number>("events.outbox.processing.maxAttempts"),
+                    maxBatchSize: configService.getOrThrow<number>("events.outbox.processing.maxBatchSize"),
+                },
+            }),
+            inject: [ConfigService],
         }),
     ],
     controllers: [],

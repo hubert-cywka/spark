@@ -29,6 +29,9 @@ import { DeleteAlertsOnCascade1743158723835 } from "@/modules/alerts/infrastruct
 import { EncryptedEvents1746293664099 } from "@/modules/alerts/infrastructure/database/migrations/1746293664099-encryptedEvents";
 import { RemoveRecipientEmail1748031512732 } from "@/modules/alerts/infrastructure/database/migrations/1748031512732-RemoveRecipientEmail";
 import { AddProcessAfterTimestampToEvent1748202978923 } from "@/modules/alerts/infrastructure/database/migrations/1748202978923-addProcessAfterTimestampToEvent";
+import { ImproveOutboxProcessing1748764641594 } from "@/modules/alerts/infrastructure/database/migrations/1748764641594-ImproveOutboxProcessing";
+import { Cleanup1748765396551 } from "@/modules/alerts/infrastructure/database/migrations/1748765396551-Cleanup";
+import { OutboxIndices1748773002752 } from "@/modules/alerts/infrastructure/database/migrations/1748773002752-OutboxIndices";
 import { AlertMapper } from "@/modules/alerts/mappers/Alert.mapper";
 import { AlertMapperToken } from "@/modules/alerts/mappers/IAlert.mapper";
 import { RecipientMapperToken } from "@/modules/alerts/mappers/IRecipient.mapper";
@@ -98,15 +101,29 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
                     EncryptedEvents1746293664099,
                     RemoveRecipientEmail1748031512732,
                     AddProcessAfterTimestampToEvent1748202978923,
+                    ImproveOutboxProcessing1748764641594,
+                    Cleanup1748765396551,
+                    OutboxIndices1748773002752,
                 ],
             }),
             inject: [ConfigService],
         }),
         DatabaseModule.forFeature(ALERTS_MODULE_DATA_SOURCE, [AlertEntity, RecipientEntity]),
-        IntegrationEventsModule.forFeature({
+        IntegrationEventsModule.forFeatureAsync({
             context: AlertsModule.name,
             consumerGroupId: "alerts",
             connectionName: ALERTS_MODULE_DATA_SOURCE,
+            useFactory: (configService: ConfigService) => ({
+                inboxProcessorOptions: {
+                    maxAttempts: configService.getOrThrow<number>("events.inbox.processing.maxAttempts"),
+                    maxBatchSize: configService.getOrThrow<number>("events.inbox.processing.maxBatchSize"),
+                },
+                outboxProcessorOptions: {
+                    maxAttempts: configService.getOrThrow<number>("events.outbox.processing.maxAttempts"),
+                    maxBatchSize: configService.getOrThrow<number>("events.outbox.processing.maxBatchSize"),
+                },
+            }),
+            inject: [ConfigService],
         }),
     ],
     controllers: [AlertsController],

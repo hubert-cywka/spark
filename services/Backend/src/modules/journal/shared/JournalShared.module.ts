@@ -26,6 +26,9 @@ import { DeleteGoalsOnCascade1743159095911 } from "@/modules/journal/infrastruct
 import { DeleteOnCascadeFix1743159586254 } from "@/modules/journal/infrastructure/database/migrations/1743159586254-deleteOnCascadeFix";
 import { EncryptedEvents1746293695291 } from "@/modules/journal/infrastructure/database/migrations/1746293695291-encryptedEvents";
 import { AddProcessAfterTimestampToEvent1748202970932 } from "@/modules/journal/infrastructure/database/migrations/1748202970932-addProcessAfterTimestampToEvent";
+import { ImproveOutboxProcessing1748764641597 } from "@/modules/journal/infrastructure/database/migrations/1748764641597-ImproveOutboxProcessing";
+import { Cleanup1748765396554 } from "@/modules/journal/infrastructure/database/migrations/1748765396554-Cleanup";
+import { OutboxIndices1748773002756 } from "@/modules/journal/infrastructure/database/migrations/1748773002756-OutboxIndices";
 
 @Module({
     providers: [],
@@ -57,15 +60,29 @@ import { AddProcessAfterTimestampToEvent1748202970932 } from "@/modules/journal/
                     DeleteOnCascadeFix1743159586254,
                     EncryptedEvents1746293695291,
                     AddProcessAfterTimestampToEvent1748202970932,
+                    ImproveOutboxProcessing1748764641597,
+                    Cleanup1748765396554,
+                    OutboxIndices1748773002756,
                 ],
             }),
             inject: [ConfigService],
         }),
         DatabaseModule.forFeature(JOURNAL_MODULE_DATA_SOURCE, [EntryEntity, DailyEntity, AuthorEntity, GoalEntity]),
-        IntegrationEventsModule.forFeature({
+        IntegrationEventsModule.forFeatureAsync({
             context: JournalSharedModule.name,
             consumerGroupId: "journal",
             connectionName: JOURNAL_MODULE_DATA_SOURCE,
+            useFactory: (configService: ConfigService) => ({
+                inboxProcessorOptions: {
+                    maxAttempts: configService.getOrThrow<number>("events.inbox.processing.maxAttempts"),
+                    maxBatchSize: configService.getOrThrow<number>("events.inbox.processing.maxBatchSize"),
+                },
+                outboxProcessorOptions: {
+                    maxAttempts: configService.getOrThrow<number>("events.outbox.processing.maxAttempts"),
+                    maxBatchSize: configService.getOrThrow<number>("events.outbox.processing.maxBatchSize"),
+                },
+            }),
+            inject: [ConfigService],
         }),
     ],
     exports: [IntegrationEventsModule, DatabaseModule],

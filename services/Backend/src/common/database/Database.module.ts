@@ -3,7 +3,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 import { addTransactionalDataSource, getDataSourceByName } from "typeorm-transactional";
 
-import { initializeDatabase } from "@/common/utils/initializeDatabase";
+import { initializeDatabase } from "@/common/utils/databaseUtils";
 import { EntityConstructor, MigrationConstructor } from "@/types/Database";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 
@@ -16,7 +16,8 @@ type DatabaseModuleOptions = {
     password: string;
     host: string;
     database: string;
-    migrations: MigrationConstructor[];
+    synchronize?: boolean;
+    migrations?: MigrationConstructor[];
     logging?: boolean;
 };
 
@@ -65,7 +66,7 @@ export class DatabaseModule {
                             logging: dbOptions.logging,
                             autoLoadEntities: true,
                             migrationsRun: true,
-                            synchronize: false,
+                            synchronize: dbOptions.synchronize,
                             migrations: dbOptions.migrations,
                         };
                     },

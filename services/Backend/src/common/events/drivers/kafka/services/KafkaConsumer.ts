@@ -1,28 +1,43 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { type Consumer } from "kafkajs";
+import { type Consumer, Batch } from "kafkajs";
 
 import { IntegrationEvent } from "@/common/events";
-import { type IPubSubConsumer, OnEventReceivedHandler } from "@/common/events/services/interfaces/IPubSubConsumer";
+import { type IPubSubConsumer, OnEventsReceivedHandler } from "@/common/events/services/interfaces/IPubSubConsumer";
 
 @Injectable()
 export class KafkaConsumer implements IPubSubConsumer {
     private readonly logger = new Logger(KafkaConsumer.name);
 
-    public constructor(private readonly consumer: Consumer) {}
+    public constructor(
+        private readonly consumer: Consumer,
+        private readonly partitionsConsumedConcurrently: number
+    ) {}
 
-    public async listen(topics: string[], onEventReceived: OnEventReceivedHandler): Promise<void> {
+    public async listen(topics: string[], onEventsReceived: OnEventsReceivedHandler): Promise<void> {
         await this.consumer.subscribe({ topics, fromBeginning: true });
         this.logger.log({ topics }, "Subscribed to topics.");
 
         await this.consumer.run({
-            eachMessage: async ({ message, topic }) => {
-                if (!message.value) {
-                    this.logger.warn({ message, topic }, "Received empty message.");
-                    return;
+            partitionsConsumedConcurrently: this.partitionsConsumedConcurrently,
+            eachBatch: async ({ resolveOffset, heartbeat, batch }) => {
+                const events = this.getEventsFromBatch(batch);
+                const emptyEventsCount = events.length - batch.messages.length;
+
+                if (emptyEventsCount) {
+                    this.logger.warn({ topic: batch.topic, count: emptyEventsCount }, "Received empty messages.");
                 }
 
-                await onEventReceived(IntegrationEvent.fromBuffer(message.value));
+                await heartbeat();
+                await onEventsReceived(events);
+
+                for (const message of batch.messages) {
+                    resolveOffset(message.offset);
+                }
             },
         });
+    }
+
+    private getEventsFromBatch(batch: Batch) {
+        return batch.messages.filter((message) => !!message.value).map((message) => IntegrationEvent.fromBuffer(message.value!));
     }
 }

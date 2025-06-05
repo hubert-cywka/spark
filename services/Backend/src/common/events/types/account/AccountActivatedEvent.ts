@@ -12,6 +12,7 @@ export class AccountActivatedEvent extends IntegrationEvent<AccountActivatedEven
         super({
             topic: IntegrationEventTopics.account.activation.completed,
             payload,
+            partitionKey: tenantId,
             tenantId,
         });
     }

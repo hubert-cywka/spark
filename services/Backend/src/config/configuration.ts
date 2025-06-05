@@ -18,13 +18,39 @@ export const AppConfig = () => ({
     },
 
     events: {
+        partitioning: {
+            numberOfPartitions: process.env.PUBSUB_PARTITIONS_NUM_OF_PARTITIONS,
+            staleThresholdInMs: process.env.PUBSUB_PARTITIONS_STALE_THRESHOLD_IN_MS,
+        },
         encryption: {
             secret: process.env.EVENTS_ENCRYPTION_SECRET_64_BYTES,
+        },
+        inbox: {
+            processing: {
+                clearingInterval: process.env.PUBSUB_INBOX_PROCESSOR_CLEARING_INTERVAL,
+                pollingInterval: process.env.PUBSUB_INBOX_PROCESSOR_POLLING_INTERVAL,
+                maxBatchSize: process.env.PUBSUB_INBOX_PROCESSOR_MAX_BATCH_SIZE,
+                maxAttempts: process.env.PUBSUB_INBOX_PROCESSOR_MAX_ATTEMPTS,
+            },
+        },
+        outbox: {
+            processing: {
+                clearingInterval: process.env.PUBSUB_OUTBOX_PROCESSOR_CLEARING_INTERVAL,
+                pollingInterval: process.env.PUBSUB_OUTBOX_PROCESSOR_POLLING_INTERVAL,
+                maxBatchSize: process.env.PUBSUB_OUTBOX_PROCESSOR_MAX_BATCH_SIZE,
+                maxAttempts: process.env.PUBSUB_OUTBOX_PROCESSOR_MAX_ATTEMPTS,
+            },
         },
     },
 
     pubsub: {
         brokers: process.env.PUBSUB_BROKERS?.split(","),
+        producer: {},
+        consumer: {
+            concurrentPartitions: process.env.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS,
+            maxWaitTimeForBatchInMs: process.env.PUBSUB_CONSUMER_MAX_WAIT_FOR_BATCH_MS,
+            maxBytesPerBatch: process.env.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH,
+        },
     },
 
     auth: {

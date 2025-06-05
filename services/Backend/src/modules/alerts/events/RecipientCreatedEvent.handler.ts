@@ -1,7 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { EntityConflictError } from "@/common/errors/EntityConflict.error";
-import { whenError } from "@/common/errors/whenError";
 import { AccountCreatedEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 import { type IRecipientService, RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRecipient.service";
 
@@ -18,10 +16,6 @@ export class RecipientCreatedEventHandler implements IInboxEventHandler {
 
     async handle(event: IntegrationEvent): Promise<void> {
         const payload = event.getPayload() as AccountCreatedEventPayload;
-        try {
-            await this.recipientService.create(payload.account.id);
-        } catch (e) {
-            whenError(e).is(EntityConflictError).throwRpcException("Recipient already exists.").elseRethrow();
-        }
+        await this.recipientService.create(payload.account.id);
     }
 }

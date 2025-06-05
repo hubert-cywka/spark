@@ -2,7 +2,9 @@ import { configDotenv } from "dotenv";
 import { DataSource } from "typeorm";
 
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
+import { InboxEventPartitionEntity } from "@/common/events/entities/InboxEventPartition.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import { OutboxEventPartitionEntity } from "@/common/events/entities/OutboxEventPartition.entity";
 import { AppConfig } from "@/config/configuration";
 import { TwoFactorAuthenticationIntegrationEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationIntegration.entity";
 import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccountEntity";
@@ -34,6 +36,8 @@ export const dataSource = new DataSource({
         ManagedAccountEntity,
         BaseAccountEntity,
         TwoFactorAuthenticationIntegrationEntity,
+        OutboxEventPartitionEntity,
+        InboxEventPartitionEntity,
     ],
     migrations: [],
 });

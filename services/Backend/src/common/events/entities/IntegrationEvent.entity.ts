@@ -1,11 +1,17 @@
 import { Column, PrimaryGeneratedColumn } from "typeorm";
 
-export class IntegrationEventEntity<T = unknown> {
+export class IntegrationEventEntity<T = string | object> {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
     @Column({ type: "uuid" })
     tenantId!: string;
+
+    @Column({ type: "varchar" })
+    partitionKey!: string;
+
+    @Column({ type: "int" })
+    partition!: number;
 
     @Column({ type: "varchar" })
     topic!: string;

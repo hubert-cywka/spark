@@ -22,6 +22,9 @@ import { AddTenantIdToOutboxAndInbox1743101796654 } from "@/modules/users/infras
 import { RemoveUserPersonalInfo1746284981052 } from "@/modules/users/infrastructure/database/migrations/1746284981052-removeUserPersonalInfo";
 import { EncryptedEvents1746293623196 } from "@/modules/users/infrastructure/database/migrations/1746293623196-encryptedEvents";
 import { AddProcessAfterTimestampToEvent1748202889222 } from "@/modules/users/infrastructure/database/migrations/1748202889222-addProcessAfterTimestampToEvent";
+import { ImproveOutboxProcessing1748764641599 } from "@/modules/users/infrastructure/database/migrations/1748764641599-ImproveOutboxProcessing";
+import { Cleanup1748765396556 } from "@/modules/users/infrastructure/database/migrations/1748765396556-Cleanup";
+import { OutboxIndices1748773002757 } from "@/modules/users/infrastructure/database/migrations/1748773002757-OutboxIndices";
 import { UserMapperToken } from "@/modules/users/mappers/IUser.mapper";
 import { UserMapper } from "@/modules/users/mappers/User.mapper";
 import { UserPublisherService } from "@/modules/users/services/implementations/UserPublisher.service";
@@ -64,15 +67,29 @@ import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.se
                     RemoveUserPersonalInfo1746284981052,
                     EncryptedEvents1746293623196,
                     AddProcessAfterTimestampToEvent1748202889222,
+                    ImproveOutboxProcessing1748764641599,
+                    Cleanup1748765396556,
+                    OutboxIndices1748773002757,
                 ],
             }),
             inject: [ConfigService],
         }),
         DatabaseModule.forFeature(USERS_MODULE_DATA_SOURCE, [UserEntity]),
-        IntegrationEventsModule.forFeature({
+        IntegrationEventsModule.forFeatureAsync({
             context: UsersModule.name,
             consumerGroupId: "users",
             connectionName: USERS_MODULE_DATA_SOURCE,
+            useFactory: (configService: ConfigService) => ({
+                inboxProcessorOptions: {
+                    maxAttempts: configService.getOrThrow<number>("events.inbox.processing.maxAttempts"),
+                    maxBatchSize: configService.getOrThrow<number>("events.inbox.processing.maxBatchSize"),
+                },
+                outboxProcessorOptions: {
+                    maxAttempts: configService.getOrThrow<number>("events.outbox.processing.maxAttempts"),
+                    maxBatchSize: configService.getOrThrow<number>("events.outbox.processing.maxBatchSize"),
+                },
+            }),
+            inject: [ConfigService],
         }),
     ],
     controllers: [UserController],

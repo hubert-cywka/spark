@@ -1,153 +1,170 @@
 import { Logger } from "@nestjs/common";
-import { Mutex } from "async-mutex";
 import dayjs from "dayjs";
-import { Repository } from "typeorm";
 import { runInTransaction } from "typeorm-transactional";
 
 import { IntegrationEvent } from "@/common/events";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import { type IOutboxEventRepository } from "@/common/events/repositories/interfaces/IOutboxEvent.repository";
+import { type IOutboxPartitionRepository } from "@/common/events/repositories/interfaces/IOutboxPartition.repository";
 import { type IEventOutboxProcessor } from "@/common/events/services/interfaces/IEventOutboxProcessor";
+import { type IPartitionAssigner } from "@/common/events/services/interfaces/IPartitionAssigner";
 import { type IPubSubProducer } from "@/common/events/services/interfaces/IPubSubProducer";
+
+const DEFAULT_MAX_BATCH_SIZE = 1000;
+const DEFAULT_MAX_ATTEMPTS = 10_000;
+const DEFAULT_STALE_PARTITION_THRESHOLD_MILLISECONDS = 30_000;
 
 export interface EventOutboxProcessorOptions {
     connectionName: string;
     context: string;
+    stalePartitionThreshold?: number;
     maxAttempts?: number;
     maxBatchSize?: number;
 }
 
-const DEFAULT_MAX_BATCH_SIZE = 50;
-const DEFAULT_MAX_ATTEMPTS = 10_000;
-
-/*
-  Key decisions:
-  1. No handling of poison messages + unlimited retries - if message cannot be published, it's either a problem with
-   network or with broker. No point in trying to publish another message.
-  2. After first publish failure stop processing. Same reason as above.
-  3. When new messages is enqueued, start processing. This reduces the delay between receiving and processing the
-   message.
-  4. Poll messages with reasonable interval. This will ensure that messages will get finally delivered. 
-  
-  Known issues:
-  1. Horizontal scaling may break order of processing. This could be solved by using a distributed lock,
-   partitioning messages by tenantId, adding sequence number (and forcing consumers to handle ordering).
-  2. Immediate publish after the message is enqueued may break order of processing. Current solution is to use mutex.
- */
 export class EventOutboxProcessor implements IEventOutboxProcessor {
     private readonly logger: Logger;
-    private readonly processingMutex: Mutex;
+    private readonly connectionName: string;
+
+    private readonly stalePartitionThreshold: number;
     private readonly maxAttempts: number;
     private readonly maxBatchSize: number;
-    private readonly connectionName: string;
 
     public constructor(
         private readonly client: IPubSubProducer,
-        private readonly repository: Repository<OutboxEventEntity>,
+        private readonly eventsRepository: IOutboxEventRepository,
+        private readonly partitionsRepository: IOutboxPartitionRepository,
+        private readonly partitionAssigner: IPartitionAssigner,
         options: EventOutboxProcessorOptions
     ) {
-        this.processingMutex = new Mutex();
         this.logger = new Logger(options.context);
         this.connectionName = options.connectionName;
 
+        this.stalePartitionThreshold = options.stalePartitionThreshold ?? DEFAULT_STALE_PARTITION_THRESHOLD_MILLISECONDS;
         this.maxBatchSize = options.maxBatchSize ?? DEFAULT_MAX_BATCH_SIZE;
         this.maxAttempts = options.maxAttempts ?? DEFAULT_MAX_ATTEMPTS;
     }
 
-    public notifyOnEnqueued(event: IntegrationEvent) {
-        void this.processPendingEvents({ tenantId: event.getTenantId() });
+    public notifyOnEnqueued(event: IntegrationEvent): void {
+        const partition = this.partitionAssigner.assign(event.getPartitionKey());
+        void this.lockAndProcessPartition(partition);
     }
 
-    public async processPendingEvents(options: { tenantId?: string } = {}) {
-        await this.processingMutex.runExclusive(async () => {
-            try {
-                const { total, successful } = await this.processNextBatchOfPendingEvents(options);
+    public async processPendingEvents(): Promise<void> {
+        const staleThreshold = dayjs().subtract(this.stalePartitionThreshold, "milliseconds").toDate();
+        this.logger.debug("Polling for stale outbox partitions...");
 
-                if (total !== successful) {
-                    this.logger.error(
-                        { processed: { total, successful }, options },
-                        "Some events in batch couldn't be processed, abandoning."
-                    );
-                    return;
-                }
+        try {
+            const { processed } = await runInTransaction(
+                async () => {
+                    const partitionToProcess = await this.partitionsRepository.getAndLockOldestStalePartition(staleThreshold);
 
-                if (total !== 0) {
-                    this.logger.log({ processed: { total, successful } }, "Processed events.");
-                }
+                    if (!partitionToProcess) {
+                        this.logger.debug({ staleThreshold }, "No more stale partitions to process.");
+                        return { processed: false };
+                    }
 
-                if (total === this.maxBatchSize) {
-                    await this.processPendingEvents(options);
-                }
-            } catch (error) {
-                this.logger.error(error, "Failed to process pending events.");
+                    this.logger.debug({ partitionId: partitionToProcess.id }, "Found stale partition. Processing...");
+                    const { ok } = await this.processPartition(partitionToProcess.id);
+                    return { processed: ok };
+                },
+                { connectionName: this.connectionName }
+            );
+
+            if (processed) {
+                await this.processPendingEvents();
             }
-        });
+        } catch (error) {
+            this.logger.error(error, "Failed to poll and process stale outbox partitions.");
+        }
     }
 
-    private async processNextBatchOfPendingEvents({ tenantId }: { tenantId?: string } = {}) {
+    private async processPartition(partitionId: number) {
         return await runInTransaction(
             async () => {
-                const query = this.getRepository()
-                    .createQueryBuilder("event")
-                    .setLock("pessimistic_write")
-                    .setOnLocked("skip_locked")
-                    .where("event.processedAt IS NULL")
-                    .andWhere("event.attempts < :maxAttempts", {
+                // eslint-disable-next-line no-constant-condition
+                while (true) {
+                    const events = await this.eventsRepository.getBatchOfUnprocessedEvents({
+                        partitionId: partitionId,
                         maxAttempts: this.maxAttempts,
-                    })
-                    .orderBy("event.createdAt", "ASC");
+                        take: this.maxBatchSize,
+                    });
 
-                if (tenantId) {
-                    query.andWhere("event.tenantId = :tenantId", { tenantId });
+                    const { successfulEvents, failedEvent } = await this.publishEvents(events);
+                    await this.updateEventsAndPartition(partitionId, successfulEvents, events);
+
+                    if (failedEvent) {
+                        this.logger.warn(
+                            { partitionId, failedEventId: failedEvent.id },
+                            "Stopped processing partition due to publish failure."
+                        );
+                        return { ok: false };
+                    }
+
+                    if (events.length < this.maxBatchSize) {
+                        return { ok: true };
+                    }
                 }
-
-                const events = await query.take(this.maxBatchSize).getMany();
-                return await this.bulkPublishAndUpdate(events);
             },
             { connectionName: this.connectionName }
         );
     }
 
-    private async bulkPublishAndUpdate(events: OutboxEventEntity[]) {
-        const processed: OutboxEventEntity[] = [];
-        const repository = this.getRepository();
+    private async lockAndProcessPartition(partitionId: number) {
+        return await runInTransaction(
+            async () => {
+                const partitionToProcess = await this.partitionsRepository.getAndLockPartition(partitionId);
 
-        if (!events.length) {
-            return { successful: 0, total: 0 };
-        }
+                if (!partitionToProcess) {
+                    this.logger.log({ partitionId }, "Partition already locked.");
+                    return;
+                }
 
-        for (const event of events) {
-            const processedEvent = await this.publish(event);
-            processed.push(processedEvent);
+                await this.processPartition(partitionToProcess.id);
+            },
+            { connectionName: this.connectionName }
+        );
+    }
 
-            if (!processedEvent.processedAt) {
+    private async publishEvents(events: OutboxEventEntity[]) {
+        const successfulEvents: OutboxEventEntity[] = [];
+        let failedEvent: OutboxEventEntity | null = null;
+
+        for (const eventEntity of events) {
+            const event = IntegrationEvent.fromEntity(eventEntity);
+
+            try {
+                await this.client.publish(event);
+                successfulEvents.push(eventEntity);
+                this.logger.log({ eventId: event.getId() }, "Published event");
+            } catch (error) {
+                this.logger.error(error, "Failed to publish event. ACK not received.");
+                failedEvent = eventEntity;
                 break;
             }
         }
 
-        await repository.save(processed);
-
-        return {
-            total: processed.length,
-            successful: processed.filter((event) => !!event.processedAt).length,
-        };
+        return { successfulEvents, failedEvent };
     }
 
-    private async publish(entity: OutboxEventEntity): Promise<OutboxEventEntity> {
-        const event = IntegrationEvent.fromEntity(entity);
+    private async updateEventsAndPartition(
+        partitionId: number,
+        successfulEvents: OutboxEventEntity[],
+        allAttemptedEvents: OutboxEventEntity[]
+    ) {
+        const allAttemptedEventIds = allAttemptedEvents.map((e) => e.id);
+        const successfulEventIds = successfulEvents.map((e) => e.id);
 
-        try {
-            await this.client.publish(event);
-            this.logger.log({ event }, "Published event");
-            entity.processedAt = dayjs().toDate();
-        } catch (e) {
-            this.logger.error({ event, e }, "Failed to publish event in time - ACK not received.");
+        if (allAttemptedEventIds.length > 0) {
+            await this.eventsRepository.increaseAttempt(allAttemptedEventIds);
         }
 
-        entity.attempts++;
-        return entity;
-    }
+        if (successfulEventIds.length > 0) {
+            await this.eventsRepository.markAsProcessed(successfulEventIds);
+        }
 
-    private getRepository(): Repository<OutboxEventEntity> {
-        return this.repository;
+        if (allAttemptedEventIds.length === successfulEventIds.length) {
+            await this.partitionsRepository.markAsProcessed(partitionId);
+        }
     }
 }

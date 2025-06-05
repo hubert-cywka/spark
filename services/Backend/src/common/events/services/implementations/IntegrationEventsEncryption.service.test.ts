@@ -12,6 +12,7 @@ describe("IntegrationEventsEncryptionService", () => {
 
     const mockEvent = new IntegrationEvent({
         createdAt: new Date(),
+        partitionKey: "abc",
         payload: { property: "value" },
         tenantId: "tenant-123",
         topic: "topic",

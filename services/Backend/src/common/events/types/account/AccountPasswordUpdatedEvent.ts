@@ -9,6 +9,7 @@ export class AccountPasswordUpdatedEvent extends IntegrationEvent<AccountPasswor
         super({
             topic: IntegrationEventTopics.account.password.updated,
             payload,
+            partitionKey: tenantId,
             tenantId,
         });
     }

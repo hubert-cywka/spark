@@ -2,7 +2,9 @@ import { configDotenv } from "dotenv";
 import { DataSource } from "typeorm";
 
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
+import { InboxEventPartitionEntity } from "@/common/events/entities/InboxEventPartition.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
+import { OutboxEventPartitionEntity } from "@/common/events/entities/OutboxEventPartition.entity";
 import { AppConfig } from "@/config/configuration";
 import { AlertEntity } from "@/modules/alerts/entities/Alert.entity";
 import { RecipientEntity } from "@/modules/alerts/entities/Recipient.entity";
@@ -21,6 +23,6 @@ export const dataSource = new DataSource({
     synchronize: false,
     dropSchema: false,
     migrationsRun: false,
-    entities: [OutboxEventEntity, InboxEventEntity, AlertEntity, RecipientEntity],
+    entities: [OutboxEventEntity, InboxEventEntity, AlertEntity, RecipientEntity, OutboxEventPartitionEntity, InboxEventPartitionEntity],
     migrations: [],
 });

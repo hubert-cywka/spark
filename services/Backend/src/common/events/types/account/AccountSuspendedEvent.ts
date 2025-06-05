@@ -11,6 +11,7 @@ export class AccountSuspendedEvent extends IntegrationEvent<AccountSuspendedEven
         super({
             topic: IntegrationEventTopics.account.suspended,
             payload,
+            partitionKey: tenantId,
             tenantId,
         });
     }

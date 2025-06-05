@@ -3,7 +3,7 @@ import { Column, Entity } from "typeorm";
 import { IntegrationEventEntity } from "@/common/events/entities/IntegrationEvent.entity";
 
 @Entity("inbox_event")
-export class InboxEventEntity<T = unknown> extends IntegrationEventEntity<T> {
+export class InboxEventEntity<T = string | object> extends IntegrationEventEntity<T> {
     @Column({ type: "timestamptz" })
     receivedAt!: Date;
 

@@ -13,8 +13,8 @@ export class IntegrationEventsSubscriber implements IIntegrationEventsSubscriber
     ) {}
 
     public async listen(topics: string[]): Promise<void> {
-        await this.consumer.listen(topics, async (event) => {
-            await this.inbox.enqueue(event);
+        await this.consumer.listen(topics, async (events) => {
+            await this.inbox.enqueueMany(events);
         });
     }
 }

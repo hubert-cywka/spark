@@ -10,6 +10,7 @@ export class AccountActivationTokenRequestedEvent extends IntegrationEvent<Accou
         super({
             topic: IntegrationEventTopics.account.activation.requested,
             payload,
+            partitionKey: tenantId,
             tenantId,
         });
     }

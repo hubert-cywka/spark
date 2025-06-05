@@ -11,6 +11,7 @@ export class DailyReminderTriggeredEvent extends IntegrationEvent<DailyReminderT
         super({
             topic: IntegrationEventTopics.alert.daily.reminder.triggered,
             payload,
+            partitionKey: tenantId,
             tenantId,
         });
     }

@@ -5,49 +5,63 @@ import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { PayloadEncryptedError } from "@/common/events/errors/PayloadEncrypted.error";
 
+export type DefaultEventPayload = object | string;
+
 type IntegrationEventMetadata = {
     id?: string;
     createdAt?: Date;
 };
 
-type RequiredIntegrationEventFields<T = unknown> = {
+type RequiredIntegrationEventFields<T = DefaultEventPayload> = {
     topic: string;
     tenantId: string;
+    partitionKey: string;
     payload: T;
 };
 
-type IntegrationEventFields<T = unknown> = IntegrationEventMetadata & RequiredIntegrationEventFields<T>;
+type IntegrationEventFields<T = DefaultEventPayload> = IntegrationEventMetadata & RequiredIntegrationEventFields<T>;
 
-export class IntegrationEvent<T = unknown> {
+export class IntegrationEvent<T = DefaultEventPayload> {
     private readonly id: string;
+    private readonly partitionKey: string;
     private readonly tenantId: string;
     private readonly topic: string;
     private readonly payload: T;
     private readonly createdAt: Date;
 
-    public constructor({ tenantId, topic, payload, id = crypto.randomUUID(), createdAt = new Date() }: IntegrationEventFields<T>) {
+    public constructor({
+        tenantId,
+        partitionKey,
+        topic,
+        payload,
+        id = crypto.randomUUID(),
+        createdAt = new Date(),
+    }: IntegrationEventFields<T>) {
         this.id = id;
         this.topic = topic;
         this.payload = payload;
         this.createdAt = createdAt;
         this.tenantId = tenantId;
+        this.partitionKey = partitionKey;
     }
 
-    public static fromEntity<T = unknown>(entity: OutboxEventEntity<T> | InboxEventEntity<T>): IntegrationEvent<T> {
+    public static fromEntity<T = DefaultEventPayload>(entity: OutboxEventEntity<T> | InboxEventEntity<T>): IntegrationEvent<T> {
         return new IntegrationEvent<T>({
             createdAt: entity.createdAt,
             payload: entity.payload,
             tenantId: entity.tenantId,
+            partitionKey: entity.partitionKey,
             topic: entity.topic,
             id: entity.id,
         });
     }
 
-    public static fromPlain<T = unknown>(plain: IntegrationEventFields<T>): IntegrationEvent<T> {
+    public static fromPlain<T = DefaultEventPayload>(plain: IntegrationEventFields<T>): IntegrationEvent<T> {
         return new IntegrationEvent<T>({
             createdAt: plain.createdAt,
             payload: plain.payload,
             tenantId: plain.tenantId,
+            partitionKey: plain.partitionKey,
             topic: plain.topic,
             id: plain.id,
         });
@@ -64,11 +78,12 @@ export class IntegrationEvent<T = unknown> {
             payload: this.payload,
             topic: this.topic,
             tenantId: this.tenantId,
+            partitionKey: this.partitionKey,
             ...overrides,
         });
     }
 
-    public static fromBuffer<T = unknown>(buffer: Buffer): IntegrationEvent<T> {
+    public static fromBuffer<T = DefaultEventPayload>(buffer: Buffer): IntegrationEvent<T> {
         return IntegrationEvent.fromPlain(deserialize(buffer));
     }
 
@@ -102,6 +117,10 @@ export class IntegrationEvent<T = unknown> {
 
     public getTenantId(): string {
         return this.tenantId;
+    }
+
+    public getPartitionKey(): string {
+        return this.partitionKey;
     }
 
     public getCreatedAt(): Date {

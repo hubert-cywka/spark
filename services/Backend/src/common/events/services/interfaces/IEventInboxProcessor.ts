@@ -4,6 +4,6 @@ import { type IEventsQueueSubscriber } from "@/common/events/services/interfaces
 export const EventInboxProcessorToken = Symbol("InboxEventsProcessor");
 
 export interface IEventInboxProcessor extends IEventsQueueSubscriber {
-    processPendingEvents(options?: { tenantId?: string }): Promise<void>;
+    processPendingEvents(): Promise<void>;
     setEventHandlers(handlers: IInboxEventHandler[]): void;
 }

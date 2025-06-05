@@ -5,3 +5,13 @@ export const toSHA256 = async (value: string) => {
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 };
+
+export const numberFromString = (input: string, n: number) => {
+    let hash = 0;
+    for (let i = 0; i < input.length; i++) {
+        hash = (hash << 5) - hash + input.charCodeAt(i);
+        hash |= 0;
+    }
+
+    return (Math.abs(hash) % n) + 1;
+};

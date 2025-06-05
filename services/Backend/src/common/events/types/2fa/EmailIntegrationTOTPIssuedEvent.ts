@@ -12,6 +12,7 @@ export class EmailIntegrationTOTPIssuedEvent extends IntegrationEvent<EmailInteg
         super({
             topic: IntegrationEventTopics.twoFactorAuth.email.issued,
             payload,
+            partitionKey: tenantId,
             tenantId,
         });
     }

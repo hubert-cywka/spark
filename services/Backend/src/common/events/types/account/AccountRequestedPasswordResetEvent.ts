@@ -10,6 +10,7 @@ export class AccountRequestedPasswordResetEvent extends IntegrationEvent<Account
         super({
             topic: IntegrationEventTopics.account.password.resetRequested,
             payload,
+            partitionKey: tenantId,
             tenantId,
         });
     }
