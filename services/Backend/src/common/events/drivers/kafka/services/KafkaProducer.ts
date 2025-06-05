@@ -2,11 +2,11 @@ import { Injectable } from "@nestjs/common";
 import { type Producer, CompressionTypes } from "kafkajs";
 
 import { IntegrationEvent } from "@/common/events";
-import { type IPubSubProducer } from "@/common/events/services/interfaces/IPubSubProducer";
+import { type IEventProducer } from "@/common/events/drivers/interfaces/IEventProducer";
 import { PublishAck } from "@/common/events/types";
 
 @Injectable()
-export class KafkaProducer implements IPubSubProducer {
+export class KafkaProducer implements IEventProducer {
     private readonly compression: CompressionTypes;
 
     public constructor(private readonly producer: Producer) {

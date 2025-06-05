@@ -3,11 +3,11 @@ import { Injectable, Logger } from "@nestjs/common";
 import { type NatsConnection } from "nats";
 
 import { IntegrationEvent } from "@/common/events";
+import { type IEventConsumer, OnEventsReceivedHandler } from "@/common/events/drivers/interfaces/IEventConsumer";
 import { NatsConsumerMetadata } from "@/common/events/drivers/nats/types";
-import { type IPubSubConsumer, OnEventsReceivedHandler } from "@/common/events/services/interfaces/IPubSubConsumer";
 
 @Injectable()
-export class NatsJetStreamConsumer implements IPubSubConsumer {
+export class NatsJetStreamConsumer implements IEventConsumer {
     private readonly logger = new Logger(NatsJetStreamConsumer.name);
     private readonly jetStreamClient: JetStreamClient;
     private jetStreamManager: JetStreamManager | null = null;
@@ -17,7 +17,7 @@ export class NatsJetStreamConsumer implements IPubSubConsumer {
     }
 
     public async listen(topics: string[], onEventsReceived: OnEventsReceivedHandler): Promise<void> {
-        // TODO: Implement
+        // TODO: Adjust to new API
         const mockConsumers: NatsConsumerMetadata[] = [];
 
         await this.registerConsumers(mockConsumers);

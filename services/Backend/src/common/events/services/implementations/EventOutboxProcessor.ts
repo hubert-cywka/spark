@@ -3,12 +3,12 @@ import dayjs from "dayjs";
 import { runInTransaction } from "typeorm-transactional";
 
 import { IntegrationEvent } from "@/common/events";
+import { type IEventProducer } from "@/common/events/drivers/interfaces/IEventProducer";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { type IOutboxEventRepository } from "@/common/events/repositories/interfaces/IOutboxEvent.repository";
 import { type IOutboxPartitionRepository } from "@/common/events/repositories/interfaces/IOutboxPartition.repository";
 import { type IEventOutboxProcessor } from "@/common/events/services/interfaces/IEventOutboxProcessor";
 import { type IPartitionAssigner } from "@/common/events/services/interfaces/IPartitionAssigner";
-import { type IPubSubProducer } from "@/common/events/services/interfaces/IPubSubProducer";
 
 const DEFAULT_MAX_BATCH_SIZE = 1000;
 const DEFAULT_MAX_ATTEMPTS = 10_000;
@@ -31,7 +31,7 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
     private readonly maxBatchSize: number;
 
     public constructor(
-        private readonly client: IPubSubProducer,
+        private readonly client: IEventProducer,
         private readonly eventsRepository: IOutboxEventRepository,
         private readonly partitionsRepository: IOutboxPartitionRepository,
         private readonly partitionAssigner: IPartitionAssigner,
@@ -47,7 +47,7 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
 
     public notifyOnEnqueued(event: IntegrationEvent): void {
         const partition = this.partitionAssigner.assign(event.getPartitionKey());
-        void this.lockAndProcessPartition(partition);
+        void this.lockAndProcessPartition(partition); // TODO: Debounce to buffer some events?
     }
 
     public async processPendingEvents(): Promise<void> {

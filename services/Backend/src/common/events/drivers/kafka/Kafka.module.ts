@@ -1,12 +1,14 @@
 import { DynamicModule, Logger, Module, OnApplicationShutdown } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { type Consumer, type Producer, Kafka } from "kafkajs";
+import { type Consumer, type Producer, Admin, Kafka } from "kafkajs";
 
+import { EventAdminToken } from "@/common/events/drivers/interfaces/IEventAdmin";
+import { EventConsumerToken } from "@/common/events/drivers/interfaces/IEventConsumer";
+import { EventProducerToken } from "@/common/events/drivers/interfaces/IEventProducer";
+import { KafkaAdmin } from "@/common/events/drivers/kafka/services/KafkaAdmin";
 import { KafkaConsumer } from "@/common/events/drivers/kafka/services/KafkaConsumer";
 import { KafkaLoggerAdapter } from "@/common/events/drivers/kafka/services/KafkaLoggingAdapter";
 import { KafkaProducer } from "@/common/events/drivers/kafka/services/KafkaProducer";
-import { PubSubConsumerToken } from "@/common/events/services/interfaces/IPubSubConsumer";
-import { PubSubProducerToken } from "@/common/events/services/interfaces/IPubSubProducer";
 import { LinearRetryBackoffPolicy } from "@/common/retry/LinearRetryBackoffPolicy";
 import { withRetry } from "@/common/retry/withRetry";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
@@ -15,6 +17,7 @@ const CONNECTION_INITIALIZATION_MAX_ATTEMPTS = 15;
 const CONNECTION_INITIALIZATION_BASE_INTERVAL = 1_000;
 
 const KafkaOptionsToken = Symbol("KafkaOptionsToken");
+const KafkaAdminToken = Symbol("KafkaAdminToken");
 const KafkaProducerToken = Symbol("KafkaProducerToken");
 const KafkaConsumerToken = Symbol("KafkaConsumerToken");
 
@@ -26,10 +29,11 @@ export type KafkaModuleOptions = {
 
 export type KafkaForFeatureOptions = Pick<KafkaModuleOptions, "brokers" | "clientId">;
 
-// TODO: Use https://www.npmjs.com/package/@confluentinc/kafka-javascript
+// TODO: Consider switching to https://www.npmjs.com/package/@confluentinc/kafka-javascript
 @Module({})
 export class KafkaModule implements OnApplicationShutdown {
     private static readonly logger = new Logger(KafkaModule.name);
+    private static readonly admins: Admin[] = [];
     private static readonly consumers: Consumer[] = [];
     private static readonly producers: Producer[] = [];
 
@@ -38,13 +42,18 @@ export class KafkaModule implements OnApplicationShutdown {
 
         try {
             await Promise.all([
+                ...KafkaModule.admins.map((admin) => admin.disconnect()),
                 ...KafkaModule.consumers.map((consumer) => consumer.disconnect()),
                 ...KafkaModule.producers.map((producer) => producer.disconnect()),
             ]);
-            KafkaModule.logger.log("Disconnected all kafka consumers and producers.");
+            KafkaModule.logger.log("Disconnected all kafka admins, consumers and producers.");
         } catch (error) {
-            KafkaModule.logger.error(error, "Error occurred when disconnecting kafka consumers and producers.");
+            KafkaModule.logger.error(error, "Error occurred when disconnecting kafka admins, consumers and producers.");
         }
+    }
+
+    private static trackAdmin(admin: Admin) {
+        KafkaModule.admins.push(admin);
     }
 
     private static trackConsumer(consumer: Consumer) {
@@ -110,6 +119,19 @@ export class KafkaModule implements OnApplicationShutdown {
                 },
 
                 {
+                    provide: KafkaAdminToken,
+                    useFactory: async (client: Kafka) => {
+                        const admin = client.admin();
+                        await admin.connect();
+                        KafkaModule.trackAdmin(admin);
+
+                        logger.log("Admin connected.");
+                        return admin;
+                    },
+                    inject: [KafkaClientToken],
+                },
+
+                {
                     provide: KafkaProducerToken,
                     useFactory: async (client: Kafka) => {
                         const producer = client.producer({
@@ -143,7 +165,15 @@ export class KafkaModule implements OnApplicationShutdown {
                 },
 
                 {
-                    provide: PubSubProducerToken,
+                    provide: EventAdminToken,
+                    useFactory: (admin: Admin) => {
+                        return new KafkaAdmin(admin);
+                    },
+                    inject: [KafkaAdminToken],
+                },
+
+                {
+                    provide: EventProducerToken,
                     useFactory: (producer: Producer) => {
                         return new KafkaProducer(producer);
                     },
@@ -151,14 +181,14 @@ export class KafkaModule implements OnApplicationShutdown {
                 },
 
                 {
-                    provide: PubSubConsumerToken,
+                    provide: EventConsumerToken,
                     useFactory: async (consumer: Consumer, config: ConfigService) => {
                         return new KafkaConsumer(consumer, config.getOrThrow<number>("pubsub.consumer.concurrentPartitions"));
                     },
                     inject: [KafkaConsumerToken, ConfigService],
                 },
             ],
-            exports: [PubSubConsumerToken, PubSubProducerToken, KafkaClientToken],
+            exports: [EventConsumerToken, EventProducerToken, EventAdminToken],
         };
     }
 }

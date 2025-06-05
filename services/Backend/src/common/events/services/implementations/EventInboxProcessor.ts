@@ -56,7 +56,7 @@ export class EventInboxProcessor implements IEventInboxProcessor {
 
     public notifyOnEnqueued(event: IntegrationEvent): void {
         const partition = this.partitionAssigner.assign(event.getPartitionKey());
-        void this.lockAndProcessPartition(partition);
+        void this.lockAndProcessPartition(partition); // TODO: Debounce to buffer some events?
     }
 
     public setEventHandlers(handlers: IInboxEventHandler[]) {

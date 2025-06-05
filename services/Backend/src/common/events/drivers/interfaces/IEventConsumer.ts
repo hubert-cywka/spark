@@ -1,8 +1,8 @@
 import { IntegrationEvent } from "@/common/events";
 
-export const PubSubConsumerToken = Symbol("PubSubConsumer");
+export const EventConsumerToken = Symbol("EventConsumerToken");
 
-export interface IPubSubConsumer {
+export interface IEventConsumer {
     listen(topics: string[], onEventReceived: OnEventsReceivedHandler): Promise<void>;
 }
 

@@ -3,6 +3,7 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 import { DatabaseModule } from "@/common/database/Database.module";
+import { type IEventProducer, EventProducerToken } from "@/common/events/drivers/interfaces/IEventProducer";
 import { KafkaForFeatureOptions, KafkaModule, KafkaModuleOptions } from "@/common/events/drivers/kafka/Kafka.module";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { InboxEventPartitionEntity } from "@/common/events/entities/InboxEventPartition.entity";
@@ -46,7 +47,6 @@ import {
 import { IntegrationEventsJobsOrchestratorToken } from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
 import { IntegrationEventsSubscriberToken } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
 import { type IPartitionAssigner, PartitionAssignerToken } from "@/common/events/services/interfaces/IPartitionAssigner";
-import { type IPubSubProducer, PubSubProducerToken } from "@/common/events/services/interfaces/IPubSubProducer";
 import { IntegrationEventsModuleOptions } from "@/common/events/types";
 import { ExponentialRetryBackoffPolicy } from "@/common/retry/ExponentialRetryBackoffPolicy";
 import { RetryBackoffPolicy } from "@/common/retry/RetryBackoffPolicy";
@@ -168,7 +168,7 @@ export class IntegrationEventsModule {
                     useFactory: (
                         eventRepository: IOutboxEventRepository,
                         partitionRepository: IOutboxPartitionRepository,
-                        producer: IPubSubProducer,
+                        producer: IEventProducer,
                         assigner: IPartitionAssigner,
                         { outboxProcessorOptions }: IntegrationEventsModuleForFeatureDynamicOptions
                     ) =>
@@ -180,7 +180,7 @@ export class IntegrationEventsModule {
                     inject: [
                         OutboxEventRepositoryToken,
                         OutboxPartitionRepositoryToken,
-                        PubSubProducerToken,
+                        EventProducerToken,
                         PartitionAssignerToken,
                         IntegrationEventsForFeatureOptionsToken,
                     ],

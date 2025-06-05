@@ -2,10 +2,10 @@ import { jetstreamManager } from "@nats-io/jetstream";
 import { DynamicModule, Inject, Logger, Module, OnApplicationShutdown } from "@nestjs/common";
 import { type NatsConnection, connect, DiscardPolicy, RetentionPolicy } from "nats";
 
+import { EventConsumerToken } from "@/common/events/drivers/interfaces/IEventConsumer";
+import { EventProducerToken } from "@/common/events/drivers/interfaces/IEventProducer";
 import { NatsJetStreamConsumer } from "@/common/events/drivers/nats/services/NatsJetStreamConsumer";
 import { NatsJetStreamProducer } from "@/common/events/drivers/nats/services/NatsJetStreamProducer";
-import { PubSubConsumerToken } from "@/common/events/services/interfaces/IPubSubConsumer";
-import { PubSubProducerToken } from "@/common/events/services/interfaces/IPubSubProducer";
 import { IntegrationEventsStream } from "@/common/events/types";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 
@@ -22,10 +22,6 @@ type NatsJetStreamConnectionOptions = {
     host: string;
     port: number;
 };
-
-// TODO: Things to consider:
-// partitioning by tenantId,
-// clustering.
 
 @Module({})
 export class NatsJetStreamModule implements OnApplicationShutdown {
@@ -85,13 +81,13 @@ export class NatsJetStreamModule implements OnApplicationShutdown {
                 },
 
                 {
-                    provide: PubSubProducerToken,
+                    provide: EventProducerToken,
                     useFactory: async (connection: NatsConnection) => new NatsJetStreamProducer(connection),
                     inject: [NatsConnectionToken],
                 },
 
                 {
-                    provide: PubSubConsumerToken,
+                    provide: EventConsumerToken,
                     useFactory: async (connection: NatsConnection) => new NatsJetStreamConsumer(connection),
                     inject: [NatsConnectionToken],
                 },
@@ -115,7 +111,7 @@ export class NatsJetStreamModule implements OnApplicationShutdown {
                     inject: [NatsConnectionToken, NatsJetStreamOptionsToken],
                 },
             ],
-            exports: [PubSubConsumerToken, PubSubProducerToken],
+            exports: [EventConsumerToken, EventProducerToken],
             global: options.global,
         };
     }
