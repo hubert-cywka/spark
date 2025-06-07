@@ -13,6 +13,7 @@ import { InputSize } from "@/components/Input";
 import { SegmentedDateInputSlot } from "@/components/Input/SegmentedDateInputSlot";
 import { Popover } from "@/components/Popover";
 import { formatToISODateString } from "@/features/daily/utils/dateUtils";
+import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 import { ISODateStringRange } from "@/types/ISODateString";
 
 type DateRangePickerProps = {
@@ -28,6 +29,8 @@ type DateRangePickerProps = {
 };
 
 export const DateRangePicker = ({ size = "2", label, value, error, onChange, required, calendarProps }: DateRangePickerProps) => {
+    const t = useTranslate();
+
     const onChangeInternal = (value: { start: DateValue; end: DateValue } | null) => {
         if (!value) {
             return;
@@ -60,7 +63,16 @@ export const DateRangePicker = ({ size = "2", label, value, error, onChange, req
                     <SegmentedDateInputSlot size={size} slot="end" />
                 </div>
 
-                <Popover trigger={<IconButton size={size} iconSlot={CalendarIcon} />}>
+                <Popover
+                    trigger={
+                        <IconButton
+                            size={size}
+                            iconSlot={CalendarIcon}
+                            tooltip={t("common.dateRangePicker.showCalendarButton.label")}
+                            aria-label={t("common.dateRangePicker.showCalendarButton.label")}
+                        />
+                    }
+                >
                     <Calendar value={value} shownMonths={calendarProps?.shownMonths} />
                 </Popover>
             </div>

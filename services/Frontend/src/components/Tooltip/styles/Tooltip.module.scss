@@ -7,6 +7,12 @@
 
     font: tokens.$typography-body-100;
     color: tokens.$color-accent-text-100;
+    transition: opacity 200ms;
+
+    &[data-entering],
+    &[data-exiting] {
+        opacity: 0;
+    }
 
     svg {
         fill: tokens.$color-accent-solid-200;

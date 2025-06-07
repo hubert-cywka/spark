@@ -5,6 +5,7 @@ import { useLocale } from "next-intl";
 import styles from "./styles/DailyListHeader.module.scss";
 
 import { IconButton } from "@/components/IconButton";
+import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
 const TIMEFRAME_BIG_CHANGE_UNITS = 12;
 const TIMEFRAME_SMALL_CHANGE_UNITS = 1;
@@ -25,6 +26,8 @@ export const DailyListHeader = ({
     onCreateNewDaily,
     children,
 }: DailyListHeaderProps) => {
+    const t = useTranslate();
+
     const now = new Date();
     const locale = useLocale();
     const isCurrentYearAndMonth = now.getMonth() === timeframeStart.getMonth() && now.getFullYear() === timeframeStart.getFullYear();
@@ -33,22 +36,51 @@ export const DailyListHeader = ({
         <header className={styles.headerWrapper}>
             <div className={styles.dateRangeFilters}>
                 <div className={styles.buttons}>
-                    <IconButton onPress={onCreateNewDaily} variant="confirm" iconSlot={Plus} />
-                    <IconButton isDisabled={isCurrentYearAndMonth} onPress={onReset} variant="secondary" iconSlot={Calendar} />
+                    <IconButton
+                        onPress={onCreateNewDaily}
+                        variant="confirm"
+                        iconSlot={Plus}
+                        tooltip={t("daily.createDailyButton.label")}
+                        aria-label={t("daily.createDailyButton.label")}
+                    />
+                    <IconButton
+                        isDisabled={isCurrentYearAndMonth}
+                        onPress={onReset}
+                        variant="secondary"
+                        iconSlot={Calendar}
+                        tooltip={t("daily.filters.today")}
+                        aria-label={t("daily.filters.today")}
+                    />
 
                     <IconButton
                         variant="secondary"
                         onPress={() => onPrevTimeframe(TIMEFRAME_BIG_CHANGE_UNITS)}
                         className={styles.changeYearButton}
                         iconSlot={ChevronsLeft}
+                        tooltip={t("daily.filters.previousYear")}
+                        aria-label={t("daily.filters.previousYear")}
                     />
-                    <IconButton variant="secondary" onPress={() => onPrevTimeframe(TIMEFRAME_SMALL_CHANGE_UNITS)} iconSlot={ChevronLeft} />
-                    <IconButton variant="secondary" onPress={() => onNextTimeframe(TIMEFRAME_SMALL_CHANGE_UNITS)} iconSlot={ChevronRight} />
+                    <IconButton
+                        variant="secondary"
+                        onPress={() => onPrevTimeframe(TIMEFRAME_SMALL_CHANGE_UNITS)}
+                        iconSlot={ChevronLeft}
+                        tooltip={t("daily.filters.previousMonth")}
+                        aria-label={t("daily.filters.previousMonth")}
+                    />
+                    <IconButton
+                        variant="secondary"
+                        onPress={() => onNextTimeframe(TIMEFRAME_SMALL_CHANGE_UNITS)}
+                        iconSlot={ChevronRight}
+                        tooltip={t("daily.filters.nextMonth")}
+                        aria-label={t("daily.filters.nextMonth")}
+                    />
                     <IconButton
                         variant="secondary"
                         onPress={() => onNextTimeframe(TIMEFRAME_BIG_CHANGE_UNITS)}
                         className={styles.changeYearButton}
                         iconSlot={ChevronsRight}
+                        tooltip={t("daily.filters.nextYear")}
+                        aria-label={t("daily.filters.nextYear")}
                     />
                 </div>
 

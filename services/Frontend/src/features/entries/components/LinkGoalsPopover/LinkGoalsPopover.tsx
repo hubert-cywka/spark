@@ -45,7 +45,18 @@ export const LinkGoalsPopover = ({ entryId }: LinkGoalsPopoverProps) => {
     };
 
     return (
-        <Popover offset={15} trigger={<IconButton size="1" variant="confirm" iconSlot={Plus} />}>
+        <Popover
+            offset={15}
+            trigger={
+                <IconButton
+                    size="1"
+                    variant="confirm"
+                    iconSlot={Plus}
+                    tooltip={t("entries.goals.list.showLinksButton.label")}
+                    aria-label={t("entries.goals.list.showLinksButton.label")}
+                />
+            }
+        >
             <section className={styles.container} aria-busy={areUnlinkedGoalsLoading}>
                 <search>
                     <Field label={t("entries.goals.list.unlinked.search")} size="1" value={search} onChange={setSearch} autoFocus />

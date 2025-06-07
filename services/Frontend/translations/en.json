@@ -167,6 +167,22 @@
         }
     },
     "common": {
+        "modal": {
+            "closeButton": {
+                "label": "Close modal"
+            }
+        },
+        "dateRangePicker": {
+            "showCalendarButton": {
+                "label": "Show calendar"
+            },
+            "nextRangeButton": {
+                "label": "Show next timeframe"
+            },
+            "previousRangeButton": {
+                "label": "Show previous timeframe"
+            }
+        },
         "loading": "Loading...",
         "valueUnavailable": {
             "label": "N/A"
@@ -239,6 +255,18 @@
         }
     },
     "entries": {
+        "expandButton": {
+            "label": "Expand entry details"
+        },
+        "collapseButton": {
+            "label": "Collapse entry details"
+        },
+        "filters": {
+            "completed": "Show completed entries",
+            "pending": "Show pending entries",
+            "featured": "Show featured entries",
+            "notFeatured": "Show non-featured entries"
+        },
         "placeholder": "Add entry...",
         "create": {
             "notifications": {
@@ -270,6 +298,9 @@
         },
         "goals": {
             "list": {
+                "showLinksButton": {
+                    "label": "Show linked goals"
+                },
                 "linked": {
                     "header": "Linked goals",
                     "noResultsCaption": "No results."
@@ -278,6 +309,14 @@
                     "header": "Link goals",
                     "noResultsCaption": "No results.",
                     "search": "Search"
+                },
+                "item": {
+                    "linkButton": {
+                        "label": "Create link"
+                    },
+                    "unlinkButton": {
+                        "label": "Remove link"
+                    }
                 }
             },
             "createLink": {
@@ -455,6 +494,16 @@
         }
     },
     "daily": {
+        "createDailyButton": {
+            "label": "Add new daily"
+        },
+        "filters": {
+            "previousYear": "Go 12 months back",
+            "nextYear": "Go 12 months forward",
+            "today": "Show current month",
+            "previousMonth": "Go 1 month back",
+            "nextMonth": "Go 1 month forward"
+        },
         "activity": {
             "chart": {
                 "legend": {
@@ -481,6 +530,20 @@
         "day": {
             "date": {
                 "label": "Daily's date"
+            },
+            "actions": {
+                "save": {
+                    "label": "Confirm changes"
+                },
+                "cancel": {
+                    "label": "Cancel changes"
+                },
+                "edit": {
+                    "label": "Edit daily"
+                },
+                "remove": {
+                    "label": "Remove daily"
+                }
             }
         },
         "create": {
@@ -615,6 +678,18 @@
             "description": "Regular reminders, triggered always on the same time on the days you select. Finishing your work at 4PM? Set a reminder and we will send you an email, so you can note down your progress.",
             "addButton": {
                 "label": "Add new reminder"
+            },
+            "deleteButton": {
+                "label": "Delete reminder"
+            },
+            "editButton": {
+                "label": "Edit reminder"
+            },
+            "cancelChangesButton": {
+                "label": "Cancel changes"
+            },
+            "confirmChangesButton": {
+                "label": "Confirm changes"
             }
         }
     },
@@ -712,6 +787,9 @@
             "floatingBar": {
                 "label": "You have selected:",
                 "buttons": {
+                    "close": {
+                        "label": "Deselect goal"
+                    },
                     "edit": {
                         "label": "Edit selected goal"
                     },
