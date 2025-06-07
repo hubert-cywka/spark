@@ -9,7 +9,6 @@ import { Icon } from "@/components/Icon";
 import { IconButtonProps } from "@/components/IconButton/types/IconButton";
 import { Tooltip } from "@/components/Tooltip";
 
-// TODO: Add aria-label to all icon buttons
 export const IconButton = ({ tooltip, iconSlot, ...props }: IconButtonProps) => {
     return (
         <Tooltip label={tooltip}>
