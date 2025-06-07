@@ -17,12 +17,19 @@ export abstract class PartitionRepository<T extends IntegrationEventPartitionEnt
             .update(this.entity)
             .set({ staleAt: now })
             .where("id = :partitionId", { partitionId })
+            .andWhere("staleAt >= :now", { now })
             .execute();
     }
 
     public async invalidateAll() {
         const now = new Date();
-        await this.repository.createQueryBuilder("partition").update(this.entity).set({ staleAt: now }).execute();
+
+        await this.repository
+            .createQueryBuilder("partition")
+            .update(this.entity)
+            .set({ staleAt: now })
+            .andWhere("staleAt >= :now", { now })
+            .execute();
     }
 
     public async markAsProcessed(partitionId: number, staleAt: Date) {
