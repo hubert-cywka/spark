@@ -4,6 +4,7 @@ import { Link, Unlink } from "lucide-react";
 import styles from "./styles/GoalLinkItem.module.scss";
 
 import { IconButton } from "@/components/IconButton";
+import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
 type GoalLinkItemProps = {
     linked?: boolean;
@@ -12,6 +13,9 @@ type GoalLinkItemProps = {
 };
 
 export const GoalLinkItem = ({ linked, onClick, name }: GoalLinkItemProps) => {
+    const t = useTranslate();
+    const label = linked ? t("goals.list.item.unlinkButton.label") : t("goals.list.item.linkButton.label");
+
     return (
         <li className={styles.goal}>
             <IconButton
@@ -20,6 +24,8 @@ export const GoalLinkItem = ({ linked, onClick, name }: GoalLinkItemProps) => {
                 onPress={onClick}
                 variant="subtle"
                 size="1"
+                tooltip={label}
+                aria-label={label}
             />
             {name}
         </li>

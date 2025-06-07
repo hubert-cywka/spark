@@ -6,6 +6,7 @@ import styles from "./styles/EntryFiltersGroup.module.scss";
 import { IconToggleButton } from "@/components/IconToggleButton/IconToggleButton.tsx";
 import { ToggleButtonGroup } from "@/components/ToggleButtonGroup";
 import { EntryFilters } from "@/features/entries/types/Entry";
+import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
 enum EntryFeaturedFilter {
     ONLY_FEATURED = "featured",
@@ -23,6 +24,8 @@ type EntryFiltersGroupProps = {
 };
 
 export const EntryFiltersGroup = ({ onFiltersChange, size = "2" }: EntryFiltersGroupProps) => {
+    const t = useTranslate();
+
     const [featured, setFeatured] = useState<boolean | undefined>();
     const [completed, setCompleted] = useState<boolean | undefined>();
 
@@ -55,13 +58,37 @@ export const EntryFiltersGroup = ({ onFiltersChange, size = "2" }: EntryFiltersG
     return (
         <div className={styles.entriesFilters}>
             <ToggleButtonGroup onSelectionChange={onCompletedFiltersChange}>
-                <IconToggleButton size={size} id={EntryCompletedFilter.WITHOUT_COMPLETED} iconSlot={SquareIcon} />
-                <IconToggleButton size={size} id={EntryCompletedFilter.ONLY_COMPLETED} iconSlot={SquareCheckBigIcon} />
+                <IconToggleButton
+                    size={size}
+                    id={EntryCompletedFilter.WITHOUT_COMPLETED}
+                    iconSlot={SquareIcon}
+                    tooltip={t("entries.filters.pending")}
+                    aria-label={t("entries.filters.pending")}
+                />
+                <IconToggleButton
+                    size={size}
+                    id={EntryCompletedFilter.ONLY_COMPLETED}
+                    iconSlot={SquareCheckBigIcon}
+                    tooltip={t("entries.filters.completed")}
+                    aria-label={t("entries.filters.completed")}
+                />
             </ToggleButtonGroup>
 
             <ToggleButtonGroup onSelectionChange={onFeaturedFiltersChange}>
-                <IconToggleButton size={size} id={EntryFeaturedFilter.WITHOUT_FEATURED} iconSlot={StarOffIcon} />
-                <IconToggleButton size={size} id={EntryFeaturedFilter.ONLY_FEATURED} iconSlot={StarIcon} />
+                <IconToggleButton
+                    size={size}
+                    id={EntryFeaturedFilter.WITHOUT_FEATURED}
+                    iconSlot={StarOffIcon}
+                    tooltip={t("entries.filters.notFeatured")}
+                    aria-label={t("entries.filters.notFeatured")}
+                />
+                <IconToggleButton
+                    size={size}
+                    id={EntryFeaturedFilter.ONLY_FEATURED}
+                    iconSlot={StarIcon}
+                    tooltip={t("entries.filters.featured")}
+                    aria-label={t("entries.filters.featured")}
+                />
             </ToggleButtonGroup>
         </div>
     );

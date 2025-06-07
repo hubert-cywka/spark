@@ -42,7 +42,7 @@ export const GoalsManagementFloatingBar = ({ onClose, selectedGoal }: GoalsManag
     return (
         <div className={styles.container}>
             <div className={styles.wrapper}>
-                <IconButton variant="subtle" onPress={onClose} size="1" className={styles.closeButton} iconSlot={X} />
+                <IconButton variant="subtle" onPress={onClose} size="1" className={styles.closeButton} iconSlot={X} tooltip="Close" />
                 <div>
                     <p className={styles.label}>{t("goals.management.floatingBar.label")}</p>
                     <p className={styles.goalName}>{selectedGoal.name}</p>
@@ -58,6 +58,7 @@ export const GoalsManagementFloatingBar = ({ onClose, selectedGoal }: GoalsManag
                             size="1"
                             {...triggerProps}
                             aria-label={t("goals.management.floatingBar.buttons.edit.label")}
+                            tooltip={t("goals.management.floatingBar.buttons.edit.label")}
                             iconSlot={Pencil}
                         />
                     )}
@@ -68,6 +69,7 @@ export const GoalsManagementFloatingBar = ({ onClose, selectedGoal }: GoalsManag
                     onPress={handleDeleteGoal}
                     size="1"
                     aria-label={t("goals.management.floatingBar.buttons.delete.label")}
+                    tooltip={t("goals.management.floatingBar.buttons.delete.label")}
                     iconSlot={Trash}
                 />
             </div>

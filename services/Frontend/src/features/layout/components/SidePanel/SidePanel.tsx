@@ -40,6 +40,7 @@ export const SidePanel = () => {
                         size="1"
                         variant="secondary"
                         onPress={toggleCollapsedState}
+                        tooltip={t(`common.navigation.collapseButton.label.${isCollapsed ? "show" : "hide"}`)}
                         aria-label={t(`common.navigation.collapseButton.label.${isCollapsed ? "show" : "hide"}`)}
                         iconSlot={ChevronLeft}
                     />
