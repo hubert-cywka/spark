@@ -65,7 +65,12 @@ export const DateRangePicker = ({ size = "2", label, value, error, onChange, req
 
                 <Popover
                     trigger={
-                        <IconButton size={size} iconSlot={CalendarIcon} tooltip={t("common.dateRangePicker.showCalendarButton.label")} />
+                        <IconButton
+                            size={size}
+                            iconSlot={CalendarIcon}
+                            tooltip={t("common.dateRangePicker.showCalendarButton.label")}
+                            aria-label={t("common.dateRangePicker.showCalendarButton.label")}
+                        />
                     }
                 >
                     <Calendar value={value} shownMonths={calendarProps?.shownMonths} />

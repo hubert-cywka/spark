@@ -14,7 +14,14 @@ export const ModalHeader = ({ children, onClose }: ModalHeaderProps) => {
     return (
         <header className={styles.container}>
             <h2 className={styles.header}>{children}</h2>
-            <IconButton variant="subtle" size="1" onPress={onClose} iconSlot={X} tooltip={t("common.modal.closeButton.label")} />
+            <IconButton
+                variant="subtle"
+                size="1"
+                onPress={onClose}
+                iconSlot={X}
+                tooltip={t("common.modal.closeButton.label")}
+                aria-label={t("common.modal.closeButton.label")}
+            />
         </header>
     );
 };
