@@ -11,6 +11,7 @@ import { type IEventInboxProcessor } from "@/common/events/services/interfaces/I
 import { type IIntegrationEventsEncryptionService } from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
 import { IPartitionAssigner } from "@/common/events/services/interfaces/IPartitionAssigner";
 import { RetryBackoffPolicy } from "@/common/retry/RetryBackoffPolicy";
+import { IThrottler } from "@/common/services/interfaces/IThrottler";
 
 export interface EventInboxProcessorOptions {
     retryPolicy: RetryBackoffPolicy;
@@ -25,6 +26,8 @@ export interface EventInboxProcessorOptions {
 const DEFAULT_MAX_BATCH_SIZE = 5;
 const DEFAULT_MAX_ATTEMPTS = 7;
 const DEFAULT_STALE_PARTITION_THRESHOLD_MILLISECONDS = 30_000;
+
+const INVALIDATION_THROTTLE_TIME = 300;
 
 export class EventInboxProcessor implements IEventInboxProcessor {
     private readonly logger: Logger;
@@ -42,6 +45,7 @@ export class EventInboxProcessor implements IEventInboxProcessor {
         private readonly partitionsRepository: IInboxPartitionRepository,
         private readonly partitionAssigner: IPartitionAssigner,
         private readonly encryptionService: IIntegrationEventsEncryptionService,
+        private readonly throttler: IThrottler,
         options: EventInboxProcessorOptions
     ) {
         this.logger = new Logger(options.context);
@@ -56,7 +60,19 @@ export class EventInboxProcessor implements IEventInboxProcessor {
 
     public notifyOnEnqueued(event: IntegrationEvent): void {
         const partition = this.partitionAssigner.assign(event.getPartitionKey());
-        void this.lockAndProcessPartition(partition); // TODO: Debounce to buffer some events?
+        this.throttler.throttle(
+            `invalidate_inbox_partition_${partition}`,
+            () => this.prioritizePartition(partition),
+            INVALIDATION_THROTTLE_TIME
+        );
+    }
+
+    private async prioritizePartition(partition: number) {
+        try {
+            await this.partitionsRepository.invalidatePartition(partition);
+        } catch (error) {
+            this.logger.error({ partition }, "Failed to invalidate partition.");
+        }
     }
 
     public setEventHandlers(handlers: IInboxEventHandler[]) {
@@ -73,15 +89,13 @@ export class EventInboxProcessor implements IEventInboxProcessor {
             return;
         }
 
-        const staleThreshold = dayjs().subtract(this.stalePartitionThreshold, "milliseconds").toDate();
-
         try {
             const { hasMore } = await runInTransaction(
                 async () => {
-                    const partitionToProcess = await this.partitionsRepository.getAndLockOldestStalePartition(staleThreshold);
+                    const partitionToProcess = await this.partitionsRepository.getAndLockOldestStalePartition();
 
                     if (!partitionToProcess) {
-                        this.logger.debug({ staleThreshold }, "No more stale partitions to process.");
+                        this.logger.debug("No more stale partitions to process.");
                         return { hasMore: false };
                     }
 
@@ -136,29 +150,14 @@ export class EventInboxProcessor implements IEventInboxProcessor {
                     }
 
                     if (!failedEvents.length) {
-                        await this.partitionsRepository.markAsProcessed(partitionId);
+                        const staleAt = dayjs().add(this.stalePartitionThreshold, "milliseconds").toDate();
+                        await this.partitionsRepository.markAsProcessed(partitionId, staleAt);
                     }
 
                     if (events.length < this.maxBatchSize) {
                         return;
                     }
                 }
-            },
-            { connectionName: this.connectionName }
-        );
-    }
-
-    private async lockAndProcessPartition(partitionId: number) {
-        return await runInTransaction(
-            async () => {
-                const partitionToProcess = await this.partitionsRepository.getAndLockPartition(partitionId);
-
-                if (!partitionToProcess) {
-                    this.logger.log({ partitionId }, "Partition already locked.");
-                    return;
-                }
-
-                await this.processPartition(partitionToProcess.id);
             },
             { connectionName: this.connectionName }
         );

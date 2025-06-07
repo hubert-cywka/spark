@@ -3,7 +3,4 @@ import { IPartitionRepository } from "@/common/events/repositories/interfaces/IP
 
 export const InboxPartitionRepositoryToken = Symbol("InboxPartitionRepository");
 
-export interface IInboxPartitionRepository extends IPartitionRepository<InboxEventPartitionEntity> {
-    markAsProcessed(partitionId: number): Promise<void>;
-    markAllAsUnprocessed(): Promise<void>;
-}
+export interface IInboxPartitionRepository extends IPartitionRepository<InboxEventPartitionEntity> {}

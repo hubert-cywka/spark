@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule, IntegrationEventTopics } from "@/common/events";
+import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -17,14 +18,7 @@ import { UserActivatedEventHandler } from "@/modules/users/events/UserActivatedE
 import { UserCreatedEventHandler } from "@/modules/users/events/UserCreatedEvent.handler";
 import { UserRemovedEventHandler } from "@/modules/users/events/UserRemovedEvent.handler";
 import { USERS_MODULE_DATA_SOURCE } from "@/modules/users/infrastructure/database/constants";
-import { InitializeUsersModule1735737579670 } from "@/modules/users/infrastructure/database/migrations/1735737579670-InitializeUsersModule";
-import { AddTenantIdToOutboxAndInbox1743101796654 } from "@/modules/users/infrastructure/database/migrations/1743101796654-addTenantIdToOutboxAndInbox";
-import { RemoveUserPersonalInfo1746284981052 } from "@/modules/users/infrastructure/database/migrations/1746284981052-removeUserPersonalInfo";
-import { EncryptedEvents1746293623196 } from "@/modules/users/infrastructure/database/migrations/1746293623196-encryptedEvents";
-import { AddProcessAfterTimestampToEvent1748202889222 } from "@/modules/users/infrastructure/database/migrations/1748202889222-addProcessAfterTimestampToEvent";
-import { ImproveOutboxProcessing1748764641599 } from "@/modules/users/infrastructure/database/migrations/1748764641599-ImproveOutboxProcessing";
-import { Cleanup1748765396556 } from "@/modules/users/infrastructure/database/migrations/1748765396556-Cleanup";
-import { OutboxIndices1748773002757 } from "@/modules/users/infrastructure/database/migrations/1748773002757-OutboxIndices";
+import { RegenerateMigrations1749289881465 } from "@/modules/users/infrastructure/database/migrations/1749289881465-regenerate-migrations";
 import { UserMapperToken } from "@/modules/users/mappers/IUser.mapper";
 import { UserMapper } from "@/modules/users/mappers/User.mapper";
 import { UserPublisherService } from "@/modules/users/services/implementations/UserPublisher.service";
@@ -61,16 +55,7 @@ import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.se
                 password: configService.getOrThrow<string>("modules.users.database.password"),
                 host: configService.getOrThrow<string>("modules.users.database.host"),
                 database: configService.getOrThrow<string>("modules.users.database.name"),
-                migrations: [
-                    InitializeUsersModule1735737579670,
-                    AddTenantIdToOutboxAndInbox1743101796654,
-                    RemoveUserPersonalInfo1746284981052,
-                    EncryptedEvents1746293623196,
-                    AddProcessAfterTimestampToEvent1748202889222,
-                    ImproveOutboxProcessing1748764641599,
-                    Cleanup1748765396556,
-                    OutboxIndices1748773002757,
-                ],
+                migrations: [RegenerateMigrations1749289881465, InboxAndOutbox1749299050551],
             }),
             inject: [ConfigService],
         }),

@@ -50,6 +50,7 @@ import { type IPartitionAssigner, PartitionAssignerToken } from "@/common/events
 import { IntegrationEventsModuleOptions } from "@/common/events/types";
 import { ExponentialRetryBackoffPolicy } from "@/common/retry/ExponentialRetryBackoffPolicy";
 import { RetryBackoffPolicy } from "@/common/retry/RetryBackoffPolicy";
+import { IThrottler, ThrottlerToken } from "@/common/services/interfaces/IThrottler";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 
 const INBOX_RETRY_BACKOFF_POLICY_BASE_INTERVAL_IN_MS = 10_000;
@@ -170,9 +171,10 @@ export class IntegrationEventsModule {
                         partitionRepository: IOutboxPartitionRepository,
                         producer: IEventProducer,
                         assigner: IPartitionAssigner,
+                        throttler: IThrottler,
                         { outboxProcessorOptions }: IntegrationEventsModuleForFeatureDynamicOptions
                     ) =>
-                        new EventOutboxProcessor(producer, eventRepository, partitionRepository, assigner, {
+                        new EventOutboxProcessor(producer, eventRepository, partitionRepository, assigner, throttler, {
                             context: options.context,
                             connectionName: options.connectionName,
                             ...outboxProcessorOptions,
@@ -182,6 +184,7 @@ export class IntegrationEventsModule {
                         OutboxPartitionRepositoryToken,
                         EventProducerToken,
                         PartitionAssignerToken,
+                        ThrottlerToken,
                         IntegrationEventsForFeatureOptionsToken,
                     ],
                 },
@@ -194,9 +197,10 @@ export class IntegrationEventsModule {
                         assigner: IPartitionAssigner,
                         encryptionService: IIntegrationEventsEncryptionService,
                         retryPolicy: RetryBackoffPolicy,
+                        throttler: IThrottler,
                         { inboxProcessorOptions }: IntegrationEventsModuleForFeatureDynamicOptions
                     ) =>
-                        new EventInboxProcessor(eventRepository, partitionRepository, assigner, encryptionService, {
+                        new EventInboxProcessor(eventRepository, partitionRepository, assigner, encryptionService, throttler, {
                             context: options.context,
                             connectionName: options.connectionName,
                             retryPolicy,
@@ -208,6 +212,7 @@ export class IntegrationEventsModule {
                         PartitionAssignerToken,
                         IntegrationEventsEncryptionServiceToken,
                         InboxRetryPolicyToken,
+                        ThrottlerToken,
                         IntegrationEventsForFeatureOptionsToken,
                     ],
                 },

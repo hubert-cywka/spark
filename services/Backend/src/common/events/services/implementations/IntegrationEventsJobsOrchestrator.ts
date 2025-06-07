@@ -1,4 +1,4 @@
-import { Inject } from "@nestjs/common";
+import { Inject, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import dayjs from "dayjs";
@@ -16,6 +16,8 @@ import { type IIntegrationEventsJobsOrchestrator } from "@/common/events/service
 const EVENTS_RETENTION_PERIOD_IN_DAYS = 7;
 
 export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobsOrchestrator {
+    private readonly logger: Logger;
+
     public constructor(
         @Inject(EventInboxToken) private readonly inbox: IEventInbox,
         @Inject(EventOutboxToken) private readonly outbox: IEventOutbox,
@@ -29,29 +31,49 @@ export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobs
         private readonly outboxProcessor: IEventOutboxProcessor,
         private readonly registry: SchedulerRegistry,
         private readonly configService: ConfigService
-    ) {}
+    ) {
+        this.logger = new Logger(IntegrationEventsJobsOrchestrator.name);
+    }
 
     public startProcessingInbox(handlers: IInboxEventHandler[]) {
         this.inboxProcessor.setEventHandlers(handlers);
         this.inbox.subscribe(this.inboxProcessor);
+        this.scheduleRecursiveInboxProcessing();
+    }
 
-        const job = setInterval(async () => {
-            await this.inboxProcessor.processPendingEvents();
+    private scheduleRecursiveInboxProcessing() {
+        const job = setTimeout(async () => {
+            try {
+                await this.inboxProcessor.processPendingEvents();
+            } catch (error) {
+                this.logger.error(error, "Inbox processing failed.");
+            }
+
+            this.scheduleRecursiveInboxProcessing();
         }, this.configService.getOrThrow<number>("events.inbox.processing.pollingInterval"));
 
         const jobId = this.createJobId();
-        this.registry.addInterval(jobId, job);
+        this.registry.addTimeout(jobId, job);
     }
 
     public startProcessingOutbox() {
         this.outbox.subscribe(this.outboxProcessor);
+        this.scheduleRecursiveOutboxProcessing();
+    }
 
-        const job = setInterval(async () => {
-            await this.outboxProcessor.processPendingEvents();
+    private scheduleRecursiveOutboxProcessing() {
+        const job = setTimeout(async () => {
+            try {
+                await this.outboxProcessor.processPendingEvents();
+            } catch (error) {
+                this.logger.error(error, "Inbox processing failed.");
+            }
+
+            this.scheduleRecursiveOutboxProcessing();
         }, this.configService.getOrThrow<number>("events.outbox.processing.pollingInterval"));
 
         const jobId = this.createJobId();
-        this.registry.addInterval(jobId, job);
+        this.registry.addTimeout(jobId, job);
     }
 
     public startClearingInbox() {

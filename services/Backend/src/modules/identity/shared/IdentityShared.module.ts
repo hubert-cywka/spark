@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import { IntegrationEventsModule } from "@/common/events";
+import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
 import { TwoFactorAuthenticationIntegrationEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationIntegration.entity";
 import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccountEntity";
 import { FederatedAccountEntity } from "@/modules/identity/account/entities/FederatedAccountEntity";
@@ -10,16 +11,7 @@ import { ManagedAccountEntity } from "@/modules/identity/account/entities/Manage
 import { SingleUseTokenEntity } from "@/modules/identity/account/entities/SingleUseTokenEntity";
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
-import { InitializeIdentityModule1735737549567 } from "@/modules/identity/infrastructure/database/migrations/1735737549567-InitializeIdentityModule";
-import { AddTenantIdToOutboxAndInbox1743101746907 } from "@/modules/identity/infrastructure/database/migrations/1743101746907-addTenantIdToOutboxAndInbox";
-import { DeleteOnCascade1743158756974 } from "@/modules/identity/infrastructure/database/migrations/1743158756974-deleteOnCascade";
-import { AddOptionToSuspendAccounts1743167408668 } from "@/modules/identity/infrastructure/database/migrations/1743167408668-addOptionToSuspendAccounts";
-import { AddTTLFor2FAIntegrations1743713719361 } from "@/modules/identity/infrastructure/database/migrations/1743713719361-addTTLFor2FAIntegrations";
-import { EncryptedEvents1746293636231 } from "@/modules/identity/infrastructure/database/migrations/1746293636231-encryptedEvents";
-import { AddProcessAfterTimestampToEvent1748202961809 } from "@/modules/identity/infrastructure/database/migrations/1748202961809-addProcessAfterTimestampToEvent";
-import { ImproveOutboxProcessing1748764641596 } from "@/modules/identity/infrastructure/database/migrations/1748764641596-ImproveOutboxProcessing";
-import { Cleanup1748765396553 } from "@/modules/identity/infrastructure/database/migrations/1748765396553-Cleanup";
-import { OutboxIndices1748773002754 } from "@/modules/identity/infrastructure/database/migrations/1748773002754-OutboxIndices";
+import { RegenerateMigrations1749289911264 } from "@/modules/identity/infrastructure/database/migrations/1749289911264-regenerate-migrations";
 
 @Module({
     imports: [
@@ -31,18 +23,7 @@ import { OutboxIndices1748773002754 } from "@/modules/identity/infrastructure/da
                 password: configService.getOrThrow<string>("modules.identity.database.password"),
                 host: configService.getOrThrow<string>("modules.identity.database.host"),
                 database: configService.getOrThrow<string>("modules.identity.database.name"),
-                migrations: [
-                    InitializeIdentityModule1735737549567,
-                    AddTenantIdToOutboxAndInbox1743101746907,
-                    DeleteOnCascade1743158756974,
-                    AddOptionToSuspendAccounts1743167408668,
-                    AddTTLFor2FAIntegrations1743713719361,
-                    EncryptedEvents1746293636231,
-                    AddProcessAfterTimestampToEvent1748202961809,
-                    ImproveOutboxProcessing1748764641596,
-                    Cleanup1748765396553,
-                    OutboxIndices1748773002754,
-                ],
+                migrations: [RegenerateMigrations1749289911264, InboxAndOutbox1749299050551],
             }),
             inject: [ConfigService],
         }),

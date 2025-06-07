@@ -35,6 +35,7 @@ import { DBConnectionOptions, dropDatabase } from "@/common/utils/databaseUtils"
 import { wait } from "@/common/utils/timeUtils";
 import { TestConfig } from "@/config/testConfiguration";
 import { loggerOptions } from "@/lib/logger";
+import { GlobalModule } from "@/modules/global/Global.module";
 
 // TODO: Clean up tests setup, extract common parts for future integration tests
 describe("IntegrationEventsModule", () => {
@@ -52,6 +53,7 @@ describe("IntegrationEventsModule", () => {
 
         const moduleRef = await Test.createTestingModule({
             imports: [
+                GlobalModule,
                 LoggerModule.forRoot({ pinoHttp: loggerOptions }),
                 ScheduleModule.forRoot(),
                 await ConfigModule.forRoot({
@@ -117,8 +119,16 @@ describe("IntegrationEventsModule", () => {
         const initialNumberOfPartitions = 16;
 
         for (let i = 1; i <= initialNumberOfPartitions; i++) {
-            outboxPartitionsToInsert.push({ id: i, lastProcessedAt: null });
-            inboxPartitionsToInsert.push({ id: i, lastProcessedAt: null });
+            outboxPartitionsToInsert.push({
+                id: i,
+                lastProcessedAt: null,
+                staleAt: new Date(),
+            });
+            inboxPartitionsToInsert.push({
+                id: i,
+                lastProcessedAt: null,
+                staleAt: new Date(),
+            });
         }
 
         await outboxPartitionRepository.insert(outboxPartitionsToInsert);
@@ -327,7 +337,7 @@ describe("IntegrationEventsModule", () => {
         beforeEach(async () => {
             const { eventRepository, partitionRepository } = setup();
             await eventRepository.removeAll();
-            await partitionRepository.markAllAsUnprocessed();
+            await partitionRepository.invalidateAll();
         });
 
         afterEach(async () => {
@@ -485,7 +495,7 @@ describe("IntegrationEventsModule", () => {
         beforeEach(async () => {
             const { eventRepository, partitionRepository } = setup();
             await eventRepository.removeAll();
-            await partitionRepository.markAllAsUnprocessed();
+            await partitionRepository.invalidateAll();
         });
 
         afterEach(async () => {
