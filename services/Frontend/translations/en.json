@@ -175,6 +175,12 @@
         "dateRangePicker": {
             "showCalendarButton": {
                 "label": "Show calendar"
+            },
+            "nextRangeButton": {
+                "label": "Show next timeframe"
+            },
+            "previousRangeButton": {
+                "label": "Show previous timeframe"
             }
         },
         "loading": "Loading...",
