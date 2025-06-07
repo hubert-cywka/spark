@@ -66,7 +66,7 @@ export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobs
             try {
                 await this.outboxProcessor.processPendingEvents();
             } catch (error) {
-                this.logger.error(error, "Inbox processing failed.");
+                this.logger.error(error, "Outbox processing failed.");
             }
 
             this.scheduleRecursiveOutboxProcessing();
