@@ -14,6 +14,7 @@ export const AlertTimeInputPassiveModeActionsRender = ({ onStartEditMode }: Pass
             onPress={onStartEditMode}
             iconSlot={Pencil}
             tooltip={t("alerts.reminders.editButton.label")}
+            aria-label={t("alerts.reminders.editButton.label")}
         />
     );
 };
