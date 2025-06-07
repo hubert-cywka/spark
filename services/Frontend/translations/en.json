@@ -255,6 +255,12 @@
         }
     },
     "entries": {
+        "expandButton": {
+            "label": "Expand entry details"
+        },
+        "collapseButton": {
+            "label": "Collapse entry details"
+        },
         "filters": {
             "completed": "Show completed entries",
             "pending": "Show pending entries",
@@ -781,6 +787,9 @@
             "floatingBar": {
                 "label": "You have selected:",
                 "buttons": {
+                    "close": {
+                        "label": "Deselect goal"
+                    },
                     "edit": {
                         "label": "Edit selected goal"
                     },

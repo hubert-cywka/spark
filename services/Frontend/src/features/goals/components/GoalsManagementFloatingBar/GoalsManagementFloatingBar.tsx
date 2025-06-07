@@ -42,7 +42,15 @@ export const GoalsManagementFloatingBar = ({ onClose, selectedGoal }: GoalsManag
     return (
         <div className={styles.container}>
             <div className={styles.wrapper}>
-                <IconButton variant="subtle" onPress={onClose} size="1" className={styles.closeButton} iconSlot={X} tooltip="Close" />
+                <IconButton
+                    variant="subtle"
+                    onPress={onClose}
+                    size="1"
+                    className={styles.closeButton}
+                    iconSlot={X}
+                    tooltip={t("goals.management.floatingBar.buttons.close.label")}
+                    aria-label={t("goals.management.floatingBar.buttons.close.label")}
+                />
                 <div>
                     <p className={styles.label}>{t("goals.management.floatingBar.label")}</p>
                     <p className={styles.goalName}>{selectedGoal.name}</p>

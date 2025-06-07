@@ -5,6 +5,7 @@ import styles from "./styles/DailyEntryExpandTrigger.module.scss";
 
 import { IconButton } from "@/components/IconButton";
 import { DailyEntryColumn } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
+import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
 type DailyEntryGoalsTriggerProps = {
     column: DailyEntryColumn;
@@ -23,6 +24,9 @@ export const DailyEntryExpandTrigger = ({
     isCollapsed,
     onClick,
 }: DailyEntryGoalsTriggerProps) => {
+    const t = useTranslate();
+    const label = isCollapsed ? t("entries.expandButton.label") : t("entries.collapseButton.label");
+
     const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
         if (e.key === "ArrowUp") {
             e.preventDefault();
@@ -51,6 +55,8 @@ export const DailyEntryExpandTrigger = ({
             iconSlot={isCollapsed ? ChevronRight : ChevronDown}
             className={styles.trigger}
             onPress={onClick}
+            tooltip={label}
+            aria-label={label}
         />
     );
 };
