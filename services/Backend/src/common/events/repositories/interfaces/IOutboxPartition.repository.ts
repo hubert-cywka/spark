@@ -3,7 +3,4 @@ import { IPartitionRepository } from "@/common/events/repositories/interfaces/IP
 
 export const OutboxPartitionRepositoryToken = Symbol("OutboxPartitionRepository");
 
-export interface IOutboxPartitionRepository extends IPartitionRepository<OutboxEventPartitionEntity> {
-    markAsProcessed(partitionId: number): Promise<void>;
-    markAllAsUnprocessed(): Promise<void>;
-}
+export interface IOutboxPartitionRepository extends IPartitionRepository<OutboxEventPartitionEntity> {}

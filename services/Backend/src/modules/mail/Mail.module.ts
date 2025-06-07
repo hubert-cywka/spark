@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule, IntegrationEventTopics } from "@/common/events";
+import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -21,14 +22,7 @@ import { AccountRequestedPasswordResetEventHandler } from "@/modules/mail/events
 import { DailyReminderTriggeredEventHandler } from "@/modules/mail/events/DailyReminderTriggeredEvent.handler";
 import { TwoFactorAuthCodeIssuedEventHandler } from "@/modules/mail/events/TwoFactorAuthCodeIssuedEvent.handler";
 import { MAIL_MODULE_DATA_SOURCE } from "@/modules/mail/infrastructure/database/constants";
-import { InitializeMailModule1735737562761 } from "@/modules/mail/infrastructure/database/migrations/1735737562761-InitializeMailModule";
-import { AddTenantIdToOutboxAndInbox1743101783697 } from "@/modules/mail/infrastructure/database/migrations/1743101783697-addTenantIdToOutboxAndInbox";
-import { EncryptedEvents1746294905909 } from "@/modules/mail/infrastructure/database/migrations/1746294905909-encryptedEvents";
-import { AddRecipient1748032112854 } from "@/modules/mail/infrastructure/database/migrations/1748032112854-AddRecipient";
-import { AddProcessAfterTimestampToEvent1748202987491 } from "@/modules/mail/infrastructure/database/migrations/1748202987491-addProcessAfterTimestampToEvent";
-import { ImproveOutboxProcessing1748764641598 } from "@/modules/mail/infrastructure/database/migrations/1748764641598-ImproveOutboxProcessing";
-import { Cleanup1748765396555 } from "@/modules/mail/infrastructure/database/migrations/1748765396555-Cleanup";
-import { OutboxIndices1748773002755 } from "@/modules/mail/infrastructure/database/migrations/1748773002755-OutboxIndices";
+import { RegenerateMigrations1749289938815 } from "@/modules/mail/infrastructure/database/migrations/1749289938815-regenerate-migrations";
 import { RecipientMapperToken } from "@/modules/mail/mappers/IRecipient.mapper";
 import { RecipientMapper } from "@/modules/mail/mappers/Recipient.mapper";
 import { EmailLookupService } from "@/modules/mail/services/implementations/EmailLookup.service";
@@ -118,16 +112,7 @@ import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/
                 password: configService.getOrThrow<string>("modules.mail.database.password"),
                 host: configService.getOrThrow<string>("modules.mail.database.host"),
                 database: configService.getOrThrow<string>("modules.mail.database.name"),
-                migrations: [
-                    InitializeMailModule1735737562761,
-                    AddTenantIdToOutboxAndInbox1743101783697,
-                    EncryptedEvents1746294905909,
-                    AddRecipient1748032112854,
-                    AddProcessAfterTimestampToEvent1748202987491,
-                    ImproveOutboxProcessing1748764641598,
-                    Cleanup1748765396555,
-                    OutboxIndices1748773002755,
-                ],
+                migrations: [RegenerateMigrations1749289938815, InboxAndOutbox1749299050551],
             }),
             inject: [ConfigService],
         }),

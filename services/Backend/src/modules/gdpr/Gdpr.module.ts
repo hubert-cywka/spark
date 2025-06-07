@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule, IntegrationEventTopics } from "@/common/events";
+import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -17,17 +18,7 @@ import { TenantCreatedEventHandler } from "@/modules/gdpr/events/TenantCreatedEv
 import { TenantRemovalRequestedEventHandler } from "@/modules/gdpr/events/TenantRemovalRequestedEvent.handler";
 import { TenantRemovedEventHandler } from "@/modules/gdpr/events/TenantRemovedEvent.handler";
 import { GDPR_MODULE_DATA_SOURCE } from "@/modules/gdpr/infrastructure/database/constants";
-import { AddTenantEntity1743100640810 } from "@/modules/gdpr/infrastructure/database/migrations/1743100640810-addTenantEntity";
-import { AddTenantIdToOutboxAndInbox1743101706566 } from "@/modules/gdpr/infrastructure/database/migrations/1743101706566-addTenantIdToOutboxAndInbox";
-import { AddDataPurgePlans1743151982101 } from "@/modules/gdpr/infrastructure/database/migrations/1743151982101-addDataPurgePlans";
-import { AddProcessedAtTimestamp1743153555989 } from "@/modules/gdpr/infrastructure/database/migrations/1743153555989-addProcessedAtTimestamp";
-import { DeleteOnCascade1743158769846 } from "@/modules/gdpr/infrastructure/database/migrations/1743158769846-deleteOnCascade";
-import { EncryptedEvents1746293676452 } from "@/modules/gdpr/infrastructure/database/migrations/1746293676452-encryptedEvents";
-import { AddRemoveAtTimestampToPurgePlan1747944544022 } from "@/modules/gdpr/infrastructure/database/migrations/1747944544022-addRemoveAtTimestampToPurgePlan";
-import { AddProcessAfterTimestampToEvent1748202952829 } from "@/modules/gdpr/infrastructure/database/migrations/1748202952829-addProcessAfterTimestampToEvent";
-import { ImproveOutboxProcessing1748764641595 } from "@/modules/gdpr/infrastructure/database/migrations/1748764641595-ImproveOutboxProcessing";
-import { Cleanup1748765396552 } from "@/modules/gdpr/infrastructure/database/migrations/1748765396552-Cleanup";
-import { OutboxIndices1748773002753 } from "@/modules/gdpr/infrastructure/database/migrations/1748773002753-OutboxIndices";
+import { RegenerateMigrations1749289951431 } from "@/modules/gdpr/infrastructure/database/migrations/1749289951431-regenerate-migrations";
 import { TenantMapperToken } from "@/modules/gdpr/mappers/ITenant.mapper";
 import { TenantMapper } from "@/modules/gdpr/mappers/Tenant.mapper";
 import { DataPurgeService } from "@/modules/gdpr/services/implementations/DataPurge.service";
@@ -73,19 +64,7 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
                 password: configService.getOrThrow<string>("modules.gdpr.database.password"),
                 host: configService.getOrThrow<string>("modules.gdpr.database.host"),
                 database: configService.getOrThrow<string>("modules.gdpr.database.name"),
-                migrations: [
-                    AddTenantEntity1743100640810,
-                    AddTenantIdToOutboxAndInbox1743101706566,
-                    AddDataPurgePlans1743151982101,
-                    AddProcessedAtTimestamp1743153555989,
-                    DeleteOnCascade1743158769846,
-                    EncryptedEvents1746293676452,
-                    AddRemoveAtTimestampToPurgePlan1747944544022,
-                    AddProcessAfterTimestampToEvent1748202952829,
-                    ImproveOutboxProcessing1748764641595,
-                    Cleanup1748765396552,
-                    OutboxIndices1748773002753,
-                ],
+                migrations: [RegenerateMigrations1749289951431, InboxAndOutbox1749299050551],
             }),
             inject: [ConfigService],
         }),

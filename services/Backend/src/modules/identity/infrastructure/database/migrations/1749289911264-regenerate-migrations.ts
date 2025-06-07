@@ -1,15 +1,9 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class InitializeIdentityModule1735737549567 implements MigrationInterface {
-    name = "InitializeIdentityModule1735737549567";
+export class RegenerateMigrations1749289911264 implements MigrationInterface {
+    name = "RegenerateMigrations1749289911264";
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(
-            'CREATE TABLE "inbox_event" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "topic" character varying NOT NULL, "payload" jsonb NOT NULL, "attempts" integer NOT NULL DEFAULT \'0\', "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL, "receivedAt" TIMESTAMP WITH TIME ZONE NOT NULL, "processedAt" TIMESTAMP WITH TIME ZONE, CONSTRAINT "PK_9b85eb4cab41c7c6023b1e579d0" PRIMARY KEY ("id"))'
-        );
-        await queryRunner.query(
-            'CREATE TABLE "outbox_event" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "topic" character varying NOT NULL, "payload" jsonb NOT NULL, "attempts" integer NOT NULL DEFAULT \'0\', "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL, "processedAt" TIMESTAMP WITH TIME ZONE, CONSTRAINT "PK_cc0c9e40998e45ecfc5e313429d" PRIMARY KEY ("id"))'
-        );
         await queryRunner.query(
             'CREATE TABLE "single_use_token" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "value" character varying NOT NULL, "type" character varying NOT NULL, "expiresAt" TIMESTAMP WITH TIME ZONE NOT NULL, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "invalidatedAt" TIMESTAMP WITH TIME ZONE, "usedAt" TIMESTAMP WITH TIME ZONE, "ownerId" uuid, CONSTRAINT "UQ_14e6f13b663a6acda7ae213d075" UNIQUE ("value"), CONSTRAINT "PK_e2be3b618427b72ac6487b42613" PRIMARY KEY ("id"))'
         );
@@ -19,21 +13,29 @@ export class InitializeIdentityModule1735737549567 implements MigrationInterface
         );
         await queryRunner.query('CREATE INDEX "IDX_80c8c3a65607935e4e3fcc1cbe" ON "refresh_token" ("hashedValue") ');
         await queryRunner.query(
-            'CREATE TABLE "account" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "providerAccountId" character varying NOT NULL, "email" character varying NOT NULL, "activatedAt" TIMESTAMP WITH TIME ZONE, "termsAndConditionsAcceptedAt" TIMESTAMP WITH TIME ZONE, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "providerId" character varying, "password" character varying, "type" character varying NOT NULL, CONSTRAINT "PK_54115ee388cdb6d86bb4bf5b2ea" PRIMARY KEY ("id"))'
+            'CREATE TABLE "account" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "providerAccountId" character varying NOT NULL, "email" character varying NOT NULL, "activatedAt" TIMESTAMP WITH TIME ZONE, "termsAndConditionsAcceptedAt" TIMESTAMP WITH TIME ZONE, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "suspendedAt" TIMESTAMP WITH TIME ZONE, "providerId" character varying, "password" character varying, "type" character varying NOT NULL, CONSTRAINT "PK_54115ee388cdb6d86bb4bf5b2ea" PRIMARY KEY ("id"))'
         );
         await queryRunner.query('CREATE INDEX "IDX_c650599c2c931e7d7a9758a63c" ON "account" ("providerId", "providerAccountId") ');
         await queryRunner.query('CREATE INDEX "IDX_3c76f178c5065d1ab304b5832e" ON "account" ("type") ');
         await queryRunner.query(
-            'ALTER TABLE "single_use_token" ADD CONSTRAINT "FK_b9c387e9756b24ea74c2ec881b3" FOREIGN KEY ("ownerId") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION'
+            'CREATE TABLE "two_factor_authentication_integration" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "method" character varying NOT NULL, "secret" character varying NOT NULL, "totpTTL" integer NOT NULL DEFAULT \'30\', "enabledAt" TIMESTAMP WITH TIME ZONE, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "ownerId" uuid, CONSTRAINT "PK_afb2604a3b4b0fbb7821f038901" PRIMARY KEY ("id"))'
         );
         await queryRunner.query(
-            'ALTER TABLE "refresh_token" ADD CONSTRAINT "FK_05b033249cf1cf03e213d6c08e3" FOREIGN KEY ("ownerId") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION'
+            'ALTER TABLE "single_use_token" ADD CONSTRAINT "FK_b9c387e9756b24ea74c2ec881b3" FOREIGN KEY ("ownerId") REFERENCES "account"("id") ON DELETE CASCADE ON UPDATE NO ACTION'
+        );
+        await queryRunner.query(
+            'ALTER TABLE "refresh_token" ADD CONSTRAINT "FK_05b033249cf1cf03e213d6c08e3" FOREIGN KEY ("ownerId") REFERENCES "account"("id") ON DELETE CASCADE ON UPDATE NO ACTION'
+        );
+        await queryRunner.query(
+            'ALTER TABLE "two_factor_authentication_integration" ADD CONSTRAINT "FK_193a665e6adcc639bc5e3fea884" FOREIGN KEY ("ownerId") REFERENCES "account"("id") ON DELETE CASCADE ON UPDATE NO ACTION'
         );
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query('ALTER TABLE "two_factor_authentication_integration" DROP CONSTRAINT "FK_193a665e6adcc639bc5e3fea884"');
         await queryRunner.query('ALTER TABLE "refresh_token" DROP CONSTRAINT "FK_05b033249cf1cf03e213d6c08e3"');
         await queryRunner.query('ALTER TABLE "single_use_token" DROP CONSTRAINT "FK_b9c387e9756b24ea74c2ec881b3"');
+        await queryRunner.query('DROP TABLE "two_factor_authentication_integration"');
         await queryRunner.query('DROP INDEX "public"."IDX_3c76f178c5065d1ab304b5832e"');
         await queryRunner.query('DROP INDEX "public"."IDX_c650599c2c931e7d7a9758a63c"');
         await queryRunner.query('DROP TABLE "account"');
@@ -41,7 +43,5 @@ export class InitializeIdentityModule1735737549567 implements MigrationInterface
         await queryRunner.query('DROP TABLE "refresh_token"');
         await queryRunner.query('DROP INDEX "public"."IDX_14e6f13b663a6acda7ae213d07"');
         await queryRunner.query('DROP TABLE "single_use_token"');
-        await queryRunner.query('DROP TABLE "outbox_event"');
-        await queryRunner.query('DROP TABLE "inbox_event"');
     }
 }

@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule, IntegrationEventTopics } from "@/common/events";
+import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -17,21 +18,7 @@ import { RecipientEntity } from "@/modules/alerts/entities/Recipient.entity";
 import { RecipientCreatedEventHandler } from "@/modules/alerts/events/RecipientCreatedEvent.handler";
 import { RecipientRemovedEventHandler } from "@/modules/alerts/events/RecipientRemovedEvent.handler";
 import { ALERTS_MODULE_DATA_SOURCE } from "@/modules/alerts/infrastructure/database/constants";
-import { InitializeInboxAndOutbox1737489799641 } from "@/modules/alerts/infrastructure/database/migrations/1737489799641-InitializeInboxAndOutbox";
-import { InitializeAlertsDatabase1737493814968 } from "@/modules/alerts/infrastructure/database/migrations/1737493814968-InitializeAlertsDatabase";
-import { ConditionsTableInheritance1737493967162 } from "@/modules/alerts/infrastructure/database/migrations/1737493967162-ConditionsTableInheritance";
-import { FixAlertEntity1737494837758 } from "@/modules/alerts/infrastructure/database/migrations/1737494837758-FixAlertEntity";
-import { CleanUpAlertsModule1737573565566 } from "@/modules/alerts/infrastructure/database/migrations/1737573565566-CleanUpAlertsModule";
-import { FixDaysOfWeekColumnType1737574459955 } from "@/modules/alerts/infrastructure/database/migrations/1737574459955-FixDaysOfWeekColumnType";
-import { SwitchFromLastTriggeredAtToNextTriggerAt1738948797659 } from "@/modules/alerts/infrastructure/database/migrations/1738948797659-SwitchFromLastTriggeredAtToNextTriggerAt";
-import { AddTenantIdToOutboxAndInbox1743101730316 } from "@/modules/alerts/infrastructure/database/migrations/1743101730316-addTenantIdToOutboxAndInbox";
-import { DeleteAlertsOnCascade1743158723835 } from "@/modules/alerts/infrastructure/database/migrations/1743158723835-deleteAlertsOnCascade";
-import { EncryptedEvents1746293664099 } from "@/modules/alerts/infrastructure/database/migrations/1746293664099-encryptedEvents";
-import { RemoveRecipientEmail1748031512732 } from "@/modules/alerts/infrastructure/database/migrations/1748031512732-RemoveRecipientEmail";
-import { AddProcessAfterTimestampToEvent1748202978923 } from "@/modules/alerts/infrastructure/database/migrations/1748202978923-addProcessAfterTimestampToEvent";
-import { ImproveOutboxProcessing1748764641594 } from "@/modules/alerts/infrastructure/database/migrations/1748764641594-ImproveOutboxProcessing";
-import { Cleanup1748765396551 } from "@/modules/alerts/infrastructure/database/migrations/1748765396551-Cleanup";
-import { OutboxIndices1748773002752 } from "@/modules/alerts/infrastructure/database/migrations/1748773002752-OutboxIndices";
+import { RegenerateMigrations1749289896371 } from "@/modules/alerts/infrastructure/database/migrations/1749289896371-regenerate-migrations";
 import { AlertMapper } from "@/modules/alerts/mappers/Alert.mapper";
 import { AlertMapperToken } from "@/modules/alerts/mappers/IAlert.mapper";
 import { RecipientMapperToken } from "@/modules/alerts/mappers/IRecipient.mapper";
@@ -88,23 +75,7 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
                 password: configService.getOrThrow<string>("modules.alerts.database.password"),
                 host: configService.getOrThrow<string>("modules.alerts.database.host"),
                 database: configService.getOrThrow<string>("modules.alerts.database.name"),
-                migrations: [
-                    InitializeInboxAndOutbox1737489799641,
-                    InitializeAlertsDatabase1737493814968,
-                    ConditionsTableInheritance1737493967162,
-                    FixAlertEntity1737494837758,
-                    CleanUpAlertsModule1737573565566,
-                    FixDaysOfWeekColumnType1737574459955,
-                    SwitchFromLastTriggeredAtToNextTriggerAt1738948797659,
-                    AddTenantIdToOutboxAndInbox1743101730316,
-                    DeleteAlertsOnCascade1743158723835,
-                    EncryptedEvents1746293664099,
-                    RemoveRecipientEmail1748031512732,
-                    AddProcessAfterTimestampToEvent1748202978923,
-                    ImproveOutboxProcessing1748764641594,
-                    Cleanup1748765396551,
-                    OutboxIndices1748773002752,
-                ],
+                migrations: [RegenerateMigrations1749289896371, InboxAndOutbox1749299050551],
             }),
             inject: [ConfigService],
         }),

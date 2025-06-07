@@ -9,10 +9,13 @@ import { type IOutboxEventRepository } from "@/common/events/repositories/interf
 import { type IOutboxPartitionRepository } from "@/common/events/repositories/interfaces/IOutboxPartition.repository";
 import { type IEventOutboxProcessor } from "@/common/events/services/interfaces/IEventOutboxProcessor";
 import { type IPartitionAssigner } from "@/common/events/services/interfaces/IPartitionAssigner";
+import { IThrottler } from "@/common/services/interfaces/IThrottler";
 
 const DEFAULT_MAX_BATCH_SIZE = 1000;
 const DEFAULT_MAX_ATTEMPTS = 10_000;
 const DEFAULT_STALE_PARTITION_THRESHOLD_MILLISECONDS = 30_000;
+
+const INVALIDATION_THROTTLE_TIME = 300;
 
 export interface EventOutboxProcessorOptions {
     connectionName: string;
@@ -35,6 +38,7 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
         private readonly eventsRepository: IOutboxEventRepository,
         private readonly partitionsRepository: IOutboxPartitionRepository,
         private readonly partitionAssigner: IPartitionAssigner,
+        private readonly throttler: IThrottler,
         options: EventOutboxProcessorOptions
     ) {
         this.logger = new Logger(options.context);
@@ -47,20 +51,31 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
 
     public notifyOnEnqueued(event: IntegrationEvent): void {
         const partition = this.partitionAssigner.assign(event.getPartitionKey());
-        void this.lockAndProcessPartition(partition); // TODO: Debounce to buffer some events?
+        this.throttler.throttle(
+            `invalidate_outbox_partition_${partition}`,
+            () => this.prioritizePartition(partition),
+            INVALIDATION_THROTTLE_TIME
+        );
+    }
+
+    private async prioritizePartition(partition: number) {
+        try {
+            await this.partitionsRepository.invalidatePartition(partition);
+        } catch (error) {
+            this.logger.error({ partition }, "Failed to invalidate partition.");
+        }
     }
 
     public async processPendingEvents(): Promise<void> {
-        const staleThreshold = dayjs().subtract(this.stalePartitionThreshold, "milliseconds").toDate();
         this.logger.debug("Polling for stale outbox partitions...");
 
         try {
             const { processed } = await runInTransaction(
                 async () => {
-                    const partitionToProcess = await this.partitionsRepository.getAndLockOldestStalePartition(staleThreshold);
+                    const partitionToProcess = await this.partitionsRepository.getAndLockOldestStalePartition();
 
                     if (!partitionToProcess) {
-                        this.logger.debug({ staleThreshold }, "No more stale partitions to process.");
+                        this.logger.debug("No more stale partitions to process.");
                         return { processed: false };
                     }
 
@@ -110,22 +125,6 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
         );
     }
 
-    private async lockAndProcessPartition(partitionId: number) {
-        return await runInTransaction(
-            async () => {
-                const partitionToProcess = await this.partitionsRepository.getAndLockPartition(partitionId);
-
-                if (!partitionToProcess) {
-                    this.logger.log({ partitionId }, "Partition already locked.");
-                    return;
-                }
-
-                await this.processPartition(partitionToProcess.id);
-            },
-            { connectionName: this.connectionName }
-        );
-    }
-
     private async publishEvents(events: OutboxEventEntity[]) {
         const successfulEvents: OutboxEventEntity[] = [];
         let failedEvent: OutboxEventEntity | null = null;
@@ -164,7 +163,8 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
         }
 
         if (allAttemptedEventIds.length === successfulEventIds.length) {
-            await this.partitionsRepository.markAsProcessed(partitionId);
+            const staleAt = dayjs().add(this.stalePartitionThreshold, "milliseconds").toDate();
+            await this.partitionsRepository.markAsProcessed(partitionId, staleAt);
         }
     }
 }
