@@ -1,0 +1,15 @@
+@use "src/styles/tokens";
+
+.header {
+    font-size: tokens.$font-size-800;
+    margin-top: tokens.$spacing-800;
+    margin-bottom: tokens.$spacing-300;
+    font-weight: tokens.$font-weight-300;
+}
+
+.paragraph {
+    font-size: tokens.$font-size-300;
+    margin-bottom: tokens.$spacing-400;
+    color: tokens.$color-neutral-text-200;
+    line-height: 1.75;
+}

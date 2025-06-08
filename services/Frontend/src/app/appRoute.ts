@@ -17,4 +17,6 @@ export enum AppRoute {
 
     OIDC_LOGIN = "/authentication/open-id-connect/login",
     OIDC_REGISTER = "/authentication/open-id-connect/register",
+
+    TERMS_AND_CONDITIONS = "/terms-and-conditions",
 }

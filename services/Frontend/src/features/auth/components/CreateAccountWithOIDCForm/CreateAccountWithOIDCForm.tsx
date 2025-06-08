@@ -4,6 +4,8 @@ import { useCallback } from "react";
 
 import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 
+import { AppRoute } from "@/app/appRoute.ts";
+import { Anchor } from "@/components/Anchor";
 import { Button } from "@/components/Button";
 import { Checkbox } from "@/components/Checkbox";
 import {
@@ -13,8 +15,8 @@ import {
 import { useCreateAccountWithOIDC } from "@/features/auth/hooks/oidc/useCreateAccountWithOIDC";
 import { useCreateAccountWithOIDCEvents } from "@/features/auth/hooks/oidc/useCreateAccountWithOIDCEvents";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
+import { preventEventBubbling } from "@/utils/domEventsUtils.ts";
 
-// TODO: Finish T&C
 export const CreateAccountWithOIDCForm = () => {
     const t = useTranslate();
 
@@ -42,7 +44,10 @@ export const CreateAccountWithOIDCForm = () => {
         <form className={sharedStyles.form} onSubmit={handleSubmit(onSubmit)}>
             <div className={sharedStyles.fieldsWrapper}>
                 <Checkbox {...register("hasAcceptedTermsAndConditions")} error={errors.hasAcceptedTermsAndConditions?.message}>
-                    {t("authentication.common.fields.termsAndConditions.label")}
+                    {t("authentication.common.fields.termsAndConditions.label")}{" "}
+                    <Anchor href={AppRoute.TERMS_AND_CONDITIONS} target="_blank" onClick={preventEventBubbling}>
+                        {t("authentication.common.fields.termsAndConditions.link")}
+                    </Anchor>
                 </Checkbox>
             </div>
 

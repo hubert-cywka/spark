@@ -21,7 +21,7 @@ export const LogoutButton = () => {
     }, [logout, onLogoutError, onLogoutSuccess]);
 
     return (
-        <Button onPress={handleLogout} isLoading={isPending} variant="secondary" size="1" rightDecorator={<Icon slot={LogOut} size="1" />}>
+        <Button onPress={handleLogout} isLoading={isPending} variant="subtle" size="1" rightDecorator={<Icon slot={LogOut} size="1" />}>
             {t("common.navigation.logoutButton.label")}
         </Button>
     );

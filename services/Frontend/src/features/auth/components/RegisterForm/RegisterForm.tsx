@@ -8,14 +8,15 @@ import sharedStyles from "../../styles/AuthenticationForm.module.scss";
 import styles from "./styles/RegisterForm.module.scss";
 
 import { AppRoute } from "@/app/appRoute";
+import { Anchor } from "@/components/Anchor";
 import { Button } from "@/components/Button";
 import { Checkbox } from "@/components/Checkbox";
 import { Field } from "@/components/Input";
 import { useRegisterWithCredentials, useRegisterWithCredentialsEvents } from "@/features/auth/hooks";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 import { getAbsoluteAppUrl } from "@/utils/appUrl";
+import { preventEventBubbling } from "@/utils/domEventsUtils.ts";
 
-// TODO: Finish T&C
 export const RegisterForm = () => {
     const t = useTranslate();
 
@@ -75,7 +76,10 @@ export const RegisterForm = () => {
 
                 <div className={styles.agreementsWrapper}>
                     <Checkbox {...register("hasAcceptedTermsAndConditions")} required error={errors.hasAcceptedTermsAndConditions?.message}>
-                        {t("authentication.common.fields.termsAndConditions.label")}
+                        {t("authentication.common.fields.termsAndConditions.label")}{" "}
+                        <Anchor href={AppRoute.TERMS_AND_CONDITIONS} target="_blank" onClick={preventEventBubbling}>
+                            {t("authentication.common.fields.termsAndConditions.link")}
+                        </Anchor>
                     </Checkbox>
                 </div>
             </div>
