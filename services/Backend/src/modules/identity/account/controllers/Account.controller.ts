@@ -1,4 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Inject, NotFoundException, Post, Put } from "@nestjs/common";
+import { Throttle } from "@nestjs/throttler";
 
 import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
@@ -14,7 +15,9 @@ import {
     ManagedAccountServiceToken,
 } from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
 import { UntrustedDomainError } from "@/modules/identity/authentication/errors/UntrustedDomain.error";
+import { IDENTITY_MODULE_DEFAULT_RATE_LIMITING, IDENTITY_MODULE_STRICT_RATE_LIMITING } from "@/modules/identity/shared/constants";
 
+@Throttle(IDENTITY_MODULE_DEFAULT_RATE_LIMITING)
 @Controller("account")
 export class AccountController {
     constructor(
@@ -26,6 +29,7 @@ export class AccountController {
 
     @HttpCode(HttpStatus.CREATED)
     @Post("password/reset")
+    @Throttle(IDENTITY_MODULE_STRICT_RATE_LIMITING)
     async requestPasswordChange(@Body() { email, redirectUrl }: RequestPasswordResetDto) {
         if (!this.domainVerifier.verify(redirectUrl)) {
             throw new UntrustedDomainError(redirectUrl);
@@ -42,6 +46,7 @@ export class AccountController {
 
     @HttpCode(HttpStatus.CREATED)
     @Put("password")
+    @Throttle(IDENTITY_MODULE_STRICT_RATE_LIMITING)
     async updatePassword(@Body() { password, passwordChangeToken }: UpdatePasswordDto) {
         try {
             await this.accountService.updatePassword(passwordChangeToken, password);
@@ -58,6 +63,7 @@ export class AccountController {
 
     @HttpCode(HttpStatus.CREATED)
     @Post("activation/redeem")
+    @Throttle(IDENTITY_MODULE_STRICT_RATE_LIMITING)
     async redeemActivationToken(@Body() { activationToken }: RedeemActivationTokenDto) {
         try {
             await this.accountService.activate(activationToken);
@@ -74,6 +80,7 @@ export class AccountController {
 
     @HttpCode(HttpStatus.CREATED)
     @Post("activation/request")
+    @Throttle(IDENTITY_MODULE_STRICT_RATE_LIMITING)
     async requestActivationToken(@Body() { email, redirectUrl }: RequestActivationTokenDto) {
         try {
             await this.accountService.requestActivation(email, redirectUrl);

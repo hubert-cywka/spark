@@ -15,6 +15,7 @@ import {
     UnauthorizedException,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { SkipThrottle, Throttle } from "@nestjs/throttler";
 import { OAuth2RequestError } from "arctic";
 import { type CookieOptions, type Response } from "express";
 
@@ -48,7 +49,9 @@ import {
 } from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
 import { FederatedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
+import { IDENTITY_MODULE_DEFAULT_RATE_LIMITING, IDENTITY_MODULE_STRICT_RATE_LIMITING } from "@/modules/identity/shared/constants";
 
+@Throttle(IDENTITY_MODULE_DEFAULT_RATE_LIMITING)
 @Controller("open-id-connect")
 export class OpenIDConnectController {
     private readonly refreshTokenCookieMaxAge: number;
@@ -73,6 +76,7 @@ export class OpenIDConnectController {
 
     @HttpCode(HttpStatus.OK)
     @Get("login/:providerId")
+    @Throttle(IDENTITY_MODULE_STRICT_RATE_LIMITING)
     async login(
         @Res() response: Response,
         @Param("providerId", new ParseEnumPipe(FederatedAccountProvider))
@@ -101,6 +105,7 @@ export class OpenIDConnectController {
 
     @HttpCode(HttpStatus.OK)
     @Get("login/:providerId/callback")
+    @SkipThrottle()
     async loginCallback(
         @Res() response: Response,
         @Param("providerId", new ParseEnumPipe(FederatedAccountProvider))
@@ -155,6 +160,7 @@ export class OpenIDConnectController {
 
     @HttpCode(HttpStatus.CREATED)
     @Post("register")
+    @Throttle(IDENTITY_MODULE_STRICT_RATE_LIMITING)
     async registerWithOIDC(
         @Res() response: Response,
         @Body() _dto: RegisterViaOIDCDto,

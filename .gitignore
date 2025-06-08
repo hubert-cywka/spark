@@ -33,3 +33,4 @@ dist-ssr
 docker-compose.local.override.yml
 
 infrastructure/docker/ollama-models/**
+.aider*

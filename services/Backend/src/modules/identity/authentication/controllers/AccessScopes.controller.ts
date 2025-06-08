@@ -1,4 +1,5 @@
 import { Body, Controller, ForbiddenException, Inject, Post, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
+import { Throttle } from "@nestjs/throttler";
 import { type Request } from "express";
 
 import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
@@ -16,9 +17,10 @@ import {
     type IAuthenticationService,
     AuthenticationServiceToken,
 } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
+import { IDENTITY_MODULE_DEFAULT_RATE_LIMITING, IDENTITY_MODULE_STRICT_RATE_LIMITING } from "@/modules/identity/shared/constants";
 import { type User } from "@/types/User";
 
-// TODO: Stricter rate limiting
+@Throttle(IDENTITY_MODULE_DEFAULT_RATE_LIMITING)
 @Controller("scopes")
 export class AccessScopesController {
     public constructor(
@@ -32,6 +34,7 @@ export class AccessScopesController {
 
     @Post("activate")
     @UseGuards(AccessGuard)
+    @Throttle(IDENTITY_MODULE_STRICT_RATE_LIMITING)
     async activateAccessScopes(@Body() dto: ActivateAccessScopesDto, @AuthenticatedUserContext() user: User, @Req() request: Request) {
         const accessToken = request.headers.authorization?.split(" ")[1];
 
