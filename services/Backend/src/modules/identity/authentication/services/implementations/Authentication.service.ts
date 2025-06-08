@@ -87,6 +87,7 @@ export class AuthenticationService implements IAuthenticationService {
     }
 
     // TODO: Invalidate refresh token before issuing new one
+    // Or maybe don't issue one at all?
     public async upgradeAccessToken(accessToken: string, scopes: AccessScope[]): Promise<AuthenticationResult> {
         const payload: AccessTokenPayload | null = this.jwtService.decode(accessToken);
 
