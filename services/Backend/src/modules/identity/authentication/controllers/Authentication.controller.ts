@@ -1,7 +1,7 @@
 import { Body, Controller, ForbiddenException, HttpCode, HttpStatus, Inject, Post, Res, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { Throttle } from "@nestjs/throttler";
 import { type Response } from "express";
-import { Throttle } from "@nestjs/throttler"; // Importuj Throttle
 
 import { Cookie } from "@/common/decorators/Cookie.decorator";
 import { EntityConflictError } from "@/common/errors/EntityConflict.error";
@@ -22,7 +22,9 @@ import {
     type IRefreshTokenCookieStrategy,
     RefreshTokenCookieStrategyToken,
 } from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
+import { IDENTITY_MODULE_DEFAULT_RATE_LIMITING, IDENTITY_MODULE_STRICT_RATE_LIMITING } from "@/modules/identity/shared/constants";
 
+@Throttle(IDENTITY_MODULE_DEFAULT_RATE_LIMITING)
 @Controller("auth")
 export class AuthenticationController {
     private readonly refreshTokenCookieMaxAge: number;
@@ -43,7 +45,7 @@ export class AuthenticationController {
 
     @HttpCode(HttpStatus.CREATED)
     @Post("register")
-    @Throttle('auth-register') // Zastosuj nazwany limit dla rejestracji
+    @Throttle(IDENTITY_MODULE_STRICT_RATE_LIMITING)
     async registerWithCredentials(@Body() dto: RegisterWithCredentialsDto) {
         if (!this.domainVerifier.verify(dto.accountActivationRedirectUrl)) {
             throw new UntrustedDomainError(dto.accountActivationRedirectUrl);
@@ -58,7 +60,7 @@ export class AuthenticationController {
 
     @HttpCode(HttpStatus.OK)
     @Post("login")
-    @Throttle('auth-login') // Zastosuj nazwany limit dla logowania
+    @Throttle(IDENTITY_MODULE_STRICT_RATE_LIMITING)
     async login(@Body() dto: LoginDto, @Res() response: Response) {
         try {
             const result = await this.authService.loginWithCredentials({
