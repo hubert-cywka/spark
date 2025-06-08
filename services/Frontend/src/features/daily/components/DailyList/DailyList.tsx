@@ -8,6 +8,7 @@ import styles from "./styles/DailyList.module.scss";
 import { ItemLoader } from "@/components/ItemLoader/ItemLoader";
 import { DailyActivityChart } from "@/features/daily/components/DailyActivityChart/DailyActivityChart.tsx";
 import { DailyListHeader } from "@/features/daily/components/DailyList/components/DailyListHeader/DailyListHeader";
+import { NoDailiesMessage } from "@/features/daily/components/DailyList/components/NoDailiesMessage/NoDailiesMessage.tsx";
 import { useDailiesEvents } from "@/features/daily/components/DailyList/hooks/useDailiesEvents";
 import { useDailyDateRange } from "@/features/daily/components/DailyList/hooks/useDailyDateRange";
 import { useDailyEntriesEvents } from "@/features/daily/components/DailyList/hooks/useDailyEntriesEvents";
@@ -186,6 +187,8 @@ export const DailyList = () => {
             <ItemLoader shouldLoadNext={hasNextPage} onLoadNext={fetchNextPage} isLoaderVisible={isFetching && dayjs().isAfter(startDate)}>
                 <DaySkeleton count={3} />
             </ItemLoader>
+
+            {!dailies.length && !isFetching && <NoDailiesMessage onCreateNewDaily={onCreateNewDaily} timeframeStart={startDate} />}
         </main>
     );
 };
