@@ -494,6 +494,13 @@
         }
     },
     "daily": {
+        "empty": {
+            "title": "Not much to see here",
+            "caption": "You have not added any daily in {date} yet.",
+            "addDailyButton": {
+                "label": "Add new daily"
+            }
+        },
         "createDailyButton": {
             "label": "Add new daily"
         },
@@ -541,7 +548,7 @@
                 "edit": {
                     "label": "Edit daily"
                 },
-                "remove": {
+                "delete": {
                     "label": "Remove daily"
                 }
             }
