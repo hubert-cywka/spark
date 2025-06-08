@@ -1,4 +1,5 @@
-// TODO
-export const preventEventBubbling = (e: { stopPropagation: () => void }) => {
+import { MouseEvent } from "react";
+
+export const preventEventBubbling = (e: MouseEvent<HTMLElement>) => {
     e.stopPropagation();
 };

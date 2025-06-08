@@ -7,6 +7,25 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Container } from "@/components/Container";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
+function Page() {
+    const t = useTranslate();
+
+    return (
+        <Container>
+            <Breadcrumbs items={[{ label: t("termsAndConditions.title") }]} />
+            <TermsAndConditionsTableOfContents content={termsAndConditionsContent} />
+
+            <main>
+                {termsAndConditionsContent.map((section, sectionIndex) => (
+                    <TermsAndConditionsSection key={section.id} section={section} sectionIndex={sectionIndex} />
+                ))}
+            </main>
+        </Container>
+    );
+}
+
+export default Page;
+
 // TODO: Replace with real content
 const termsAndConditionsContent: TermsAndConditionsContentSection[] = [
     {
@@ -104,22 +123,3 @@ const termsAndConditionsContent: TermsAndConditionsContentSection[] = [
         ],
     },
 ];
-
-function Page() {
-    const t = useTranslate();
-
-    return (
-        <Container>
-            <Breadcrumbs items={[{ label: t("termsAndConditions.title") }]} />
-            <TermsAndConditionsTableOfContents content={termsAndConditionsContent} />
-
-            <main>
-                {termsAndConditionsContent.map((section, sectionIndex) => (
-                    <TermsAndConditionsSection key={section.id} section={section} sectionIndex={sectionIndex} />
-                ))}
-            </main>
-        </Container>
-    );
-}
-
-export default Page;

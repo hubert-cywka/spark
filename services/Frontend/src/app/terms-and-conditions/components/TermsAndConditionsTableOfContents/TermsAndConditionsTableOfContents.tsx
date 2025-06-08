@@ -17,6 +17,7 @@ export const TermsAndConditionsTableOfContents = ({ content }: TermsAndCondition
                 {content.map((section) => (
                     <li key={section.id}>
                         <Anchor href={`#${section.id}`}>{t(section.titleKey)}</Anchor>
+
                         {section.subsections && section.subsections.length > 0 && (
                             <ol>
                                 {section.subsections.map((subsection) => (
