@@ -1,6 +1,7 @@
 import { Body, Controller, ForbiddenException, HttpCode, HttpStatus, Inject, Post, Res, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { type Response } from "express";
+import { Throttle } from "@nestjs/throttler"; // Importuj Throttle
 
 import { Cookie } from "@/common/decorators/Cookie.decorator";
 import { EntityConflictError } from "@/common/errors/EntityConflict.error";
@@ -42,6 +43,7 @@ export class AuthenticationController {
 
     @HttpCode(HttpStatus.CREATED)
     @Post("register")
+    @Throttle('auth-register') // Zastosuj nazwany limit dla rejestracji
     async registerWithCredentials(@Body() dto: RegisterWithCredentialsDto) {
         if (!this.domainVerifier.verify(dto.accountActivationRedirectUrl)) {
             throw new UntrustedDomainError(dto.accountActivationRedirectUrl);
@@ -56,6 +58,7 @@ export class AuthenticationController {
 
     @HttpCode(HttpStatus.OK)
     @Post("login")
+    @Throttle('auth-login') // Zastosuj nazwany limit dla logowania
     async login(@Body() dto: LoginDto, @Res() response: Response) {
         try {
             const result = await this.authService.loginWithCredentials({
