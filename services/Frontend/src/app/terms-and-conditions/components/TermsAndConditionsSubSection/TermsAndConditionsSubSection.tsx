@@ -13,11 +13,12 @@ export const TermsAndConditionsSubSection = ({ subsection }: TermsAndConditionsS
     return (
         <div key={subsection.id}>
             <h3 id={subsection.id} className={styles.header}>
-                {t(subsection.titleKey)}
+                {t(subsection.titleTranslationKey)}
             </h3>
+
             {subsection.paragraphs.map((paragraph, pIndex) => (
                 <p key={pIndex} className={styles.paragraph}>
-                    {t(paragraph.key)}
+                    {t(paragraph.translationKey)}
                 </p>
             ))}
         </div>

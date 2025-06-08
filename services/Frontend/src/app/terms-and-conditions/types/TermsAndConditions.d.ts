@@ -1,16 +1,16 @@
 export type TermsAndConditionsContentParagraph = {
-    key: string;
+    translationKey: string;
 };
 
 export type TermsAndConditionsContentSubsection = {
     id: string;
-    titleKey: string;
+    titleTranslationKey: string;
     paragraphs: TermsAndConditionsContentParagraph[];
 };
 
 export type TermsAndConditionsContentSection = {
     id: string;
-    titleKey: string;
+    titleTranslationKey: string;
     paragraphs: TermsAndConditionsContentParagraph[];
     subsections?: TermsAndConditionsContentSubsection[];
 };

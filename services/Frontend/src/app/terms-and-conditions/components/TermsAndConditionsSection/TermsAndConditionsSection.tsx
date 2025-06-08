@@ -15,12 +15,12 @@ export const TermsAndConditionsSection = ({ section, sectionIndex }: TermsAndCon
     return (
         <section id={section.id} key={section.id}>
             <h2 className={styles.header}>
-                {sectionIndex + 1}. {t(section.titleKey)}
+                {sectionIndex + 1}. {t(section.titleTranslationKey)}
             </h2>
 
             {section.paragraphs.map((paragraph, pIndex) => (
                 <p className={styles.paragraph} key={pIndex}>
-                    {t(paragraph.key)}
+                    {t(paragraph.translationKey)}
                 </p>
             ))}
 

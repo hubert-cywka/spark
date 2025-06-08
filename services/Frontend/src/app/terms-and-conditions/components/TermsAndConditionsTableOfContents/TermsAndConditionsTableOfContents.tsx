@@ -16,13 +16,13 @@ export const TermsAndConditionsTableOfContents = ({ content }: TermsAndCondition
             <ol>
                 {content.map((section) => (
                     <li key={section.id}>
-                        <Anchor href={`#${section.id}`}>{t(section.titleKey)}</Anchor>
+                        <Anchor href={`#${section.id}`}>{t(section.titleTranslationKey)}</Anchor>
 
                         {section.subsections && section.subsections.length > 0 && (
                             <ol>
                                 {section.subsections.map((subsection) => (
                                     <li key={subsection.id}>
-                                        <Anchor href={`#${subsection.id}`}>{t(subsection.titleKey)}</Anchor>
+                                        <Anchor href={`#${subsection.id}`}>{t(subsection.titleTranslationKey)}</Anchor>
                                     </li>
                                 ))}
                             </ol>
