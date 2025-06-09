@@ -1,0 +1,50 @@
+// TODO: HC
+
+.auroraWrapper {
+    position: absolute;
+    z-index: -1;
+    top: -100px;
+    overflow: visible;
+
+    width: 100%;
+    max-width: 1600px;
+    height: 1000px;
+
+    animation: 5s ease-out 0s 1 delayedFadeIn forwards;
+
+    mask-mode: alpha;
+    mask-image: linear-gradient(
+            to right,
+            transparent 0%,
+            black 30%,
+            black 70%,
+            transparent 100%
+    );
+    
+    .aurora {
+        position: absolute;
+        height: 500px;
+
+        &.top {
+            transform: translateY(0) scale(-1, -1);
+        }
+
+        &.bottom {
+            transform: translateY(500px) scale(-1, 1);
+        }
+    }
+}
+
+@keyframes delayedFadeIn {
+    0% {
+        opacity: 0;
+        display: none;
+    }
+    25% {
+        opacity: 0;
+        display: block;
+    }
+    100% {
+        opacity: 1;
+    }
+}

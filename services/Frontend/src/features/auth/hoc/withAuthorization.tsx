@@ -20,7 +20,7 @@ export default function withAuthorization<T extends object>(Component: FC<T>) {
 }
 
 export function onlyAsUnauthenticated<T extends object>(Component: FC<T>) {
-    return withAuthorization<T>(Component)(["browse_as_unauthenticated"], AppRoute.HOME);
+    return withAuthorization<T>(Component)(["browse_as_unauthenticated"], AppRoute.DAILY);
 }
 
 export function onlyAsAuthenticated<T extends object>(Component: FC<T>) {

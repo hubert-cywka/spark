@@ -5,8 +5,7 @@ import { SkeletonTheme } from "react-loading-skeleton";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 
-import { AuthSessionProvider } from "@/features/auth/components/AuthStateProvider/AuthSessionProvider";
-import { TwoFactorAuthenticationProvider } from "@/features/auth/components/TwoFactorAuthenticationProvider";
+import { AuthSessionProvider } from "@/features/auth/components/AuthStateProvider";
 
 type ProviderProps = PropsWithChildren;
 
@@ -28,11 +27,9 @@ export const Provider = ({ children }: ProviderProps) => {
 
     return (
         <SkeletonTheme baseColor={SKELETON_BASE_COLOR} highlightColor={SKELETON_HIGHLIGHT_COLOR}>
+            <Toaster position="top-right" />
             <QueryClientProvider client={queryClient}>
-                <Toaster position="top-right" />
-                <AuthSessionProvider>
-                    <TwoFactorAuthenticationProvider>{children}</TwoFactorAuthenticationProvider>
-                </AuthSessionProvider>
+                <AuthSessionProvider>{children}</AuthSessionProvider>
             </QueryClientProvider>
         </SkeletonTheme>
     );

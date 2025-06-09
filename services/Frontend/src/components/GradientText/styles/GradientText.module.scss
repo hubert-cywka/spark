@@ -1,0 +1,17 @@
+@keyframes animatedTextGradient {
+    0%, 100% {
+        background-position: 0 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+.gradientText {
+    // TODO: HC
+    background: linear-gradient(135deg, rgb(255, 255, 255), rgb(134, 96, 250), rgb(168, 85, 247), rgb(132, 0, 255), rgb(168, 85, 247), rgb(255, 255, 255)) 0 0 / 200% 200% text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: animatedTextGradient 5s ease-in-out 0s infinite normal none running;
+}

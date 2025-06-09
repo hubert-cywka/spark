@@ -2,6 +2,7 @@
 
 .container {
     width: 100%;
+    position: relative;
     padding-block: tokens.$spacing-400;
 
     &[data-size="1"] {
@@ -22,5 +23,9 @@
 
     &[data-size="5"] {
         max-width: tokens.$breakpoint-xl;
+    }
+
+    &[data-size="full-width"] {
+        max-width: 100%;
     }
 }

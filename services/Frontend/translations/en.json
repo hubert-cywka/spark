@@ -215,6 +215,12 @@
                 }
             },
             "sections": {
+                "legal": {
+                    "label": "Legal",
+                    "termsAndConditions": {
+                        "label": "Terms and Conditions"
+                    }
+                },
                 "main": {
                     "label": "Main",
                     "home": {

@@ -1,0 +1,25 @@
+@use "src/styles/tokens";
+
+.shell {
+    display: flex;
+    flex-direction: column;
+
+    .contentContainer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        color: tokens.$color-neutral-text-100;
+        height: fit-content;
+
+        .content {
+            font: tokens.$typography-body-100;
+            width: 100%;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+}

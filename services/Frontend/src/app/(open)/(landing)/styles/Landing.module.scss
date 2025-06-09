@@ -1,0 +1,123 @@
+@use "src/styles/tokens";
+
+// TODO: HC
+.landingPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.content {
+    max-width: tokens.$breakpoint-sm;
+    width: 100%;
+    
+    .testimonials {
+        margin-top: tokens.$spacing-900;
+        margin-bottom: tokens.$spacing-800;
+        color: tokens.$color-accent-text-100;
+        
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: tokens.$spacing-300;
+        
+        .testimonialsHeader {
+            font-size: tokens.$font-size-1000;
+            font-weight: bold;
+        }
+        
+        .testimonialsCaption {
+            font-size: tokens.$font-size-500;
+        }
+    }
+    
+    .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        padding-inline: tokens.$spacing-400;
+        gap: tokens.$spacing-400;
+    }
+    
+    .test {
+        height: 300px;
+        border-radius: tokens.$radius-400;
+        background:
+            linear-gradient(to right, rgba(tokens.$color-accent-background-100, 0.25) 0%, rgba(tokens.$color-accent-background-300, 0.1) 100%) fixed,
+            linear-gradient(to left, rgba(tokens.$color-accent-solid-300, 0.75) 0%, rgba(tokens.$color-accent-background-300, 0.1) 100%) fixed,
+            tokens.$color-accent-solid-300;
+        
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        .testHeader {
+            font-size: tokens.$font-size-1000;
+            font-weight: bold;
+        }
+
+        .testCaption {
+            font-size: tokens.$font-size-500;
+        }
+        
+        .testButton {
+            margin-top: tokens.$spacing-500;
+            border-radius: tokens.$radius-400;
+            border: thin solid tokens.$color-accent-text-100;
+            padding-inline: tokens.$spacing-600;
+            
+            transition: 0.2s;
+            
+            &:hover {
+                background: tokens.$color-accent-text-100;
+                color: tokens.$color-accent-solid-300;
+            }
+        }
+    }
+
+    .heroSection {
+        width: 100%;
+        padding: tokens.$spacing-1000 tokens.$spacing-600;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        .heroContent {
+            max-width: 600px;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: tokens.$spacing-400;
+
+            .heroHeader {
+                text-align: center;
+                font-size: tokens.$font-size-1100;
+            }
+
+            .heroCaption {
+                text-align: center;
+                font-size: tokens.$font-size-400;
+                color: tokens.$color-accent-text-200;
+            }
+
+            .heroActions {
+                display: flex;
+                gap: tokens.$spacing-400;
+                margin-top: tokens.$spacing-300;
+
+                .heroActionButton {
+                    font-weight: bold;
+                }
+            }
+
+            .heroActionsCaption {
+                color: tokens.$color-accent-text-200;
+                font-size: tokens.$font-size-200;
+            }
+        }
+    }
+}
