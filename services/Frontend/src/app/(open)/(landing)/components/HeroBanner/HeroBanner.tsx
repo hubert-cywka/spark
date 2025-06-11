@@ -1,3 +1,4 @@
+import classNames from "clsx";
 import { ArrowRight } from "lucide-react";
 
 import styles from "./styles/HeroBanner.module.scss";
@@ -19,10 +20,14 @@ export const HeroBanner = () => {
                 </p>
 
                 <div className={styles.actions}>
-                    <Button size="3" className={styles.actionButton} rightDecorator={<Icon slot={ArrowRight} size="1" />}>
+                    <Button
+                        size="3"
+                        className={classNames(styles.actionButton, styles.primary)}
+                        rightDecorator={<Icon slot={ArrowRight} size="1" />}
+                    >
                         Try it for free
                     </Button>
-                    <Button size="3" className={styles.actionButton} variant="secondary">
+                    <Button size="3" className={classNames(styles.actionButton, styles.secondary)} variant="secondary">
                         Learn more
                     </Button>
                 </div>

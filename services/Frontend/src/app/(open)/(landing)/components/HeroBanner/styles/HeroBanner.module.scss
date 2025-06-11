@@ -34,7 +34,28 @@
             margin-top: tokens.$spacing-300;
 
             .actionButton {
-                font-weight: bold;
+                border-radius: tokens.$radius-400;
+                padding-inline: tokens.$spacing-600;
+
+                background: transparent;
+                transition: 0.2s;
+
+                &.primary {
+                    background: tokens.$color-accent-solid-300;
+                    color: tokens.$color-accent-text-100;
+                    
+                    &:hover {
+                        border-color: tokens.$color-accent-text-100;
+                        background: tokens.$color-accent-text-100;
+                        color: tokens.$color-accent-solid-300;
+                    }
+                }
+                
+                &.secondary {
+                    &:hover {
+                        border: thin solid tokens.$color-accent-text-100;
+                    }
+                }
             }
         }
 
