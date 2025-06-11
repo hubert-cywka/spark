@@ -1,0 +1,42 @@
+@use "src/styles/tokens";
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+    height: 300px;
+    border-radius: tokens.$radius-400;
+    background:
+        linear-gradient(to right, rgba(tokens.$color-accent-background-100, 0.25) 0%, rgba(tokens.$color-accent-background-300, 0.1) 100%) fixed,
+        linear-gradient(to left, rgba(tokens.$color-accent-solid-300, 0.75) 0%, rgba(tokens.$color-accent-background-300, 0.1) 100%) fixed,
+        tokens.$color-accent-solid-300;
+
+    .header {
+        font-size: tokens.$font-size-1000;
+    }
+
+    .caption {
+        font-size: tokens.$font-size-500;
+        color: tokens.$color-accent-text-200;
+    }
+
+    .link {
+        text-decoration: none;
+        
+        .button {
+            margin-top: tokens.$spacing-500;
+            border-radius: tokens.$radius-400;
+            border: thin solid tokens.$color-accent-text-100;
+            padding-inline: tokens.$spacing-600;
+
+            transition: 0.2s;
+
+            &:hover {
+                background: tokens.$color-accent-text-100;
+                color: tokens.$color-accent-solid-300;
+            }
+        }
+    }
+}

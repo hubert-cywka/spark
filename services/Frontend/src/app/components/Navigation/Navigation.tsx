@@ -8,15 +8,13 @@ import { AppRoute } from "@/app/appRoute.ts";
 import { NavigationItem } from "@/app/components/Navigation/components/NavigationItem/NavigationItem.tsx";
 import { Logo } from "@/components/Logo";
 import { AccessGuard } from "@/features/auth/components/AccessGuard";
-import { useSpotlight } from "@/hooks/useSpotlight.ts";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
 export const Navigation = () => {
     const t = useTranslate();
-    const { ref, handleMouseMove, spotlightClassName } = useSpotlight();
 
     return (
-        <nav className={classNames(styles.navigation, spotlightClassName)} ref={ref} onMouseMove={handleMouseMove}>
+        <nav className={classNames(styles.navigation)}>
             <div className={styles.container}>
                 <Logo />
 

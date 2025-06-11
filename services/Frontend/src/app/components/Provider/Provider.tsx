@@ -27,7 +27,7 @@ export const Provider = ({ children }: ProviderProps) => {
 
     return (
         <SkeletonTheme baseColor={SKELETON_BASE_COLOR} highlightColor={SKELETON_HIGHLIGHT_COLOR}>
-            <Toaster position="top-right" />
+            <Toaster position="bottom-right" />
             <QueryClientProvider client={queryClient}>
                 <AuthSessionProvider>{children}</AuthSessionProvider>
             </QueryClientProvider>

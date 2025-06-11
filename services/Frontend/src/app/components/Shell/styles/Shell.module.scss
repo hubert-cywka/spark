@@ -3,6 +3,7 @@
 .shell {
     display: flex;
     flex-direction: column;
+    position: relative;
 
     .contentContainer {
         display: flex;

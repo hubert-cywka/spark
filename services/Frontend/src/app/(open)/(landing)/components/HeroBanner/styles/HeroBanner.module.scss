@@ -1,0 +1,46 @@
+@use "src/styles/tokens";
+
+.container {
+    padding: tokens.$spacing-1000 tokens.$spacing-600;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    .content {
+        max-width: tokens.$breakpoint-xs;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: tokens.$spacing-400;
+
+        .header {
+            text-align: center;
+            font-size: tokens.$font-size-1100;
+        }
+
+        .caption {
+            text-align: center;
+            font-size: tokens.$font-size-400;
+            color: tokens.$color-accent-text-200;
+        }
+
+        .actions {
+            display: flex;
+            gap: tokens.$spacing-400;
+            margin-top: tokens.$spacing-300;
+
+            .actionButton {
+                font-weight: bold;
+            }
+        }
+
+        .actionsCaption {
+            color: tokens.$color-accent-text-200;
+            font-size: tokens.$font-size-200;
+        }
+    }
+}
