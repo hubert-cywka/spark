@@ -1,6 +1,6 @@
 @use "src/styles/tokens";
 
-// TODO: HC
+// TODO: Clean up
 .landingPage {
     display: flex;
     flex-direction: column;
@@ -76,7 +76,6 @@
     }
 
     .heroSection {
-        width: 100%;
         padding: tokens.$spacing-1000 tokens.$spacing-600;
 
         display: flex;
@@ -85,7 +84,7 @@
         justify-content: center;
 
         .heroContent {
-            max-width: 600px;
+            max-width: tokens.$breakpoint-xs;
 
             display: flex;
             flex-direction: column;

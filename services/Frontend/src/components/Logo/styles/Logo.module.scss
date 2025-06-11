@@ -1,11 +1,23 @@
 @use "src/styles/tokens";
 
-// TODO: HC
-a.logo.logo {
-    display: flex;
-    gap: tokens.$spacing-200;
+.container {
+    .logo {
+        display: flex;
+        gap: tokens.$spacing-200;
 
-    color: tokens.$color-accent-text-300;
-    font-weight: bold;
-    text-decoration: none;
+        color: tokens.$color-accent-text-200;
+        font-weight: bold;
+        text-decoration: none;
+        
+        .icon {
+            transition: 0.2s ease-in-out;
+        }
+        
+        &:hover {
+            .icon {
+                transform: rotate(-10deg) scale(1.05);
+                color: tokens.$color-accent-text-300;
+            }
+        }
+    }
 }

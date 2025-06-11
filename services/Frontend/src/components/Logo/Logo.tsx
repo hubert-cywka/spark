@@ -13,9 +13,11 @@ export const Logo = ({ className }: LogoProps) => {
     const t = useTranslate();
 
     return (
-        <Anchor href={AppRoute.HOME} className={clsx(styles.logo, className)}>
-            <Flame />
-            <span>{t("common.app.name")}</span>
-        </Anchor>
+        <div className={clsx(styles.container, className)}>
+            <Anchor href={AppRoute.HOME} className={styles.logo}>
+                <Flame className={styles.icon} />
+                <span className={styles.name}>{t("common.app.name")}</span>
+            </Anchor>
+        </div>
     );
 };

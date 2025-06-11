@@ -12,7 +12,7 @@ import { GradientText } from "@/components/GradientText/GradientText.tsx";
 import { Icon } from "@/components/Icon";
 import { withSessionRestore } from "@/features/auth/hoc/withSessionRestore.tsx";
 
-// TODO: HC
+// TODO: Clean up + real content
 function Page() {
     return (
         <Container className={styles.landingPage} size="full-width">
@@ -69,4 +69,4 @@ function Page() {
     );
 }
 
-export default withSessionRestore(Page);
+export default withSessionRestore(Page, { inBackground: true });

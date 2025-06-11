@@ -6,7 +6,7 @@ import Aurora from "@/components/Aurora/Aurora.tsx";
 
 export const AuroraBackground = () => {
     return (
-        <div className={classNames(styles.auroraWrapper)}>
+        <div className={classNames(styles.wrapper)}>
             <Aurora className={classNames(styles.aurora, styles.top)} />
             <Aurora className={classNames(styles.aurora, styles.bottom)} />
         </div>

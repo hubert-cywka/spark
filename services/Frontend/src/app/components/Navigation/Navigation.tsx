@@ -11,7 +11,6 @@ import { AccessGuard } from "@/features/auth/components/AccessGuard";
 import { useSpotlight } from "@/hooks/useSpotlight.ts";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
-// TODO: HC
 export const Navigation = () => {
     const t = useTranslate();
     const { ref, handleMouseMove, spotlightClassName } = useSpotlight();
@@ -28,8 +27,8 @@ export const Navigation = () => {
                     </AccessGuard>
 
                     <AccessGuard requiredScopes={["browse_as_authenticated"]}>
-                        <NavigationItem href={AppRoute.DAILY} label={"Dashboard"} />
-                        <NavigationItem href={AppRoute.SETTINGS} label={"Settings"} />
+                        <NavigationItem href={AppRoute.DAILY} label={t("common.navigation.sections.dashboard.label")} />
+                        <NavigationItem href={AppRoute.SETTINGS} label={t("common.navigation.sections.settings.label")} />
                     </AccessGuard>
 
                     <NavigationItem

@@ -4,9 +4,9 @@ import "server-only";
 
 import { AuthSessionRestorer } from "@/features/auth/components/AuthSessionRestorer/AuthSessionRestorer";
 
-export function withSessionRestore<T extends object>(Component: FC<T>) {
+export function withSessionRestore<T extends object>(Component: FC<T>, options: { inBackground?: boolean } = {}) {
     const WrappedComponent = (props: T) => (
-        <AuthSessionRestorer>
+        <AuthSessionRestorer inBackground={options.inBackground}>
             <Component {...props} />
         </AuthSessionRestorer>
     );

@@ -111,17 +111,21 @@ void main() {
   fragColor = vec4(auroraColor * auroraAlpha, auroraAlpha);
 }
 `;
-interface AuroraProps {
-    colorStops?: string[];
+
+// https://www.reactbits.dev/backgrounds/aurora
+
+const COLORS = ["#c176ff", "#5227FF", "#b700ff"];
+
+type AuroraProps = {
     amplitude?: number;
     className?: string;
     blend?: number;
     time?: number;
     speed?: number;
-}
+};
 
 export default function Aurora(props: AuroraProps) {
-    const { colorStops = ["#c176ff", "#5227FF", "#27f8ff"], amplitude = 1.0, blend = 0.5 } = props;
+    const { amplitude = 1.0, blend = 0.5 } = props;
     const propsRef = useRef<AuroraProps>(props);
     propsRef.current = props;
 
@@ -149,7 +153,7 @@ export default function Aurora(props: AuroraProps) {
             delete geometry.attributes.uv;
         }
 
-        const colorStopsArray = colorStops.map((hex) => {
+        const colorStopsArray = COLORS.map((hex) => {
             const c = new Color(hex);
             return [c.r, c.g, c.b];
         });
@@ -186,8 +190,7 @@ export default function Aurora(props: AuroraProps) {
             program.uniforms.uTime.value = time * speed * 0.1;
             program.uniforms.uAmplitude.value = propsRef.current.amplitude ?? 1.0;
             program.uniforms.uBlend.value = propsRef.current.blend ?? blend;
-            const stops = propsRef.current.colorStops ?? colorStops;
-            program.uniforms.uColorStops.value = stops.map((hex: string) => {
+            program.uniforms.uColorStops.value = COLORS.map((hex: string) => {
                 const c = new Color(hex);
                 return [c.r, c.g, c.b];
             });
@@ -207,9 +210,7 @@ export default function Aurora(props: AuroraProps) {
 
             gl.getExtension("WEBGL_lose_context")?.loseContext();
         };
-    }, [amplitude, blend, colorStops]);
+    }, [amplitude, blend]);
 
     return <div ref={ctnDom} className={classNames(styles.container, props.className)} />;
 }
-
-// TODO: HC

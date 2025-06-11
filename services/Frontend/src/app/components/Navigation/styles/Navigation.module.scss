@@ -14,7 +14,8 @@
     
     .container {
         width: 100%;
-        max-width: 1200px; // TODO: HC
+        max-width: tokens.$breakpoint-md;
+        
         display: flex;
         gap: tokens.$spacing-800;
         justify-content: space-between;
