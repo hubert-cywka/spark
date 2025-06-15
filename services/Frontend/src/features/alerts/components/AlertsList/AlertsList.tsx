@@ -11,6 +11,7 @@ import { useDeleteAlertEvents } from "@/features/alerts/hooks/useDeleteAlertEven
 import { useUpdateAlertEvents } from "@/features/alerts/hooks/useUpdateAlertEvents";
 import { useUpdateAlertStatus } from "@/features/alerts/hooks/useUpdateAlertStatus";
 import { useUpdateAlertTime } from "@/features/alerts/hooks/useUpdateAlertTime";
+import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 import { Day } from "@/types/Day";
 
 type AlertsListProps = {
@@ -20,6 +21,7 @@ type AlertsListProps = {
 };
 
 export const AlertsList = ({ maxAlertsAllowed, onAlertRender, onAddAlertRender }: AlertsListProps) => {
+    const t = useTranslate();
     const { data, isLoading } = useAlerts();
     const numberOfAlerts = data?.length ?? 0;
 
@@ -60,6 +62,7 @@ export const AlertsList = ({ maxAlertsAllowed, onAlertRender, onAddAlertRender }
             {data?.map((alert) =>
                 onAlertRender({
                     alert,
+                    translateFn: t,
                     onUpdateTime: (value) => handleUpdateTime(alert.id, value, alert.daysOfWeek),
                     onUpdateDays: (value) => handleUpdateTime(alert.id, alert.time, value),
                     onUpdateStatus: (value) => handleUpdateStatus(alert.id, value),

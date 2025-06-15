@@ -7,6 +7,7 @@ export type AddAlertRenderProps = {
 
 export type AlertRenderProps = {
     alert: Alert;
+    translateFn: (key: string) => string;
     onUpdateStatus: (value: boolean) => void;
     onUpdateTime: (value: string) => void;
     onUpdateDays: (value: Day[]) => void;
