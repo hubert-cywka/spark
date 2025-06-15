@@ -3,7 +3,6 @@ import { ConfigService } from "@nestjs/config";
 import { Throttle } from "@nestjs/throttler";
 import { type Response } from "express";
 
-import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
 import { Cookie } from "@/common/decorators/Cookie.decorator";
 import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
@@ -25,7 +24,6 @@ import {
     RefreshTokenCookieStrategyToken,
 } from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
 import { IDENTITY_MODULE_DEFAULT_RATE_LIMITING, IDENTITY_MODULE_STRICT_RATE_LIMITING } from "@/modules/identity/shared/constants";
-import type { User } from "@/types/User";
 
 @Throttle(IDENTITY_MODULE_DEFAULT_RATE_LIMITING)
 @Controller("auth")
@@ -104,18 +102,13 @@ export class AuthenticationController {
 
     @HttpCode(HttpStatus.OK)
     @Post("logout")
-    async logout(
-        @Res() response: Response,
-        @Body() dto: LogoutDto,
-        @Cookie(REFRESH_TOKEN_COOKIE_NAME) token: string,
-        @AuthenticatedUserContext() user: User
-    ) {
+    async logout(@Res() response: Response, @Body() dto: LogoutDto, @Cookie(REFRESH_TOKEN_COOKIE_NAME) token: string) {
         if (!token) {
             throw new UnauthorizedException();
         }
 
         if (dto?.allSessions) {
-            await this.authService.logoutAllSessions(user.id);
+            await this.authService.logoutAllSessions(token);
         } else {
             await this.authService.logoutSingleSession(token);
         }

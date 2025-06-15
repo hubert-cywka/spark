@@ -9,17 +9,15 @@ export type AccessTokenPayload = {
 
 export type AuthenticationResult = {
     accessToken: string;
-    refreshToken: string;
     account: Account;
     accessScopes: AccessScopes;
+};
+
+export type ExtendedAuthenticationResult = AuthenticationResult & {
+    refreshToken: string;
 };
 
 export type Credentials = {
     email: string;
     password: string;
-};
-
-export type PersonalInformation = {
-    lastName: string;
-    firstName: string;
 };
