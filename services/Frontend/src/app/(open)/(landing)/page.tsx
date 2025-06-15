@@ -9,9 +9,11 @@ import { FeatureCard } from "@/app/(open)/(landing)/components/FeatureCard/Featu
 import { HeroBanner } from "@/app/(open)/(landing)/components/HeroBanner/HeroBanner.tsx";
 import { Container } from "@/components/Container";
 import { withSessionRestore } from "@/features/auth/hoc/withSessionRestore.tsx";
+import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
-// TODO: Clean up + real content
 function Page() {
+    const t = useTranslate();
+
     return (
         <Container className={styles.landingPage} size="full-width">
             <AuroraBackground />
@@ -21,23 +23,23 @@ function Page() {
                 <section className={styles.features}>
                     <FeatureCard
                         icon={TimerIcon}
-                        title="Easy to start"
-                        caption="Sign up and create your first entry in 2 minutes. Spend just 5 minutes per-day on journalling."
+                        title={t("landingPage.features.easyToStart.title")}
+                        caption={t("landingPage.features.easyToStart.caption")}
                     />
                     <FeatureCard
                         icon={SparkleIcon}
-                        title="Smart insights"
-                        caption="Spark will provide insights based on your journaling habits, so you can create entries of higher quality."
+                        title={t("landingPage.features.smartInsights.title")}
+                        caption={t("landingPage.features.smartInsights.caption")}
                     />
                     <FeatureCard
                         icon={GlobeIcon}
-                        title="Open-source"
-                        caption="We have nothing to hide; Spark's code is publicly available. You can also host Spark on your own."
+                        title={t("landingPage.features.openSource.title")}
+                        caption={t("landingPage.features.openSource.caption")}
                     />
                     <FeatureCard
                         icon={CookieIcon}
-                        title="Privacy-first"
-                        caption="Cookies are for authentication, not for tracking. We don't share your data with third parties. We never will."
+                        title={t("landingPage.features.privacyFirst.title")}
+                        caption={t("landingPage.features.privacyFirst.caption")}
                     />
                 </section>
 
