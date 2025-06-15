@@ -54,7 +54,7 @@ export const SidePanel = () => {
 
                 <footer className={styles.footer}>
                     <AccessGuard requiredScopes={["browse_as_authenticated"]}>
-                        <LogoutButton />
+                        <LogoutButton size="1" />
                     </AccessGuard>
                 </footer>
             </div>

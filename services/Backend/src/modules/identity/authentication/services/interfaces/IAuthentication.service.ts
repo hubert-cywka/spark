@@ -12,7 +12,8 @@ export interface IAuthenticationService {
     loginWithCredentials(credentials: Credentials): Promise<AuthenticationResult>;
 
     redeemRefreshToken(refreshToken: string): Promise<AuthenticationResult>;
-    logout(refreshToken: string): Promise<void>;
+    logoutSingleSession(refreshToken: string): Promise<void>;
+    logoutAllSessions(ownerId: string): Promise<void>;
 
     upgradeAccessToken(accountId: string, scopes: AccessScope[]): Promise<AuthenticationResult>;
 }
