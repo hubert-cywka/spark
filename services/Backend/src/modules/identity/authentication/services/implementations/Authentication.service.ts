@@ -102,23 +102,25 @@ export class AuthenticationService implements IAuthenticationService {
         }
 
         const upgradedScopes = this.scopesService.activate(payload.account.id, scopes);
-        return this.createAuthenticationResult(payload.account, upgradedScopes, { includeRefreshToken: false });
+        return await this.createAuthenticationResult(payload.account, upgradedScopes, { includeRefreshToken: false });
     }
 
-    private async createAuthenticationResult(
+    private async createAuthenticationResult<T extends AuthenticationResultOptions>(
         account: Account,
         accessScopes: AccessScopes,
-        options: AuthenticationResultOptions
-    ): Promise<AuthenticationResult> {
+        options: T
+    ): Promise<CreateAuthenticationResultReturnType<T>> {
         const tokens = await this.generateTokens(account, accessScopes, options);
-        return { ...tokens, account, accessScopes };
+        // Asercja typu jest używana, aby pomóc TypeScriptowi w wnioskowaniu dokładnego typu warunkowego
+        // na podstawie obiektu 'tokens' oraz właściwości 'account' i 'accessScopes'.
+        return { ...tokens, account, accessScopes } as CreateAuthenticationResultReturnType<T>;
     }
 
-    private async generateTokens(
+    private async generateTokens<T extends AuthenticationResultOptions>(
         account: Account,
         accessScopes: AccessScopes,
-        { includeRefreshToken }: AuthenticationResultOptions
-    ): Promise<{ accessToken: string; refreshToken?: string }> {
+        options: T
+    ): Promise<T["includeRefreshToken"] extends true ? { accessToken: string; refreshToken: string } : { accessToken: string }> {
         const payload: AccessTokenPayload = {
             account,
             accessScopes,
@@ -130,10 +132,12 @@ export class AuthenticationService implements IAuthenticationService {
             expiresIn: this.accessTokenExpirationTimeInSeconds,
         });
 
-        if (includeRefreshToken) {
+        if (options.includeRefreshToken) {
             const refreshToken = await this.refreshTokenService.issue(payload);
+            // TypeScript powinien poprawnie wywnioskować, że ta gałąź zwraca { accessToken: string, refreshToken: string }
             return { accessToken, refreshToken };
         } else {
+            // TypeScript powinien poprawnie wywnioskować, że ta gałąź zwraca { accessToken: string }
             return { accessToken };
         }
     }
@@ -142,3 +146,15 @@ export class AuthenticationService implements IAuthenticationService {
 type AuthenticationResultOptions = {
     includeRefreshToken?: boolean;
 };
+
+// Definiuje typ, który reprezentuje AuthenticationResult, gdy refreshToken jest gwarantowany.
+// Jest to typ przecięcia, który sprawia, że właściwość 'refreshToken' jest wymagana.
+type AuthenticationResultWithRequiredRefreshToken = AuthenticationResult & { refreshToken: string };
+
+// Definiuje typ warunkowy dla wartości zwracanej przez createAuthenticationResult.
+// Jeśli 'includeRefreshToken' jest true, zwraca AuthenticationResultWithRequiredRefreshToken.
+// W przeciwnym razie (jeśli false lub undefined), zwraca TokenUpgradeResult.
+type CreateAuthenticationResultReturnType<T extends AuthenticationResultOptions> =
+    T["includeRefreshToken"] extends true
+        ? AuthenticationResultWithRequiredRefreshToken
+        : TokenUpgradeResult;
