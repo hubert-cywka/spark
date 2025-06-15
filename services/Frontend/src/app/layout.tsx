@@ -10,9 +10,9 @@ import "../styles/normalize.scss";
 import styles from "./styles/Layout.module.scss";
 import "react-loading-skeleton/dist/skeleton.css";
 
-import { Provider } from "@/app/components/Provider/Provider";
+import { Provider } from "@/app/(open)/components/Provider/Provider";
 
-const montserrat = Montserrat({ subsets: ["latin"] });
+const font = Montserrat({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
     title: "Spark",
@@ -25,7 +25,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
 
     return (
         <html lang={locale}>
-            <body className={classNames(montserrat.className)} id="root">
+            <body className={classNames(font.className)} id="root">
                 <NextIntlClientProvider messages={messages}>
                     <Provider>
                         <div className={styles.layout}>{children}</div>

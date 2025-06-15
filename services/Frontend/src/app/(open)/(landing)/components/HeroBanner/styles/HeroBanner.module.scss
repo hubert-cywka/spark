@@ -30,13 +30,21 @@
 
         .actions {
             display: flex;
-            gap: tokens.$spacing-400;
+            flex-direction: column;
+            align-items: center;
+            
             margin-top: tokens.$spacing-300;
+            gap: tokens.$spacing-400;
+            
+            @media (min-width: tokens.$breakpoint-xs) {
+                flex-direction: row
+            }
 
             .actionButton {
                 border-radius: tokens.$radius-400;
-                padding-inline: tokens.$spacing-600;
+                font-weight: bold;
 
+                text-decoration: none;
                 background: transparent;
                 transition: 0.2s;
 
@@ -62,6 +70,7 @@
         .actionsCaption {
             color: tokens.$color-accent-text-200;
             font-size: tokens.$font-size-200;
+            text-align: center;
         }
     }
 }

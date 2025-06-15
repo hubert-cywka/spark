@@ -1,11 +1,9 @@
-"use client";
-
 import classNames from "clsx";
 
 import styles from "./styles/Navigation.module.scss";
 
+import { NavigationItem } from "@/app/(open)/components/Navigation/components/NavigationItem/NavigationItem.tsx";
 import { AppRoute } from "@/app/appRoute.ts";
-import { NavigationItem } from "@/app/components/Navigation/components/NavigationItem/NavigationItem.tsx";
 import { Logo } from "@/components/Logo";
 import { AccessGuard } from "@/features/auth/components/AccessGuard";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
@@ -28,11 +26,6 @@ export const Navigation = () => {
                         <NavigationItem href={AppRoute.DAILY} label={t("common.navigation.sections.dashboard.label")} />
                         <NavigationItem href={AppRoute.SETTINGS} label={t("common.navigation.sections.settings.label")} />
                     </AccessGuard>
-
-                    <NavigationItem
-                        href={AppRoute.TERMS_AND_CONDITIONS}
-                        label={t("common.navigation.sections.legal.termsAndConditions.label")}
-                    />
                 </div>
             </div>
         </nav>

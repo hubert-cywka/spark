@@ -3,7 +3,8 @@ import { PropsWithChildren } from "react";
 import styles from "./styles/Shell.module.scss";
 import "server-only";
 
-import { Navigation } from "@/app/components/Navigation/Navigation.tsx";
+import { Footer } from "@/app/(open)/components/Footer/Footer.tsx";
+import { Navigation } from "@/app/(open)/components/Navigation/Navigation.tsx";
 
 type ShellProps = PropsWithChildren<{ id?: string }>;
 
@@ -15,6 +16,8 @@ export const Shell = ({ children, id }: ShellProps) => {
             <div className={styles.contentContainer}>
                 <div className={styles.content}>{children}</div>
             </div>
+
+            <Footer />
         </div>
     );
 };

@@ -19,7 +19,7 @@ function Page() {
             <AuroraBackground />
             <HeroBanner />
 
-            <Container size="3">
+            <Container size="3" className={styles.innerContainer}>
                 <section className={styles.features}>
                     <FeatureCard icon={SparkleIcon} title="Lorem ipsum" caption="Lorem ipsum dolor sit amet lorem ipsum dolor sit amet." />
                     <FeatureCard icon={SparkleIcon} title="Lorem ipsum" caption="Lorem ipsum dolor sit amet lorem ipsum dolor sit amet." />

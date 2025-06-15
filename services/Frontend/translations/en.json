@@ -205,6 +205,9 @@
             }
         },
         "navigation": {
+            "footer": {
+                "madeBy": "Made by"
+            },
             "logoutButton": {
                 "label": "Logout"
             },

@@ -5,8 +5,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    
-    border-bottom: 3px solid tokens.$color-accent-text-200;
+    padding: tokens.$spacing-600;
     
     height: 300px;
     border-radius: tokens.$radius-400;
@@ -15,14 +14,32 @@
         linear-gradient(to right, rgba(tokens.$color-info-solid-300, 0.25) 0%, rgba(tokens.$color-info-solid-100, 0.1) 100%) fixed,
         linear-gradient(to left, rgba(tokens.$color-accent-solid-300, 0.75) 0%, rgba(tokens.$color-accent-background-300, 0.1) 100%) fixed,
         tokens.$color-accent-solid-300;
-
+    
     .header {
-        font-size: tokens.$font-size-1000;
+        text-align: center;
+        font-size: tokens.$font-size-800;
+        
+        @media (min-width: tokens.$breakpoint-xs) {
+            font-size: tokens.$font-size-900;
+        }
+
+        @media (min-width: tokens.$breakpoint-sm) {
+            font-size: tokens.$font-size-1000;
+        }
     }
 
     .caption {
-        font-size: tokens.$font-size-500;
+        font-size: tokens.$font-size-400;
         color: tokens.$color-accent-text-200;
+        text-align: center;
+
+        @media (min-width: tokens.$breakpoint-xs) {
+            font-size: tokens.$font-size-400;
+        }
+
+        @media (min-width: tokens.$breakpoint-sm) {
+            font-size: tokens.$font-size-500;
+        }
     }
 
     .link {

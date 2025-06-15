@@ -1,3 +1,4 @@
+import { PropsWithChildren } from "react";
 import classNames from "clsx";
 
 import styles from "./styles/GradientText.module.scss";
