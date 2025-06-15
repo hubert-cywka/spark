@@ -18,8 +18,7 @@ import { InvalidAccessTokenError } from "@/modules/identity/authentication/error
 import {
     type IAccessScopesService,
     AccessScopesServiceToken,
-}
-from "@/modules/identity/authentication/services/interfaces/IAccessScopes.service";
+} from "@/modules/identity/authentication/services/interfaces/IAccessScopes.service";
 import { type IAuthenticationService } from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
 import {
     type IRefreshTokenService,
@@ -155,7 +154,6 @@ type AuthenticationResultWithRequiredRefreshToken = AuthenticationResult & { ref
 // Definiuje typ warunkowy dla wartości zwracanej przez createAuthenticationResult.
 // Jeśli 'includeRefreshToken' jest true, zwraca AuthenticationResultWithRequiredRefreshToken.
 // W przeciwnym razie (jeśli false lub undefined), zwraca TokenUpgradeResult.
-type CreateAuthenticationResultReturnType<T extends AuthenticationResultOptions> =
-    T["includeRefreshToken"] extends true
-        ? AuthenticationResultWithRequiredRefreshToken
-        : TokenUpgradeResult;
+type CreateAuthenticationResultReturnType<T extends AuthenticationResultOptions> = T["includeRefreshToken"] extends true
+    ? AuthenticationResultWithRequiredRefreshToken
+    : TokenUpgradeResult;
