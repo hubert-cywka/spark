@@ -4,7 +4,7 @@ import "server-only";
 import { Container } from "@/components/Container";
 import { withSessionRestore } from "@/features/auth/hoc/withSessionRestore.tsx";
 
-// TODO
+// TODO: Content
 function Page() {
     return <Container className={styles.container}>WIP</Container>;
 }
