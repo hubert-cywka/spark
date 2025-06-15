@@ -28,7 +28,7 @@ import {
     type AccessTokenPayload,
     type AuthenticationResult,
     type Credentials,
-    TokenUpgradeResult,
+    type ExtendedAuthenticationResult,
 } from "@/modules/identity/authentication/types/Authentication";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
@@ -55,7 +55,7 @@ export class AuthenticationService implements IAuthenticationService {
         this.accessTokenExpirationTimeInSeconds = configService.getOrThrow<number>("auth.jwt.expirationTimeInSeconds");
     }
 
-    public async loginWithCredentials({ email, password }: Credentials): Promise<AuthenticationResult> {
+    public async loginWithCredentials({ email, password }: Credentials): Promise<ExtendedAuthenticationResult> {
         const account = await this.managedAccountService.findActivatedByCredentials(email, password);
         return await this.createAuthenticationResult(account, this.scopesService.getByAccountId(account.id), { includeRefreshToken: true });
     }
@@ -66,19 +66,19 @@ export class AuthenticationService implements IAuthenticationService {
         await this.managedAccountService.requestActivation(email, clientRedirectUrl);
     }
 
-    public async loginWithExternalIdentity(identity: ExternalIdentity): Promise<AuthenticationResult> {
+    public async loginWithExternalIdentity(identity: ExternalIdentity): Promise<ExtendedAuthenticationResult> {
         const account = await this.federatedAccountService.findByExternalIdentity(identity);
         return await this.createAuthenticationResult(account, this.scopesService.getByAccountId(account.id), { includeRefreshToken: true });
     }
 
     @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })
-    public async registerWithExternalIdentity(identity: ExternalIdentity): Promise<AuthenticationResult> {
+    public async registerWithExternalIdentity(identity: ExternalIdentity): Promise<ExtendedAuthenticationResult> {
         const account = await this.federatedAccountService.createAccountWithExternalIdentity(identity);
         await this.federatedAccountService.activateByInternalId(account.id);
         return await this.createAuthenticationResult(account, this.scopesService.getByAccountId(account.id), { includeRefreshToken: true });
     }
 
-    public async redeemRefreshToken(refreshToken: string): Promise<AuthenticationResult> {
+    public async redeemRefreshToken(refreshToken: string): Promise<ExtendedAuthenticationResult> {
         const { account } = await this.refreshTokenService.redeem(refreshToken);
         return await this.createAuthenticationResult(account, this.scopesService.getByAccountId(account.id), { includeRefreshToken: true });
     }
@@ -87,13 +87,12 @@ export class AuthenticationService implements IAuthenticationService {
         return this.refreshTokenService.invalidate(refreshToken);
     }
 
-    public async logoutAllSessions(ownerId: string): Promise<void> {
+    public async logoutAllSessions(token: string): Promise<void> {
+        const ownerId = await this.refreshTokenService.findOwner(token);
         return this.refreshTokenService.invalidateAllByOwnerId(ownerId);
     }
 
-    // TODO: Invalidate refresh token before issuing new one
-    // Or maybe don't issue one at all?
-    public async upgradeAccessToken(accessToken: string, scopes: AccessScope[]): Promise<TokenUpgradeResult> {
+    public async upgradeAccessToken(accessToken: string, scopes: AccessScope[]): Promise<AuthenticationResult> {
         const payload: AccessTokenPayload | null = this.jwtService.decode(accessToken);
 
         if (!payload) {
@@ -105,57 +104,19 @@ export class AuthenticationService implements IAuthenticationService {
         return this.createAuthenticationResult(payload.account, upgradedScopes, { includeRefreshToken: false });
     }
 
-    // Przeciążenie 1: Gdy includeRefreshToken jest true, zwraca FullAuthenticationResult
     private async createAuthenticationResult(
         account: Account,
         accessScopes: AccessScopes,
         options: { includeRefreshToken: true }
-    ): Promise<FullAuthenticationResult>;
+    ): Promise<ExtendedAuthenticationResult>;
 
-    // Przeciążenie 2: Gdy includeRefreshToken jest false lub undefined, zwraca TokenUpgradeResult
     private async createAuthenticationResult(
         account: Account,
         accessScopes: AccessScopes,
         options: { includeRefreshToken?: false }
-    ): Promise<TokenUpgradeResult>;
+    ): Promise<AuthenticationResult>;
 
-    // Implementacja funkcji (musi być kompatybilna ze wszystkimi przeciążeniami)
-    private async createAuthenticationResult(
-        account: Account,
-        accessScopes: AccessScopes,
-        options: AuthenticationResultOptions
-    ): Promise<FullAuthenticationResult | TokenUpgradeResult> {
-        const tokens = await this.generateTokens(account, accessScopes, options);
-
-        if (options.includeRefreshToken) {
-            // TypeScript wie, że tokens zawiera refreshToken
-            return { ...tokens, account, accessScopes };
-        } else {
-            // TypeScript wie, że tokens nie zawiera refreshToken
-            return { ...tokens, account, accessScopes };
-        }
-    }
-
-    // Przeciążenie 1: Gdy includeRefreshToken jest true
-    private async generateTokens(
-        account: Account,
-        accessScopes: AccessScopes,
-        options: { includeRefreshToken: true }
-    ): Promise<{ accessToken: string; refreshToken: string }>;
-
-    // Przeciążenie 2: Gdy includeRefreshToken jest false lub undefined
-    private async generateTokens(
-        account: Account,
-        accessScopes: AccessScopes,
-        options: { includeRefreshToken?: false }
-    ): Promise<{ accessToken: string }>;
-
-    // Implementacja funkcji (musi być kompatybilna ze wszystkimi przeciążeniami)
-    private async generateTokens(
-        account: Account,
-        accessScopes: AccessScopes,
-        options: AuthenticationResultOptions
-    ): Promise<{ accessToken: string; refreshToken?: string }> {
+    private async createAuthenticationResult(account: Account, accessScopes: AccessScopes, options: CreateAuthenticationResultOptions) {
         const payload: AccessTokenPayload = {
             account,
             accessScopes,
@@ -169,21 +130,13 @@ export class AuthenticationService implements IAuthenticationService {
 
         if (options.includeRefreshToken) {
             const refreshToken = await this.refreshTokenService.issue(payload);
-            return { accessToken, refreshToken };
+            return { accessToken, refreshToken, accessScopes, account };
         } else {
-            return { accessToken };
+            return { accessToken, accessScopes, account };
         }
     }
 }
 
-type AuthenticationResultOptions = {
+type CreateAuthenticationResultOptions = {
     includeRefreshToken?: boolean;
-};
-
-// Nowy typ, który gwarantuje obecność refreshToken
-type FullAuthenticationResult = {
-    accessToken: string;
-    refreshToken: string;
-    account: Account;
-    accessScopes: AccessScopes;
 };

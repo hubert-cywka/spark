@@ -66,6 +66,14 @@ export class RefreshTokenService implements IRefreshTokenService {
         return payload;
     }
 
+    public async findOwner(token: string): Promise<string> {
+        const payload = await this.jwtService.verifyAsync<AccessTokenPayload>(token, {
+            secret: this.signingSecret,
+        });
+
+        return payload.account.id;
+    }
+
     public async invalidate(token: string): Promise<void>;
     public async invalidate(token: RefreshTokenEntity): Promise<void>;
     public async invalidate(token: RefreshTokenEntity | string): Promise<void> {
