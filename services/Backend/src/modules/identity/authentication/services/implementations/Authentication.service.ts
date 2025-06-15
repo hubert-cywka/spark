@@ -136,11 +136,26 @@ export class AuthenticationService implements IAuthenticationService {
         }
     }
 
-    private async generateTokens<T extends AuthenticationResultOptions>(
+    // Przeciążenie 1: Gdy includeRefreshToken jest true
+    private async generateTokens(
         account: Account,
         accessScopes: AccessScopes,
-        options: T
-    ): Promise<T["includeRefreshToken"] extends true ? { accessToken: string; refreshToken: string } : { accessToken: string }> {
+        options: { includeRefreshToken: true }
+    ): Promise<{ accessToken: string; refreshToken: string }>;
+
+    // Przeciążenie 2: Gdy includeRefreshToken jest false lub undefined
+    private async generateTokens(
+        account: Account,
+        accessScopes: AccessScopes,
+        options: { includeRefreshToken?: false }
+    ): Promise<{ accessToken: string }>;
+
+    // Implementacja funkcji (musi być kompatybilna ze wszystkimi przeciążeniami)
+    private async generateTokens(
+        account: Account,
+        accessScopes: AccessScopes,
+        options: AuthenticationResultOptions
+    ): Promise<{ accessToken: string; refreshToken?: string }> {
         const payload: AccessTokenPayload = {
             account,
             accessScopes,
