@@ -1,0 +1,9 @@
+@use "src/styles/tokens";
+
+.container {
+    padding: tokens.$spacing-600;
+    
+    @media (min-width: tokens.$breakpoint-xs) {
+        padding: tokens.$spacing-800;
+    }
+}

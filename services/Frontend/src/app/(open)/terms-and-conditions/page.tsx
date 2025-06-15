@@ -26,7 +26,7 @@ function Page() {
     );
 }
 
-export default withSessionRestore(Page);
+export default withSessionRestore(Page, { inBackground: true });
 
 // TODO: Replace with real content
 const termsAndConditionsContent: TermsAndConditionsContentSection[] = [
