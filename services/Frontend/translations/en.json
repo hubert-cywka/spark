@@ -1228,5 +1228,30 @@
                 }
             }
         }
+    },
+    "landingPage": {
+        "features": {
+            "easyToStart": {
+                "title": "Easy to start",
+                "caption": "Sign up and create your first entry in 2 minutes. Spend just 5 minutes per-day on journaling."
+            },
+            "smartInsights": {
+                "title": "Smart insights",
+                "caption": "Spark will provide insights based on your journaling habits, so you can create entries of higher quality."
+            },
+            "openSource": {
+                "title": "Open-source",
+                "caption": "We have nothing to hide; Spark's code is publicly available. You can also host Spark on your own."
+            },
+            "privacyFirst": {
+                "title": "Privacy-first",
+                "caption": "Cookies are for authentication, not for tracking. We don't share your data with third parties. We never will."
+            }
+        },
+        "callToAction": {
+            "header": "Start journaling today",
+            "caption": "Your progress, insights, goals and pain-points in one place.",
+            "buttonLabel": "Explore Spark"
+        }
     }
 }

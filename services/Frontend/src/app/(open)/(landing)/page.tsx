@@ -1,5 +1,4 @@
-import classNames from "clsx";
-import { SparkleIcon } from "lucide-react";
+import { CookieIcon, GlobeIcon, SparkleIcon, TimerIcon } from "lucide-react";
 
 import styles from "./styles/Landing.module.scss";
 import "server-only";
@@ -9,11 +8,12 @@ import { CallToActionBanner } from "@/app/(open)/(landing)/components/CallToActi
 import { FeatureCard } from "@/app/(open)/(landing)/components/FeatureCard/FeatureCard.tsx";
 import { HeroBanner } from "@/app/(open)/(landing)/components/HeroBanner/HeroBanner.tsx";
 import { Container } from "@/components/Container";
-import { GradientText } from "@/components/GradientText/GradientText.tsx";
 import { withSessionRestore } from "@/features/auth/hoc/withSessionRestore.tsx";
+import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
-// TODO: Clean up + real content
 function Page() {
+    const t = useTranslate();
+
     return (
         <Container className={styles.landingPage} size="full-width">
             <AuroraBackground />
@@ -21,17 +21,26 @@ function Page() {
 
             <Container size="3" className={styles.innerContainer}>
                 <section className={styles.features}>
-                    <FeatureCard icon={SparkleIcon} title="Lorem ipsum" caption="Lorem ipsum dolor sit amet lorem ipsum dolor sit amet." />
-                    <FeatureCard icon={SparkleIcon} title="Lorem ipsum" caption="Lorem ipsum dolor sit amet lorem ipsum dolor sit amet." />
-                    <FeatureCard icon={SparkleIcon} title="Lorem ipsum" caption="Lorem ipsum dolor sit amet lorem ipsum dolor sit amet." />
-                    <FeatureCard icon={SparkleIcon} title="Lorem ipsum" caption="Lorem ipsum dolor sit amet lorem ipsum dolor sit amet." />
-                </section>
-
-                <section className={styles.section}>
-                    <h2 className={classNames(styles.header)}>
-                        Lorem <GradientText>ipsum dolor</GradientText> sit amet
-                    </h2>
-                    <p className={styles.caption}>Lorem ipsum dolor sit amet lorem ipsum dolor sit amet</p>
+                    <FeatureCard
+                        icon={TimerIcon}
+                        title={t("landingPage.features.easyToStart.title")}
+                        caption={t("landingPage.features.easyToStart.caption")}
+                    />
+                    <FeatureCard
+                        icon={SparkleIcon}
+                        title={t("landingPage.features.smartInsights.title")}
+                        caption={t("landingPage.features.smartInsights.caption")}
+                    />
+                    <FeatureCard
+                        icon={GlobeIcon}
+                        title={t("landingPage.features.openSource.title")}
+                        caption={t("landingPage.features.openSource.caption")}
+                    />
+                    <FeatureCard
+                        icon={CookieIcon}
+                        title={t("landingPage.features.privacyFirst.title")}
+                        caption={t("landingPage.features.privacyFirst.caption")}
+                    />
                 </section>
 
                 <CallToActionBanner />

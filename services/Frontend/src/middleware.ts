@@ -17,6 +17,8 @@ export const config = {
 export function middleware(request: NextRequest) {
     const requestHeaders = new Headers(request.headers);
 
+    // Hubert: Add nonce for dynamic routes. Static routes work fine, due to workaround with build-time replacement
+    // of inline scripts.
     const nonce = crypto.randomUUID();
     requestHeaders.set("x-nonce", nonce);
 
