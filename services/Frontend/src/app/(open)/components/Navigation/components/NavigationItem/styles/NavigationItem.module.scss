@@ -1,0 +1,14 @@
+@use "src/styles/tokens";
+
+a.navigationItem.navigationItem {
+    font-weight: bold;
+    font-size: tokens.$font-size-200;
+    color: tokens.$color-accent-text-200;
+    
+    white-space: nowrap;
+    text-decoration: none;
+
+    &:hover, &:focus, &:active {
+        color: tokens.$color-accent-text-300;
+    }
+}

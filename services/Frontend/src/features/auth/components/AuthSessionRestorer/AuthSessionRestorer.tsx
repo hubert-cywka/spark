@@ -6,7 +6,11 @@ import { LoadingOverlay } from "@/components/LoadingOverlay/LoadingOverlay";
 import { useAuthSession, useRefreshSession, useRefreshSessionEvents } from "@/features/auth/hooks";
 import { logger } from "@/lib/logger/logger";
 
-export const AuthSessionRestorer = ({ children }: PropsWithChildren) => {
+type AuthSessionRestorerProps = PropsWithChildren<{
+    inBackground?: boolean;
+}>;
+
+export const AuthSessionRestorer = ({ children, inBackground }: AuthSessionRestorerProps) => {
     const { onRefreshSuccess } = useRefreshSessionEvents();
     const { mutateAsync: refreshSession, isError, isSuccess } = useRefreshSession();
     const accessToken = useAuthSession((state) => state.accessToken);
@@ -19,11 +23,14 @@ export const AuthSessionRestorer = ({ children }: PropsWithChildren) => {
     const restoreSession = useCallback(async (): Promise<void> => {
         try {
             await reAuthenticate();
-            onRefreshSuccess();
+
+            if (!inBackground) {
+                onRefreshSuccess();
+            }
         } catch (err) {
             logger.warn({ err, msg: "Failed to restore session." });
         }
-    }, [onRefreshSuccess, reAuthenticate]);
+    }, [inBackground, onRefreshSuccess, reAuthenticate]);
 
     useEffect(() => {
         if (accessToken) {
@@ -33,7 +40,7 @@ export const AuthSessionRestorer = ({ children }: PropsWithChildren) => {
         void restoreSession();
     }, [accessToken, restoreSession]);
 
-    if (!accessToken && !isError && !isSuccess) {
+    if (!accessToken && !isError && !isSuccess && !inBackground) {
         return <LoadingOverlay />;
     }
 

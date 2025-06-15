@@ -205,6 +205,9 @@
             }
         },
         "navigation": {
+            "footer": {
+                "madeBy": "Made by"
+            },
             "logoutButton": {
                 "label": "Logout"
             },
@@ -215,11 +218,14 @@
                 }
             },
             "sections": {
-                "main": {
-                    "label": "Main",
-                    "home": {
-                        "label": "Home"
+                "legal": {
+                    "label": "Legal",
+                    "termsAndConditions": {
+                        "label": "Terms and Conditions"
                     }
+                },
+                "dashboard": {
+                    "label": "Dashboard"
                 },
                 "journal": {
                     "label": "My journey",

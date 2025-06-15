@@ -1,0 +1,25 @@
+@use "src/styles/tokens";
+
+.card.card.card  {
+    display: flex;
+    flex-direction: column;
+    padding-block: tokens.$spacing-800;
+    
+    .header {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: tokens.$spacing-300;
+
+        color: tokens.$color-accent-text-200;
+
+        .title {
+            font-size: tokens.$font-size-900;
+        }
+    }
+
+    .caption {
+        color: tokens.$color-accent-text-300;
+        font-size: tokens.$font-size-300;
+    }
+}

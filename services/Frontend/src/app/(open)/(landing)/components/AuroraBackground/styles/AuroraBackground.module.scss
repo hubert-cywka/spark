@@ -1,0 +1,49 @@
+@use "src/styles/tokens";
+
+.wrapper {
+    --base-aurora-height: 500px;
+    --top-aurora-height-multiplier: 1.5;
+    
+    position: absolute;
+    z-index: -1;
+
+    width: 100%;
+    max-width: tokens.$breakpoint-xl;
+    height: calc((1 + #{var(--top-aurora-height-multiplier)}) * #{var(--base-aurora-height)});
+    
+    animation: 5s ease-out 0s 1 delayedFadeIn forwards;
+    mask-mode: alpha;
+    mask-image: linear-gradient(
+            to right,
+            transparent 2%,
+            black 40%,
+            black 60%,
+            transparent 98%
+    );
+    
+    .aurora {
+        position: absolute;
+
+        &.top {
+            height: calc(#{var(--base-aurora-height)} * #{var(--top-aurora-height-multiplier)});
+            transform: translateY(calc(#{var(--base-aurora-height)} * (1 - #{var(--top-aurora-height-multiplier)}))) scale(-1, -1);
+        }
+
+        &.bottom {
+            height: var( --base-aurora-height);
+            transform: translateY(var(--base-aurora-height)) scale(-1, 1);
+        }
+    }
+}
+
+@keyframes delayedFadeIn {
+    0% {
+        opacity: 0;
+    }
+    25% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
