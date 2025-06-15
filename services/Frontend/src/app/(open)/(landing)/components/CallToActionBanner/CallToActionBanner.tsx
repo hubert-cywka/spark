@@ -10,8 +10,8 @@ import { Button } from "@/components/Button";
 export const CallToActionBanner = () => {
     return (
         <section className={styles.container}>
-            <h2 className={classNames(styles.header)}>Lorem ipsum dolor sit amet</h2>
-            <p className={styles.caption}>Lorem ipsum dolor sit amet lorem ipsum dolor sit amet</p>
+            <h2 className={classNames(styles.header)}>Start journaling today</h2>
+            <p className={styles.caption}>Your progress, insights, goals and pain-points in one place.</p>
 
             <Anchor href={AppRoute.LOGIN} className={styles.link}>
                 <Button size="3" className={styles.button}>
