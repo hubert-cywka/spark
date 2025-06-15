@@ -37,8 +37,8 @@ function Page() {
             <SectionSeparator />
 
             <Section>
-                <SectionTitle>{t("settings.profile.logoutFromAllSessions.header")}</SectionTitle>
-                <SectionDescription>{t("settings.profile.logoutFromAllSessions.description")}</SectionDescription>
+                <SectionTitle>{t("settings.profile.logoutFromAllDevices.header")}</SectionTitle>
+                <SectionDescription>{t("settings.profile.logoutFromAllDevices.description")}</SectionDescription>
                 <LogoutButton logoutFromAllSessions variant="primary" />
             </Section>
 
