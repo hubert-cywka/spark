@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { Throttle } from "@nestjs/throttler";
 import { type Response } from "express";
 
+import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
 import { Cookie } from "@/common/decorators/Cookie.decorator";
 import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
@@ -11,6 +12,7 @@ import { whenError } from "@/common/errors/whenError";
 import { type IDomainVerifierService, DomainVerifierServiceToken } from "@/common/services/interfaces/IDomainVerifier.service";
 import { REFRESH_TOKEN_COOKIE_NAME } from "@/modules/identity/authentication/constants";
 import { LoginDto } from "@/modules/identity/authentication/dto/incoming/Login.dto";
+import { LogoutDto } from "@/modules/identity/authentication/dto/incoming/Logout.dto";
 import { RegisterWithCredentialsDto } from "@/modules/identity/authentication/dto/incoming/RegisterWithCredentials.dto";
 import { UntrustedDomainError } from "@/modules/identity/authentication/errors/UntrustedDomain.error";
 import { type IAuthenticationMapper, AuthenticationMapperToken } from "@/modules/identity/authentication/mappers/IAuthentication.mapper";
@@ -23,6 +25,7 @@ import {
     RefreshTokenCookieStrategyToken,
 } from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
 import { IDENTITY_MODULE_DEFAULT_RATE_LIMITING, IDENTITY_MODULE_STRICT_RATE_LIMITING } from "@/modules/identity/shared/constants";
+import type { User } from "@/types/User";
 
 @Throttle(IDENTITY_MODULE_DEFAULT_RATE_LIMITING)
 @Controller("auth")
@@ -101,12 +104,22 @@ export class AuthenticationController {
 
     @HttpCode(HttpStatus.OK)
     @Post("logout")
-    async logout(@Res() response: Response, @Cookie(REFRESH_TOKEN_COOKIE_NAME) token: string) {
+    async logout(
+        @Res() response: Response,
+        @Body() dto: LogoutDto,
+        @Cookie(REFRESH_TOKEN_COOKIE_NAME) token: string,
+        @AuthenticatedUserContext() user: User
+    ) {
         if (!token) {
             throw new UnauthorizedException();
         }
 
-        await this.authService.logout(token);
+        if (dto?.allSessions) {
+            await this.authService.logoutAllSessions(user.id);
+        } else {
+            await this.authService.logoutSingleSession(token);
+        }
+
         const cookieOptions = {
             ...this.refreshTokenCookieStrategy.getCookieOptions(this.refreshTokenCookieMaxAge),
             maxAge: 0,

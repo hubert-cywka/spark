@@ -629,6 +629,10 @@
                 "header": "Account termination",
                 "description": "If you want to close your account and remove your data, press the button below. You will be prompted to authorize the request, and after that, you'll be logged out. This action is irreversible."
             },
+            "logoutFromAllSessions": {
+                "header": "Logout from all devices",
+                "description":  "You will be logged out from all devices (including this one). Sessions that are still active on other devices may take up to few minutes to be invalidated."
+            },
             "2fa": {
                 "header": "Two-factor authentication",
                 "description": "Two-factor authentication is required and enabled by default; codes are sent to your email you've provided during registration. If you wish, you can enable another 2FA option, such as authenticator app (e.g. Google Authenticator). At least one 2FA option needs to be enabled; if you wish you can enable all options."

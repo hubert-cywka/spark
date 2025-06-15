@@ -6,6 +6,7 @@ import { SectionSeparator } from "@/app/(dashboard)/settings/components/Section/
 import { AppRoute } from "@/app/appRoute";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Container } from "@/components/Container";
+import { LogoutButton } from "@/features/auth/components/LogoutButton";
 import { TwoFactorAuthenticationConfiguration } from "@/features/auth/components/TwoFactorAuthenticationConfiguration";
 import { onlyAsAuthenticated } from "@/features/auth/hoc/withAuthorization";
 import { withSessionRestore } from "@/features/auth/hoc/withSessionRestore";
@@ -31,6 +32,14 @@ function Page() {
                 <SectionTitle>{t("settings.profile.2fa.header")}</SectionTitle>
                 <SectionDescription>{t("settings.profile.2fa.description")}</SectionDescription>
                 <TwoFactorAuthenticationConfiguration />
+            </Section>
+
+            <SectionSeparator />
+
+            <Section>
+                <SectionTitle>{t("settings.profile.logoutFromAllSessions.header")}</SectionTitle>
+                <SectionDescription>{t("settings.profile.logoutFromAllSessions.description")}</SectionDescription>
+                <LogoutButton logoutFromAllSessions variant="primary" />
             </Section>
 
             <SectionSeparator />

@@ -41,15 +41,15 @@
     }
 
     &[data-variant="danger"] {
-        border: 1px solid tokens.$color-danger-solid-300;
-        color: tokens.$color-danger-text-200;
-        background: tokens.$color-danger-surface-300;
+        border: 1px solid tokens.$color-danger-surface-300;
+        color: tokens.$color-danger-text-100;
+        background: tokens.$color-danger-surface-200;
     }
 
     &[data-variant="confirm"] {
-        border: 1px solid tokens.$color-success-solid-300;
-        color: tokens.$color-success-text-300;
-        background: tokens.$color-success-surface-300;
+        border: 1px solid tokens.$color-success-surface-100;
+        color: tokens.$color-success-text-100;
+        background: tokens.$color-success-surface-200;
     }
 
     &[data-variant="subtle"] {

@@ -1,5 +1,6 @@
 import { AuthenticationResponseDto } from "@/features/auth/api/authentication/dto/AuthenticationResponseDto";
 import { LoginRequestDto } from "@/features/auth/api/authentication/dto/LoginRequestDto";
+import { LogoutRequestDto } from "@/features/auth/api/authentication/dto/LogoutRequestDto.ts";
 import { RegisterRequestDto } from "@/features/auth/api/authentication/dto/RegisterRequestDto";
 import { UpgradeAccessTokenDto } from "@/features/auth/api/authentication/dto/UpgradeAccessTokenDto.ts";
 import { apiClient } from "@/lib/apiClient/apiClient";
@@ -19,8 +20,8 @@ export class AuthenticationService {
         await apiClient.post("/auth/register", payload);
     }
 
-    public static async logout() {
-        await apiClient.post("/auth/logout");
+    public static async logout(payload: LogoutRequestDto) {
+        await apiClient.post("/auth/logout", payload);
     }
 
     public static async upgradeSession(payload: UpgradeAccessTokenDto): Promise<AuthenticationResponseDto> {

@@ -82,8 +82,12 @@ export class AuthenticationService implements IAuthenticationService {
         return await this.createAuthenticationResult(account, this.scopesService.getByAccountId(account.id));
     }
 
-    public async logout(refreshToken: string): Promise<void> {
+    public async logoutSingleSession(refreshToken: string): Promise<void> {
         return this.refreshTokenService.invalidate(refreshToken);
+    }
+
+    public async logoutAllSessions(ownerId: string): Promise<void> {
+        return this.refreshTokenService.invalidateAllByOwnerId(ownerId);
     }
 
     // TODO: Invalidate refresh token before issuing new one
