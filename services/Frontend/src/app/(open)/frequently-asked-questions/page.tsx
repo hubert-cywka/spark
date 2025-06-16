@@ -1,11 +1,13 @@
+import { useTranslations } from "next-intl";
+
+import { FAQItem } from "./components/FAQItem";
+import { FAQSection } from "./components/FAQSection";
+
 import styles from "./styles/FAQPage.module.scss";
 import "server-only";
 
 import { Container } from "@/components/Container";
 import { withSessionRestore } from "@/features/auth/hoc/withSessionRestore.tsx";
-import { useTranslations } from "next-intl";
-import { FAQSection } from "./components/FAQSection";
-import { FAQItem } from "./components/FAQItem";
 
 function Page() {
     const t = useTranslations("faq");

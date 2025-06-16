@@ -1,4 +1,5 @@
 import { PropsWithChildren } from "react";
+
 import styles from "../styles/FAQPage.module.scss";
 
 type FAQSectionProps = PropsWithChildren<{
