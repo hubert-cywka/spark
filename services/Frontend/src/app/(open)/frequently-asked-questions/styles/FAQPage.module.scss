@@ -28,9 +28,9 @@
 .faqItem {
     margin-bottom: tokens.$spacing-300;
     background-color: var(--color-surface-100);
-    padding: var(--spacing-4);
-    border-radius: var(--border-radius-2);
-    box-shadow: var(--shadow-1);
+    padding: tokens.$spacing-400; /* Zmieniono z var(--spacing-4) */
+    border-radius: tokens.$radius-200; /* Zmieniono z var(--border-radius-2) */
+    box-shadow: tokens.$shadow-100; /* Zmieniono z var(--shadow-1) */
 
     &:last-child {
         margin-bottom: 0;
