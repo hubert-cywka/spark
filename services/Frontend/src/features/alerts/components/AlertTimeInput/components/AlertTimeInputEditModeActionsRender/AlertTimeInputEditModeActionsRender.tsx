@@ -2,15 +2,13 @@ import { Check, X } from "lucide-react";
 
 import { IconButton } from "@/components/IconButton";
 import { PassiveTextInputEditModeActionsRenderProps } from "@/components/PassiveTextInput";
-import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
 export const AlertTimeInputEditModeActionsRender = ({
     onCancelEditMode,
     onSaveChanges,
     hasValueChanged,
+    translationFn,
 }: PassiveTextInputEditModeActionsRenderProps) => {
-    const t = useTranslate();
-
     return (
         <>
             <IconButton
@@ -18,8 +16,8 @@ export const AlertTimeInputEditModeActionsRender = ({
                 size="1"
                 onPress={onCancelEditMode}
                 iconSlot={X}
-                tooltip={t("alerts.reminders.cancelChangesButton.label")}
-                aria-label={t("alerts.reminders.cancelChangesButton.label")}
+                tooltip={translationFn("alerts.reminders.cancelChangesButton.label")}
+                aria-label={translationFn("alerts.reminders.cancelChangesButton.label")}
             />
             <IconButton
                 size="1"
@@ -27,8 +25,8 @@ export const AlertTimeInputEditModeActionsRender = ({
                 onPress={onSaveChanges}
                 isDisabled={!hasValueChanged}
                 iconSlot={Check}
-                tooltip={t("alerts.reminders.confirmChangesButton.label")}
-                aria-label={t("alerts.reminders.confirmChangesButton.label")}
+                tooltip={translationFn("alerts.reminders.confirmChangesButton.label")}
+                aria-label={translationFn("alerts.reminders.confirmChangesButton.label")}
             />
         </>
     );

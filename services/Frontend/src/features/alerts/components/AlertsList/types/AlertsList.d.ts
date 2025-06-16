@@ -1,4 +1,5 @@
 import { Alert } from "@/features/alerts/types/Alert";
+import { TranslationFn } from "@/lib/i18n/i18n";
 import { Day } from "@/types/Day.ts";
 
 export type AddAlertRenderProps = {
@@ -7,7 +8,7 @@ export type AddAlertRenderProps = {
 
 export type AlertRenderProps = {
     alert: Alert;
-    translateFn: (key: string) => string;
+    translateFn: TranslationFn;
     onUpdateStatus: (value: boolean) => void;
     onUpdateTime: (value: string) => void;
     onUpdateDays: (value: Day[]) => void;

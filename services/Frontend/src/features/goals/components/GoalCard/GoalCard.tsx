@@ -1,3 +1,5 @@
+"use client";
+
 import { useRef } from "react";
 import classNames from "clsx";
 import { Target } from "lucide-react";

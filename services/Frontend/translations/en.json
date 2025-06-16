@@ -1248,6 +1248,24 @@
                 "caption": "Cookies are for authentication, not for tracking. We don't share your data with third parties. We never will."
             }
         },
+        "demo": {
+            "goals": {
+                "header": "Set and achieve goals",
+                "caption": "Each entry will bring you closer to achieving your goal.",
+                "mocks": {
+                    "1": {
+                        "name": "Ship amazing features"
+                    },
+                    "2": {
+                        "name": "Finish engineering courses"
+                    }
+                }
+            },
+            "alerts": {
+                "header": "Maintain consistency",
+                "caption": "Forgot about adding new entries? No worries, we will remind you."
+            }
+        },
         "callToAction": {
             "header": "Start journaling today",
             "caption": "Your progress, insights, goals and pain-points in one place.",

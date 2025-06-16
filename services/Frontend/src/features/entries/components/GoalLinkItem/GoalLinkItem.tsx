@@ -14,7 +14,7 @@ type GoalLinkItemProps = {
 
 export const GoalLinkItem = ({ linked, onClick, name }: GoalLinkItemProps) => {
     const t = useTranslate();
-    const label = linked ? t("goals.list.item.unlinkButton.label") : t("goals.list.item.linkButton.label");
+    const label = linked ? t("entries.goals.list.item.unlinkButton.label") : t("entries.goals.list.item.linkButton.label");
 
     return (
         <li className={styles.goal}>

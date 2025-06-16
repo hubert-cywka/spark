@@ -23,8 +23,8 @@ export const DayHeader = ({ daily, onUpdateDate }: DayHeaderProps) => {
             value={mapToDateValue(daily.date)}
             onChange={(value) => onUpdateDate(daily.id, mapToISODate(value))}
             onRenderEditModeActions={DayHeaderEditModeActionsRender}
-            onRenderPassiveModeActions={({ onStartEditMode }) => (
-                <DayHeaderPassiveModeActionsRender onStartEditMode={onStartEditMode} daily={daily} />
+            onRenderPassiveModeActions={({ onStartEditMode, translationFn }) => (
+                <DayHeaderPassiveModeActionsRender onStartEditMode={onStartEditMode} daily={daily} translationFn={translationFn} />
             )}
         >
             {(props) => (
