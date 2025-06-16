@@ -1,0 +1,40 @@
+@use "src/styles/tokens";
+
+.tableOfContents {
+    margin-bottom: tokens.$spacing-600;
+    padding: tokens.$spacing-400;
+    background-color: var(--color-surface-100);
+    border-radius: tokens.$radius-200;
+    box-shadow: tokens.$shadow-100;
+}
+
+.header {
+    font-size: var(--font-size-h3);
+    margin-bottom: tokens.$spacing-300;
+    color: var(--color-text-100);
+}
+
+.list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.listItem {
+    margin-bottom: tokens.$spacing-200;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.link {
+    color: var(--color-text-200);
+    text-decoration: none;
+    font-size: var(--font-size-body-1);
+
+    &:hover {
+        color: var(--color-accent-solid-200);
+        text-decoration: underline;
+    }
+}
