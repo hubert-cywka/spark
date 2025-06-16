@@ -136,7 +136,6 @@
             "refresh": {
                 "errors": {
                     "unauthorized": "We couldn't re-authenticate you."
-                "unauthorized": "We couldn't re-authenticate you."
                 }
             },
             "logout": {
