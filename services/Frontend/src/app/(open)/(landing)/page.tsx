@@ -1,3 +1,4 @@
+import classNames from "clsx";
 import { CookieIcon, GlobeIcon, SparkleIcon, TimerIcon } from "lucide-react";
 
 import styles from "./styles/Landing.module.scss";
@@ -5,6 +6,8 @@ import "server-only";
 
 import { AuroraBackground } from "@/app/(open)/(landing)/components/AuroraBackground/AuroraBackground.tsx";
 import { CallToActionBanner } from "@/app/(open)/(landing)/components/CallToActionBanner/CallToActionBanner.tsx";
+import { DemoGoals } from "@/app/(open)/(landing)/components/DemoGoals/DemoGoals.tsx";
+import { DemoReminderCard } from "@/app/(open)/(landing)/components/DemoReminderCard/DemoReminderCard.tsx";
 import { FeatureCard } from "@/app/(open)/(landing)/components/FeatureCard/FeatureCard.tsx";
 import { HeroBanner } from "@/app/(open)/(landing)/components/HeroBanner/HeroBanner.tsx";
 import { Container } from "@/components/Container";
@@ -41,6 +44,18 @@ function Page() {
                         title={t("landingPage.features.privacyFirst.title")}
                         caption={t("landingPage.features.privacyFirst.caption")}
                     />
+                </section>
+
+                <section className={styles.section}>
+                    <h2 className={classNames(styles.header)}>{t("landingPage.demo.goals.header")}</h2>
+                    <p className={styles.caption}>{t("landingPage.demo.goals.caption")}</p>
+                    <DemoGoals />
+                </section>
+
+                <section className={styles.section}>
+                    <h2 className={classNames(styles.header)}>{t("landingPage.demo.alerts.header")}</h2>
+                    <p className={styles.caption}>{t("landingPage.demo.alerts.caption")}</p>
+                    <DemoReminderCard />
                 </section>
 
                 <CallToActionBanner />

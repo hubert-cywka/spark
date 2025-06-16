@@ -12,6 +12,7 @@ import styles from "./styles/PassiveTextInput.module.scss";
 
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
+import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
 const SEGMENT_SELECTOR = '[role="spinbutton"]';
 
@@ -30,6 +31,7 @@ export function PassiveTextInput<T extends object>({
     onRenderEditModeActions,
     onRenderPassiveModeActions,
 }: PassiveTextInputProps<T>) {
+    const t = useTranslate();
     const [internalValue, setInternalValue] = useState<T | null>(value);
     const hasValueChanged = !!internalValue && value?.toString() !== internalValue.toString();
 
@@ -98,9 +100,11 @@ export function PassiveTextInput<T extends object>({
                           onCancelEditMode: cancelEditMode,
                           onSaveChanges: confirmValueUpdate,
                           hasValueChanged,
+                          translationFn: t,
                       })
                     : onRenderPassiveModeActions({
                           onStartEditMode: startEditMode,
+                          translationFn: t,
                       })}
             </div>
         </div>
