@@ -1,15 +1,14 @@
-import styles from "./styles/TermsAndConditionsSection.module.scss";
+import styles from "./styles/DocumentationSection.module.scss";
 
-import { TermsAndConditionsSubSection } from "@/app/(open)/terms-and-conditions/components/TermsAndConditionsSubSection/TermsAndConditionsSubSection.tsx";
-import { TermsAndConditionsContentSection } from "@/app/(open)/terms-and-conditions/types/TermsAndConditions";
+import { DocumentationContentSection, DocumentationSubsection } from "@/features/documentation";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
-type TermsAndConditionsSectionProps = {
-    section: TermsAndConditionsContentSection;
+type DocumentationSectionProps = {
+    section: DocumentationContentSection;
     sectionIndex: number;
 };
 
-export const TermsAndConditionsSection = ({ section, sectionIndex }: TermsAndConditionsSectionProps) => {
+export const DocumentationSection = ({ section, sectionIndex }: DocumentationSectionProps) => {
     const t = useTranslate();
 
     return (
@@ -27,7 +26,7 @@ export const TermsAndConditionsSection = ({ section, sectionIndex }: TermsAndCon
             {!!section.subsections?.length && (
                 <>
                     {section.subsections.map((subsection) => (
-                        <TermsAndConditionsSubSection key={subsection.id} subsection={subsection} />
+                        <DocumentationSubsection key={subsection.id} subsection={subsection} />
                     ))}
                 </>
             )}

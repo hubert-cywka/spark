@@ -1,57 +1,9 @@
 @use "src/styles/tokens";
 
 .container {
-    padding-top: tokens.$spacing-600;
-    padding-bottom: tokens.$spacing-600;
-}
-
-.pageTitle {
-    font-size: var(--font-size-h1);
-    margin-bottom: tokens.$spacing-600;
-    text-align: center;
-}
-
-.faqSection {
-    margin-bottom: tokens.$spacing-600;
-
-    &:last-child {
-        margin-bottom: 0;
-    }
-}
-
-.faqSectionTitle {
-    font-size: var(--font-size-h2);
-    margin-bottom: tokens.$spacing-300;
-    color: var(--color-text-100);
-}
-
-.faqItem {
-    margin-bottom: tokens.$spacing-300;
-    background-color: var(--color-surface-100);
-    padding: tokens.$spacing-400; /* Zmieniono z var(--spacing-4) */
-    border-radius: tokens.$radius-200; /* Zmieniono z var(--border-radius-2) */
-    box-shadow: tokens.$shadow-100; /* Zmieniono z var(--shadow-1) */
-
-    &:last-child {
-        margin-bottom: 0;
-    }
-}
-
-.faqQuestion {
-    font-size: var(--font-size-h3);
-    margin-bottom: tokens.$spacing-100;
-    color: var(--color-text-200);
-}
-
-.faqAnswer {
-    font-size: var(--font-size-body-1);
-    color: var(--color-text-300);
-
-    p {
-        margin-bottom: tokens.$spacing-100;
-
-        &:last-child {
-            margin-bottom: 0;
-        }
+    padding: tokens.$spacing-600;
+    
+    @media (min-width: tokens.$breakpoint-xs) {
+        padding: tokens.$spacing-800;
     }
 }

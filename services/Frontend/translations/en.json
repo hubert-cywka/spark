@@ -218,10 +218,13 @@
                 }
             },
             "sections": {
-                "legal": {
-                    "label": "Legal",
+                "docs": {
+                    "label": "Documentation",
                     "termsAndConditions": {
                         "label": "Terms and Conditions"
+                    },
+                    "faq": {
+                        "label": "FAQ"
                     }
                 },
                 "dashboard": {
@@ -538,68 +541,68 @@
                     "nov": "Nov",
                     "dec": "Dec"
                 }
+            }
+        },
+        "day": {
+            "date": {
+                "label": "Daily's date"
             },
-            "day": {
-                "date": {
-                    "label": "Daily's date"
+            "actions": {
+                "save": {
+                    "label": "Confirm changes"
                 },
-                "actions": {
-                    "save": {
-                        "label": "Confirm changes"
-                    },
+                "cancel": {
+                    "label": "Cancel changes"
+                },
+                "edit": {
+                    "label": "Edit daily"
+                },
+                "delete": {
+                    "label": "Remove daily"
+                }
+            }
+        },
+        "create": {
+            "notifications": {
+                "error": {
+                    "title": "Couldn't create daily"
+                },
+                "success": {
+                    "title": "Daily has been created",
+                    "body": "It will be moved to correct timeframe once you leave this page."
+                }
+            }
+        },
+        "updateDate": {
+            "notifications": {
+                "error": {
+                    "title": "Couldn't update daily's date"
+                },
+                "success": {
+                    "title": "Daily's date has been updated",
+                    "body": "It will be moved to correct timeframe once you leave this page."
+                }
+            }
+        },
+        "delete": {
+            "modal": {
+                "header": "Delete daily",
+                "caption": "Are you sure that you want to delete {date} daily? All it's entries will be deleted as well.",
+                "buttons": {
                     "cancel": {
-                        "label": "Cancel changes"
+                        "label": "Cancel"
                     },
-                    "edit": {
-                        "label": "Edit daily"
-                    },
-                    "delete": {
-                        "label": "Remove daily"
+                    "confirm": {
+                        "label": "Delete anyway"
                     }
                 }
             },
-            "create": {
-                "notifications": {
-                    "error": {
-                        "title": "Couldn't create daily"
-                    },
-                    "success": {
-                        "title": "Daily has been created",
-                        "body": "It will be moved to correct timeframe once you leave this page."
-                    }
-                }
-            },
-            "updateDate": {
-                "notifications": {
-                    "error": {
-                        "title": "Couldn't update daily's date"
-                    },
-                    "success": {
-                        "title": "Daily's date has been updated",
-                        "body": "It will be moved to correct timeframe once you leave this page."
-                    }
-                }
-            },
-            "delete": {
-                "modal": {
-                    "header": "Delete daily",
-                    "caption": "Are you sure that you want to delete {date} daily? All it's entries will be deleted as well.",
-                    "buttons": {
-                        "cancel": {
-                            "label": "Cancel"
-                        },
-                        "confirm": {
-                            "label": "Delete anyway"
-                        }
-                    }
+            "notifications": {
+                "error": {
+                    "title": "Couldn't delete daily"
                 },
-                "notifications": {
-                    "error": {
-                        "title": "Couldn't delete daily"
-                    },
-                    "success": {
-                        "title": "Daily and it's entries have been deleted"
-                    }
+                "success": {
+                    "title": "Daily and it's entries have been deleted"
                 }
             }
         }
@@ -1002,7 +1005,6 @@
                 "email": {
                     "errors": {
                         "invalid": "Email has invalid format.",
-                    "invalid": "Email has invalid format.",
                         "required": "Email is required."
                     },
                     "label": "Email"

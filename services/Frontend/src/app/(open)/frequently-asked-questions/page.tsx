@@ -1,16 +1,18 @@
-import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
-
-import { FAQItem } from "./components/FAQItem";
-import { FAQSection } from "./components/FAQSection";
-import { FAQTableOfContents } from "./components/FAQTableOfContents/FAQTableOfContents";
-import { FAQContentSection } from "./types/FAQ";
+import { Metadata } from "next";
 
 import styles from "./styles/FAQPage.module.scss";
 import "server-only";
 
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Container } from "@/components/Container";
 import { withSessionRestore } from "@/features/auth/hoc/withSessionRestore.tsx";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { DocumentationContentSection, DocumentationSection, DocumentationTableOfContents } from "@/features/documentation";
+import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
+
+export const metadata: Metadata = {
+    title: "Spark | FAQ",
+    description: "",
+};
 
 function Page() {
     const t = useTranslate();
@@ -18,13 +20,10 @@ function Page() {
     return (
         <Container className={styles.container}>
             <Breadcrumbs items={[{ label: t("faq.title") }]} />
-            <h1 className={styles.pageTitle}>{t("faq.title")}</h1>
-
-            <FAQTableOfContents content={faqContent} />
-
+            <DocumentationTableOfContents content={faqContent} />
             <main>
                 {faqContent.map((section, sectionIndex) => (
-                    <FAQSection key={section.id} section={section} sectionIndex={sectionIndex} />
+                    <DocumentationSection key={section.id} section={section} sectionIndex={sectionIndex} />
                 ))}
             </main>
         </Container>
@@ -33,58 +32,107 @@ function Page() {
 
 export default withSessionRestore(Page, { inBackground: true });
 
-const faqContent: FAQContentSection[] = [
+// TODO: Replace with real content
+const faqContent: DocumentationContentSection[] = [
     {
         id: "general-questions",
         titleTranslationKey: "faq.sections.general.title",
-        questions: [
+        paragraphs: [],
+        subsections: [
             {
-                questionTranslationKey: "faq.sections.general.questions.q1.question",
-                answerTranslationKey: "faq.sections.general.questions.q1.answer",
+                id: "what-is-spark",
+                titleTranslationKey: "faq.sections.general.questions.q1.question",
+                paragraphs: [
+                    {
+                        translationKey: "faq.sections.general.questions.q1.answer",
+                    },
+                ],
             },
             {
-                questionTranslationKey: "faq.sections.general.questions.q2.question",
-                answerTranslationKey: "faq.sections.general.questions.q2.answer",
+                id: "is-spark-free",
+                titleTranslationKey: "faq.sections.general.questions.q2.question",
+                paragraphs: [
+                    {
+                        translationKey: "faq.sections.general.questions.q2.answer",
+                    },
+                ],
             },
             {
-                questionTranslationKey: "faq.sections.general.questions.q3.question",
-                answerTranslationKey: "faq.sections.general.questions.q3.answer",
+                id: "multiple-devices",
+                titleTranslationKey: "faq.sections.general.questions.q3.question",
+                paragraphs: [
+                    {
+                        translationKey: "faq.sections.general.questions.q3.answer",
+                    },
+                ],
             },
         ],
     },
     {
         id: "account-management",
         titleTranslationKey: "faq.sections.account.title",
-        questions: [
+        paragraphs: [],
+        subsections: [
             {
-                questionTranslationKey: "faq.sections.account.questions.q1.question",
-                answerTranslationKey: "faq.sections.account.questions.q1.answer",
+                id: "how-to-create-account",
+                titleTranslationKey: "faq.sections.account.questions.q1.question",
+                paragraphs: [
+                    {
+                        translationKey: "faq.sections.account.questions.q1.answer",
+                    },
+                ],
             },
             {
-                questionTranslationKey: "faq.sections.account.questions.q2.question",
-                answerTranslationKey: "faq.sections.account.questions.q2.answer",
+                id: "how-to-reset-password",
+                titleTranslationKey: "faq.sections.account.questions.q2.question",
+                paragraphs: [
+                    {
+                        translationKey: "faq.sections.account.questions.q2.answer",
+                    },
+                ],
             },
             {
-                questionTranslationKey: "faq.sections.account.questions.q3.question",
-                answerTranslationKey: "faq.sections.account.questions.q3.answer",
+                id: "how-to-delete-account",
+                titleTranslationKey: "faq.sections.account.questions.q3.question",
+                paragraphs: [
+                    {
+                        translationKey: "faq.sections.account.questions.q3.answer",
+                    },
+                ],
             },
         ],
     },
     {
         id: "features-and-usage",
         titleTranslationKey: "faq.sections.features.title",
-        questions: [
+        paragraphs: [],
+        subsections: [
             {
-                questionTranslationKey: "faq.sections.features.questions.q1.question",
-                answerTranslationKey: "faq.sections.features.questions.q1.answer",
+                id: "new-journal-entry",
+                titleTranslationKey: "faq.sections.features.questions.q1.question",
+                paragraphs: [
+                    {
+                        translationKey: "faq.sections.features.questions.q1.answer",
+                    },
+                ],
             },
             {
-                questionTranslationKey: "faq.sections.features.questions.q2.question",
-                answerTranslationKey: "faq.sections.features.questions.q2.answer",
+                id: "what-are-goals",
+                titleTranslationKey: "faq.sections.features.questions.q2.question",
+                paragraphs: [
+                    {
+                        translationKey: "faq.sections.features.questions.q2.answer",
+                    },
+                ],
             },
             {
-                questionTranslationKey: "faq.sections.features.questions.q3.question",
-                answerTranslationKey: "faq.sections.features.questions.q3.answer",
+                id: "what-kind-of-insights",
+                titleTranslationKey: "faq.sections.features.questions.q3.question",
+                paragraphs: [
+                    {
+                        translationKey: "faq.sections.features.questions.q3.answer",
+                    },
+                ],
             },
         ],
     },
