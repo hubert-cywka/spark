@@ -1,14 +1,14 @@
-import styles from "./styles/TermsAndConditionsTableOfContents.module.scss";
+import styles from "./styles/DocumentationTableOfContents.module.scss";
 
-import { TermsAndConditionsContentSection } from "@/app/(open)/terms-and-conditions/types/TermsAndConditions";
 import { Anchor } from "@/components/Anchor";
+import { DocumentationContentSection } from "@/features/documentation";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
-type TermsAndConditionsTableOfContentsProps = {
-    content: TermsAndConditionsContentSection[];
+type DocumentationTableOfContentProps = {
+    content: DocumentationContentSection[];
 };
 
-export const TermsAndConditionsTableOfContents = ({ content }: TermsAndConditionsTableOfContentsProps) => {
+export const DocumentationTableOfContents = ({ content }: DocumentationTableOfContentProps) => {
     const t = useTranslate();
 
     return (

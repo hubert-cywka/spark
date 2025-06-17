@@ -218,10 +218,13 @@
                 }
             },
             "sections": {
-                "legal": {
-                    "label": "Legal",
+                "docs": {
+                    "label": "Documentation",
                     "termsAndConditions": {
                         "label": "Terms and Conditions"
+                    },
+                    "faq": {
+                        "label": "FAQ"
                     }
                 },
                 "dashboard": {
@@ -1270,6 +1273,65 @@
             "header": "Start journaling today",
             "caption": "Your progress, insights, goals and pain-points in one place.",
             "buttonLabel": "Explore Spark"
+        }
+    },
+    "faq": {
+        "title": "Frequently Asked Questions",
+        "tableOfContents": {
+            "title": "Table of Contents"
+        },
+        "sections": {
+            "general": {
+                "title": "General Questions",
+                "questions": {
+                    "q1": {
+                        "question": "What is Spark?",
+                        "answer": "Spark is a journaling application designed to help you track your progress, gain insights into your habits, and achieve your goals. It's a privacy-first, open-source platform."
+                    },
+                    "q2": {
+                        "question": "Is Spark free to use?",
+                        "answer": "Yes, Spark is completely free to use. We believe in providing valuable tools without hidden costs."
+                    },
+                    "q3": {
+                        "question": "Can I use Spark on multiple devices?",
+                        "answer": "Yes, your data is synced across devices, allowing you to access your journal entries, goals, and insights from anywhere."
+                    }
+                }
+            },
+            "account": {
+                "title": "Account Management",
+                "questions": {
+                    "q1": {
+                        "question": "How do I create an account?",
+                        "answer": "You can create an account by navigating to the 'Register' page and providing your email and a strong password, or by using one of the supported OIDC providers like Google."
+                    },
+                    "q2": {
+                        "question": "What if I forget my password?",
+                        "answer": "You can reset your password by clicking on 'Forgot password?' on the login page. We will send a password reset link to your registered email address."
+                    },
+                    "q3": {
+                        "question": "How can I delete my account?",
+                        "answer": "You can terminate your account from the 'Profile' section in 'Settings'. Please be aware that this action is irreversible and will delete all your data."
+                    }
+                }
+            },
+            "features": {
+                "title": "Features and Usage",
+                "questions": {
+                    "q1": {
+                        "question": "How do I add a new journal entry?",
+                        "answer": "Navigate to the 'Daily' section, select a date, and use the input field to add your entry. You can also mark entries as completed or featured."
+                    },
+                    "q2": {
+                        "question": "What are goals and how do I use them?",
+                        "answer": "Goals help you track progress towards specific objectives. You can set a target number of entries and a deadline. Link entries to goals to track your progress."
+                    },
+                    "q3": {
+                        "question": "What kind of insights does Spark provide?",
+                        "answer": "Spark analyzes your journaling habits to provide insights on completed entries ratio, featured entries ratio, streaks, daily activity rate, and more. These insights help you improve your journaling quality."
+                    }
+                }
+            }
         }
     }
 }

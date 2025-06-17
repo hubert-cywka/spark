@@ -7,7 +7,6 @@ import { HelpCircleIcon } from "lucide-react";
 import commonStyles from "@/components/Chart/styles/Chart.module.scss";
 
 import { IconButton } from "@/components/IconButton";
-import { Tooltip } from "@/components/Tooltip";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
 type ChartContainerProps = PropsWithChildren<{
@@ -25,13 +24,13 @@ export const ChartContainer = ({ children, height, title, description }: ChartCo
                 {title && <h2 className={commonStyles.title}>{title}</h2>}
 
                 {description && (
-                    <Tooltip label={description}>
-                        <IconButton
-                            variant="subtle"
-                            iconSlot={HelpCircleIcon}
-                            aria-label={t("insights.charts.common.details.tooltipTriggerLabel", { title })}
-                        />
-                    </Tooltip>
+                    <IconButton
+                        variant="subtle"
+                        iconSlot={HelpCircleIcon}
+                        tooltip={description}
+                        tooltipDelay={0}
+                        aria-label={t("insights.charts.common.details.tooltipTriggerLabel", { title })}
+                    />
                 )}
             </header>
 

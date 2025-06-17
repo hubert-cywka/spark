@@ -24,8 +24,10 @@ export const Footer = () => {
                 <div className={styles.links}>
                     <NavigationItem
                         href={AppRoute.TERMS_AND_CONDITIONS}
-                        label={t("common.navigation.sections.legal.termsAndConditions.label")}
+                        label={t("common.navigation.sections.docs.termsAndConditions.label")}
                     />
+
+                    <NavigationItem href={AppRoute.FAQ} label={t("common.navigation.sections.docs.faq.label")} />
                 </div>
             </div>
         </footer>

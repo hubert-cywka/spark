@@ -5,4 +5,5 @@ export type IconButtonProps = Omit<ButtonProps, "children"> & {
     iconSlot: IconSlot;
     ["aria-label"]: string;
     tooltip?: string;
+    tooltipDelay?: number;
 };

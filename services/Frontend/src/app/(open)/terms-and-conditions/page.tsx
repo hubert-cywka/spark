@@ -1,13 +1,18 @@
+import { Metadata } from "next";
+
 import styles from "./styles/TermsAndConditionsPage.module.scss";
 import "server-only";
 
-import { TermsAndConditionsSection } from "@/app/(open)/terms-and-conditions/components/TermsAndConditionsSection/TermsAndConditionsSection.tsx";
-import { TermsAndConditionsTableOfContents } from "@/app/(open)/terms-and-conditions/components/TermsAndConditionsTableOfContents/TermsAndConditionsTableOfContents.tsx";
-import { TermsAndConditionsContentSection } from "@/app/(open)/terms-and-conditions/types/TermsAndConditions";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Container } from "@/components/Container";
 import { withSessionRestore } from "@/features/auth/hoc/withSessionRestore.tsx";
+import { DocumentationContentSection, DocumentationSection, DocumentationTableOfContents } from "@/features/documentation";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
+
+export const metadata: Metadata = {
+    title: "Spark | Terms and Conditions",
+    description: "",
+};
 
 function Page() {
     const t = useTranslate();
@@ -15,11 +20,11 @@ function Page() {
     return (
         <Container className={styles.container}>
             <Breadcrumbs items={[{ label: t("termsAndConditions.title") }]} />
-            <TermsAndConditionsTableOfContents content={termsAndConditionsContent} />
+            <DocumentationTableOfContents content={termsAndConditionsContent} />
 
             <main>
                 {termsAndConditionsContent.map((section, sectionIndex) => (
-                    <TermsAndConditionsSection key={section.id} section={section} sectionIndex={sectionIndex} />
+                    <DocumentationSection key={section.id} section={section} sectionIndex={sectionIndex} />
                 ))}
             </main>
         </Container>
@@ -29,7 +34,7 @@ function Page() {
 export default withSessionRestore(Page, { inBackground: true });
 
 // TODO: Replace with real content
-const termsAndConditionsContent: TermsAndConditionsContentSection[] = [
+const termsAndConditionsContent: DocumentationContentSection[] = [
     {
         id: "introduction",
         titleTranslationKey: "termsAndConditions.sections.introduction.title",

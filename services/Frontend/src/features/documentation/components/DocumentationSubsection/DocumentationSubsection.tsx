@@ -1,13 +1,13 @@
-import styles from "./styles/TermsAndConditionsSubSection.module.scss";
+import styles from "./styles/DocumentationSubsection.module.scss";
 
-import { TermsAndConditionsContentSubsection } from "@/app/(open)/terms-and-conditions/types/TermsAndConditions";
+import { DocumentationContentSubsection } from "@/features/documentation";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
-type TermsAndConditionsSubSectionProps = {
-    subsection: TermsAndConditionsContentSubsection;
+type DocumentationSubsectionProps = {
+    subsection: DocumentationContentSubsection;
 };
 
-export const TermsAndConditionsSubSection = ({ subsection }: TermsAndConditionsSubSectionProps) => {
+export const DocumentationSubsection = ({ subsection }: DocumentationSubsectionProps) => {
     const t = useTranslate();
 
     return (
