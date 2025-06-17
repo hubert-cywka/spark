@@ -1233,6 +1233,19 @@
         }
     },
     "landingPage": {
+        "hero": {
+            "header": "Spark your career",
+            "caption": "Spark helps you track daily progress, provides insights, and creates reports you can use for talks with your manager.",
+            "actions": {
+                "tryButton": {
+                    "label": "Try it now"
+                },
+                "learnMoreButton": {
+                    "label": "Learn more"
+                },
+                "caption": "Own account is required to use Spark features."
+            }
+        },
         "features": {
             "easyToStart": {
                 "title": "Easy to start",

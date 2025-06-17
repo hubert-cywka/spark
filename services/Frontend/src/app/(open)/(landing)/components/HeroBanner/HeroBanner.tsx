@@ -9,20 +9,20 @@ import { Anchor } from "@/components/Anchor";
 import { Button } from "@/components/Button";
 import { GradientText } from "@/components/GradientText/GradientText.tsx";
 import { Icon } from "@/components/Icon";
+import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
 const font = Inter({ subsets: ["latin"], weight: "900" });
 
-// TODO: Translations
 export const HeroBanner = () => {
+    const t = useTranslate();
+
     return (
         <main className={styles.container}>
             <div className={styles.content}>
-                <h1 className={classNames(styles.header, font.className)}>
-                    <GradientText>Spark</GradientText> your career.
-                </h1>
-                <p className={styles.caption}>
-                    Spark helps you track daily progress, provides insights, and creates reports you can use for talks with your manager.
-                </p>
+                <GradientText>
+                    <h1 className={classNames(styles.header, font.className)}>{t("landingPage.hero.header")}</h1>
+                </GradientText>
+                <p className={styles.caption}>{t("landingPage.hero.caption")}</p>
 
                 <div className={styles.actions}>
                     <Anchor href={AppRoute.LOGIN} className={styles.actionButton}>
@@ -31,17 +31,17 @@ export const HeroBanner = () => {
                             className={classNames(styles.actionButton, styles.primary)}
                             rightDecorator={<Icon slot={ArrowRight} size="1" />}
                         >
-                            Try it for free
+                            {t("landingPage.hero.actions.tryButton.label")}
                         </Button>
                     </Anchor>
                     <Anchor href={AppRoute.FAQ} className={styles.actionButton}>
                         <Button size="3" className={classNames(styles.actionButton, styles.secondary)} variant="secondary">
-                            Learn more
+                            {t("landingPage.hero.actions.learnMoreButton.label")}
                         </Button>
                     </Anchor>
                 </div>
 
-                <p className={styles.actionsCaption}>Own account is required to use Spark features.</p>
+                <p className={styles.actionsCaption}>{t("landingPage.hero.actions.caption")}</p>
             </div>
         </main>
     );
