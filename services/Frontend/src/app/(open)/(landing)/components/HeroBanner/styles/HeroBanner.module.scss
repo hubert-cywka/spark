@@ -2,6 +2,7 @@
 
 .container {
     padding: tokens.$spacing-1000 tokens.$spacing-600;
+    z-index: 1;
 
     display: flex;
     flex-direction: column;
