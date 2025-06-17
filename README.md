@@ -1,4 +1,4 @@
-# Codename (WIP)
+# Spark (WIP)
 
 ## Useful links
 - [How to run the app?](./docs/local-development.md)
