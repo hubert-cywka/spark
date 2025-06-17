@@ -19,5 +19,5 @@ export enum AppRoute {
     OIDC_REGISTER = "/authentication/open-id-connect/register",
 
     TERMS_AND_CONDITIONS = "/terms-and-conditions",
-    FAQ = "/frequently-asked-questions", // TODO: Implement this page
+    FAQ = "/frequently-asked-questions",
 }
