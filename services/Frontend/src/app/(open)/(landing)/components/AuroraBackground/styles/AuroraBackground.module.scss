@@ -5,12 +5,10 @@
     --top-aurora-height-multiplier: 1.5;
 
     position: absolute;
-    z-index: -1;
-
     width: 100%;
     max-width: tokens.$breakpoint-xl;
     height: calc((1 + #{var(--top-aurora-height-multiplier)}) * #{var(--base-aurora-height)});
-    
+
     animation: 5s ease-out 0s 1 delayedFadeIn forwards;
     mask-mode: alpha;
     mask-image: linear-gradient(
@@ -33,6 +31,10 @@
             height: var( --base-aurora-height);
             transform: translateY(var(--base-aurora-height)) scale(-1, 1);
         }
+    }
+    
+    @media (max-width: tokens.$breakpoint-xs) {
+        display: none;
     }
 }
 
