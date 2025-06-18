@@ -1,6 +1,7 @@
 export enum AppRoute {
     HOME = "/",
 
+    REPORTS = "/reports",
     INSIGHTS = "/insights",
     DAILY = "/daily",
     GOALS = "/goals",
