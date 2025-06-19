@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { SquareCheckBigIcon, SquareIcon, StarIcon, StarOffIcon } from "lucide-react";
 

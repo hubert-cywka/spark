@@ -11,13 +11,13 @@ button.iconButton {
 
     &[data-size="2"] {
         padding: tokens.$spacing-200;
-        height: 2rem;
-        width: 2rem;
+        height: 1.675rem;
+        width: 1.675rem;
     }
 
     &[data-size="3"] {
         padding: tokens.$spacing-300;
-        height: 2.5rem;
-        width: 2.5rem;
+        height: 2.175rem;
+        width: 2.175rem;
     }
 }

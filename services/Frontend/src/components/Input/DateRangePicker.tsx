@@ -56,8 +56,8 @@ export const DateRangePicker = ({ size = "2", label, value, error, onChange, req
                 {required && <span className={sharedStyles.highlight}> *</span>}
             </Label>
 
-            <div className={styles.wrapper}>
-                <div className={classNames(styles.inputsWrapper, sharedStyles.input)}>
+            <div className={classNames(styles.wrapper, sharedStyles.input)}>
+                <div className={styles.inputsWrapper} data-size={size}>
                     <SegmentedDateInputSlot size={size} slot="start" />
                     <span aria-hidden="true"> – </span>
                     <SegmentedDateInputSlot size={size} slot="end" />
@@ -68,6 +68,7 @@ export const DateRangePicker = ({ size = "2", label, value, error, onChange, req
                         <IconButton
                             size={size}
                             iconSlot={CalendarIcon}
+                            variant="subtle"
                             tooltip={t("common.dateRangePicker.showCalendarButton.label")}
                             aria-label={t("common.dateRangePicker.showCalendarButton.label")}
                         />

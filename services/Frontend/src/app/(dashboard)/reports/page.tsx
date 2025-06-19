@@ -1,5 +1,6 @@
 import "server-only";
 
+import { Test } from "@/app/(dashboard)/reports/Test.tsx";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Container } from "@/components/Container";
 import { onlyAsAuthenticated } from "@/features/auth/hoc/withAuthorization";
@@ -12,6 +13,7 @@ function Page() {
     return (
         <Container>
             <Breadcrumbs items={[{ label: t("reports.navigation.label") }]} />
+            <Test />
         </Container>
     );
 }
