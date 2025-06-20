@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactElement, useState } from "react";
+import { ReactElement } from "react";
 import { Column, DataGrid as BaseDataGrid } from "react-data-grid";
 import classNames from "clsx";
 
@@ -18,20 +18,14 @@ type DataGridProps<TData> = {
 };
 
 export function DataGrid<TData>({ data, columns, rowKeyGetter, noRowsFallback, className }: DataGridProps<TData>) {
-    const [rows, setRows] = useState<TData[]>(data);
     const { sortedRows, setSortColumns, sortColumns } = useDataGridSort({
-        rows,
+        rows: data,
     });
-
-    const onRowsChange = (newRows: TData[]) => {
-        setRows(newRows);
-    };
 
     return (
         <BaseDataGrid
             columns={columns}
             rows={sortedRows}
-            onRowsChange={onRowsChange}
             rowKeyGetter={rowKeyGetter}
             sortColumns={sortColumns}
             onSortColumnsChange={setSortColumns}

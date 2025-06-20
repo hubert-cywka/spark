@@ -380,7 +380,7 @@
                 "isFeatured": "Featured"
             },
             "noData": {
-                "header": "No entries found",
+                "title": "No entries found",
                 "caption": "Add new entries or change filters."
             }
         }

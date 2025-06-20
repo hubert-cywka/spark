@@ -1,5 +1,8 @@
 "use client";
 
+import { useMemo, useState } from "react";
+import dayjs from "dayjs";
+
 import { useEntriesDataGrid } from "./hooks/useEntriesDataGrid";
 
 import styles from "./styles/EntriesDataGrid.module.scss";
@@ -7,24 +10,86 @@ import styles from "./styles/EntriesDataGrid.module.scss";
 import { DataGrid } from "@/components/DataGrid";
 import { DateRangePicker, Field } from "@/components/Input";
 import { NoRecordsMessage } from "@/features/entries/components/EntriesDataGrid/components/NoRecordsMessage/NoRecordsMessage.tsx";
+import { EntryRow } from "@/features/entries/components/EntriesDataGrid/types/EntriesDataGrid";
 import { EntryFiltersGroup } from "@/features/entries/components/EntryFiltersGroup";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
+import { DateRangePreset } from "@/types/DateRangePreset.ts";
+import { ISODateString } from "@/types/ISODateString";
+import { getDateRange } from "@/utils/getDateRange.ts";
 
-// TODO: Logic
+// TODO: Clean up
+// TODO: Debounce
+const useEntriesDataGridFilters = () => {
+    const [content, setContent] = useState("");
+
+    const [dateRange, setDateRange] = useState<{
+        from: ISODateString;
+        to: ISODateString;
+    }>(getDateRange(DateRangePreset.PAST_MONTH));
+
+    const [flags, setFlags] = useState<{
+        completed?: boolean;
+        featured?: boolean;
+    }>({});
+
+    return {
+        content,
+        setContent,
+        dateRange,
+        setDateRange,
+        flags,
+        setFlags,
+    };
+};
+
+// TODO: Fetch entries and server-side filtering
 export const EntriesDataGrid = () => {
     const t = useTranslate();
     const { columns, rowKeyGetter } = useEntriesDataGrid();
+    const { setFlags, flags, dateRange, setDateRange, content, setContent } = useEntriesDataGridFilters();
+
+    const mockFilteredEntries = useMemo(() => {
+        const byContent = (row: EntryRow) => {
+            if (!content) {
+                return true;
+            }
+
+            return row.content.toLowerCase().includes(content.toLowerCase());
+        };
+
+        const byFeatured = (row: EntryRow) => {
+            if (flags.featured === undefined) {
+                return true;
+            }
+
+            return row.isFeatured === flags.featured;
+        };
+
+        const byCompleted = (row: EntryRow) => {
+            if (flags.completed === undefined) {
+                return true;
+            }
+
+            return row.isCompleted === flags.completed;
+        };
+
+        const byDate = (row: EntryRow) => {
+            return dayjs(row.daily).isAfter(dateRange.from) && dayjs(row.daily).isBefore(dateRange.to);
+        };
+
+        return initialRows.filter(byContent).filter(byCompleted).filter(byFeatured).filter(byDate);
+    }, [content, dateRange.from, dateRange.to, flags.completed, flags.featured]);
 
     return (
         <div className={styles.container}>
             <div className={styles.filters}>
-                <EntryFiltersGroup size="2" onFiltersChange={() => ({})} />
-                <Field size="3" label={t("reports.filters.content.label")} />
-                <DateRangePicker size="3" label={t("reports.filters.daily.label")} value={null} />
+                <EntryFiltersGroup onFiltersChange={setFlags} />
+                <Field size="3" label={t("reports.filters.content.label")} value={content} onChange={setContent} />
+                <DateRangePicker size="3" label={t("reports.filters.daily.label")} value={dateRange} onChange={setDateRange} />
             </div>
             <DataGrid
                 columns={columns}
-                data={initialRows}
+                data={mockFilteredEntries}
                 rowKeyGetter={rowKeyGetter}
                 noRowsFallback={<NoRecordsMessage />}
                 className={styles.grid}
