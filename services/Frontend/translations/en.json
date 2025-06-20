@@ -273,6 +273,12 @@
         "collapseButton": {
             "label": "Collapse entry details"
         },
+        "values": {
+            "completed": "Completed",
+            "pending": "Pending",
+            "featured": "Featured",
+            "notFeatured": "Not featured"
+        },
         "filters": {
             "completed": "Show completed entries",
             "pending": "Show pending entries",
@@ -357,6 +363,26 @@
     "reports": {
         "navigation": {
             "label": "Reports"
+        },
+        "filters": {
+            "content": {
+                "label": "Entry content"
+            },
+            "daily": {
+                "label": "Date range"
+            }
+        },
+        "grid": {
+            "columns": {
+                "daily": "Date",
+                "content": "Content",
+                "isCompleted": "Completed",
+                "isFeatured": "Featured"
+            },
+            "noData": {
+                "header": "No entries found",
+                "caption": "Add new entries or change filters."
+            }
         }
     },
     "insights": {

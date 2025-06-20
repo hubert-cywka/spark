@@ -21,7 +21,7 @@
         .author {
             color: tokens.$color-neutral-text-300;
             font-size: tokens.$font-size-200;
-            font-weight: bold;
+            font-weight: tokens.$font-weight-400;
         }
         
         .links {

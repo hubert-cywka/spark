@@ -1,0 +1,58 @@
+@use "src/styles/tokens";
+
+.dataGrid {
+    border: thin solid tokens.$color-neutral-surface-300;
+    background-color: tokens.$color-neutral-background-200;
+    border-radius: tokens.$radius-300;
+    
+    [role="columnheader"] {
+        border-inline: none;
+        
+        &:nth-of-type(1) {
+            border-top-left-radius: tokens.$radius-300;
+        }
+
+        &:nth-last-of-type(1) {
+            border-top-right-radius: tokens.$radius-300;
+        }
+        
+        &:not(:last-of-type) {
+            &::before {
+                content: "";
+                position: absolute;
+                right: 0.75px;
+                top: 25%;
+                bottom: 25%;
+                width: 1px;
+                background: tokens.$color-neutral-surface-100;
+            }
+        }
+
+        &:not(:first-of-type) {
+            &::after {
+                content: "";
+                position: absolute;
+                left: 0.75px;
+                top: 25%;
+                bottom: 25%;
+                width: 1px;
+                background: tokens.$color-neutral-surface-100;
+            }
+        }
+    }
+    
+    [aria-selected="true"] {
+        outline: 2px solid tokens.$color-accent-solid-200;
+        outline-offset: -2px;
+    }
+
+    .headerRow {
+        background-color: tokens.$color-neutral-surface-300;
+    }
+
+    .row {
+        background-color: tokens.$color-neutral-background-100;
+    }
+}
+
+

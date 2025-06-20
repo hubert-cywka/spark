@@ -9,7 +9,7 @@
     margin-block: tokens.$spacing-500;
     color: tokens.$color-neutral-text-300;
     font: tokens.$typography-caption-200;
-    font-weight: 700;
+    font-weight: tokens.$font-weight-400;
 
     .line {
         flex: 1;

@@ -1,0 +1,17 @@
+@use "src/styles/tokens";
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$spacing-400;
+    
+    .filters {
+        display: flex;
+        gap: tokens.$spacing-300;
+        align-items: flex-end;
+    }
+    
+    .grid {
+        height: calc(100vh - 190px); // TODO
+    }
+}
