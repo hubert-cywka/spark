@@ -6,10 +6,10 @@
         "./src/*"
       ]
     },
-    "target": "ES2021",
+    "target": "ESNext",
     "useDefineForClassFields": true,
     "lib": [
-      "ES2021",
+      "ESNext",
       "DOM",
       "DOM.Iterable"
     ],

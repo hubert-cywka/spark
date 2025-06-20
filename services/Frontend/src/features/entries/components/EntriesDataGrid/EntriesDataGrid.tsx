@@ -17,6 +17,8 @@ import { DateRangePreset } from "@/types/DateRangePreset.ts";
 import { ISODateString } from "@/types/ISODateString";
 import { getDateRange } from "@/utils/getDateRange.ts";
 
+const GROUP_BY_COLUMNS = ["daily"];
+
 // TODO: Clean up
 // TODO: Debounce
 const useEntriesDataGridFilters = () => {
@@ -89,6 +91,7 @@ export const EntriesDataGrid = () => {
             </div>
             <DataGrid
                 columns={columns}
+                groupBy={GROUP_BY_COLUMNS}
                 data={mockFilteredEntries}
                 rowKeyGetter={rowKeyGetter}
                 noRowsFallback={<NoRecordsMessage />}

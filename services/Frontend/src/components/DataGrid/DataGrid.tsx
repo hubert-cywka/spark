@@ -1,7 +1,7 @@
 "use client";
 
-import { ReactElement } from "react";
-import { Column, DataGrid as BaseDataGrid } from "react-data-grid";
+import { ReactElement, useState } from "react";
+import { Column, TreeDataGrid } from "react-data-grid";
 import classNames from "clsx";
 
 import styles from "./styles/DataGrid.module.scss";
@@ -12,18 +12,20 @@ import { useDataGridSort } from "@/components/DataGrid/hooks/useDataGridSort.ts"
 type DataGridProps<TData> = {
     data: TData[];
     columns: readonly Column<TData>[];
+    groupBy: readonly Column<TData>["key"][];
     rowKeyGetter: (row: TData) => string;
     noRowsFallback?: ReactElement;
     className?: string;
 };
 
-export function DataGrid<TData>({ data, columns, rowKeyGetter, noRowsFallback, className }: DataGridProps<TData>) {
+export function DataGrid<TData>({ data, columns, rowKeyGetter, noRowsFallback, className, groupBy }: DataGridProps<TData>) {
+    const [expandedGroupIds, setExpandedGroupIds] = useState((): ReadonlySet<unknown> => new Set<unknown>([]));
     const { sortedRows, setSortColumns, sortColumns } = useDataGridSort({
         rows: data,
     });
 
     return (
-        <BaseDataGrid
+        <TreeDataGrid
             columns={columns}
             rows={sortedRows}
             rowKeyGetter={rowKeyGetter}
@@ -32,9 +34,16 @@ export function DataGrid<TData>({ data, columns, rowKeyGetter, noRowsFallback, c
             className={classNames(styles.dataGrid, className)}
             headerRowClass={styles.headerRow}
             rowClass={() => styles.row}
-            renderers={{
-                noRowsFallback,
-            }}
+            renderers={{ noRowsFallback }}
+            groupBy={groupBy}
+            expandedGroupIds={expandedGroupIds}
+            onExpandedGroupIdsChange={setExpandedGroupIds}
+            rowGrouper={rowGrouper}
         />
     );
+}
+
+function rowGrouper<TData>(rows: readonly TData[], columnKey: string) {
+    // @ts-expect-error TODO: Fix types
+    return Object.groupBy(rows, (r) => r[columnKey]) as Record<string, readonly R[]>;
 }

@@ -10,7 +10,8 @@ import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 export const useEntriesDataGrid = () => {
     const t = useTranslate();
     const { headerCellRenderer } = useDataGridRenderers();
-    const { isCompletedCellRenderer, isFeaturedCellRenderer, contentCellRenderer, dailyDateCellRenderer } = useEntriesDataGridRenderers();
+    const { isCompletedCellRenderer, isFeaturedCellRenderer, contentCellRenderer, dailyDateCellRenderer, dailyDateGroupCellRenderer } =
+        useEntriesDataGridRenderers();
 
     const columns: readonly Column<EntryRow>[] = useMemo(
         () => [
@@ -19,10 +20,11 @@ export const useEntriesDataGrid = () => {
                 name: t("reports.grid.columns.daily"),
                 resizable: true,
                 sortable: true,
-                minWidth: 100,
-                width: 100,
+                minWidth: 120,
+                width: 120,
                 renderCell: dailyDateCellRenderer,
                 renderHeaderCell: headerCellRenderer,
+                renderGroupCell: dailyDateGroupCellRenderer,
             },
             {
                 key: "content",
@@ -54,10 +56,18 @@ export const useEntriesDataGrid = () => {
                 renderHeaderCell: headerCellRenderer,
             },
         ],
-        [dailyDateCellRenderer, headerCellRenderer, contentCellRenderer, isCompletedCellRenderer, isFeaturedCellRenderer, t]
+        [
+            t,
+            dailyDateCellRenderer,
+            headerCellRenderer,
+            dailyDateGroupCellRenderer,
+            contentCellRenderer,
+            isCompletedCellRenderer,
+            isFeaturedCellRenderer,
+        ]
     );
 
     return { columns, rowKeyGetter };
 };
 
-const rowKeyGetter = (row: Entry) => row.id;
+const rowKeyGetter = (row: EntryRow) => row.id;

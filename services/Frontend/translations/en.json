@@ -373,6 +373,12 @@
             }
         },
         "grid": {
+            "collapseGroupButton": {
+                "label": "Collapse group"
+            },
+            "expandGroupButton": {
+                "label": "Expand group"
+            },
             "columns": {
                 "daily": "Date",
                 "content": "Content",
