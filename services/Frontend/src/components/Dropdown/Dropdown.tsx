@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Key, Label, ListBox, ListBoxItem, Select, SelectValue } from "react-aria-components";
 import { ChevronDownIcon } from "lucide-react";
 
@@ -9,9 +10,18 @@ import { Icon } from "@/components/Icon";
 import { Popover } from "@/components/Popover";
 
 export function Dropdown<T extends Key>({ selectedKey, items, label, onChange, placeholder, size = "2" }: DropdownProps<T>) {
+    const [open, setOpen] = useState(false);
+
+    const internalOnChange = (key: T) => {
+        setOpen(false);
+        onChange(key);
+    };
+
     return (
         <Select
-            onSelectionChange={onChange as OnSelectionChange}
+            isOpen={open}
+            onOpenChange={setOpen}
+            onSelectionChange={internalOnChange as OnSelectionChange}
             selectedKey={selectedKey}
             className={styles.container}
             placeholder={placeholder}
@@ -19,6 +29,8 @@ export function Dropdown<T extends Key>({ selectedKey, items, label, onChange, p
             <Label className={styles.label}>{label}</Label>
 
             <Popover
+                isOpen={open}
+                onOpenChange={setOpen}
                 trigger={
                     <Button
                         size={size}

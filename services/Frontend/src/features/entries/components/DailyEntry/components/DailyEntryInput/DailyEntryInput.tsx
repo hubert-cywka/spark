@@ -4,8 +4,8 @@ import classNames from "clsx";
 
 import styles from "./styles/DailyEntryInput.module.scss";
 
-import { Anchor } from "@/components/Anchor";
 import { DailyEntryColumn } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
+import { FormattedEntryContent } from "@/features/entries/components/FormattedEntryContent/FormattedEntryContent.tsx";
 
 const CONTENT_UPDATE_DEBOUNCE = 2000;
 
@@ -143,7 +143,7 @@ export const DailyEntryInput = ({
             onKeyDown={handleKeyDown}
             onFocus={handleFocus}
         >
-            {onRenderContent(content)}
+            <FormattedEntryContent content={content} />
         </span>
     );
 };
@@ -159,22 +159,4 @@ const preventFocusOnLinkClick = (e: MouseEvent<HTMLSpanElement>) => {
     if (target.tagName === "A") {
         e.preventDefault();
     }
-};
-
-const onRenderContent = (text: string) => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const parts = text.split(urlRegex);
-
-    return parts.map((part, index) => {
-        if (urlRegex.test(part)) {
-            const displayText = part.replace(/https?:\/\//, "");
-
-            return (
-                <Anchor href={part} target="_blank" rel="noopener noreferrer" className={styles.link} key={index}>
-                    {displayText}
-                </Anchor>
-            );
-        }
-        return <span key={index}>{part}</span>;
-    });
 };

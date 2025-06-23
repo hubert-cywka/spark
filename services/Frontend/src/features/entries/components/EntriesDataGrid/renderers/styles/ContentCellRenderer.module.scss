@@ -2,4 +2,7 @@
 
 .container {
     font-size: tokens.$font-size-200;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
