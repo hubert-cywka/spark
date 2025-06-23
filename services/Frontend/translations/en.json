@@ -173,6 +173,17 @@
             }
         },
         "dateRangePicker": {
+            "label": "Date range",
+            "presets": {
+                "label": "Date range presets",
+                "placeholder": "Select preset",
+                "pastYear": "Past year",
+                "lastYear": "Last year",
+                "thisYear": "This year",
+                "pastMonth": "Past month",
+                "lastMonth": "Last month",
+                "thisMonth": "This month"
+            },
             "showCalendarButton": {
                 "label": "Show calendar"
             },
@@ -398,19 +409,6 @@
     "insights": {
         "navigation": {
             "label": "Insights"
-        },
-        "filters": {
-            "dateRange": {
-                "label": "Date range"
-            },
-            "presets": {
-                "pastYear": "Past year",
-                "lastYear": "Last year",
-                "thisYear": "This year",
-                "pastMonth": "Past month",
-                "lastMonth": "Last month",
-                "thisMonth": "This month"
-            }
         },
         "separators": {
             "summary": "Summary",

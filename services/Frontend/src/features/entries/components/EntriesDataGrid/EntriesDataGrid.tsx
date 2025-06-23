@@ -5,7 +5,8 @@ import { useEntriesDataGrid } from "./hooks/useEntriesDataGrid";
 import styles from "./styles/EntriesDataGrid.module.scss";
 
 import { DataGrid } from "@/components/DataGrid";
-import { DateRangePicker, Field } from "@/components/Input";
+import { DateRangeFiltersGroup } from "@/components/DateRangeFiltersGroup";
+import { Field } from "@/components/Input";
 import { NoRecordsFallback } from "@/features/entries/components/EntriesDataGrid/components/NoRecordsFallback/NoRecordsFallback.tsx";
 import { useEntriesDataGridFilters } from "@/features/entries/components/EntriesDataGrid/hooks/useEntriesDataGridFilters.ts";
 import { useEntryRows } from "@/features/entries/components/EntriesDataGrid/hooks/useEntryRows.ts";
@@ -14,6 +15,7 @@ import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
 const GROUP_BY_COLUMNS = ["daily"];
 
+// TODO: Replace Field with SearchField (based on https://react-spectrum.adobe.com/react-aria/SearchField.html)
 // TODO: Enable grouping by goals
 // TODO: Semantic html
 export const EntriesDataGrid = () => {
@@ -32,7 +34,7 @@ export const EntriesDataGrid = () => {
             <div className={styles.filters}>
                 <EntryFiltersGroup onFiltersChange={setFlags} />
                 <Field size="3" label={t("reports.filters.content.label")} value={content} onChange={setContent} />
-                <DateRangePicker size="3" label={t("reports.filters.daily.label")} value={dateRange} onChange={setDateRange} />
+                <DateRangeFiltersGroup dateRange={dateRange} onDateRangeChange={setDateRange} />
             </div>
 
             <DataGrid
