@@ -48,7 +48,7 @@ export class EntryService implements IEntryService {
             });
         }
 
-        // TODO: Use pg_trgm
+        // TODO: Consider using pg_trgm
         if (content) {
             queryBuilder.andWhere("entry.content ILIKE '%' || :content || '%'", { content });
         }
@@ -75,7 +75,7 @@ export class EntryService implements IEntryService {
         };
     }
 
-    // TODO: Don't save/update/delete Entry if Daily is soft-removed
+    // TODO: Don't save/update/delete entry if daily is soft-removed
     public async create(
         authorId: string,
         dailyId: string,

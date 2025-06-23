@@ -6,6 +6,7 @@ import { useCreateDailyEvents } from "@/features/daily/hooks/useCreateDailyEvent
 import { useUpdateDailyDate } from "@/features/daily/hooks/useUpdateDailyDate";
 import { useUpdateDailyDateEvents } from "@/features/daily/hooks/useUpdateDailyDateEvents";
 import { formatToISODateString } from "@/features/daily/utils/dateUtils";
+import { ISODateString } from "@/types/ISODateString";
 
 type UseDailiesEvents = {
     queryKey: QueryKey;
@@ -20,7 +21,7 @@ export const useDailiesEvents = ({ queryKey, endDate, startDate }: UseDailiesEve
     const { mutateAsync: updateDate } = useUpdateDailyDate();
     const { onUpdateDailyDateError, onUpdateDailyDateSuccess } = useUpdateDailyDateEvents();
 
-    const onUpdateDailyDate = async (id: string, date: string) => {
+    const onUpdateDailyDate = async (id: string, date: ISODateString) => {
         try {
             await updateDate({ id, date });
             onUpdateDailyDateSuccess();

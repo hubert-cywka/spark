@@ -1,7 +1,9 @@
+import { ISODateString } from "@/types/ISODateString";
+
 export type EntryLoggingHistogramDto = {
     dailyRange: {
-        from: string;
-        to: string;
+        from: ISODateString;
+        to: ISODateString;
     };
     days: {
         dayOfWeek: number;

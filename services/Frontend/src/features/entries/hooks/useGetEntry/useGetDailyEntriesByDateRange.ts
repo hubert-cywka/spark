@@ -2,21 +2,33 @@ import { useMemo } from "react";
 
 import { useEntries } from "@/features/entries/hooks";
 import { Entry } from "@/features/entries/types/Entry";
-import { useAutoFetch } from "@/hooks/useAutoFetch";
 
 type UseGetDailyEntriesByDateRangeOptions = {
     from: string;
     to: string;
+    content?: string;
     featured?: boolean;
     completed?: boolean;
     autoFetch?: boolean;
 };
 
-export const useGetDailyEntriesByDateRange = ({ from, to, featured, completed, autoFetch }: UseGetDailyEntriesByDateRangeOptions) => {
-    const { data: entriesData, hasNextPage, fetchNextPage, ...rest } = useEntries({ from, to, featured, completed });
-    useAutoFetch({
-        shouldFetch: !!autoFetch && hasNextPage,
-        fetch: fetchNextPage,
+export const useGetDailyEntriesByDateRange = ({
+    from,
+    to,
+    featured,
+    completed,
+    content,
+    autoFetch,
+}: UseGetDailyEntriesByDateRangeOptions) => {
+    const { data: entriesData, ...rest } = useEntries({
+        filters: {
+            from,
+            to,
+            featured,
+            completed,
+            content,
+        },
+        autoFetch,
     });
 
     const data = useMemo(() => {
@@ -36,5 +48,5 @@ export const useGetDailyEntriesByDateRange = ({ from, to, featured, completed, a
         return entriesMap;
     }, [entriesData]);
 
-    return { data, hasNextPage, fetchNextPage, ...rest };
+    return { data, ...rest };
 };

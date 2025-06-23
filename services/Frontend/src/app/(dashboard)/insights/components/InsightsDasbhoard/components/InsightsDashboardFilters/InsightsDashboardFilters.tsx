@@ -13,6 +13,7 @@ type InsightsDashboardFiltersProps = {
     dateRange: ISODateStringRange;
 };
 
+// TODO: Replace ToggleButtonGroup with dropdown and reuse component in Reports page
 export const InsightsDashboardFilters = ({ onDateRangeChange, dateRange }: InsightsDashboardFiltersProps) => {
     const t = useTranslate();
     const selectedPreset = getPresetFromDateRange(dateRange);

@@ -24,12 +24,15 @@ export const GoalPageDashboard = ({ goalId }: EntriesProps) => {
     }>({});
 
     const { data } = useEntries({
-        goals: [goalId],
-        featured: filters.featured,
-        completed: filters.completed,
+        autoFetch: true,
+        filters: {
+            goals: [goalId],
+            featured: filters.featured,
+            completed: filters.completed,
+        },
     });
-    const entries = data?.pages.flatMap((page) => page.data) ?? [];
 
+    const entries = data?.pages.flatMap((page) => page.data) ?? [];
     const { data: goal } = useGoal({ goalId });
 
     if (!goal) {

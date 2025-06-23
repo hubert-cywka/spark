@@ -1,4 +1,6 @@
+import { ISODateString } from "@/types/ISODateString";
+
 export type DailyDto = {
     id: string;
-    date: string;
+    date: ISODateString;
 };

@@ -6,12 +6,13 @@
     gap: tokens.$spacing-400;
     
     .filters {
+        // TODO: RWD
         display: flex;
         gap: tokens.$spacing-300;
         align-items: flex-end;
     }
     
     .grid {
-        height: calc(100vh - 190px); // TODO
+        height: calc(100vh - 190px); // TODO: Adjust height based on remaining space
     }
 }

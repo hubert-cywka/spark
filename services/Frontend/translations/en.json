@@ -385,6 +385,10 @@
                 "isCompleted": "Completed",
                 "isFeatured": "Featured"
             },
+            "loading": {
+                "title": "Loading...",
+                "caption": "Please be patient. If loading is too long, try using different filters."
+            },
             "noData": {
                 "title": "No entries found",
                 "caption": "Add new entries or change filters."

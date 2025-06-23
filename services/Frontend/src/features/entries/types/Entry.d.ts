@@ -1,4 +1,5 @@
 import { Day } from "@/types/Day.ts";
+import { ISODateString } from "@/types/ISODateString";
 
 export type Entry = {
     id: string;
@@ -12,8 +13,8 @@ export type Entry = {
 
 export type EntriesMetrics = {
     dailyRange: {
-        from: string;
-        to: string;
+        from: ISODateString;
+        to: ISODateString;
     };
     completedEntriesAmount: number;
     completedEntriesRatio: number;
@@ -25,8 +26,8 @@ export type EntriesMetrics = {
 
 export type EntryLoggingHistogram = {
     dailyRange: {
-        from: string;
-        to: string;
+        from: ISODateString;
+        to: ISODateString;
     };
     days: {
         dayOfWeek: Day;
