@@ -31,7 +31,7 @@ export const GoalsList = ({ goals, header, selectedGoalId, onSelectGoal }: Goals
                         <GoalCard goal={goal} isSelected={selectedGoalId === goal.id} onSelection={onSelectGoal} />
 
                         <Anchor href={AppRoute.GOAL.replace(":id", goal.id)}>
-                            <Card className={styles.navigationCard}>
+                            <Card variant="semi-translucent" className={styles.navigationCard}>
                                 <Icon slot={ArrowRight} className={styles.navigationIcon} />
                             </Card>
                         </Anchor>
