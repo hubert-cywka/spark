@@ -7,7 +7,7 @@
     
     .filters {
         display: flex;
-        gap: tokens.$spacing-500;
+        gap: tokens.$spacing-400;
         flex-direction: column;
 
         @media (min-width: tokens.$breakpoint-lg) {
@@ -17,7 +17,7 @@
         
         .filtersGroup {
             display: flex;
-            gap: tokens.$spacing-500;
+            gap: tokens.$spacing-400;
             flex-direction: column-reverse;
 
             @media (min-width: tokens.$breakpoint-sm) {
@@ -28,14 +28,14 @@
     }
     
     .grid {
-        height: calc(100vh - 400px);
+        height: calc(100vh - 380px);
        
         @media (min-width: tokens.$breakpoint-sm) {
-            height: calc(100vh - 270px);
+            height: calc(100vh - 260px);
         }
 
         @media (min-width: tokens.$breakpoint-lg) {
-            height: calc(100vh - 200px);
+            height: calc(100vh - 195px);
         }
     }
 }

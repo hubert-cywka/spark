@@ -7,7 +7,6 @@ import { getDateRange } from "@/utils/getDateRange.ts";
 
 const DEBOUNCE_IN_MS = 300;
 
-// TODO: Clean up
 export const useEntriesDataGridFilters = () => {
     const [dateRange, setDateRange] = useState<{
         from: ISODateString;

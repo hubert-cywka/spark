@@ -2,7 +2,7 @@
 
 .container {
     display: flex;
-    gap: tokens.$spacing-500;
+    gap: tokens.$spacing-400;
     flex-direction: column;
 
     @media (min-width: tokens.$breakpoint-sm) {

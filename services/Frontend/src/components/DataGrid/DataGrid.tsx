@@ -45,5 +45,5 @@ export function DataGrid<TData>({ data, columns, rowKeyGetter, noRowsFallback, c
 
 function rowGrouper<TData>(rows: readonly TData[], columnKey: string) {
     // @ts-expect-error TODO: Fix types
-    return Object.groupBy(rows, (r) => r[columnKey]) as Record<string, readonly R[]>;
+    return Object.groupBy(rows, (r) => r[columnKey]) as Record<string, readonly TData[]>;
 }
