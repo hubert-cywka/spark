@@ -2,11 +2,11 @@
 
 .container {
     display: flex;
-    gap: tokens.$spacing-300;
+    gap: tokens.$spacing-500;
     flex-direction: column;
 
     @media (min-width: tokens.$breakpoint-sm) {
-        flex-direction: row;
         align-items: flex-end;
+        flex-direction: row;
     }
 }

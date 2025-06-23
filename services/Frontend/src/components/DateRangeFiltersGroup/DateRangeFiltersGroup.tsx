@@ -1,4 +1,4 @@
-import styles from "./styles/InsightsDasbhoardFilters.module.scss";
+import styles from "./styles/DateRangeFiltersGroup.module.scss";
 
 import { Dropdown } from "@/components/Dropdown/Dropdown.tsx";
 import { DateRangePicker } from "@/components/Input";

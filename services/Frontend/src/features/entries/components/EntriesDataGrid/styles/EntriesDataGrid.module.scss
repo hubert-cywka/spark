@@ -3,16 +3,39 @@
 .container {
     display: flex;
     flex-direction: column;
-    gap: tokens.$spacing-400;
+    gap: tokens.$spacing-500;
     
     .filters {
-        // TODO: RWD
         display: flex;
-        gap: tokens.$spacing-300;
-        align-items: flex-end;
+        gap: tokens.$spacing-500;
+        flex-direction: column;
+
+        @media (min-width: tokens.$breakpoint-lg) {
+            align-items: flex-end;
+            flex-direction: row;
+        }
+        
+        .filtersGroup {
+            display: flex;
+            gap: tokens.$spacing-500;
+            flex-direction: column-reverse;
+
+            @media (min-width: tokens.$breakpoint-sm) {
+                align-items: flex-end;               
+                flex-direction: row;
+            }
+        }
     }
     
     .grid {
-        height: calc(100vh - 190px); // TODO: Adjust height based on remaining space
+        height: calc(100vh - 400px);
+       
+        @media (min-width: tokens.$breakpoint-sm) {
+            height: calc(100vh - 270px);
+        }
+
+        @media (min-width: tokens.$breakpoint-lg) {
+            height: calc(100vh - 200px);
+        }
     }
 }

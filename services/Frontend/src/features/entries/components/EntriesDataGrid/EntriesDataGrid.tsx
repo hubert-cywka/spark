@@ -32,8 +32,10 @@ export const EntriesDataGrid = () => {
     return (
         <div className={styles.container}>
             <div className={styles.filters}>
-                <EntryFiltersGroup onFiltersChange={setFlags} />
-                <Field size="3" label={t("reports.filters.content.label")} value={content} onChange={setContent} />
+                <div className={styles.filtersGroup}>
+                    <Field size="3" label={t("reports.filters.content.label")} value={content} onChange={setContent} />
+                    <EntryFiltersGroup onFiltersChange={setFlags} />
+                </div>
                 <DateRangeFiltersGroup dateRange={dateRange} onDateRangeChange={setDateRange} />
             </div>
 
