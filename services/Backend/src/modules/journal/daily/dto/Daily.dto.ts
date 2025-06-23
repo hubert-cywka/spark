@@ -1,5 +1,7 @@
 import { IsDateString, IsUUID } from "class-validator";
 
+import { type ISODateString } from "@/types/Date";
+
 export class DailyDto {
     @IsUUID("4")
     id!: string;
@@ -8,7 +10,7 @@ export class DailyDto {
     authorId!: string;
 
     @IsDateString()
-    date!: string;
+    date!: ISODateString;
 
     @IsDateString()
     createdAt!: string;

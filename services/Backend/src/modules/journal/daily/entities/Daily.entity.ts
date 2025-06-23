@@ -12,6 +12,7 @@ import {
 
 import { AuthorEntity } from "@/modules/journal/authors/entities/Author.entity";
 import { EntryEntity } from "@/modules/journal/entries/entities/Entry.entity";
+import { type ISODateString } from "@/types/Date";
 
 @Entity("daily")
 export class DailyEntity {
@@ -19,7 +20,7 @@ export class DailyEntity {
     id!: string;
 
     @Column({ type: "varchar" })
-    date!: string;
+    date!: ISODateString;
 
     @CreateDateColumn({ type: "timestamptz" })
     createdAt!: Date;

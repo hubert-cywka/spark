@@ -10,6 +10,7 @@ import { type IDailyMapper, DailyMapperToken } from "@/modules/journal/daily/map
 import { Daily } from "@/modules/journal/daily/models/Daily.model";
 import { IDailyService } from "@/modules/journal/daily/services/interfaces/IDaily.service";
 import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
+import { type ISODateString } from "@/types/Date";
 
 @Injectable()
 export class DailyService implements IDailyService {
@@ -22,7 +23,12 @@ export class DailyService implements IDailyService {
         private readonly dailyMapper: IDailyMapper
     ) {}
 
-    public async findAllByDateRange(authorId: string, from: string, to: string, pageOptions: PageOptions): Promise<Paginated<Daily>> {
+    public async findAllByDateRange(
+        authorId: string,
+        from: ISODateString,
+        to: ISODateString,
+        pageOptions: PageOptions
+    ): Promise<Paginated<Daily>> {
         const queryBuilder = this.getRepository().createQueryBuilder("daily");
 
         queryBuilder
@@ -57,7 +63,7 @@ export class DailyService implements IDailyService {
         return this.dailyMapper.fromEntityToModel(daily);
     }
 
-    public async create(authorId: string, date: string): Promise<Daily> {
+    public async create(authorId: string, date: ISODateString): Promise<Daily> {
         const result = await this.getRepository()
             .createQueryBuilder()
             .insert()
@@ -73,7 +79,7 @@ export class DailyService implements IDailyService {
         return this.dailyMapper.fromEntityToModel(insertedEntity);
     }
 
-    public async update(authorId: string, dailyId: string, date: string): Promise<Daily> {
+    public async update(authorId: string, dailyId: string, date: ISODateString): Promise<Daily> {
         const result = await this.getRepository()
             .createQueryBuilder()
             .update(DailyEntity)

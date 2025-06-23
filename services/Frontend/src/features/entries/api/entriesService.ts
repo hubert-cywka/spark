@@ -11,7 +11,7 @@ import { apiClient } from "@/lib/apiClient/apiClient";
 const PAGE_SIZE = 100;
 
 export class EntriesService {
-    public static async getPage(page: number, { from, to, goals, featured, completed }: EntriesQueryFilters = {}) {
+    public static async getPage(page: number, { from, to, goals, featured, completed, content }: EntriesQueryFilters = {}) {
         const searchParams = new URLSearchParams({
             order: "DESC",
             page: String(page),
@@ -24,6 +24,10 @@ export class EntriesService {
 
         if (to) {
             searchParams.append("to", to);
+        }
+
+        if (content) {
+            searchParams.append("content", content);
         }
 
         if (goals) {
