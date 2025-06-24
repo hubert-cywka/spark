@@ -11,9 +11,9 @@ type BadgeProps = {
 
 export const Badge = ({ label, icon, variant = "primary" }: BadgeProps) => {
     return (
-        <div data-variant={variant} className={styles.badge}>
+        <span data-variant={variant} className={styles.badge}>
             {icon && <Icon slot={icon} size="1" />}
             {label}
-        </div>
+        </span>
     );
 };

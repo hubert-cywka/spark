@@ -20,14 +20,14 @@ const GROUP_BY_COLUMNS = ["daily"];
 // TODO: Semantic html
 export const EntriesDataGrid = () => {
     const t = useTranslate();
-    const { setFlags, flags, dateRange, setDateRange, content, setContent, debouncedContent } = useEntriesDataGridFilters();
 
+    const { columns, rowKeyGetter } = useEntriesDataGrid();
+    const { setFlags, flags, dateRange, setDateRange, content, setContent, debouncedContent } = useEntriesDataGridFilters();
     const { data, isLoading } = useEntryRows({
         ...flags,
         ...dateRange,
         content: debouncedContent,
     });
-    const { columns, rowKeyGetter } = useEntriesDataGrid();
 
     return (
         <div className={styles.container}>

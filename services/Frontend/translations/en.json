@@ -398,7 +398,7 @@
             },
             "loading": {
                 "title": "Loading...",
-                "caption": "Please be patient. If loading is too long, try using different filters."
+                "caption": "Please be patient. If loading is taking too long, try different filters."
             },
             "noData": {
                 "title": "No entries found",

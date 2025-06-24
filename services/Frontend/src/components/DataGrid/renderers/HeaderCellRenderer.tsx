@@ -8,13 +8,13 @@ import { Icon } from "@/components/Icon";
 export function HeaderCellRenderer<TData>(p: RenderHeaderCellProps<TData>) {
     return (
         <div className={styles.container}>
-            <div className={styles.name}>{p.column.name}</div>
+            <span className={styles.name}>{p.column.name}</span>
 
             {p.column.sortable && (
-                <div>
+                <span>
                     {p.sortDirection === "ASC" && <Icon slot={ArrowDownIcon} size="1" />}
                     {p.sortDirection === "DESC" && <Icon slot={ArrowUpIcon} size="1" />}
-                </div>
+                </span>
             )}
         </div>
     );

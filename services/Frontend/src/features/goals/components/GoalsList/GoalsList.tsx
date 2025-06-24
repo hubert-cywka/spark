@@ -24,7 +24,9 @@ export const GoalsList = ({ goals, header, selectedGoalId, onSelectGoal, isLoadi
 
     return (
         <section>
-            <Divider>{header}</Divider>
+            <header>
+                <Divider>{header}</Divider>
+            </header>
             {!goals.length && !isLoading && <p className={styles.noResults}>{t("goals.list.section.noResults")}</p>}
 
             <ul className={styles.list}>

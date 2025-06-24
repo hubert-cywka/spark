@@ -7,7 +7,7 @@
       ]
     },
     "target": "ES2022",
-    "module": "esnext",
+    "module": "ES2020",
     "moduleResolution": "bundler",
     "useDefineForClassFields": true,
     "skipLibCheck": true,
@@ -28,11 +28,6 @@
       {
         "name": "next"
       }
-    ],
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
     ]
   },
   "include": [
