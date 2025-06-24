@@ -1,0 +1,37 @@
+@use "src/styles/tokens";
+
+.badge {
+    display: flex;
+    gap: tokens.$spacing-300;
+    align-items: center;
+    width: fit-content;
+    
+    font-size: tokens.$font-size-200;
+    padding: tokens.$spacing-100 tokens.$spacing-400;
+    border-radius: tokens.$radius-400;
+
+    border: thin solid;
+    
+    &[data-variant="primary"] {
+        background: tokens.$color-neutral-surface-200;
+        border-color: tokens.$color-neutral-surface-100;
+    }
+
+    &[data-variant="secondary"] {
+        background: tokens.$color-accent-surface-300;
+        border-color: tokens.$color-accent-surface-200;
+        color: tokens.$color-accent-text-200;
+    }
+
+    &[data-variant="success"] {
+        background: tokens.$color-success-surface-300;
+        border-color: tokens.$color-success-surface-200;
+        color: tokens.$color-success-text-200;
+    }
+
+    &[data-variant="info"] {
+        background: tokens.$color-info-surface-300;
+        border-color: tokens.$color-info-surface-200;
+        color: tokens.$color-info-text-200;
+    }
+}

@@ -43,7 +43,7 @@
 
             .actionButton {
                 border-radius: tokens.$radius-400;
-                font-weight: bold;
+                font-weight: tokens.$font-weight-400;
 
                 text-decoration: none;
                 background: transparent;

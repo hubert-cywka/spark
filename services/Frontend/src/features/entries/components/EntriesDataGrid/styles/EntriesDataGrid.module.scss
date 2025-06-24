@@ -1,0 +1,41 @@
+@use "src/styles/tokens";
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$spacing-500;
+    
+    .filters {
+        display: flex;
+        gap: tokens.$spacing-400;
+        flex-direction: column;
+
+        @media (min-width: tokens.$breakpoint-lg) {
+            align-items: flex-end;
+            flex-direction: row;
+        }
+        
+        .filtersGroup {
+            display: flex;
+            gap: tokens.$spacing-400;
+            flex-direction: column-reverse;
+
+            @media (min-width: tokens.$breakpoint-sm) {
+                align-items: flex-end;               
+                flex-direction: row;
+            }
+        }
+    }
+    
+    .grid {
+        height: calc(100vh - 380px);
+       
+        @media (min-width: tokens.$breakpoint-sm) {
+            height: calc(100vh - 260px);
+        }
+
+        @media (min-width: tokens.$breakpoint-lg) {
+            height: calc(100vh - 195px);
+        }
+    }
+}

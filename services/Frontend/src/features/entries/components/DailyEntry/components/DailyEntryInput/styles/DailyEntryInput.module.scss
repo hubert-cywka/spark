@@ -1,9 +1,5 @@
 @use "src/styles/tokens";
 
-.link {
-    color: tokens.$color-accent-text-200;
-}
-
 .content {
     color: tokens.$color-neutral-text-200;
     outline: none;

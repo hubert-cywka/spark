@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Bell, Calendar, Lightbulb, Target, User } from "lucide-react";
+import { Bell, Calendar, Lightbulb, Newspaper, Target, User } from "lucide-react";
 
 import { AppRoute } from "@/app/appRoute";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
@@ -35,6 +35,11 @@ export const useNavigation = (): UseAppNavigation => {
                         target: AppRoute.GOALS,
                         label: t("common.navigation.sections.journal.goals.label"),
                         icon: Target,
+                    },
+                    {
+                        target: AppRoute.REPORTS,
+                        label: t("common.navigation.sections.journal.reports.label"),
+                        icon: Newspaper,
                     },
                     {
                         target: AppRoute.INSIGHTS,

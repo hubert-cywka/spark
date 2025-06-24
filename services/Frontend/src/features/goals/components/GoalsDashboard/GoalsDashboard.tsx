@@ -23,7 +23,7 @@ export const GoalsDashboard = () => {
     const [debouncedSearch, setDebouncedSearch] = useState(search);
     useDebounce(() => setDebouncedSearch(search), SEARCH_DEBOUNCE_IN_MS, [search]);
 
-    const { data, fetchNextPage, isFetching, hasNextPage } = useGoals({
+    const { data, fetchNextPage, isFetching, hasNextPage, isLoading } = useGoals({
         name: debouncedSearch,
         withProgress: true,
     });
@@ -57,6 +57,7 @@ export const GoalsDashboard = () => {
                     count: accomplishedGoals.length,
                 })}
                 goals={accomplishedGoals}
+                isLoading={isLoading}
                 onSelectGoal={setSelectedGoalId}
                 selectedGoalId={selectedGoalId}
             />
@@ -66,6 +67,7 @@ export const GoalsDashboard = () => {
                     count: pendingGoals.length,
                 })}
                 goals={pendingGoals}
+                isLoading={isLoading}
                 onSelectGoal={setSelectedGoalId}
                 selectedGoalId={selectedGoalId}
             />

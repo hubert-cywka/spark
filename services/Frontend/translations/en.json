@@ -173,6 +173,17 @@
             }
         },
         "dateRangePicker": {
+            "label": "Date range",
+            "presets": {
+                "label": "Date range presets",
+                "placeholder": "Select preset",
+                "pastYear": "Past year",
+                "lastYear": "Last year",
+                "thisYear": "This year",
+                "pastMonth": "Past month",
+                "lastMonth": "Last month",
+                "thisMonth": "This month"
+            },
             "showCalendarButton": {
                 "label": "Show calendar"
             },
@@ -240,6 +251,9 @@
                     },
                     "insights": {
                         "label": "Insights"
+                    },
+                    "reports": {
+                        "label": "Reports"
                     }
                 },
                 "settings": {
@@ -269,6 +283,12 @@
         },
         "collapseButton": {
             "label": "Collapse entry details"
+        },
+        "values": {
+            "completed": "Completed",
+            "pending": "Pending",
+            "featured": "Featured",
+            "notFeatured": "Not featured"
         },
         "filters": {
             "completed": "Show completed entries",
@@ -351,22 +371,44 @@
             }
         }
     },
+    "reports": {
+        "navigation": {
+            "label": "Reports"
+        },
+        "filters": {
+            "content": {
+                "label": "Entry content"
+            },
+            "daily": {
+                "label": "Date range"
+            }
+        },
+        "grid": {
+            "collapseGroupButton": {
+                "label": "Collapse group"
+            },
+            "expandGroupButton": {
+                "label": "Expand group"
+            },
+            "columns": {
+                "daily": "Date",
+                "content": "Content",
+                "isCompleted": "Completed",
+                "isFeatured": "Featured"
+            },
+            "loading": {
+                "title": "Loading...",
+                "caption": "Please be patient. If loading is taking too long, try different filters."
+            },
+            "noData": {
+                "title": "No entries found",
+                "caption": "Add new entries or change filters."
+            }
+        }
+    },
     "insights": {
         "navigation": {
             "label": "Insights"
-        },
-        "filters": {
-            "dateRange": {
-                "label": "Date range"
-            },
-            "presets": {
-                "pastYear": "Past year",
-                "lastYear": "Last year",
-                "thisYear": "This year",
-                "pastMonth": "Past month",
-                "lastMonth": "Last month",
-                "thisMonth": "This month"
-            }
         },
         "separators": {
             "summary": "Summary",

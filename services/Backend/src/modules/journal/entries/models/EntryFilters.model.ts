@@ -1,7 +1,10 @@
+import { ISODateString } from "@/types/Date";
+
 export type EntryFilters = {
-    from?: string;
-    to?: string;
+    from?: ISODateString;
+    to?: ISODateString;
     goals?: string[];
+    content?: string;
     featured?: boolean;
     completed?: boolean;
 };

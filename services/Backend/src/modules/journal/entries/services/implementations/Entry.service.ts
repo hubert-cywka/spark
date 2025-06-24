@@ -24,7 +24,7 @@ export class EntryService implements IEntryService {
     public async findAll(
         authorId: string,
         pageOptions: PageOptions,
-        { from, to, goals, featured, completed }: EntryFilters = {}
+        { from, to, goals, featured, completed, content }: EntryFilters = {}
     ): Promise<Paginated<Entry>> {
         const queryBuilder = this.getRepository().createQueryBuilder("entry");
 
@@ -46,6 +46,11 @@ export class EntryService implements IEntryService {
             queryBuilder.andWhere("entry.isCompleted = :completed", {
                 completed,
             });
+        }
+
+        // TODO: Consider using pg_trgm
+        if (content) {
+            queryBuilder.andWhere("entry.content ILIKE '%' || :content || '%'", { content });
         }
 
         if (goals) {
@@ -70,7 +75,7 @@ export class EntryService implements IEntryService {
         };
     }
 
-    // FIXME: Don't save/update/delete Entry if Daily is soft-removed
+    // TODO: Don't save/update/delete entry if daily is soft-removed
     public async create(
         authorId: string,
         dailyId: string,

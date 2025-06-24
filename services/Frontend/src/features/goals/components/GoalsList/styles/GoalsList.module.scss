@@ -1,11 +1,5 @@
 @use "src/styles/tokens";
 
-.header {
-    font: tokens.$typography-title-200;
-    margin-bottom: tokens.$spacing-400;
-    margin-top: tokens.$spacing-600;
-}
-
 .list {
     display: flex;
     flex-direction: column;
@@ -28,4 +22,11 @@
             }
         }
     }
+}
+
+.noResults {
+    font: tokens.$typography-body-200;
+    color: tokens.$color-neutral-text-200;
+    font-weight: bold;
+    text-align: center; 
 }

@@ -6,7 +6,7 @@
         gap: tokens.$spacing-200;
 
         color: tokens.$color-accent-text-200;
-        font-weight: bold;
+        font-weight: tokens.$font-weight-400;
         text-decoration: none;
         
         .icon {

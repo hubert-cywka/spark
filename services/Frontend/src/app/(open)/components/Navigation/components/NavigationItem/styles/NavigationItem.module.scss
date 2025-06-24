@@ -1,7 +1,7 @@
 @use "src/styles/tokens";
 
 a.navigationItem.navigationItem {
-    font-weight: bold;
+    font-weight: tokens.$font-weight-400;
     font-size: tokens.$font-size-200;
     color: tokens.$color-accent-text-200;
     

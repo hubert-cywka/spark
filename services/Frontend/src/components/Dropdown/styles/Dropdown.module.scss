@@ -1,0 +1,44 @@
+@use "src/styles/tokens";
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$spacing-200;
+
+    .label {
+        font: tokens.$typography-caption-200;
+    }
+    
+    .value {
+        &[data-placeholder] {
+            color: tokens.$color-neutral-text-300;
+        }
+    }
+    
+    .button {
+        justify-content: space-between;
+    }
+}
+
+.items {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$spacing-300;
+
+    .item {
+        font: tokens.$typography-body-100;
+        padding: tokens.$spacing-200 tokens.$spacing-300;
+        border-radius: tokens.$radius-100;
+        cursor: pointer;
+
+        &[data-focused] {
+            outline: 2px solid tokens.$color-accent-solid-200;
+            outline-offset: 2px;
+        }
+
+        &[data-selected] {
+            background: tokens.$color-accent-solid-300;
+            color: tokens.$color-accent-text-100;
+        }
+    }
+}

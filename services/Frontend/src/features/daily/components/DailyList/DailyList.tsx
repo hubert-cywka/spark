@@ -51,8 +51,10 @@ export const DailyList = () => {
         isFetching,
         queryKey,
     } = useGetDailiesByDateRange({
-        from: formatToISODateString(startDate),
-        to: formatToISODateString(endDate),
+        filters: {
+            from: formatToISODateString(startDate),
+            to: formatToISODateString(endDate),
+        },
     });
 
     const dailies = useMemo(() => dailyData?.pages?.flatMap((page) => page.data) ?? [], [dailyData?.pages]);

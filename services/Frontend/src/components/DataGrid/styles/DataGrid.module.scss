@@ -1,0 +1,75 @@
+@use "src/styles/tokens";
+
+.dataGrid {
+    --rdg-selection-color: #{tokens.$color-accent-solid-300};
+
+    border: thin solid tokens.$color-neutral-surface-200;
+    border-radius: tokens.$radius-300;
+    background:
+        radial-gradient(
+                ellipse farthest-corner at left top,
+                rgba(tokens.$color-accent-background-100, 0.15) 0%,
+                rgba(tokens.$color-accent-background-100, 0.05) 50%,
+                transparent 100%
+        ),
+        radial-gradient(
+                ellipse farthest-corner at right bottom,
+                rgba(tokens.$color-accent-background-300, 0.15) 0%,
+                rgba(tokens.$color-accent-background-300, 0.05) 50%,
+                transparent 100%
+        ),
+        tokens.$color-neutral-background-alpha-100;
+    
+    [role="row"] {
+        background-color: tokens.$color-neutral-background-alpha-200;
+
+        &.headerRow {
+            background-color: tokens.$color-neutral-background-alpha-300;
+
+            [role="columnheader"] {
+                border-color: tokens.$color-neutral-surface-200;
+                border-inline: none;
+
+                &:nth-of-type(1) {
+                    border-top-left-radius: tokens.$radius-300;
+                }
+
+                &:nth-last-of-type(1) {
+                    border-top-right-radius: tokens.$radius-300;
+                }
+
+                &:not(:last-of-type) {
+                    &::before {
+                        content: "";
+                        position: absolute;
+                        right: 0.75px;
+                        top: 25%;
+                        bottom: 25%;
+                        width: 1px;
+                        background: tokens.$color-neutral-surface-100;
+                    }
+                }
+
+                &:not(:first-of-type) {
+                    &::after {
+                        content: "";
+                        position: absolute;
+                        left: 0.75px;
+                        top: 25%;
+                        bottom: 25%;
+                        width: 1px;
+                        background: tokens.$color-neutral-surface-100;
+                    }
+                }
+            }
+        }
+
+        &.row {
+            background-color: tokens.$color-neutral-background-alpha-100;
+        }
+
+        [role="gridcell"] {
+            border-color: tokens.$color-neutral-surface-300;
+        }
+    }
+}

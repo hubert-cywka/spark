@@ -1,0 +1,12 @@
+@use "src/styles/tokens";
+
+.container {
+    display: flex;
+    gap: tokens.$spacing-400;
+    flex-direction: column;
+
+    @media (min-width: tokens.$breakpoint-sm) {
+        align-items: flex-end;
+        flex-direction: row;
+    }
+}

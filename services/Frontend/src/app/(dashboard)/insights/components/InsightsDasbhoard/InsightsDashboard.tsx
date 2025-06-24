@@ -4,11 +4,11 @@ import { useState } from "react";
 import classNames from "clsx";
 
 import { ChartContainer } from "./components/ChartContainer";
-import { InsightsDashboardFilters } from "./components/InsightsDashboardFilters";
 
 import styles from "./styles/InsightsDashboard.module.scss";
 
 import { AreaChart, BarChart, RadialChart } from "@/components/Chart";
+import { DateRangeFiltersGroup } from "@/components/DateRangeFiltersGroup";
 import { Divider } from "@/components/Divider";
 import { StatsCard } from "@/components/StatsCard";
 import { StatsCardSkeleton } from "@/components/StatsCard/StatsCardSkeleton";
@@ -58,7 +58,7 @@ export const InsightsDashboard = () => {
 
     return (
         <main className={styles.container}>
-            <InsightsDashboardFilters onDateRangeChange={setDateRange} dateRange={dateRange} />
+            <DateRangeFiltersGroup onDateRangeChange={setDateRange} dateRange={dateRange} />
 
             <Divider>{t("insights.separators.summary")}</Divider>
 

@@ -12,7 +12,7 @@
     .header {
         font: tokens.$typography-title-400;
         margin-bottom: tokens.$spacing-500;
-        font-weight: 500;
+        font-weight: tokens.$font-weight-200;
     }
 
     .caption {

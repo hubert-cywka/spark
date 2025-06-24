@@ -9,10 +9,11 @@ import { DayHeaderPassiveModeActionsRender } from "@/features/daily/components/D
 import { Daily } from "@/features/daily/types/Daily";
 import { formatToISODateString } from "@/features/daily/utils/dateUtils";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
+import { ISODateString } from "@/types/ISODateString";
 
 type DayHeaderProps = {
     daily: Daily;
-    onUpdateDate: (id: string, date: string) => void;
+    onUpdateDate: (id: string, date: ISODateString) => void;
 };
 
 export const DayHeader = ({ daily, onUpdateDate }: DayHeaderProps) => {

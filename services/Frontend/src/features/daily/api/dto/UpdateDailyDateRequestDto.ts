@@ -1,3 +1,5 @@
+import { ISODateString } from "@/types/ISODateString";
+
 export type UpdateDailyDateRequestDto = {
-    date: string;
+    date: ISODateString;
 };

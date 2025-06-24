@@ -9,7 +9,7 @@
 
     .description {
         margin-bottom: tokens.$spacing-500;
-        margin-top: tokens.$spacing-200;
+        margin-top: tokens.$spacing-300;
 
         text-align: justify;
         font: tokens.$typography-body-100;
@@ -18,7 +18,7 @@
 }
 
 .separator {
-    padding-block: tokens.$spacing-300;
+    padding-block: tokens.$spacing-400;
     opacity: 0.5;
 }
 
