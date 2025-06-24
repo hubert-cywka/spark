@@ -20,53 +20,56 @@
         ),
         tokens.$color-neutral-background-alpha-100;
     
-    
-    [role="columnheader"] {
-        border-inline: none;
-
-        &:nth-of-type(1) {
-            border-top-left-radius: tokens.$radius-300;
-        }
-
-        &:nth-last-of-type(1) {
-            border-top-right-radius: tokens.$radius-300;
-        }
-
-        &:not(:last-of-type) {
-            &::before {
-                content: "";
-                position: absolute;
-                right: 0.75px;
-                top: 25%;
-                bottom: 25%;
-                width: 1px;
-                background: tokens.$color-neutral-surface-100;
-            }
-        }
-
-        &:not(:first-of-type) {
-            &::after {
-                content: "";
-                position: absolute;
-                left: 0.75px;
-                top: 25%;
-                bottom: 25%;
-                width: 1px;
-                background: tokens.$color-neutral-surface-100;
-            }
-        }
-    }
-
-
     [role="row"] {
         background-color: tokens.$color-neutral-background-alpha-200;
 
         &.headerRow {
             background-color: tokens.$color-neutral-background-alpha-300;
+
+            [role="columnheader"] {
+                border-color: tokens.$color-neutral-surface-200;
+                border-inline: none;
+
+                &:nth-of-type(1) {
+                    border-top-left-radius: tokens.$radius-300;
+                }
+
+                &:nth-last-of-type(1) {
+                    border-top-right-radius: tokens.$radius-300;
+                }
+
+                &:not(:last-of-type) {
+                    &::before {
+                        content: "";
+                        position: absolute;
+                        right: 0.75px;
+                        top: 25%;
+                        bottom: 25%;
+                        width: 1px;
+                        background: tokens.$color-neutral-surface-100;
+                    }
+                }
+
+                &:not(:first-of-type) {
+                    &::after {
+                        content: "";
+                        position: absolute;
+                        left: 0.75px;
+                        top: 25%;
+                        bottom: 25%;
+                        width: 1px;
+                        background: tokens.$color-neutral-surface-100;
+                    }
+                }
+            }
         }
 
         &.row {
             background-color: tokens.$color-neutral-background-alpha-100;
+        }
+
+        [role="gridcell"] {
+            border-color: tokens.$color-neutral-surface-300;
         }
     }
 }
