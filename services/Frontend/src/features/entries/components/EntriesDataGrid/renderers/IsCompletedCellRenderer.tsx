@@ -8,12 +8,20 @@ import styles from "./styles/IsCompletedCellRenderer.module.scss";
 import { Badge } from "@/components/Badge";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
-export const IsCompletedCellRenderer = (p: RenderCellProps<EntryRow>) => {
+type IsCompletedCellValueRendererProps = {
+    value: boolean;
+};
+
+const IsCompletedCellValueRenderer = ({ value }: IsCompletedCellValueRendererProps) => {
     const t = useTranslate();
 
-    return p.row.isCompleted ? (
+    return value ? (
         <Badge label={t("entries.values.completed")} icon={SquareCheckIcon} variant="success" className={styles.badge} />
     ) : (
         <Badge label={t("entries.values.pending")} icon={SquareIcon} className={styles.badge} />
     );
+};
+
+export const IsCompletedCellRenderer = (p: RenderCellProps<EntryRow>) => {
+    return <IsCompletedCellValueRenderer value={p.row.isCompleted} />;
 };

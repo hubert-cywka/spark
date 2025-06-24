@@ -7,9 +7,19 @@ import { useDataGridRenderers } from "@/components/DataGrid";
 import { useEntriesDataGridRenderers } from "@/features/entries/components/EntriesDataGrid/hooks/useEntriesDataGridRenderers.ts";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
-export const useEntriesDataGrid = () => {
+type UseEntriesDataGridOptions = {
+    activeGroups: string[];
+    onColumnGrouped: (key: string) => void;
+    onColumnUngrouped: (key: string) => void;
+};
+
+export const useEntriesDataGrid = ({ activeGroups, onColumnGrouped, onColumnUngrouped }: UseEntriesDataGridOptions) => {
     const t = useTranslate();
-    const { headerCellRenderer } = useDataGridRenderers();
+    const { headerCellRenderer } = useDataGridRenderers<EntryRow>({
+        activeGroups,
+        onColumnGrouped,
+        onColumnUngrouped,
+    });
     const { isCompletedCellRenderer, isFeaturedCellRenderer, contentCellRenderer, dailyDateCellRenderer, dailyDateGroupCellRenderer } =
         useEntriesDataGridRenderers();
 
@@ -34,6 +44,7 @@ export const useEntriesDataGrid = () => {
                 minWidth: 150,
                 renderCell: contentCellRenderer,
                 renderHeaderCell: headerCellRenderer,
+                renderGroupCell: dailyDateGroupCellRenderer,
             },
             {
                 key: "isCompleted",

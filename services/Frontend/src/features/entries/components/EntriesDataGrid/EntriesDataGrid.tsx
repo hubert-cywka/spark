@@ -1,5 +1,7 @@
 "use client";
 
+import { useCallback, useState } from "react";
+
 import { useEntriesDataGrid } from "./hooks/useEntriesDataGrid";
 
 import styles from "./styles/EntriesDataGrid.module.scss";
@@ -13,15 +15,32 @@ import { useEntryRows } from "@/features/entries/components/EntriesDataGrid/hook
 import { EntryFiltersGroup } from "@/features/entries/components/EntryFiltersGroup";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
-const GROUP_BY_COLUMNS = ["daily"];
+const useEntriesDataGridGroups = () => {
+    const [activeGroups, setActiveGroups] = useState<string[]>([]);
+
+    const onColumnGrouped = useCallback((key: string) => {
+        setActiveGroups((prev) => [...prev, key]);
+    }, []);
+
+    const onColumnUngrouped = useCallback((key: string) => {
+        setActiveGroups((prev) => [...prev.filter((k) => k !== key)]);
+    }, []);
+
+    return { activeGroups, onColumnGrouped, onColumnUngrouped };
+};
 
 // TODO: Replace Field with SearchField (based on https://react-spectrum.adobe.com/react-aria/SearchField.html)
 // TODO: Enable grouping by goals
 // TODO: Semantic html
 export const EntriesDataGrid = () => {
     const t = useTranslate();
+    const { activeGroups, onColumnGrouped, onColumnUngrouped } = useEntriesDataGridGroups();
+    const { columns, rowKeyGetter } = useEntriesDataGrid({
+        activeGroups,
+        onColumnGrouped,
+        onColumnUngrouped,
+    });
 
-    const { columns, rowKeyGetter } = useEntriesDataGrid();
     const { setFlags, flags, dateRange, setDateRange, content, setContent, debouncedContent } = useEntriesDataGridFilters();
     const { data, isLoading } = useEntryRows({
         ...flags,
@@ -41,7 +60,7 @@ export const EntriesDataGrid = () => {
 
             <DataGrid
                 columns={columns}
-                groupBy={GROUP_BY_COLUMNS}
+                groupBy={activeGroups}
                 data={data}
                 rowKeyGetter={rowKeyGetter}
                 noRowsFallback={<NoRecordsFallback isLoading={isLoading} />}

@@ -2,11 +2,10 @@
 
 .container {
     display: flex;
-    gap: tokens.$spacing-300;
     align-items: center;
-    justify-content: center;
     
     .name {
         font-weight: tokens.$font-weight-200;
+        margin-inline: tokens.$spacing-300;
     }
 }
