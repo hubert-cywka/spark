@@ -11,13 +11,9 @@ import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 export const IsFeaturedCellRenderer = (p: RenderCellProps<EntryRow>) => {
     const t = useTranslate();
 
-    return (
-        <div className={styles.container}>
-            {p.row.isFeatured ? (
-                <Badge label={t("entries.values.featured")} icon={StarIcon} variant="secondary" />
-            ) : (
-                <Badge label={t("entries.values.notFeatured")} icon={StarOffIcon} />
-            )}
-        </div>
+    return p.row.isFeatured ? (
+        <Badge label={t("entries.values.featured")} icon={StarIcon} variant="secondary" className={styles.badge} />
+    ) : (
+        <Badge label={t("entries.values.notFeatured")} icon={StarOffIcon} className={styles.badge} />
     );
 };

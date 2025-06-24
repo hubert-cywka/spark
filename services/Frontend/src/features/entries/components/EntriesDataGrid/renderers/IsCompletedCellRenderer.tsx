@@ -11,13 +11,9 @@ import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 export const IsCompletedCellRenderer = (p: RenderCellProps<EntryRow>) => {
     const t = useTranslate();
 
-    return (
-        <div className={styles.container}>
-            {p.row.isCompleted ? (
-                <Badge label={t("entries.values.completed")} icon={SquareCheckIcon} variant="success" />
-            ) : (
-                <Badge label={t("entries.values.pending")} icon={SquareIcon} />
-            )}
-        </div>
+    return p.row.isCompleted ? (
+        <Badge label={t("entries.values.completed")} icon={SquareCheckIcon} variant="success" className={styles.badge} />
+    ) : (
+        <Badge label={t("entries.values.pending")} icon={SquareIcon} className={styles.badge} />
     );
 };
