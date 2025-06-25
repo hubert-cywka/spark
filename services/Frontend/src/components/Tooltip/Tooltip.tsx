@@ -6,13 +6,13 @@ import { TooltipProps } from "./types/Tooltip";
 
 import styles from "./styles/Tooltip.module.scss";
 
-export const Tooltip = ({ children, label, delay = 500 }: TooltipProps) => {
+export const Tooltip = ({ children, label, isDisabled, delay = 500 }: TooltipProps) => {
     if (!label) {
         return <>{children}</>;
     }
 
     return (
-        <TooltipTrigger delay={delay} closeDelay={0}>
+        <TooltipTrigger delay={delay} closeDelay={0} isDisabled={isDisabled}>
             {children}
             <TooltipPopup offset={10} crossOffset={10} placement="top" className={styles.tooltipPopup}>
                 <OverlayArrow>

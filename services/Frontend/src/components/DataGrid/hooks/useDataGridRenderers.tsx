@@ -4,6 +4,7 @@ import { RenderHeaderCellProps } from "react-data-grid";
 import { HeaderCellRenderer } from "@/components/DataGrid/renderers/HeaderCellRenderer.tsx";
 
 type UseDataGridRenderersOptions = {
+    allGroups: string[];
     activeGroups: string[];
     onColumnGrouped: (key: string) => void;
     onColumnUngrouped: (key: string) => void;
@@ -14,6 +15,7 @@ type DataGridRenderers<TData> = {
 };
 
 export const useDataGridRenderers = <TData extends object>({
+    allGroups,
     activeGroups,
     onColumnGrouped,
     onColumnUngrouped,
@@ -26,10 +28,10 @@ export const useDataGridRenderers = <TData extends object>({
                     group={() => onColumnGrouped(props.column.key)}
                     ungroup={() => onColumnUngrouped(props.column.key)}
                     isGrouped={activeGroups.includes(props.column.key)}
-                    canBeGrouped={!!props.column.renderGroupCell}
+                    canBeGrouped={allGroups.includes(props.column.key)}
                 />
             ),
         }),
-        [activeGroups, onColumnGrouped, onColumnUngrouped]
+        [activeGroups, allGroups, onColumnGrouped, onColumnUngrouped]
     );
 };

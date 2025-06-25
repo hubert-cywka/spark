@@ -384,6 +384,12 @@
             }
         },
         "grid": {
+            "groupButton": {
+                "label": "Group by column {columnName}"
+            },
+            "ungroupButton": {
+                "label": "Remove grouping by column {columnName}"
+            },
             "collapseGroupButton": {
                 "label": "Collapse group"
             },

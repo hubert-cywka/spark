@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
 import { ContentCellRenderer } from "../renderers/ContentCellRenderer.tsx";
-import { IsCompletedCellRenderer } from "../renderers/IsCompletedCellRenderer.tsx";
-import { IsFeaturedCellRenderer } from "../renderers/IsFeaturedCellRenderer.tsx";
+import { IsCompletedCellRenderer, IsCompletedGroupCellRenderer } from "../renderers/IsCompletedCellRenderer.tsx";
+import { IsFeaturedCellRenderer, IsFeaturedGroupCellRenderer } from "../renderers/IsFeaturedCellRenderer.tsx";
 
 import {
     DailyDateCellRenderer,
@@ -13,7 +13,9 @@ export const useEntriesDataGridRenderers = () => {
     return useMemo(
         () => ({
             isCompletedCellRenderer: IsCompletedCellRenderer,
+            isCompletedGroupCellRenderer: IsCompletedGroupCellRenderer,
             isFeaturedCellRenderer: IsFeaturedCellRenderer,
+            isFeaturedGroupCellRenderer: IsFeaturedGroupCellRenderer,
             contentCellRenderer: ContentCellRenderer,
             dailyDateCellRenderer: DailyDateCellRenderer,
             dailyDateGroupCellRenderer: DailyDateGroupCellRenderer,

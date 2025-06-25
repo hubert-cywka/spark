@@ -19,10 +19,10 @@ const ContentCellValueRenderer = ({ value }: ContentCellValueRendererProps) => {
     );
 };
 
-export const ContentCellRenderer = (p: RenderCellProps<EntryRow>) => {
+export const ContentCellRenderer = ({ row }: RenderCellProps<EntryRow>) => {
     return (
         <div className={styles.container}>
-            <ContentCellValueRenderer value={p.row.content} />
+            <ContentCellValueRenderer value={row.content} />
         </div>
     );
 };

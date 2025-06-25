@@ -1,11 +1,10 @@
-import { RenderCellProps } from "react-data-grid";
+import { RenderCellProps, RenderGroupCellProps } from "react-data-grid";
 import { SquareCheckIcon, SquareIcon } from "lucide-react";
 
 import { EntryRow } from "../types/EntriesDataGrid";
 
-import styles from "./styles/IsCompletedCellRenderer.module.scss";
-
 import { Badge } from "@/components/Badge";
+import { GroupCellRenderer } from "@/components/DataGrid/renderers/GroupCellRenderer.tsx";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
 type IsCompletedCellValueRendererProps = {
@@ -16,12 +15,20 @@ const IsCompletedCellValueRenderer = ({ value }: IsCompletedCellValueRendererPro
     const t = useTranslate();
 
     return value ? (
-        <Badge label={t("entries.values.completed")} icon={SquareCheckIcon} variant="success" className={styles.badge} />
+        <Badge label={t("entries.values.completed")} icon={SquareCheckIcon} variant="success" />
     ) : (
-        <Badge label={t("entries.values.pending")} icon={SquareIcon} className={styles.badge} />
+        <Badge label={t("entries.values.pending")} icon={SquareIcon} />
     );
 };
 
-export const IsCompletedCellRenderer = (p: RenderCellProps<EntryRow>) => {
-    return <IsCompletedCellValueRenderer value={p.row.isCompleted} />;
+export const IsCompletedCellRenderer = ({ row }: RenderCellProps<EntryRow>) => {
+    return <IsCompletedCellValueRenderer value={row.isCompleted} />;
+};
+
+export const IsCompletedGroupCellRenderer = (p: RenderGroupCellProps<EntryRow>) => {
+    return (
+        <GroupCellRenderer {...p}>
+            <IsCompletedCellValueRenderer value={p.row.childRows[0].isCompleted} />
+        </GroupCellRenderer>
+    );
 };

@@ -8,4 +8,21 @@
         font-weight: tokens.$font-weight-200;
         margin-inline: tokens.$spacing-300;
     }
+    
+    .sortButton {
+        flex-shrink: 0;
+    }
+    
+    .groupingButton {
+        flex-shrink: 0;
+      
+        &.grouped {
+            color: tokens.$color-accent-text-300;
+        }
+
+        &:not(.grouped) {
+            color: tokens.$color-neutral-text-300;
+        }
+
+    }
 }
