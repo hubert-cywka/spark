@@ -11,14 +11,14 @@ import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
 type HeaderCellRendererProps<TData> = RenderHeaderCellProps<TData> & {
     canBeGrouped: boolean;
-    isGrouped: boolean;
+    groupIndex?: number;
     group: () => void;
     ungroup: () => void;
 };
 
 export function HeaderCellRenderer<TData>({
     column,
-    isGrouped,
+    groupIndex,
     canBeGrouped,
     sortDirection,
     group,
@@ -27,6 +27,7 @@ export function HeaderCellRenderer<TData>({
     const t = useTranslate();
 
     const columnName = column.name as string;
+    const isGrouped = groupIndex !== undefined;
     const groupButtonLabel = isGrouped ? "reports.grid.ungroupButton.label" : "reports.grid.groupButton.label";
     const handleGroupClick = isGrouped ? ungroup : group;
 
@@ -48,6 +49,8 @@ export function HeaderCellRenderer<TData>({
             <OverflowableText tooltip={columnName} className={styles.name}>
                 {columnName}
             </OverflowableText>
+
+            {isGrouped && <span className={styles.groupIndex}>({groupIndex + 1}.)</span>}
 
             {column.sortable && (
                 <span className={styles.sortButton}>

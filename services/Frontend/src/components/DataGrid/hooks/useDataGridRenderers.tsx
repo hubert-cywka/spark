@@ -27,11 +27,19 @@ export const useDataGridRenderers = <TData extends object>({
                     {...props}
                     group={() => onColumnGrouped(props.column.key)}
                     ungroup={() => onColumnUngrouped(props.column.key)}
-                    isGrouped={activeGroups.includes(props.column.key)}
+                    groupIndex={findIndexOrReturnUndefined(activeGroups, props.column.key)}
                     canBeGrouped={allGroups.includes(props.column.key)}
                 />
             ),
         }),
         [activeGroups, allGroups, onColumnGrouped, onColumnUngrouped]
     );
+};
+
+const findIndexOrReturnUndefined = <T,>(array: T[], item: T): number | undefined => {
+    const index = array.indexOf(item);
+
+    if (index >= 0) {
+        return index;
+    }
 };

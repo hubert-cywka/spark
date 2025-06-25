@@ -9,6 +9,11 @@
         margin-inline: tokens.$spacing-300;
     }
     
+    .groupIndex {
+        font-size: tokens.$font-size-200;
+        color: tokens.$color-accent-text-300;
+    }
+    
     .sortButton {
         flex-shrink: 0;
     }
