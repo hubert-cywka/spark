@@ -12,7 +12,7 @@ import { Field } from "@/components/Input";
 import { NoRecordsFallback } from "@/features/entries/components/EntriesDataGrid/components/NoRecordsFallback/NoRecordsFallback.tsx";
 import { useEntriesDataGridFilters } from "@/features/entries/components/EntriesDataGrid/hooks/useEntriesDataGridFilters.ts";
 import { useEntriesDataGridGroups } from "@/features/entries/components/EntriesDataGrid/hooks/useEntriesDataGridGroups.ts";
-import { useEntryRows } from "@/features/entries/components/EntriesDataGrid/hooks/useEntryRows.ts";
+import { useEntryDetails } from "@/features/entries/components/EntriesDataGrid/hooks/useEntryDetails.ts";
 import { EntriesDataGridColumn } from "@/features/entries/components/EntriesDataGrid/types/EntriesDataGrid";
 import { EntryFiltersGroup } from "@/features/entries/components/EntryFiltersGroup";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
@@ -35,19 +35,18 @@ export const EntriesDataGrid = () => {
     });
 
     const { setFlags, flags, dateRange, setDateRange, content, setContent, debouncedContent } = useEntriesDataGridFilters();
-    const { data: entryRows, isLoading } = useEntryRows({
-        ...flags,
-        ...dateRange,
-        content: debouncedContent,
+    const { data, isLoading } = useEntryDetails({
+        filters: { ...flags, ...dateRange, content: debouncedContent },
+        autoFetch: true,
     });
 
     const denormalizedData = useMemo(() => {
         if (!activeGroups.includes("goals")) {
-            return entryRows;
+            return data;
         }
 
-        return denormalize(entryRows, "goals");
-    }, [activeGroups, entryRows]);
+        return denormalize(data, "goals");
+    }, [activeGroups, data]);
 
     return (
         <div className={styles.container}>

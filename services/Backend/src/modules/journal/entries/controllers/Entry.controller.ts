@@ -10,7 +10,9 @@ import { EntriesMetricsDto } from "@/modules/journal/entries/dto/EntriesMetrics.
 import { EntryLoggingHistogramDto } from "@/modules/journal/entries/dto/EntryLoggingHistogram.dto";
 import { FindEntriesFiltersDto } from "@/modules/journal/entries/dto/FindEntriesFilters.dto";
 import { FindEntriesInsightsDto } from "@/modules/journal/entries/dto/FindEntriesInsights.dto";
+import { FindEntryDetailsFiltersDto } from "@/modules/journal/entries/dto/FindEntryDetailsFilters.dto";
 import { type IEntryMapper, EntryMapperToken } from "@/modules/journal/entries/mappers/IEntry.mapper";
+import { type IEntryDetailMapper, EntryDetailMapperToken } from "@/modules/journal/entries/mappers/IEntryDetail.mapper";
 import {
     type IEntriesInsightsService,
     EntriesInsightsServiceToken,
@@ -24,7 +26,9 @@ export class EntryController {
         @Inject(EntryServiceToken) private readonly entryService: IEntryService,
         @Inject(EntriesInsightsServiceToken)
         private readonly insightsService: IEntriesInsightsService,
-        @Inject(EntryMapperToken) private readonly entryMapper: IEntryMapper
+        @Inject(EntryMapperToken) private readonly entryMapper: IEntryMapper,
+        @Inject(EntryDetailMapperToken)
+        private readonly entryDetailMapper: IEntryDetailMapper
     ) {}
 
     @Get()
@@ -37,6 +41,18 @@ export class EntryController {
     ) {
         const result = await this.entryService.findAll(user.id, pageOptions, filters);
         return this.entryMapper.fromModelToDtoPage(result);
+    }
+
+    @Get("/details")
+    @UseGuards(AccessGuard)
+    @AccessScopes("read:entry")
+    public async getEntriesDetailed(
+        @Query() filters: FindEntryDetailsFiltersDto,
+        @Query() pageOptions: PageOptionsDto,
+        @AuthenticatedUserContext() user: User
+    ) {
+        const result = await this.entryService.findAllDetailed(user.id, pageOptions, filters);
+        return this.entryDetailMapper.fromModelToDtoPage(result);
     }
 
     @Get("insights/metrics")

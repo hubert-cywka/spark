@@ -1,13 +1,3 @@
-import { ISODateString } from "@/types/ISODateString";
+import { EntryDetail } from "@/features/entries/types/Entry";
 
-export type EntryRow = {
-    id: string;
-    daily: ISODateString;
-    content: string;
-    isCompleted: boolean;
-    isFeatured: boolean;
-    createdAt: Date;
-    goals: string[];
-};
-
-export type EntriesDataGridColumn = keyof EntryRow;
+export type EntriesDataGridColumn = keyof EntryDetail;

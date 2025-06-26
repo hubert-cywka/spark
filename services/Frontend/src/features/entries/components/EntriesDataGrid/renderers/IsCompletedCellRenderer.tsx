@@ -1,10 +1,9 @@
 import { RenderCellProps, RenderGroupCellProps } from "react-data-grid";
 import { SquareCheckIcon, SquareIcon } from "lucide-react";
 
-import { EntryRow } from "../types/EntriesDataGrid";
-
 import { Badge } from "@/components/Badge";
 import { GroupCellRenderer } from "@/components/DataGrid/renderers/GroupCellRenderer.tsx";
+import { EntryDetail } from "@/features/entries/types/Entry";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
 type IsCompletedCellValueRendererProps = {
@@ -21,11 +20,11 @@ const IsCompletedCellValueRenderer = ({ value }: IsCompletedCellValueRendererPro
     );
 };
 
-export const IsCompletedCellRenderer = ({ row }: RenderCellProps<EntryRow>) => {
+export const IsCompletedCellRenderer = ({ row }: RenderCellProps<EntryDetail>) => {
     return <IsCompletedCellValueRenderer value={row.isCompleted} />;
 };
 
-export const IsCompletedGroupCellRenderer = (p: RenderGroupCellProps<EntryRow>) => {
+export const IsCompletedGroupCellRenderer = (p: RenderGroupCellProps<EntryDetail>) => {
     return (
         <GroupCellRenderer {...p}>
             <IsCompletedCellValueRenderer value={p.row.childRows[0].isCompleted} />

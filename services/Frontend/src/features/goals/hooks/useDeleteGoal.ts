@@ -1,10 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
 
+import { EntriesQueryKeyFactory } from "@/features/entries/utils/entriesQueryKeyFactory.ts";
 import { GoalsService } from "@/features/goals/api/goalsService";
 import { GoalQueryKeyFactory } from "@/features/goals/utils/goalQueryKeyFactory";
 import { useQueryCache } from "@/hooks/useQueryCache";
-
-const queryKey = GoalQueryKeyFactory.createForAll();
 
 export const useDeleteGoal = () => {
     const { invalidate } = useQueryCache();
@@ -12,7 +11,8 @@ export const useDeleteGoal = () => {
     return useMutation({
         mutationFn: GoalsService.deleteOne,
         onSuccess: async () => {
-            await invalidate(queryKey);
+            void invalidate(GoalQueryKeyFactory.createForAll());
+            void invalidate(EntriesQueryKeyFactory.createForDetailed());
         },
     });
 };
