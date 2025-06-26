@@ -6,7 +6,7 @@ import { GroupCellRenderer } from "@/components/DataGrid/renderers/GroupCellRend
 import { OverflowableText } from "@/components/OverflowableText";
 import { EntryRow } from "@/features/entries/components/EntriesDataGrid/types/EntriesDataGrid";
 
-// TODO: Improve this renderer
+// TODO: Better visualization
 type GoalsCellValueRendererProps = {
     value: string[];
 };

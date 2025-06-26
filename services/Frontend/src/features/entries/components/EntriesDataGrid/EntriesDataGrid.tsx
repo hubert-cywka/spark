@@ -21,7 +21,6 @@ import { denormalize } from "@/utils/tableUtils.ts";
 // TODO: Mention, that aggregating by "goals" may seemingly duplicate entries
 const GROUP_BY_COLUMNS: EntriesDataGridColumn[] = ["goals", "daily", "isFeatured", "isCompleted"];
 
-// TODO: Replace Field with SearchField (based on https://react-spectrum.adobe.com/react-aria/SearchField.html)
 // TODO: Semantic html
 // TODO: Filter by groups
 export const EntriesDataGrid = () => {
@@ -42,7 +41,6 @@ export const EntriesDataGrid = () => {
         content: debouncedContent,
     });
 
-    // Hubert: Only the "goals" column needs to be denormalized, no need to make this generic for now.
     const denormalizedData = useMemo(() => {
         if (!activeGroups.includes("goals")) {
             return entryRows;

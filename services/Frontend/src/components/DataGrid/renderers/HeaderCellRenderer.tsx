@@ -26,7 +26,7 @@ export function HeaderCellRenderer<TData>({
 }: HeaderCellRendererProps<TData>) {
     const t = useTranslate();
 
-    const columnName = column.name as string;
+    const columnName = column.name.toString();
     const isGrouped = groupIndex !== undefined;
     const groupButtonLabel = isGrouped ? "reports.grid.ungroupButton.label" : "reports.grid.groupButton.label";
     const handleGroupClick = isGrouped ? ungroup : group;
