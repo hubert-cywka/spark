@@ -9,6 +9,8 @@ import "react-data-grid/lib/styles.css";
 
 import { useDataGridSort } from "@/components/DataGrid/hooks/useDataGridSort.ts";
 
+const HEADER_ROW_HEIGHT = 40;
+
 type DataGridProps<TData> = {
     data: TData[];
     columns: readonly Column<TData>[];
@@ -39,6 +41,7 @@ export function DataGrid<TData>({ data, columns, rowKeyGetter, noRowsFallback, c
             expandedGroupIds={expandedGroupIds}
             onExpandedGroupIdsChange={setExpandedGroupIds}
             rowGrouper={rowGrouper}
+            headerRowHeight={HEADER_ROW_HEIGHT}
         />
     );
 }

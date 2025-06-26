@@ -1,10 +1,9 @@
 import { RenderCellProps, RenderGroupCellProps } from "react-data-grid";
 import { SquareCheckIcon, SquareIcon } from "lucide-react";
 
-import { EntryRow } from "../types/EntriesDataGrid";
-
 import { Badge } from "@/components/Badge";
 import { GroupCellRenderer } from "@/components/DataGrid/renderers/GroupCellRenderer.tsx";
+import { EntryDetail } from "@/features/entries/types/Entry";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
 type IsFeaturedCellValueRendererProps = {
@@ -21,11 +20,11 @@ export const IsFeaturedCellValueRenderer = ({ value }: IsFeaturedCellValueRender
     );
 };
 
-export const IsFeaturedCellRenderer = ({ row }: RenderCellProps<EntryRow>) => {
+export const IsFeaturedCellRenderer = ({ row }: RenderCellProps<EntryDetail>) => {
     return <IsFeaturedCellValueRenderer value={row.isFeatured} />;
 };
 
-export const IsFeaturedGroupCellRenderer = (p: RenderGroupCellProps<EntryRow>) => {
+export const IsFeaturedGroupCellRenderer = (p: RenderGroupCellProps<EntryDetail>) => {
     return (
         <GroupCellRenderer {...p}>
             <IsFeaturedCellValueRenderer value={p.row.childRows[0].isFeatured} />

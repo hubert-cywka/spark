@@ -11,6 +11,15 @@ export type Entry = {
     createdAt: Date;
 };
 
+export type EntryDetail = {
+    id: string;
+    daily: ISODateString;
+    content: string;
+    isCompleted: boolean;
+    isFeatured: boolean;
+    goals: string[];
+};
+
 export type EntriesMetrics = {
     dailyRange: {
         from: ISODateString;

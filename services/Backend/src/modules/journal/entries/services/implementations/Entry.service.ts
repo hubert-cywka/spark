@@ -7,7 +7,10 @@ import { type Paginated } from "@/common/pagination/types/Paginated";
 import { EntryEntity } from "@/modules/journal/entries/entities/Entry.entity";
 import { EntryNotFoundError } from "@/modules/journal/entries/errors/EntryNotFound.error";
 import { type IEntryMapper, EntryMapperToken } from "@/modules/journal/entries/mappers/IEntry.mapper";
+import { type IEntryDetailMapper, EntryDetailMapperToken } from "@/modules/journal/entries/mappers/IEntryDetail.mapper";
 import { type Entry } from "@/modules/journal/entries/models/Entry.model";
+import { EntryDetail } from "@/modules/journal/entries/models/EntryDetail.model";
+import { EntryDetailFilters } from "@/modules/journal/entries/models/EntryDetailFilters.model";
 import { type EntryFilters } from "@/modules/journal/entries/models/EntryFilters.model";
 import { type IEntryService } from "@/modules/journal/entries/services/interfaces/IEntry.service";
 import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
@@ -18,13 +21,15 @@ export class EntryService implements IEntryService {
     public constructor(
         @InjectRepository(EntryEntity, JOURNAL_MODULE_DATA_SOURCE)
         private readonly repository: Repository<EntryEntity>,
-        @Inject(EntryMapperToken) private readonly entryMapper: IEntryMapper
+        @Inject(EntryMapperToken) private readonly entryMapper: IEntryMapper,
+        @Inject(EntryDetailMapperToken)
+        private readonly entryDetailMapper: IEntryDetailMapper
     ) {}
 
     public async findAll(
         authorId: string,
         pageOptions: PageOptions,
-        { from, to, goals, featured, completed, content }: EntryFilters = {}
+        { from, to, goals, featured, completed }: EntryFilters = {}
     ): Promise<Paginated<Entry>> {
         const queryBuilder = this.getRepository().createQueryBuilder("entry");
 
@@ -48,11 +53,6 @@ export class EntryService implements IEntryService {
             });
         }
 
-        // TODO: Consider using pg_trgm
-        if (content) {
-            queryBuilder.andWhere("entry.content ILIKE '%' || :content || '%'", { content });
-        }
-
         if (goals) {
             queryBuilder.innerJoin("entry.goals", "goal").andWhere("goal.id IN (:...goals)", { goals });
         }
@@ -67,6 +67,57 @@ export class EntryService implements IEntryService {
 
         return {
             data: this.entryMapper.fromEntityToModelBulk(entries),
+            meta: {
+                itemCount,
+                page: pageOptions.page,
+                take: pageOptions.take,
+            },
+        };
+    }
+
+    public async findAllDetailed(
+        authorId: string,
+        pageOptions: PageOptions,
+        { from, to, goals, featured, completed, content }: EntryDetailFilters
+    ): Promise<Paginated<EntryDetail>> {
+        const queryBuilder = this.getRepository().createQueryBuilder("entry");
+
+        queryBuilder
+            .innerJoinAndSelect("entry.daily", "daily")
+            .leftJoinAndSelect("entry.goals", "goal")
+            .where("entry.authorId = :authorId", { authorId })
+            .andWhere("daily.date >= :from", { from })
+            .andWhere("daily.date <= :to", { to });
+
+        if (featured !== undefined) {
+            queryBuilder.andWhere("entry.isFeatured = :featured", { featured });
+        }
+
+        if (completed !== undefined) {
+            queryBuilder.andWhere("entry.isCompleted = :completed", {
+                completed,
+            });
+        }
+
+        // TODO: Consider using pg_trgm
+        if (content) {
+            queryBuilder.andWhere("entry.content ILIKE '%' || :content || '%'", { content });
+        }
+
+        if (goals) {
+            queryBuilder.andWhere("goal.id IN (:...goals)", { goals });
+        }
+
+        queryBuilder
+            .orderBy("daily.date", pageOptions.order)
+            .addOrderBy("entry.createdAt", "ASC")
+            .take(pageOptions.take)
+            .skip(pageOptions.skip);
+
+        const [entries, itemCount] = await queryBuilder.getManyAndCount();
+
+        return {
+            data: this.entryDetailMapper.fromEntityToModelBulk(entries),
             meta: {
                 itemCount,
                 page: pageOptions.page,

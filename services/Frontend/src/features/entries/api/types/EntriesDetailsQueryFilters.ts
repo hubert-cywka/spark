@@ -1,9 +1,10 @@
 import { ISODateString } from "@/types/ISODateString";
 
-export type EntriesQueryFilters = {
+export type EntriesDetailsQueryFilters = {
     goals?: string[];
-    from?: ISODateString;
-    to?: ISODateString;
+    content?: string;
+    from: ISODateString;
+    to: ISODateString;
     featured?: boolean;
     completed?: boolean;
 };

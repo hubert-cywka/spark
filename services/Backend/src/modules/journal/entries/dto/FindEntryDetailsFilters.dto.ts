@@ -1,10 +1,10 @@
 import { Transform, Type } from "class-transformer";
-import { IsArray, IsBoolean, IsDateString, IsOptional, IsUUID } from "class-validator";
+import { IsArray, IsBoolean, IsDateString, IsOptional, IsString, IsUUID } from "class-validator";
 
 import { IsDateOnly } from "@/lib/validation";
-import { type ISODateString } from "@/types/Date";
+import type { ISODateString } from "@/types/Date";
 
-export class FindEntriesFiltersDto {
+export class FindEntryDetailsFiltersDto {
     @IsOptional()
     @IsArray()
     @IsUUID("4", { each: true })
@@ -12,15 +12,13 @@ export class FindEntriesFiltersDto {
     @Transform(({ value }) => value.split(","))
     readonly goals?: string[];
 
-    @IsOptional()
     @IsDateOnly()
     @IsDateString({ strict: true })
-    readonly from?: ISODateString;
+    readonly from!: ISODateString;
 
-    @IsOptional()
     @IsDateOnly()
     @IsDateString({ strict: true })
-    readonly to?: ISODateString;
+    readonly to!: ISODateString;
 
     @IsOptional()
     @IsBoolean()
@@ -39,4 +37,8 @@ export class FindEntriesFiltersDto {
         return value;
     })
     readonly completed?: boolean;
+
+    @IsOptional()
+    @IsString()
+    readonly content?: string;
 }

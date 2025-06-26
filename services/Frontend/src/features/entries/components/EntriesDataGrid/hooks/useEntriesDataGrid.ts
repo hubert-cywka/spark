@@ -1,10 +1,9 @@
 import { useMemo } from "react";
 import { Column } from "react-data-grid";
 
-import { EntryRow } from "../types/EntriesDataGrid";
-
 import { useDataGridRenderers } from "@/components/DataGrid";
 import { useEntriesDataGridRenderers } from "@/features/entries/components/EntriesDataGrid/hooks/useEntriesDataGridRenderers.ts";
+import { EntryDetail } from "@/features/entries/types/Entry";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
 type UseEntriesDataGridOptions = {
@@ -16,7 +15,7 @@ type UseEntriesDataGridOptions = {
 
 export const useEntriesDataGrid = ({ allGroups, activeGroups, onColumnGrouped, onColumnUngrouped }: UseEntriesDataGridOptions) => {
     const t = useTranslate();
-    const { headerCellRenderer } = useDataGridRenderers<EntryRow>({
+    const { headerCellRenderer } = useDataGridRenderers<EntryDetail>({
         allGroups,
         activeGroups,
         onColumnGrouped,
@@ -40,7 +39,7 @@ export const useEntriesDataGrid = ({ allGroups, activeGroups, onColumnGrouped, o
     const isCompletedGrouped = activeGroups.includes("isCompleted");
     const isFeaturedGrouped = activeGroups.includes("isFeatured");
 
-    const columns: readonly Column<EntryRow>[] = useMemo(
+    const columns: readonly Column<EntryDetail>[] = useMemo(
         () => [
             {
                 key: "daily",
@@ -115,4 +114,4 @@ export const useEntriesDataGrid = ({ allGroups, activeGroups, onColumnGrouped, o
     return { columns, rowKeyGetter };
 };
 
-const rowKeyGetter = (row: EntryRow) => `${row.id}_${row.goals.concat("-")}`;
+const rowKeyGetter = (row: EntryDetail) => `${row.id}_${row.goals.concat("-")}`;

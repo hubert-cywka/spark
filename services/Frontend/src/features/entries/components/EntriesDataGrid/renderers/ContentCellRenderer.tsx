@@ -1,11 +1,10 @@
 import { RenderCellProps } from "react-data-grid";
 
-import { EntryRow } from "../types/EntriesDataGrid";
-
 import styles from "./styles/ContentCellRenderer.module.scss";
 
 import { Tooltip } from "@/components/Tooltip";
 import { FormattedEntryContent } from "@/features/entries/components/FormattedEntryContent";
+import { EntryDetail } from "@/features/entries/types/Entry";
 
 type ContentCellValueRendererProps = {
     value: string;
@@ -19,7 +18,7 @@ const ContentCellValueRenderer = ({ value }: ContentCellValueRendererProps) => {
     );
 };
 
-export const ContentCellRenderer = ({ row }: RenderCellProps<EntryRow>) => {
+export const ContentCellRenderer = ({ row }: RenderCellProps<EntryDetail>) => {
     return (
         <div className={styles.container}>
             <ContentCellValueRenderer value={row.content} />
