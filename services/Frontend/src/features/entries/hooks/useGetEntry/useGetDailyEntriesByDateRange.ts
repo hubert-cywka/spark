@@ -2,31 +2,23 @@ import { useMemo } from "react";
 
 import { useEntries } from "@/features/entries/hooks";
 import { Entry } from "@/features/entries/types/Entry";
+import { ISODateString } from "@/types/ISODateString";
 
 type UseGetDailyEntriesByDateRangeOptions = {
-    from: string;
-    to: string;
-    content?: string;
+    from: ISODateString;
+    to: ISODateString;
     featured?: boolean;
     completed?: boolean;
     autoFetch?: boolean;
 };
 
-export const useGetDailyEntriesByDateRange = ({
-    from,
-    to,
-    featured,
-    completed,
-    content,
-    autoFetch,
-}: UseGetDailyEntriesByDateRangeOptions) => {
+export const useGetDailyEntriesByDateRange = ({ from, to, featured, completed, autoFetch }: UseGetDailyEntriesByDateRangeOptions) => {
     const { data: entriesData, ...rest } = useEntries({
         filters: {
             from,
             to,
             featured,
             completed,
-            content,
         },
         autoFetch,
     });
