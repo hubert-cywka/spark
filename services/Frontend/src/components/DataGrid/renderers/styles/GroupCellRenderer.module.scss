@@ -1,0 +1,32 @@
+@use "src/styles/tokens";
+
+
+.container {
+    gap: tokens.$spacing-200;
+    align-items: center;
+    display: flex;
+
+    font-size: tokens.$font-size-200;
+
+    .valueWrapper {
+        gap: tokens.$spacing-300;
+        align-items: center;
+        display: flex;
+
+        flex-grow: 1; 
+        flex-shrink: 1;
+        min-width: 0;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        .count {
+            color: tokens.$color-accent-text-300;
+        }
+    }
+
+    .toggleButton {
+        flex-shrink: 0;
+    }
+}

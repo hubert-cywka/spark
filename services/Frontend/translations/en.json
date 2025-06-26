@@ -384,6 +384,12 @@
             }
         },
         "grid": {
+            "groupButton": {
+                "label": "Group by column {columnName}"
+            },
+            "ungroupButton": {
+                "label": "Remove grouping by column {columnName}"
+            },
             "collapseGroupButton": {
                 "label": "Collapse group"
             },
@@ -393,6 +399,7 @@
             "columns": {
                 "daily": "Date",
                 "content": "Content",
+                "goals": "Goals",
                 "isCompleted": "Completed",
                 "isFeatured": "Featured"
             },

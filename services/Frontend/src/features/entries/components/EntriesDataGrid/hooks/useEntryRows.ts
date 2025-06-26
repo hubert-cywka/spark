@@ -57,5 +57,6 @@ const mapToEntryRow = (entry: Entry, daily: ISODateString): EntryRow => {
         content: entry.content,
         isCompleted: entry.isCompleted,
         id: entry.id,
+        goals: ["Mock goal", "Another example", "Simple mock"], // TODO: Provide real data
     };
 };

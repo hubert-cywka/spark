@@ -1,19 +1,34 @@
-import { RenderCellProps } from "react-data-grid";
-import { StarIcon, StarOffIcon } from "lucide-react";
+import { RenderCellProps, RenderGroupCellProps } from "react-data-grid";
+import { SquareCheckIcon, SquareIcon } from "lucide-react";
 
 import { EntryRow } from "../types/EntriesDataGrid";
 
-import styles from "./styles/IsFeaturedCellRenderer.module.scss";
-
 import { Badge } from "@/components/Badge";
+import { GroupCellRenderer } from "@/components/DataGrid/renderers/GroupCellRenderer.tsx";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
-export const IsFeaturedCellRenderer = (p: RenderCellProps<EntryRow>) => {
+type IsFeaturedCellValueRendererProps = {
+    value: boolean;
+};
+
+export const IsFeaturedCellValueRenderer = ({ value }: IsFeaturedCellValueRendererProps) => {
     const t = useTranslate();
 
-    return p.row.isFeatured ? (
-        <Badge label={t("entries.values.featured")} icon={StarIcon} variant="secondary" className={styles.badge} />
+    return value ? (
+        <Badge label={t("entries.values.featured")} icon={SquareCheckIcon} variant="success" />
     ) : (
-        <Badge label={t("entries.values.notFeatured")} icon={StarOffIcon} className={styles.badge} />
+        <Badge label={t("entries.values.notFeatured")} icon={SquareIcon} />
+    );
+};
+
+export const IsFeaturedCellRenderer = ({ row }: RenderCellProps<EntryRow>) => {
+    return <IsFeaturedCellValueRenderer value={row.isFeatured} />;
+};
+
+export const IsFeaturedGroupCellRenderer = (p: RenderGroupCellProps<EntryRow>) => {
+    return (
+        <GroupCellRenderer {...p}>
+            <IsFeaturedCellValueRenderer value={p.row.childRows[0].isFeatured} />
+        </GroupCellRenderer>
     );
 };

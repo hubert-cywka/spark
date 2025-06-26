@@ -4,6 +4,7 @@ import styles from "./styles/Badge.module.scss";
 
 import { Icon } from "@/components/Icon";
 import { IconSlot } from "@/components/Icon/types/Icon";
+import { OverflowableText } from "@/components/OverflowableText";
 
 type BadgeProps = {
     label: string;
@@ -15,8 +16,10 @@ type BadgeProps = {
 export const Badge = ({ label, icon, className, variant = "primary" }: BadgeProps) => {
     return (
         <span data-variant={variant} className={classNames(styles.badge, className)}>
-            {icon && <Icon slot={icon} size="1" />}
-            {label}
+            {icon && <Icon className={styles.icon} slot={icon} size="1" />}
+            <OverflowableText tooltip={label} className={styles.label}>
+                {label}
+            </OverflowableText>
         </span>
     );
 };

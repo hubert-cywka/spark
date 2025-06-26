@@ -1,0 +1,17 @@
+@use "src/styles/tokens";
+
+.container {
+    display: flex;
+    font-size: tokens.$font-size-200;
+    justify-content: center;
+    
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    
+    .valueWrapper {
+        display: flex;
+        gap: tokens.$spacing-200;
+        align-items: center;
+    }
+}

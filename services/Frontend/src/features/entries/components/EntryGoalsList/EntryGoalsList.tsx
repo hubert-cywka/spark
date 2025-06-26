@@ -16,7 +16,7 @@ type EntryGoalsListProps = {
 export const EntryGoalsList = ({ entryId }: EntryGoalsListProps) => {
     const t = useTranslate();
 
-    const { data: linkedGoalsData, hasNextPage, fetchNextPage, isFetching } = useGoals({ entries: [entryId] });
+    const { data: linkedGoalsData, hasNextPage, fetchNextPage, isFetching } = useGoals({ filters: { entries: [entryId] } });
     const linkedGoals = linkedGoalsData?.pages.flatMap((page) => page.data) ?? [];
 
     const { onUnlinkEntryError } = useUnlinkEntryFromGoalEvents();

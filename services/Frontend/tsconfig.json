@@ -28,6 +28,11 @@
       {
         "name": "next"
       }
+    ],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
     ]
   },
   "include": [

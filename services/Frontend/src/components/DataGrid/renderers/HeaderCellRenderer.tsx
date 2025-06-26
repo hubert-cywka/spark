@@ -1,19 +1,61 @@
 import { RenderHeaderCellProps } from "react-data-grid";
-import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
+import classNames from "clsx";
+import { ArrowDownIcon, ArrowUpIcon, GroupIcon } from "lucide-react";
 
 import styles from "./styles/HeaderCellRenderer.module.scss";
 
 import { Icon } from "@/components/Icon";
+import { IconButton } from "@/components/IconButton";
+import { OverflowableText } from "@/components/OverflowableText";
+import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
-export function HeaderCellRenderer<TData>(p: RenderHeaderCellProps<TData>) {
+type HeaderCellRendererProps<TData> = RenderHeaderCellProps<TData> & {
+    canBeGrouped: boolean;
+    groupIndex?: number;
+    group: () => void;
+    ungroup: () => void;
+};
+
+export function HeaderCellRenderer<TData>({
+    column,
+    groupIndex,
+    canBeGrouped,
+    sortDirection,
+    group,
+    ungroup,
+}: HeaderCellRendererProps<TData>) {
+    const t = useTranslate();
+
+    const columnName = column.name.toString();
+    const isGrouped = groupIndex !== undefined;
+    const groupButtonLabel = isGrouped ? "reports.grid.ungroupButton.label" : "reports.grid.groupButton.label";
+    const handleGroupClick = isGrouped ? ungroup : group;
+
     return (
         <div className={styles.container}>
-            <span className={styles.name}>{p.column.name}</span>
+            {canBeGrouped && (
+                <IconButton
+                    onPress={handleGroupClick}
+                    iconSlot={GroupIcon}
+                    aria-label={t(groupButtonLabel, { columnName })}
+                    className={classNames(styles.groupingButton, {
+                        [styles.grouped]: isGrouped,
+                    })}
+                    variant="subtle"
+                    size="1"
+                />
+            )}
 
-            {p.column.sortable && (
-                <span>
-                    {p.sortDirection === "ASC" && <Icon slot={ArrowDownIcon} size="1" />}
-                    {p.sortDirection === "DESC" && <Icon slot={ArrowUpIcon} size="1" />}
+            <OverflowableText tooltip={columnName} className={styles.name}>
+                {columnName}
+            </OverflowableText>
+
+            {isGrouped && <span className={styles.groupIndex}>({groupIndex + 1}.)</span>}
+
+            {column.sortable && (
+                <span className={styles.sortButton}>
+                    {sortDirection === "ASC" && <Icon slot={ArrowDownIcon} size="1" />}
+                    {sortDirection === "DESC" && <Icon slot={ArrowUpIcon} size="1" />}
                 </span>
             )}
         </div>
