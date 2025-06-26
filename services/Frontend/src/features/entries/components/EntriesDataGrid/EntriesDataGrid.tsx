@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo } from "react";
+
 import { useEntriesDataGrid } from "./hooks/useEntriesDataGrid";
 
 import styles from "./styles/EntriesDataGrid.module.scss";
@@ -14,15 +16,17 @@ import { useEntryRows } from "@/features/entries/components/EntriesDataGrid/hook
 import { EntriesDataGridColumn } from "@/features/entries/components/EntriesDataGrid/types/EntriesDataGrid";
 import { EntryFiltersGroup } from "@/features/entries/components/EntryFiltersGroup";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
+import { denormalize } from "@/utils/tableUtils.ts";
 
-const GROUP_BY_COLUMNS: EntriesDataGridColumn[] = ["daily", "isFeatured", "isCompleted"];
+// TODO: Mention, that aggregating by "goals" may seemingly duplicate entries
+const GROUP_BY_COLUMNS: EntriesDataGridColumn[] = ["goals", "daily", "isFeatured", "isCompleted"];
 
 // TODO: Replace Field with SearchField (based on https://react-spectrum.adobe.com/react-aria/SearchField.html)
-// TODO: Display groups. They should support filtering, grouping and maybe sorting.
 // TODO: Semantic html
-// TODO: Ungroup all button
+// TODO: Filter by groups
 export const EntriesDataGrid = () => {
     const t = useTranslate();
+
     const { activeGroups, onColumnGrouped, onColumnUngrouped } = useEntriesDataGridGroups();
     const { columns, rowKeyGetter } = useEntriesDataGrid({
         allGroups: GROUP_BY_COLUMNS,
@@ -32,11 +36,20 @@ export const EntriesDataGrid = () => {
     });
 
     const { setFlags, flags, dateRange, setDateRange, content, setContent, debouncedContent } = useEntriesDataGridFilters();
-    const { data, isLoading } = useEntryRows({
+    const { data: entryRows, isLoading } = useEntryRows({
         ...flags,
         ...dateRange,
         content: debouncedContent,
     });
+
+    // Hubert: Only the "goals" column needs to be denormalized, no need to make this generic for now.
+    const denormalizedData = useMemo(() => {
+        if (!activeGroups.includes("goals")) {
+            return entryRows;
+        }
+
+        return denormalize(entryRows, "goals");
+    }, [activeGroups, entryRows]);
 
     return (
         <div className={styles.container}>
@@ -51,7 +64,7 @@ export const EntriesDataGrid = () => {
             <DataGrid
                 columns={columns}
                 groupBy={activeGroups}
-                data={data}
+                data={denormalizedData}
                 rowKeyGetter={rowKeyGetter}
                 noRowsFallback={<NoRecordsFallback isLoading={isLoading} />}
                 className={styles.grid}

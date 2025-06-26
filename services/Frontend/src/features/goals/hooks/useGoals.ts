@@ -3,16 +3,29 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { GoalsService } from "@/features/goals/api/goalsService";
 import { GoalsQueryFilters } from "@/features/goals/api/types/GoalsQueryFilters";
 import { GoalQueryKeyFactory } from "@/features/goals/utils/goalQueryKeyFactory";
+import { useAutoFetch } from "@/hooks/useAutoFetch.ts";
 import { getNextPage, getPreviousPage } from "@/lib/queryClient/pagination";
 
-export const useGoals = (filters: GoalsQueryFilters = {}) => {
+type UseGoalsOptions = {
+    filters?: GoalsQueryFilters;
+    autoFetch?: boolean;
+};
+
+export const useGoals = ({ filters = {}, autoFetch }: UseGoalsOptions) => {
     const queryKey = GoalQueryKeyFactory.createForFiltered(filters);
 
-    return useInfiniteQuery({
+    const { hasNextPage, fetchNextPage, ...rest } = useInfiniteQuery({
         queryKey,
         initialPageParam: 1,
         queryFn: async ({ pageParam }) => await GoalsService.getPage(pageParam, filters),
         getNextPageParam: getNextPage,
         getPreviousPageParam: getPreviousPage,
     });
+
+    useAutoFetch({
+        shouldFetch: !!autoFetch && hasNextPage,
+        fetch: fetchNextPage,
+    });
+
+    return { hasNextPage, fetchNextPage, ...rest, queryKey };
 };

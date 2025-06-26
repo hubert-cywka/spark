@@ -7,6 +7,7 @@ export type EntryRow = {
     isCompleted: boolean;
     isFeatured: boolean;
     createdAt: Date;
+    goals: string[];
 };
 
 export type EntriesDataGridColumn = keyof EntryRow;

@@ -8,6 +8,7 @@ import {
     DailyDateCellRenderer,
     DailyDateGroupCellRenderer,
 } from "@/features/entries/components/EntriesDataGrid/renderers/DailyDateCellRenderer.tsx";
+import { GoalsCellRenderer, GoalsGroupCellRenderer } from "@/features/entries/components/EntriesDataGrid/renderers/GoalsCellRenderer.tsx";
 
 export const useEntriesDataGridRenderers = () => {
     return useMemo(
@@ -19,6 +20,8 @@ export const useEntriesDataGridRenderers = () => {
             contentCellRenderer: ContentCellRenderer,
             dailyDateCellRenderer: DailyDateCellRenderer,
             dailyDateGroupCellRenderer: DailyDateGroupCellRenderer,
+            goalsCellRenderer: GoalsCellRenderer,
+            goalsGroupCellRenderer: GoalsGroupCellRenderer,
         }),
         []
     );

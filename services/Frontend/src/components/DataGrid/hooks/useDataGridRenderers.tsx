@@ -27,7 +27,7 @@ export const useDataGridRenderers = <TData extends object>({
                     {...props}
                     group={() => onColumnGrouped(props.column.key)}
                     ungroup={() => onColumnUngrouped(props.column.key)}
-                    groupIndex={findIndexOrReturnUndefined(activeGroups, props.column.key)}
+                    groupIndex={findIndexOf(activeGroups, props.column.key)}
                     canBeGrouped={allGroups.includes(props.column.key)}
                 />
             ),
@@ -36,7 +36,7 @@ export const useDataGridRenderers = <TData extends object>({
     );
 };
 
-const findIndexOrReturnUndefined = <T,>(array: T[], item: T): number | undefined => {
+const findIndexOf = <T,>(array: T[], item: T): number | undefined => {
     const index = array.indexOf(item);
 
     if (index >= 0) {

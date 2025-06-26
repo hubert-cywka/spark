@@ -11,5 +11,14 @@ export const useEntriesDataGridGroups = () => {
         setActiveGroups((prev) => [...prev.filter((k) => k !== key)]);
     }, []);
 
-    return { activeGroups, onColumnGrouped, onColumnUngrouped };
+    const clearActiveGroups = useCallback(() => {
+        setActiveGroups([]);
+    }, []);
+
+    return {
+        activeGroups,
+        onColumnGrouped,
+        onColumnUngrouped,
+        clearActiveGroups,
+    };
 };

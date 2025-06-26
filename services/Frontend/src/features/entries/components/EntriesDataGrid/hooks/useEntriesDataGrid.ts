@@ -31,9 +31,12 @@ export const useEntriesDataGrid = ({ allGroups, activeGroups, onColumnGrouped, o
         dailyDateGroupCellRenderer,
         isFeaturedGroupCellRenderer,
         isCompletedGroupCellRenderer,
+        goalsCellRenderer,
+        goalsGroupCellRenderer,
     } = useEntriesDataGridRenderers();
 
     const isDailyGrouped = activeGroups.includes("daily");
+    const isGoalsGrouped = activeGroups.includes("goals");
     const isCompletedGrouped = activeGroups.includes("isCompleted");
     const isFeaturedGrouped = activeGroups.includes("isFeatured");
 
@@ -55,17 +58,26 @@ export const useEntriesDataGrid = ({ allGroups, activeGroups, onColumnGrouped, o
                 name: t("reports.grid.columns.content"),
                 sortable: true,
                 resizable: true,
-                minWidth: 150,
+                minWidth: 100,
+                width: 300,
                 renderCell: contentCellRenderer,
                 renderHeaderCell: headerCellRenderer,
+            },
+            {
+                key: "goals",
+                name: t("reports.grid.columns.goals"),
+                resizable: true,
+                minWidth: 150,
+                renderCell: goalsCellRenderer,
+                renderHeaderCell: headerCellRenderer,
+                renderGroupCell: isGoalsGrouped ? goalsGroupCellRenderer : undefined,
             },
             {
                 key: "isCompleted",
                 name: t("reports.grid.columns.isCompleted"),
                 sortable: true,
                 resizable: true,
-                minWidth: 180,
-                width: 180,
+                minWidth: 100,
                 renderCell: isCompletedCellRenderer,
                 renderHeaderCell: headerCellRenderer,
                 renderGroupCell: isCompletedGrouped ? isCompletedGroupCellRenderer : undefined,
@@ -75,8 +87,7 @@ export const useEntriesDataGrid = ({ allGroups, activeGroups, onColumnGrouped, o
                 name: t("reports.grid.columns.isFeatured"),
                 sortable: true,
                 resizable: true,
-                minWidth: 190,
-                width: 190,
+                minWidth: 100,
                 renderCell: isFeaturedCellRenderer,
                 renderHeaderCell: headerCellRenderer,
                 renderGroupCell: isFeaturedGrouped ? isFeaturedGroupCellRenderer : undefined,
@@ -95,10 +106,13 @@ export const useEntriesDataGrid = ({ allGroups, activeGroups, onColumnGrouped, o
             isFeaturedCellRenderer,
             isFeaturedGrouped,
             isFeaturedGroupCellRenderer,
+            goalsCellRenderer,
+            isGoalsGrouped,
+            goalsGroupCellRenderer,
         ]
     );
 
     return { columns, rowKeyGetter };
 };
 
-const rowKeyGetter = (row: EntryRow) => row.id;
+const rowKeyGetter = (row: EntryRow) => `${row.id}_${row.goals.concat("-")}`;

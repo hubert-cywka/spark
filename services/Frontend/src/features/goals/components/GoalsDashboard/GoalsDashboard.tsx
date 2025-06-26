@@ -24,8 +24,7 @@ export const GoalsDashboard = () => {
     useDebounce(() => setDebouncedSearch(search), SEARCH_DEBOUNCE_IN_MS, [search]);
 
     const { data, fetchNextPage, isFetching, hasNextPage, isLoading } = useGoals({
-        name: debouncedSearch,
-        withProgress: true,
+        filters: { name: debouncedSearch, withProgress: true },
     });
     const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
 

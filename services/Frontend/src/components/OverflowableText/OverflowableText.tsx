@@ -10,7 +10,7 @@ import { Tooltip } from "@/components/Tooltip";
 import { useIsOverflow } from "@/hooks/useIsOverflow.ts";
 
 type OverflowableTextProps = PropsWithChildren<{
-    tooltip?: string;
+    tooltip?: string | number;
     className?: string;
 }>;
 

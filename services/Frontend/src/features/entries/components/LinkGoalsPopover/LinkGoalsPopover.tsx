@@ -27,9 +27,11 @@ export const LinkGoalsPopover = ({ entryId }: LinkGoalsPopoverProps) => {
     useDebounce(() => setDebouncedSearch(search), SEARCH_DEBOUNCE_IN_MS, [search]);
 
     const { data: unlinkedGoalsData, isLoading: areUnlinkedGoalsLoading } = useGoals({
-        excludeEntries: [entryId],
-        name: debouncedSearch,
-        pageSize: 5,
+        filters: {
+            excludeEntries: [entryId],
+            name: debouncedSearch,
+            pageSize: 5,
+        },
     });
     const unlinkedGoals = unlinkedGoalsData?.pages.flatMap((page) => page.data) ?? [];
 
