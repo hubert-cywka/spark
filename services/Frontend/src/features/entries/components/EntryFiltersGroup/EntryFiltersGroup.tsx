@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import classNames from "clsx";
 import { SquareCheckBigIcon, SquareIcon, StarIcon, StarOffIcon } from "lucide-react";
 
 import styles from "./styles/EntryFiltersGroup.module.scss";
@@ -23,9 +24,10 @@ enum EntryCompletedFilter {
 type EntryFiltersGroupProps = {
     onFiltersChange: (value: EntryFilters) => void;
     size?: "1" | "2" | "3";
+    className?: string;
 };
 
-export const EntryFiltersGroup = ({ onFiltersChange, size = "2" }: EntryFiltersGroupProps) => {
+export const EntryFiltersGroup = ({ onFiltersChange, className, size = "2" }: EntryFiltersGroupProps) => {
     const t = useTranslate();
 
     const [featured, setFeatured] = useState<boolean | undefined>();
@@ -58,7 +60,7 @@ export const EntryFiltersGroup = ({ onFiltersChange, size = "2" }: EntryFiltersG
     };
 
     return (
-        <div className={styles.entriesFilters}>
+        <div className={classNames(styles.entriesFilters, className)}>
             <ToggleButtonGroup onSelectionChange={onCompletedFiltersChange}>
                 <IconToggleButton
                     size={size}

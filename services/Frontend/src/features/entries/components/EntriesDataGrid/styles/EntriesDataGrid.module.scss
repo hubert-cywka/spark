@@ -8,34 +8,31 @@
     .filters {
         display: flex;
         gap: tokens.$spacing-400;
-        flex-direction: column;
-
-        @media (min-width: tokens.$breakpoint-lg) {
-            align-items: flex-end;
+        flex-direction: column-reverse;
+        justify-content: space-between;
+        
+        @media (min-width: tokens.$breakpoint-md) {
             flex-direction: row;
+            align-items: flex-end;
         }
         
+        .booleanFilters {
+            margin-left: auto;
+        }
+
         .filtersGroup {
             display: flex;
             gap: tokens.$spacing-400;
-            flex-direction: column-reverse;
-
-            @media (min-width: tokens.$breakpoint-sm) {
-                align-items: flex-end;               
-                flex-direction: row;
-            }
+            flex-direction: row;
+            align-items: flex-end;
         }
     }
     
     .grid {
-        height: calc(100vh - 380px);
+        height: calc(100vh - 300px);
        
-        @media (min-width: tokens.$breakpoint-sm) {
-            height: calc(100vh - 260px);
-        }
-
-        @media (min-width: tokens.$breakpoint-lg) {
-            height: calc(100vh - 195px);
+        @media (min-width: tokens.$breakpoint-md) {
+            height: calc(100vh - 190px);
         }
     }
 }

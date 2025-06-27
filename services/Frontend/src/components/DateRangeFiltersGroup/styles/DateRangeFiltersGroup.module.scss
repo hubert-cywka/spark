@@ -5,7 +5,7 @@
     gap: tokens.$spacing-400;
     flex-direction: column;
 
-    @media (min-width: tokens.$breakpoint-sm) {
+    @media (min-width: tokens.$breakpoint-md) {
         align-items: flex-end;
         flex-direction: row;
     }

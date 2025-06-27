@@ -58,7 +58,7 @@ export const InsightsDashboard = () => {
 
     return (
         <main className={styles.container}>
-            <DateRangeFiltersGroup onDateRangeChange={setDateRange} dateRange={dateRange} />
+            <DateRangeFiltersGroup size="1" onDateRangeChange={setDateRange} dateRange={dateRange} />
 
             <Divider>{t("insights.separators.summary")}</Divider>
 
