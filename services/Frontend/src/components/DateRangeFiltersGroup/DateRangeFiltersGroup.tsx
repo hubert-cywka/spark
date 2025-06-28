@@ -10,9 +10,10 @@ import { getDateRange, getPresetFromDateRange } from "@/utils/getDateRange.ts";
 type DateRangeFiltersGroupProps = {
     onDateRangeChange: (value: ISODateStringRange) => void;
     dateRange: ISODateStringRange;
+    size?: "1" | "2" | "3";
 };
 
-export const DateRangeFiltersGroup = ({ onDateRangeChange, dateRange }: DateRangeFiltersGroupProps) => {
+export const DateRangeFiltersGroup = ({ onDateRangeChange, dateRange, size = "2" }: DateRangeFiltersGroupProps) => {
     const t = useTranslate();
     const selectedPreset = getPresetFromDateRange(dateRange);
 
@@ -52,9 +53,9 @@ export const DateRangeFiltersGroup = ({ onDateRangeChange, dateRange }: DateRang
                 selectedKey={selectedPreset}
                 onChange={(preset) => onDateRangeChange(getDateRange(preset))}
                 items={presets}
-                size="3"
+                size={size}
             />
-            <DateRangePicker size="3" label={t("common.dateRangePicker.label")} value={dateRange} onChange={onDateRangeChange} />
+            <DateRangePicker size={size} label={t("common.dateRangePicker.label")} value={dateRange} onChange={onDateRangeChange} />
         </div>
     );
 };

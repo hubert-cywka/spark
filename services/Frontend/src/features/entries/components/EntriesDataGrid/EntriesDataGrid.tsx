@@ -51,11 +51,12 @@ export const EntriesDataGrid = () => {
     return (
         <div className={styles.container}>
             <div className={styles.filters}>
+                <DateRangeFiltersGroup size="1" dateRange={dateRange} onDateRangeChange={setDateRange} />
+
                 <div className={styles.filtersGroup}>
-                    <Field size="3" label={t("reports.filters.content.label")} value={content} onChange={setContent} />
-                    <EntryFiltersGroup onFiltersChange={setFlags} />
+                    <Field size="1" label={t("reports.filters.content.label")} value={content} onChange={setContent} />
+                    <EntryFiltersGroup size="1" className={styles.booleanFilters} onFiltersChange={setFlags} />
                 </div>
-                <DateRangeFiltersGroup dateRange={dateRange} onDateRangeChange={setDateRange} />
             </div>
 
             <DataGrid

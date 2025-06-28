@@ -1,6 +1,8 @@
 import { RenderCellProps, RenderGroupCellProps } from "react-data-grid";
 import { SquareCheckIcon, SquareIcon } from "lucide-react";
 
+import styles from "./styles/IsFeaturedCellRenderer.module.scss";
+
 import { Badge } from "@/components/Badge";
 import { GroupCellRenderer } from "@/components/DataGrid/renderers/GroupCellRenderer.tsx";
 import { EntryDetail } from "@/features/entries/types/Entry";
@@ -14,9 +16,9 @@ export const IsFeaturedCellValueRenderer = ({ value }: IsFeaturedCellValueRender
     const t = useTranslate();
 
     return value ? (
-        <Badge label={t("entries.values.featured")} icon={SquareCheckIcon} variant="success" />
+        <Badge label={t("entries.values.featured")} icon={SquareCheckIcon} variant="success" className={styles.badge} />
     ) : (
-        <Badge label={t("entries.values.notFeatured")} icon={SquareIcon} />
+        <Badge label={t("entries.values.notFeatured")} icon={SquareIcon} className={styles.badge} />
     );
 };
 
