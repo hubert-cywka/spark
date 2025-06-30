@@ -1,0 +1,22 @@
+@use "src/styles/tokens";
+
+.container {
+    .spinner {
+        align-self: center;
+    }
+
+    .header {
+        font: tokens.$typography-caption-200;
+        font-weight: tokens.$font-weight-300;
+        margin-bottom: tokens.$spacing-200;
+    }
+
+    .caption {
+        font: tokens.$typography-caption-200;
+    }
+
+    .list {
+        margin: 0;
+        padding: 0;
+    }
+}

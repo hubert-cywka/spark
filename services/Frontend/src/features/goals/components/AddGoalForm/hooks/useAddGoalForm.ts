@@ -50,7 +50,6 @@ export const useAddGoalForm = () => {
     return useHookFormAdapter<AddGoalFormInputs>({
         resolver: yupResolver<AddGoalFormInputs>(requirements),
         defaultValues: {
-            target: DEFAULT_TARGET_VALUE,
             deadline: null,
         },
     });

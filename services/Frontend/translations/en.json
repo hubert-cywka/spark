@@ -116,9 +116,11 @@
                 "conflict": "2FA integration already enabled."
             },
             "confirm": {
-                "notFound": "2FA integration does not found, try again later.",
-                "conflict": "2FA integration already enabled.",
-                "forbidden": "Invalid or expired code"
+                "errors": {
+                    "notFound": "2FA integration does not found, try again later.",
+                    "conflict": "2FA integration already enabled.",
+                    "forbidden": "Invalid or expired code"
+                }
             },
             "requestCode": {
                 "email": {
@@ -327,16 +329,15 @@
         },
         "goals": {
             "list": {
+                "noResultsCaption": "No results.",
                 "showLinksButton": {
                     "label": "Show linked goals"
                 },
                 "linked": {
-                    "header": "Linked goals",
-                    "noResultsCaption": "No results."
+                    "header": "Linked goals"
                 },
                 "unlinked": {
-                    "header": "Link goals",
-                    "noResultsCaption": "No results.",
+                    "header": "Link more goals",
                     "search": "Search"
                 },
                 "item": {
@@ -781,6 +782,9 @@
                 },
                 "pending": {
                     "header": "Pending goals ({count})"
+                },
+                "expired": {
+                    "header": "Expired goals ({count})"
                 },
                 "noResults": "No results."
             },

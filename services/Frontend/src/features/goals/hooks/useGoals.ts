@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 import { GoalsService } from "@/features/goals/api/goalsService";
@@ -14,7 +15,7 @@ type UseGoalsOptions = {
 export const useGoals = ({ filters = {}, autoFetch }: UseGoalsOptions) => {
     const queryKey = GoalQueryKeyFactory.createForFiltered(filters);
 
-    const { hasNextPage, fetchNextPage, ...rest } = useInfiniteQuery({
+    const { hasNextPage, fetchNextPage, data, ...rest } = useInfiniteQuery({
         queryKey,
         initialPageParam: 1,
         queryFn: async ({ pageParam }) => await GoalsService.getPage(pageParam, filters),
@@ -27,5 +28,7 @@ export const useGoals = ({ filters = {}, autoFetch }: UseGoalsOptions) => {
         fetch: fetchNextPage,
     });
 
-    return { hasNextPage, fetchNextPage, ...rest, queryKey };
+    const flatData = useMemo(() => data?.pages.flatMap((page) => page.data) ?? [], [data?.pages]);
+
+    return { hasNextPage, fetchNextPage, data: flatData, ...rest, queryKey };
 };

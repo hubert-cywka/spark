@@ -1,16 +1,14 @@
-import { useState } from "react";
-
 import styles from "./styles/DailyEntry.module.scss";
 
 import { DailyEntryColumn } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
 import {
-    DailyEntryExpandTrigger,
+    DailyEntryGoalsPopupTrigger,
     DailyEntryInput,
     DailyEntryStatusCheckbox,
     DailyEntryWrapper,
 } from "@/features/entries/components/DailyEntry/components";
 import { DailyEntryFeaturedCheckbox } from "@/features/entries/components/DailyEntry/components/DailyEntryFeaturedCheckbox/DailyEntryFeaturedCheckbox.tsx";
-import { EntryGoalsList } from "@/features/entries/components/EntryGoalsList/EntryGoalsList";
+import { LinkGoalsPopover } from "@/features/entries/components/LinkGoalsPopover/LinkGoalsPopover.tsx";
 import { Entry } from "@/features/entries/types/Entry";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
@@ -38,23 +36,12 @@ export const DailyEntry = ({
     onFocusColumn,
 }: DailyEntryProps) => {
     const t = useTranslate();
-    const [isCollapsed, setIsCollapsed] = useState(true);
 
     return (
         <DailyEntryWrapper id={id}>
             <div className={styles.row}>
-                <DailyEntryExpandTrigger
-                    column="expand"
-                    isCollapsed={isCollapsed}
-                    onClick={() => setIsCollapsed((p) => !p)}
-                    onNavigateRight={() => onFocusColumn("checkbox")}
-                    onNavigateUp={() => onNavigateUp("expand")}
-                    onNavigateDown={() => onNavigateDown("expand")}
-                />
-
                 <DailyEntryStatusCheckbox
                     column="checkbox"
-                    onNavigateLeft={() => onFocusColumn("expand")}
                     onNavigateRight={() => onFocusColumn("featured")}
                     onNavigateUp={() => onNavigateUp("checkbox")}
                     onNavigateDown={() => onNavigateDown("checkbox")}
@@ -65,30 +52,34 @@ export const DailyEntry = ({
                 <DailyEntryFeaturedCheckbox
                     column="featured"
                     onNavigateLeft={() => onFocusColumn("checkbox")}
-                    onNavigateRight={() => onFocusColumn("input")}
+                    onNavigateRight={() => onFocusColumn("goals")}
                     onNavigateUp={() => onNavigateUp("featured")}
                     onNavigateDown={() => onNavigateDown("featured")}
                     onChange={(isFeatured) => onChangeIsFeatured(entry, isFeatured)}
                     value={entry.isFeatured}
                 />
 
+                <LinkGoalsPopover entryId={entry.id}>
+                    <DailyEntryGoalsPopupTrigger
+                        column="goals"
+                        onNavigateLeft={() => onFocusColumn("featured")}
+                        onNavigateRight={() => onFocusColumn("input")}
+                        onNavigateUp={() => onNavigateUp("goals")}
+                        onNavigateDown={() => onNavigateDown("goals")}
+                    />
+                </LinkGoalsPopover>
+
                 <DailyEntryInput
                     column="input"
                     initialContent={entry.content}
                     onNavigateUp={() => onNavigateUp("input")}
                     onNavigateDown={() => onNavigateDown("input")}
-                    onNavigateLeft={() => onFocusColumn("featured")}
+                    onNavigateLeft={() => onFocusColumn("goals")}
                     onSaveContent={(content) => onSaveContent(entry, content)}
                     onDelete={() => onDelete(entry.dailyId, entry.id)}
                     placeholder={t("entries.placeholder")}
                 />
             </div>
-
-            {!isCollapsed && (
-                <div className={styles.metadata}>
-                    <EntryGoalsList entryId={entry.id} />
-                </div>
-            )}
         </DailyEntryWrapper>
     );
 };

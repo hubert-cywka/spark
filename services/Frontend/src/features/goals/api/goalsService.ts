@@ -56,13 +56,18 @@ export class GoalsService {
     }
 
     private static mapDtoToGoal(dto: GoalDto): Goal {
+        const isAccomplished = dto.isTargetMet ?? false;
+        const isAfterDeadline = dto.deadline ? new Date() > new Date(dto.deadline) : false;
+        const isExpired = isAfterDeadline ? !isAccomplished : false;
+
         return {
             id: dto.id,
             name: dto.name,
             createdAt: new Date(dto.createdAt),
             target: dto.target,
             targetProgress: dto.targetProgress ?? 0,
-            isAccomplished: dto.isTargetMet ?? false,
+            isAccomplished,
+            isExpired,
             deadline: dto.deadline ? new Date(dto.deadline) : null,
         };
     }

@@ -63,6 +63,7 @@ export const GoalCard = ({ goal, isSelected, onSelection }: GoalCardProps) => {
             <Target
                 className={classNames(styles.icon, {
                     [styles.accomplished]: goal.isAccomplished,
+                    [styles.expired]: goal.isExpired,
                 })}
             />
 
@@ -75,6 +76,7 @@ export const GoalCard = ({ goal, isSelected, onSelection }: GoalCardProps) => {
                 <p
                     className={classNames(styles.name, {
                         [styles.accomplished]: goal.isAccomplished,
+                        [styles.expired]: goal.isExpired,
                     })}
                 >
                     {goal.name}

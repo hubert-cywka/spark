@@ -14,8 +14,8 @@ import { Checkbox } from "@/components/Checkbox";
 import { Field } from "@/components/Input";
 import { useRegisterWithCredentials, useRegisterWithCredentialsEvents } from "@/features/auth/hooks";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
-import { getAbsoluteAppUrl } from "@/utils/appUrl";
 import { preventEventBubbling } from "@/utils/domEventsUtils.ts";
+import { getAbsoluteAppUrl } from "@/utils/urlUtils";
 
 export const RegisterForm = () => {
     const t = useTranslate();

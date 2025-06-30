@@ -23,14 +23,20 @@ export const GoalsDashboard = () => {
     const [debouncedSearch, setDebouncedSearch] = useState(search);
     useDebounce(() => setDebouncedSearch(search), SEARCH_DEBOUNCE_IN_MS, [search]);
 
-    const { data, fetchNextPage, isFetching, hasNextPage, isLoading } = useGoals({
+    const {
+        data: goals,
+        fetchNextPage,
+        isFetching,
+        hasNextPage,
+        isLoading,
+    } = useGoals({
         filters: { name: debouncedSearch, withProgress: true },
     });
     const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
 
-    const goals = data?.pages?.flatMap(({ data }) => data) ?? [];
     const accomplishedGoals = goals.filter((goal) => !!goal.isAccomplished);
-    const pendingGoals = goals.filter((goal) => !goal.isAccomplished);
+    const expiredGoals = goals.filter((goal) => !!goal.isExpired);
+    const pendingGoals = goals.filter((goal) => !goal.isAccomplished && !goal.isExpired);
     const selectedGoal = goals.find((goal) => selectedGoalId === goal.id);
 
     const clearSelection = useCallback(() => {
@@ -66,6 +72,16 @@ export const GoalsDashboard = () => {
                     count: pendingGoals.length,
                 })}
                 goals={pendingGoals}
+                isLoading={isLoading}
+                onSelectGoal={setSelectedGoalId}
+                selectedGoalId={selectedGoalId}
+            />
+
+            <GoalsList
+                header={t("goals.list.section.expired.header", {
+                    count: expiredGoals.length,
+                })}
+                goals={expiredGoals}
                 isLoading={isLoading}
                 onSelectGoal={setSelectedGoalId}
                 selectedGoalId={selectedGoalId}
