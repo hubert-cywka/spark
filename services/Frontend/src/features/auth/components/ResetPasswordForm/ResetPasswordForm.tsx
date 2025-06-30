@@ -11,7 +11,7 @@ import { ButtonWithThrottle } from "@/components/ButtonWithThrottle";
 import { Field } from "@/components/Input";
 import { useRequestPasswordResetToken, useRequestPasswordResetTokenEvents } from "@/features/auth/hooks";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
-import { getAbsoluteAppUrl } from "@/utils/appUrl";
+import { getAbsoluteAppUrl } from "@/utils/urlUtils";
 
 const RESEND_DELAY = 60;
 

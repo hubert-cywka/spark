@@ -8,10 +8,10 @@ import { DailyEntryColumn } from "@/features/daily/components/DailyList/hooks/us
 type DailyEntryStatusCheckboxProps = {
     onChange: (value: boolean) => void;
     value: boolean;
-    onNavigateRight: () => void;
-    onNavigateLeft: () => void;
-    onNavigateDown: () => void;
-    onNavigateUp: () => void;
+    onNavigateRight?: () => void;
+    onNavigateLeft?: () => void;
+    onNavigateDown?: () => void;
+    onNavigateUp?: () => void;
     column: DailyEntryColumn;
 };
 
@@ -27,25 +27,25 @@ export const DailyEntryStatusCheckbox = ({
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "ArrowUp") {
             e.preventDefault();
-            onNavigateUp();
+            onNavigateUp?.();
             return;
         }
 
         if (e.key === "ArrowRight") {
             e.preventDefault();
-            onNavigateRight();
+            onNavigateRight?.();
             return;
         }
 
         if (e.key === "ArrowLeft") {
             e.preventDefault();
-            onNavigateLeft();
+            onNavigateLeft?.();
             return;
         }
 
         if (e.key === "ArrowDown") {
             e.preventDefault();
-            onNavigateDown();
+            onNavigateDown?.();
         }
     };
 

@@ -2,7 +2,7 @@ import { getEntryElementId, getEntryPlaceholderElementId } from "@/features/dail
 import { Entry } from "@/features/entries/types/Entry";
 import { onNextTick } from "@/utils/onNextTick";
 
-export type DailyEntryColumn = "input" | "checkbox" | "expand" | "featured";
+export type DailyEntryColumn = "input" | "checkbox" | "goals" | "featured";
 
 type UseNavigationBetweenEntries = {
     entriesGroups: Record<string, Entry[]>;

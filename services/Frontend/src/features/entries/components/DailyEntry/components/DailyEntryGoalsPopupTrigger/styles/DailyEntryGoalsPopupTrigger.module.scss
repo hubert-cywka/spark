@@ -1,5 +1,6 @@
 @use "src/styles/tokens";
 
-.trigger {
+button.trigger.trigger {
     margin-right: tokens.$spacing-200;
+    color: tokens.$color-neutral-text-200;
 }

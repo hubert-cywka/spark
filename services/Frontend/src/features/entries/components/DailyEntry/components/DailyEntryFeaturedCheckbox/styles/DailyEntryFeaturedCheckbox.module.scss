@@ -1,8 +1,6 @@
 @use "src/styles/tokens";
 
 .checkbox {
-    margin-right: tokens.$spacing-200;
-    
     svg {
         height: 1.25rem;
         width: 1.25rem;

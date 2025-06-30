@@ -329,16 +329,15 @@
         },
         "goals": {
             "list": {
+                "noResultsCaption": "No results.",
                 "showLinksButton": {
                     "label": "Show linked goals"
                 },
                 "linked": {
-                    "header": "Linked goals",
-                    "noResultsCaption": "No results."
+                    "header": "Linked goals"
                 },
                 "unlinked": {
-                    "header": "Link goals",
-                    "noResultsCaption": "No results.",
+                    "header": "Link more goals",
                     "search": "Search"
                 },
                 "item": {

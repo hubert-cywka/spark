@@ -2,7 +2,7 @@ import { AppRoute } from "@/app/appRoute";
 import { AuthenticationResponseDto } from "@/features/auth/api/authentication/dto/AuthenticationResponseDto";
 import { CreateAccountWithOIDCRequestDto } from "@/features/auth/api/oidc/dto/CreateAccountWithOIDCRequestDto";
 import { apiClient } from "@/lib/apiClient/apiClient";
-import { getAbsoluteAppUrl } from "@/utils/appUrl";
+import { getAbsoluteAppUrl } from "@/utils/urlUtils";
 
 export class OpenIDConnectService {
     public static async register(payload: CreateAccountWithOIDCRequestDto) {

@@ -11,7 +11,7 @@ import { Button } from "@/components/Button";
 import { Field } from "@/components/Input";
 import { useRequestAccountActivationToken, useRequestAccountActivationTokenEvents } from "@/features/auth/hooks";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
-import { getAbsoluteAppUrl } from "@/utils/appUrl";
+import { getAbsoluteAppUrl } from "@/utils/urlUtils";
 
 export const RequestActivationLinkForm = () => {
     const t = useTranslate();
