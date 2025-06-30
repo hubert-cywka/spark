@@ -30,7 +30,8 @@ export const GoalsDashboard = () => {
 
     const goals = data?.pages?.flatMap(({ data }) => data) ?? [];
     const accomplishedGoals = goals.filter((goal) => !!goal.isAccomplished);
-    const pendingGoals = goals.filter((goal) => !goal.isAccomplished);
+    const expiredGoals = goals.filter((goal) => !!goal.isExpired);
+    const pendingGoals = goals.filter((goal) => !goal.isAccomplished && !goal.isExpired);
     const selectedGoal = goals.find((goal) => selectedGoalId === goal.id);
 
     const clearSelection = useCallback(() => {
@@ -66,6 +67,16 @@ export const GoalsDashboard = () => {
                     count: pendingGoals.length,
                 })}
                 goals={pendingGoals}
+                isLoading={isLoading}
+                onSelectGoal={setSelectedGoalId}
+                selectedGoalId={selectedGoalId}
+            />
+
+            <GoalsList
+                header={t("goals.list.section.expired.header", {
+                    count: expiredGoals.length,
+                })}
+                goals={expiredGoals}
                 isLoading={isLoading}
                 onSelectGoal={setSelectedGoalId}
                 selectedGoalId={selectedGoalId}

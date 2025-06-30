@@ -8,6 +8,7 @@ type FormattedContentProps = {
     content: string;
 };
 
+// TODO: Better formatting
 export const FormattedEntryContent = ({ content }: FormattedContentProps) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const parts = content.split(urlRegex);

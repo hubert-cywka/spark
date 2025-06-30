@@ -55,6 +55,10 @@
         &.accomplished {
             color: tokens.$color-success-text-200;
         }
+
+        &.expired {
+            color: tokens.$color-danger-text-200;
+        }
     }
 
     @container (max-width: 400px) {
@@ -78,6 +82,10 @@
 
             &.accomplished {
                 color: tokens.$color-success-text-300;
+            }
+
+            &.expired {
+                color: tokens.$color-danger-text-300;
             }
         }
 

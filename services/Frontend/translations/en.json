@@ -116,9 +116,11 @@
                 "conflict": "2FA integration already enabled."
             },
             "confirm": {
-                "notFound": "2FA integration does not found, try again later.",
-                "conflict": "2FA integration already enabled.",
-                "forbidden": "Invalid or expired code"
+                "errors": {
+                    "notFound": "2FA integration does not found, try again later.",
+                    "conflict": "2FA integration already enabled.",
+                    "forbidden": "Invalid or expired code"
+                }
             },
             "requestCode": {
                 "email": {
@@ -781,6 +783,9 @@
                 },
                 "pending": {
                     "header": "Pending goals ({count})"
+                },
+                "expired": {
+                    "header": "Expired goals ({count})"
                 },
                 "noResults": "No results."
             },
