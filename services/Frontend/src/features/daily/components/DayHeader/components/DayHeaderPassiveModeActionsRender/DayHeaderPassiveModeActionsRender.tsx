@@ -1,4 +1,4 @@
-import { Pencil, Trash } from "lucide-react";
+import { Pencil, Plus, Trash } from "lucide-react";
 
 import { IconButton } from "@/components/IconButton";
 import { PassiveTextInputPassiveModeActionsRenderProps } from "@/components/PassiveTextInput";
@@ -7,11 +7,25 @@ import { Daily } from "@/features/daily/types/Daily";
 
 type DayHeaderPassiveModeActionsRenderProps = {
     daily: Daily;
+    onCreateEntryDraft: () => void;
 } & PassiveTextInputPassiveModeActionsRenderProps;
 
-export const DayHeaderPassiveModeActionsRender = ({ daily, onStartEditMode, translationFn }: DayHeaderPassiveModeActionsRenderProps) => {
+export const DayHeaderPassiveModeActionsRender = ({
+    daily,
+    onStartEditMode,
+    onCreateEntryDraft,
+    translationFn,
+}: DayHeaderPassiveModeActionsRenderProps) => {
     return (
         <>
+            <IconButton
+                variant="secondary"
+                size="1"
+                onPress={onCreateEntryDraft}
+                iconSlot={Plus}
+                tooltip={translationFn("daily.day.actions.createDraftEntry.label")}
+                aria-label={translationFn("daily.day.actions.createDraftEntry.label")}
+            />
             <IconButton
                 variant="secondary"
                 size="1"

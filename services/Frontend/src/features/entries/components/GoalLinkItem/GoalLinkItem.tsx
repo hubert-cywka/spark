@@ -1,5 +1,5 @@
 import classNames from "clsx";
-import { Link, Unlink } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 
 import styles from "./styles/GoalLinkItem.module.scss";
 
@@ -20,7 +20,7 @@ export const GoalLinkItem = ({ linked, onClick, name }: GoalLinkItemProps) => {
         <li className={styles.goal}>
             <IconButton
                 className={classNames({ [styles.linkButton]: !linked }, { [styles.unlinkButton]: linked })}
-                iconSlot={linked ? Unlink : Link}
+                iconSlot={linked ? Minus : Plus}
                 onPress={onClick}
                 variant="subtle"
                 size="1"

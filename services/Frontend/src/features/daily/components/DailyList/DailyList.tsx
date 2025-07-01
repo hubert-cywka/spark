@@ -76,7 +76,7 @@ export const DailyList = () => {
     const { onCreateEntry, onUpdateEntryContent, onDeleteEntry, onUpdateEntryStatus, onUpdateEntryIsFeatured } = useDailyEntriesEvents();
     const { placeholders, addPlaceholder, removePlaceholder } = useDailyEntriesPlaceholders();
 
-    const { navigateByIndex, navigateByEntryId } = useNavigationBetweenEntries({
+    const { navigateByIndex, navigateByEntryId, navigateToPlaceholderByGroup } = useNavigationBetweenEntries({
         entriesGroups,
         onBottomLeft: removePlaceholder,
         onBottomReached: addPlaceholder,
@@ -136,6 +136,11 @@ export const DailyList = () => {
         [isFetching, isFetchingEntries]
     );
 
+    const createEntryDraft = (dailyId: string) => {
+        addPlaceholder(dailyId);
+        navigateToPlaceholderByGroup(dailyId);
+    };
+
     return (
         <main className={styles.container} ref={containerRef}>
             <DailyListHeader
@@ -156,7 +161,8 @@ export const DailyList = () => {
 
             {dailies.map((daily) => (
                 <section className={styles.day} key={daily.id} data-daily-date={daily.date}>
-                    <DayHeader daily={daily} onUpdateDate={onUpdateDailyDate} />
+                    <DayHeader daily={daily} onUpdateDate={onUpdateDailyDate} onCreateEntryDraft={() => createEntryDraft(daily.id)} />
+
                     <ul className={styles.entries}>
                         {entriesGroups[daily.id]?.map((entry, index) => (
                             <DailyEntry
