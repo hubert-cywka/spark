@@ -598,6 +598,9 @@
                 "label": "Daily's date"
             },
             "actions": {
+                "createDraftEntry": {
+                    "label": "Add new entry"
+                },
                 "save": {
                     "label": "Confirm changes"
                 },

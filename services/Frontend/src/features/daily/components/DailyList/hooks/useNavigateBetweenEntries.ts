@@ -15,17 +15,21 @@ export const useNavigationBetweenEntries = ({ entriesGroups, onBottomLeft, onBot
         onNextTick(() => getEntryFocusableElement(column, entryId)?.focus());
     };
 
+    const navigateToPlaceholderByGroup = (group: string) => {
+        onNextTick(() => getEntryPlaceholderFocusableElement("input", group)?.focus());
+    };
+
     const navigateByIndex = (column: DailyEntryColumn, group: string, targetIndex: number) => {
         const entries = entriesGroups[group];
 
         if (!entries?.length || targetIndex < 0) {
-            onNextTick(() => getEntryPlaceholderFocusableElement("input", group)?.focus());
+            navigateToPlaceholderByGroup(group);
             return;
         }
 
         if (targetIndex >= entries.length) {
             onBottomReached?.(group);
-            onNextTick(() => getEntryPlaceholderFocusableElement("input", group)?.focus());
+            navigateToPlaceholderByGroup(group);
             return;
         }
 
@@ -34,7 +38,7 @@ export const useNavigationBetweenEntries = ({ entriesGroups, onBottomLeft, onBot
         getEntryFocusableElement(column, targetEntry.id)?.focus();
     };
 
-    return { navigateByEntryId, navigateByIndex };
+    return { navigateByEntryId, navigateByIndex, navigateToPlaceholderByGroup };
 };
 
 const getEntryFocusableElement = (column: DailyEntryColumn, entryId: string) => {

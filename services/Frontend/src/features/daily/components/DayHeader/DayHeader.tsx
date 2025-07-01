@@ -14,9 +14,10 @@ import { ISODateString } from "@/types/ISODateString";
 type DayHeaderProps = {
     daily: Daily;
     onUpdateDate: (id: string, date: ISODateString) => void;
+    onCreateEntryDraft: () => void;
 };
 
-export const DayHeader = ({ daily, onUpdateDate }: DayHeaderProps) => {
+export const DayHeader = ({ daily, onUpdateDate, onCreateEntryDraft }: DayHeaderProps) => {
     const t = useTranslate();
 
     return (
@@ -25,7 +26,12 @@ export const DayHeader = ({ daily, onUpdateDate }: DayHeaderProps) => {
             onChange={(value) => onUpdateDate(daily.id, mapToISODate(value))}
             onRenderEditModeActions={DayHeaderEditModeActionsRender}
             onRenderPassiveModeActions={({ onStartEditMode, translationFn }) => (
-                <DayHeaderPassiveModeActionsRender onStartEditMode={onStartEditMode} daily={daily} translationFn={translationFn} />
+                <DayHeaderPassiveModeActionsRender
+                    onCreateEntryDraft={onCreateEntryDraft}
+                    onStartEditMode={onStartEditMode}
+                    daily={daily}
+                    translationFn={translationFn}
+                />
             )}
         >
             {(props) => (
