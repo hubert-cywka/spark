@@ -1,5 +1,5 @@
 import { Controller, Get, Inject, Query, UseGuards } from "@nestjs/common";
-import { plainToClass } from "class-transformer";
+import { plainToInstance } from "class-transformer";
 
 import { AccessScopes } from "@/common/decorators/AccessScope.decorator";
 import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
@@ -60,7 +60,7 @@ export class EntryController {
     @AccessScopes("read:entry")
     public async getEntriesMetrics(@Query() filters: FindEntriesInsightsDto, @AuthenticatedUserContext() user: User) {
         const result = await this.insightsService.findMetricsByDateRange(user.id, filters.from, filters.to);
-        return plainToClass(EntriesMetricsDto, {
+        return plainToInstance(EntriesMetricsDto, {
             ...result,
             dailyRange: { to: filters.to, from: filters.from },
         });
@@ -75,7 +75,7 @@ export class EntryController {
         @Timezone() timezone: string
     ) {
         const result = await this.insightsService.findLoggingHistogram(user.id, filters.from, filters.to, timezone);
-        return plainToClass(EntryLoggingHistogramDto, {
+        return plainToInstance(EntryLoggingHistogramDto, {
             days: result,
             dailyRange: { to: filters.to, from: filters.from },
         });

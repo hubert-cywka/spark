@@ -1,9 +1,9 @@
+import fastifyCookie from "@fastify/cookie";
 import { ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
-import type { NestExpressApplication } from "@nestjs/platform-express";
+import { FastifyAdapter, NestFastifyApplication } from "@nestjs/platform-fastify";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import cookieParser from "cookie-parser";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone.js";
 import utc from "dayjs/plugin/utc.js";
@@ -31,9 +31,15 @@ async function bootstrap() {
     initializeTransactionalContext();
 
     const config = new ConfigService(AppConfig());
-    const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-        logger,
-    });
+    const app = await NestFactory.create<NestFastifyApplication>(
+        AppModule,
+        new FastifyAdapter({
+            trustProxy: true,
+        }),
+        {
+            logger,
+        }
+    );
 
     const appLogger = app.get(Logger);
     app.useLogger(appLogger);
@@ -45,8 +51,9 @@ async function bootstrap() {
         })
     );
 
-    app.use(cookieParser(config.getOrThrow<string>("cookies.secret")));
-    app.set("trust proxy", true);
+    await app.register(fastifyCookie, {
+        secret: config.getOrThrow<string>("cookies.secret"),
+    });
 
     // TODO: Update schemas and responses for each endpoint
     const swaggerConfig = new DocumentBuilder().setTitle("codename - OpenAPI").setVersion("1.0").addTag("codename").build();
@@ -57,7 +64,13 @@ async function bootstrap() {
 
     app.enableShutdownHooks();
     await app.startAllMicroservices();
-    await app.listen(config.getOrThrow<number>("port"));
+    await app.listen(config.getOrThrow<number>("port"), (err, address) => {
+        if (err) {
+            appLogger.fatal("Startup failed.");
+        } else {
+            appLogger.log({ address }, "Started listening.");
+        }
+    });
 }
 
 void bootstrap();

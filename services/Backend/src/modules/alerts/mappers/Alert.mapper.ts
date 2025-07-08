@@ -1,4 +1,4 @@
-import { plainToClass } from "class-transformer";
+import { plainToInstance } from "class-transformer";
 
 import { BaseModelDTOEntityMapper } from "@/common/mappers/BaseModelDTOEntity.mapper";
 import { AlertDto } from "@/modules/alerts/dto/Alert.dto";
@@ -32,7 +32,7 @@ export class AlertMapper extends BaseModelDTOEntityMapper<Alert, AlertDto, Alert
     }
 
     fromModelToDto(model: Alert): AlertDto {
-        return plainToClass(AlertDto, {
+        return plainToInstance(AlertDto, {
             id: model.id,
             time: model.time,
             daysOfWeek: model.daysOfWeek,

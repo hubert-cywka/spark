@@ -1,4 +1,4 @@
-import { plainToClass } from "class-transformer";
+import { plainToInstance } from "class-transformer";
 
 import { BaseModelDTOEntityMapper } from "@/common/mappers/BaseModelDTOEntity.mapper";
 import { FederatedAccountEntity } from "@/modules/identity/account/entities/FederatedAccountEntity";
@@ -22,7 +22,7 @@ export class AccountMapper
     }
 
     fromEntityToModel(entity: ManagedAccountEntity | FederatedAccountEntity): Account {
-        return plainToClass(Account, {
+        return plainToInstance(Account, {
             id: entity.id,
             providerAccountId: entity.providerAccountId,
             email: entity.email,
@@ -31,7 +31,7 @@ export class AccountMapper
     }
 
     fromModelToDto(model: Account): AccountDto {
-        return plainToClass(AccountDto, {
+        return plainToInstance(AccountDto, {
             id: model.id,
             providerAccountId: model.providerAccountId,
             email: model.email,

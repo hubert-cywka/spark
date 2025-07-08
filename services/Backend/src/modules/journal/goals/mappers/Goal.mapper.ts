@@ -1,4 +1,4 @@
-import { plainToClass } from "class-transformer";
+import { plainToInstance } from "class-transformer";
 
 import { BaseModelDTOEntityMapper } from "@/common/mappers/BaseModelDTOEntity.mapper";
 import { GoalDto } from "@/modules/journal/goals/dto/Goal.dto";
@@ -36,7 +36,7 @@ export class GoalMapper extends BaseModelDTOEntityMapper<Goal, GoalDto, GoalEnti
     }
 
     fromModelToDto(model: Goal): GoalDto {
-        return plainToClass(GoalDto, {
+        return plainToInstance(GoalDto, {
             id: model.id,
             authorId: model.authorId,
             name: model.name,
