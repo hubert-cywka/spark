@@ -64,11 +64,11 @@ async function bootstrap() {
 
     app.enableShutdownHooks();
     await app.startAllMicroservices();
-    await app.listen(config.getOrThrow<number>("port"), (err, address) => {
+    await app.listen(config.getOrThrow<number>("port"), "0.0.0.0", (err, address) => {
         if (err) {
             appLogger.fatal("Startup failed.");
         } else {
-            appLogger.log({ address }, "Started listening.");
+            appLogger.log({ address }, "Listening.");
         }
     });
 }
