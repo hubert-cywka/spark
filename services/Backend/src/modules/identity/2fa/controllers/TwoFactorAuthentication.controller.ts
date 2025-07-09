@@ -12,7 +12,7 @@ import {
     UseGuards,
 } from "@nestjs/common";
 import { Throttle } from "@nestjs/throttler";
-import { plainToClass } from "class-transformer";
+import { plainToInstance } from "class-transformer";
 
 import { AccessScopes } from "@/common/decorators/AccessScope.decorator";
 import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
@@ -91,7 +91,7 @@ export class TwoFactorAuthenticationController {
 
         try {
             const result = await twoFactorAuthService.createMethodIntegration(user);
-            return plainToClass(EnableApp2FADto, { url: result });
+            return plainToInstance(EnableApp2FADto, { url: result });
         } catch (err) {
             whenError(err).is(EntityConflictError).throw(new ConflictException()).elseRethrow();
         }

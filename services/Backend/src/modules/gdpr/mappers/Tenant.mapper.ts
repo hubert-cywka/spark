@@ -1,4 +1,4 @@
-import { plainToClass } from "class-transformer";
+import { plainToInstance } from "class-transformer";
 
 import { BaseModelDTOEntityMapper } from "@/common/mappers/BaseModelDTOEntity.mapper";
 import { TenantDto } from "@/modules/gdpr/dto/Tenant.dto";
@@ -20,7 +20,7 @@ export class TenantMapper extends BaseModelDTOEntityMapper<Tenant, TenantDto, Te
     }
 
     fromModelToDto(model: Tenant): TenantDto {
-        return plainToClass(TenantDto, {
+        return plainToInstance(TenantDto, {
             id: model.id,
         });
     }

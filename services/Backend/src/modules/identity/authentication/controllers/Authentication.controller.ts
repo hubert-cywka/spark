@@ -1,7 +1,7 @@
 import { Body, Controller, ForbiddenException, HttpCode, HttpStatus, Inject, Post, Res, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Throttle } from "@nestjs/throttler";
-import { type Response } from "express";
+import { type FastifyReply } from "fastify";
 
 import { Cookie } from "@/common/decorators/Cookie.decorator";
 import { EntityConflictError } from "@/common/errors/EntityConflict.error";
@@ -62,7 +62,7 @@ export class AuthenticationController {
     @HttpCode(HttpStatus.OK)
     @Post("login")
     @Throttle(IDENTITY_MODULE_STRICT_RATE_LIMITING)
-    async login(@Body() dto: LoginDto, @Res() response: Response) {
+    async login(@Body() dto: LoginDto, @Res() response: FastifyReply) {
         try {
             const result = await this.authService.loginWithCredentials({
                 password: dto.password,
@@ -84,7 +84,7 @@ export class AuthenticationController {
 
     @HttpCode(HttpStatus.OK)
     @Post("refresh")
-    async refresh(@Res() response: Response, @Cookie(REFRESH_TOKEN_COOKIE_NAME) token: string) {
+    async refresh(@Res() response: FastifyReply, @Cookie(REFRESH_TOKEN_COOKIE_NAME) token: string) {
         if (!token) {
             throw new UnauthorizedException();
         }
@@ -102,7 +102,7 @@ export class AuthenticationController {
 
     @HttpCode(HttpStatus.OK)
     @Post("logout")
-    async logout(@Res() response: Response, @Body() dto: LogoutDto, @Cookie(REFRESH_TOKEN_COOKIE_NAME) token: string) {
+    async logout(@Res() response: FastifyReply, @Body() dto: LogoutDto, @Cookie(REFRESH_TOKEN_COOKIE_NAME) token: string) {
         if (!token) {
             throw new UnauthorizedException();
         }

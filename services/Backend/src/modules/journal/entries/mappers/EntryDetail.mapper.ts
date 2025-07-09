@@ -1,4 +1,4 @@
-import { plainToClass } from "class-transformer";
+import { plainToInstance } from "class-transformer";
 
 import { BaseModelDTOEntityMapper } from "@/common/mappers/BaseModelDTOEntity.mapper";
 import { EntryDetailDto } from "@/modules/journal/entries/dto/EntryDetail.dto";
@@ -30,7 +30,7 @@ export class EntryDetailMapper extends BaseModelDTOEntityMapper<EntryDetail, Ent
     }
 
     public fromModelToDto(model: EntryDetail): EntryDetailDto {
-        return plainToClass(EntryDetailDto, {
+        return plainToInstance(EntryDetailDto, {
             id: model.id,
             content: model.content,
             isCompleted: model.isCompleted,

@@ -1,4 +1,4 @@
-import { classToPlain } from "class-transformer";
+import { instanceToPlain } from "class-transformer";
 import { deserialize, serialize } from "v8";
 
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
@@ -68,7 +68,7 @@ export class IntegrationEvent<T = DefaultEventPayload> {
     }
 
     public toPlain(): object {
-        return classToPlain(this);
+        return instanceToPlain(this);
     }
 
     public copy(overrides: Partial<RequiredIntegrationEventFields<T>> = {}) {

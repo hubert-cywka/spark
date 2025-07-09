@@ -12,7 +12,7 @@ import {
     Query,
     UseGuards,
 } from "@nestjs/common";
-import { plainToClass } from "class-transformer";
+import { plainToInstance } from "class-transformer";
 
 import { AccessScopes } from "@/common/decorators/AccessScope.decorator";
 import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
@@ -61,7 +61,7 @@ export class DailyController {
         @Timezone() timezone: string
     ) {
         const result = await this.insightsService.findMetricsByDateRange(author.id, { from, to }, timezone);
-        return plainToClass(DailyMetricsDto, result);
+        return plainToInstance(DailyMetricsDto, result);
     }
 
     @Get(":id")

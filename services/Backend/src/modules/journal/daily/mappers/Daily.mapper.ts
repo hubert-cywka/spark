@@ -1,4 +1,4 @@
-import { plainToClass } from "class-transformer";
+import { plainToInstance } from "class-transformer";
 
 import { BaseModelDTOEntityMapper } from "@/common/mappers/BaseModelDTOEntity.mapper";
 import { DailyDto } from "@/modules/journal/daily/dto/Daily.dto";
@@ -28,7 +28,7 @@ export class DailyMapper extends BaseModelDTOEntityMapper<Daily, DailyDto, Daily
     }
 
     public fromModelToDto(model: Daily): DailyDto {
-        return plainToClass(DailyDto, {
+        return plainToInstance(DailyDto, {
             id: model.id,
             date: model.date,
             authorId: model.authorId,

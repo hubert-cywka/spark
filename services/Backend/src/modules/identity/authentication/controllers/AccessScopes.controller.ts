@@ -1,6 +1,6 @@
 import { Body, Controller, ForbiddenException, Inject, Post, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { Throttle } from "@nestjs/throttler";
-import { type Request } from "express";
+import { type FastifyRequest } from "fastify";
 
 import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
@@ -35,7 +35,11 @@ export class AccessScopesController {
     @Post("activate")
     @UseGuards(AccessGuard)
     @Throttle(IDENTITY_MODULE_STRICT_RATE_LIMITING)
-    async activateAccessScopes(@Body() dto: ActivateAccessScopesDto, @AuthenticatedUserContext() user: User, @Req() request: Request) {
+    async activateAccessScopes(
+        @Body() dto: ActivateAccessScopesDto,
+        @AuthenticatedUserContext() user: User,
+        @Req() request: FastifyRequest
+    ) {
         const accessToken = request.headers.authorization?.split(" ")[1];
 
         if (!accessToken) {

@@ -1,4 +1,4 @@
-import { plainToClass } from "class-transformer";
+import { plainToInstance } from "class-transformer";
 
 import { AuthenticationResultDto } from "@/modules/identity/authentication/dto/outgoing/AuthenticationResult.dto";
 import { OIDCRedirectResponseDto } from "@/modules/identity/authentication/dto/outgoing/OIDCRedirectResponse.dto";
@@ -7,7 +7,7 @@ import { AuthenticationResult } from "@/modules/identity/authentication/types/Au
 
 export class AuthenticationMapper implements IAuthenticationMapper {
     toAuthenticationResultDTO(model: AuthenticationResult): AuthenticationResultDto {
-        return plainToClass(AuthenticationResultDto, {
+        return plainToInstance(AuthenticationResultDto, {
             account: model.account,
             accessToken: model.accessToken,
             accessScopes: model.accessScopes,
@@ -15,6 +15,8 @@ export class AuthenticationMapper implements IAuthenticationMapper {
     }
 
     toOIDCRedirectDTO(url: URL): OIDCRedirectResponseDto {
-        return plainToClass(OIDCRedirectResponseDto, { url: url.toString() });
+        return plainToInstance(OIDCRedirectResponseDto, {
+            url: url.toString(),
+        });
     }
 }

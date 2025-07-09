@@ -1,4 +1,4 @@
-import { plainToClass } from "class-transformer";
+import { plainToInstance } from "class-transformer";
 
 import { BaseModelDTOEntityMapper } from "@/common/mappers/BaseModelDTOEntity.mapper";
 import { UserDto } from "@/modules/users/dto/User.dto";
@@ -24,7 +24,7 @@ export class UserMapper extends BaseModelDTOEntityMapper<User, UserDto, UserEnti
     }
 
     fromModelToDto(model: User): UserDto {
-        return plainToClass(UserDto, {
+        return plainToInstance(UserDto, {
             id: model.id,
             email: model.email,
             isActivated: model.isActivated,

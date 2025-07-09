@@ -1,4 +1,4 @@
-import { plainToClass } from "class-transformer";
+import { plainToInstance } from "class-transformer";
 
 import { BaseModelDTOEntityMapper } from "@/common/mappers/BaseModelDTOEntity.mapper";
 import { RecipientDto } from "@/modules/alerts/dto/Recipient.dto";
@@ -20,7 +20,7 @@ export class RecipientMapper extends BaseModelDTOEntityMapper<Recipient, Recipie
     }
 
     fromModelToDto(model: Recipient): RecipientDto {
-        return plainToClass(RecipientDto, {
+        return plainToInstance(RecipientDto, {
             id: model.id,
         });
     }

@@ -1,3 +1,4 @@
+import { Fragment, useMemo } from "react";
 import { Focusable } from "react-aria-components";
 
 import styles from "./styles/FormattedEntryContent.module.scss";
@@ -10,25 +11,45 @@ type FormattedContentProps = {
 };
 
 export const FormattedEntryContent = ({ content }: FormattedContentProps) => {
-    const urlRegex = /(https?:\/\/\S+)/g;
-    const parts = content.split(urlRegex);
+    const memoizedParts = useMemo(() => {
+        const urlRegex = /(https?:\/\/\S+[a-zA-Z0-9/#])([.,!?)]*)/g;
+        const parts = [];
+        let lastIndex = 0;
+
+        if (!content) {
+            return [];
+        }
+
+        for (const match of content.matchAll(urlRegex)) {
+            const href = match[1];
+            const trailingText = match[2];
+            const matchIndex = match.index ?? 0;
+
+            if (matchIndex > lastIndex) {
+                parts.push(content.substring(lastIndex, matchIndex));
+            }
+
+            const displayText = beautifyUrl(href);
+            parts.push(
+                <Fragment key={`match-${matchIndex}`}>
+                    <Anchor href={href} target="_blank" rel="noopener noreferrer" className={styles.link}>
+                        {displayText}
+                    </Anchor>
+                    {trailingText}
+                </Fragment>
+            );
+
+            lastIndex = matchIndex + (match[0]?.length ?? 0);
+        }
+
+        parts.push(content.substring(lastIndex));
+
+        return parts;
+    }, [content]);
 
     return (
         <Focusable>
-            <span>
-                {parts.map((part, index) => {
-                    if (urlRegex.test(part)) {
-                        const displayText = beautifyUrl(part);
-
-                        return (
-                            <Anchor href={part} target="_blank" rel="noopener noreferrer" className={styles.link} key={index}>
-                                {displayText}
-                            </Anchor>
-                        );
-                    }
-                    return <span key={index}>{part}</span>;
-                })}
-            </span>
+            <span>{memoizedParts}</span>
         </Focusable>
     );
 };

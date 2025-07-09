@@ -1,11 +1,11 @@
 import { ArgumentMetadata, Injectable, PipeTransform } from "@nestjs/common";
-import { type ClassConstructor, plainToClass } from "class-transformer";
+import { type ClassConstructor, plainToInstance } from "class-transformer";
 
 @Injectable()
 export class HydratePipe<T> implements PipeTransform {
     constructor(private readonly targetClass: ClassConstructor<T>) {}
 
     transform(value: object, _metadata: ArgumentMetadata): T {
-        return plainToClass(this.targetClass, value);
+        return plainToInstance(this.targetClass, value);
     }
 }

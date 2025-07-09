@@ -1,4 +1,4 @@
-import { plainToClass } from "class-transformer";
+import { plainToInstance } from "class-transformer";
 
 import { BaseModelDTOEntityMapper } from "@/common/mappers/BaseModelDTOEntity.mapper";
 import { TwoFactorAuthenticationIntegrationDto } from "@/modules/identity/2fa/dto/TwoFactorAuthenticationIntegration.dto";
@@ -39,7 +39,7 @@ export class TwoFactorAuthenticationIntegrationMapper
     }
 
     public fromModelToDto(model: TwoFactorAuthenticationIntegration): TwoFactorAuthenticationIntegrationDto {
-        return plainToClass(TwoFactorAuthenticationIntegrationDto, {
+        return plainToInstance(TwoFactorAuthenticationIntegrationDto, {
             id: model.id,
             method: model.method,
             totpTTL: model.totpTTL,

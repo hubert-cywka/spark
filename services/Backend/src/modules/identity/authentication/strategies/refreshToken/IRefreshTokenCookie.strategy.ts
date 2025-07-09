@@ -1,7 +1,7 @@
-import { CookieOptions } from "express";
+import { CookieSerializeOptions } from "@fastify/cookie";
 
 export const RefreshTokenCookieStrategyToken = Symbol("IRefreshTokenCookieStrategy");
 
 export interface IRefreshTokenCookieStrategy {
-    getCookieOptions: (maxAge: number) => CookieOptions;
+    getCookieOptions: (maxAge: number) => CookieSerializeOptions;
 }

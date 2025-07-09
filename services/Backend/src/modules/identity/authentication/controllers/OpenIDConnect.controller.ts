@@ -1,3 +1,4 @@
+import { CookieSerializeOptions } from "@fastify/cookie";
 import {
     BadRequestException,
     Body,
@@ -17,7 +18,7 @@ import {
 import { ConfigService } from "@nestjs/config";
 import { SkipThrottle, Throttle } from "@nestjs/throttler";
 import { OAuth2RequestError } from "arctic";
-import { type CookieOptions, type Response } from "express";
+import { type FastifyReply } from "fastify";
 
 import { Cookie } from "@/common/decorators/Cookie.decorator";
 import { EntityConflictError } from "@/common/errors/EntityConflict.error";
@@ -78,7 +79,7 @@ export class OpenIDConnectController {
     @Get("login/:providerId")
     @Throttle(IDENTITY_MODULE_STRICT_RATE_LIMITING)
     async login(
-        @Res() response: Response,
+        @Res() response: FastifyReply,
         @Param("providerId", new ParseEnumPipe(FederatedAccountProvider))
         providerId: FederatedAccountProvider,
         @Query("loginRedirectUrl") loginRedirectUrl: string,
@@ -107,7 +108,7 @@ export class OpenIDConnectController {
     @Get("login/:providerId/callback")
     @SkipThrottle()
     async loginCallback(
-        @Res() response: Response,
+        @Res() response: FastifyReply,
         @Param("providerId", new ParseEnumPipe(FederatedAccountProvider))
         providerId: FederatedAccountProvider,
         @Query("code") code: string,
@@ -145,7 +146,7 @@ export class OpenIDConnectController {
             loginRedirectUrl.searchParams.set("account", encodeURIComponent(JSON.stringify(account)));
         } catch (err) {
             if (err instanceof EntityNotFoundError && !!externalIdentity) {
-                return response.redirect(registerRedirectUrl);
+                return response.status(HttpStatus.FOUND).redirect(registerRedirectUrl);
             }
 
             if (err instanceof ForbiddenError && !!externalIdentity) {
@@ -155,14 +156,14 @@ export class OpenIDConnectController {
             }
         }
 
-        return response.redirect(loginRedirectUrl.toString());
+        return response.status(HttpStatus.FOUND).redirect(loginRedirectUrl.toString());
     }
 
     @HttpCode(HttpStatus.CREATED)
     @Post("register")
     @Throttle(IDENTITY_MODULE_STRICT_RATE_LIMITING)
     async registerWithOIDC(
-        @Res() response: Response,
+        @Res() response: FastifyReply,
         @Body() _dto: RegisterViaOIDCDto,
         @Cookie({
             name: OIDC_EXTERNAL_IDENTITY,
@@ -193,7 +194,7 @@ export class OpenIDConnectController {
         }
     }
 
-    private getOIDCCookieOptions(): CookieOptions {
+    private getOIDCCookieOptions(): CookieSerializeOptions {
         return {
             partitioned: true,
             httpOnly: true,
@@ -204,7 +205,7 @@ export class OpenIDConnectController {
         };
     }
 
-    private getExternalIdentityCookieOptions(): CookieOptions {
+    private getExternalIdentityCookieOptions(): CookieSerializeOptions {
         return {
             partitioned: true,
             httpOnly: true,

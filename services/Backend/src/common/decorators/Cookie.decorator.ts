@@ -1,5 +1,5 @@
 import { type ExecutionContext, BadRequestException, createParamDecorator } from "@nestjs/common";
-import { plainToClass } from "class-transformer";
+import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 
 import { ClassConstructor } from "@/types/Class";
@@ -28,7 +28,7 @@ export const Cookie = createParamDecorator(async (options: CookieDecoratorOption
 
     try {
         const parsedCookie = JSON.parse(cookieData);
-        const instance = plainToClass(options.parseAs, parsedCookie);
+        const instance = plainToInstance(options.parseAs, parsedCookie);
         const errors = await validate(instance as object);
 
         if (errors.length) {
