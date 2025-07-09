@@ -1,4 +1,4 @@
-import React, { Fragment, useMemo } from "react"; // Dodajemy import useMemo
+import { Fragment, useMemo } from "react";
 import { Focusable } from "react-aria-components";
 
 import styles from "./styles/FormattedEntryContent.module.scss";
