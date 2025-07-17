@@ -13,6 +13,10 @@ import {
     TwoFactorAuthenticationEmailIntegrationPublisherServiceToken,
 } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationEmailIntegrationPublisher.service";
 import { type ITwoFactorAuthenticationIntegrationService } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationIntegration.service";
+import {
+    type ITwoFactorAuthenticationSecretManager,
+    TwoFactorAuthenticationSecretManagerToken,
+} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationSecretManager.service";
 import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
@@ -25,15 +29,22 @@ export class TwoFactorAuthenticationFactory implements ITwoFactorAuthenticationF
         private readonly repository: Repository<TwoFactorAuthenticationIntegrationEntity>,
         @Inject(TwoFactorAuthenticationEmailIntegrationPublisherServiceToken)
         private readonly publisher: ITwoFactorAuthenticationEmailIntegrationPublisherService,
+        @Inject(TwoFactorAuthenticationSecretManagerToken)
+        private readonly secretManager: ITwoFactorAuthenticationSecretManager,
         private readonly configService: ConfigService
     ) {}
 
     public createIntegrationService(method: TwoFactorAuthenticationMethod): ITwoFactorAuthenticationIntegrationService {
         switch (method) {
             case TwoFactorAuthenticationMethod.AUTHENTICATOR:
-                return new TwoFactorAuthenticationAppIntegrationService(this.repository, this.configService);
+                return new TwoFactorAuthenticationAppIntegrationService(this.repository, this.secretManager, this.configService);
             case TwoFactorAuthenticationMethod.EMAIL:
-                return new TwoFactorAuthenticationEmailIntegrationService(this.repository, this.publisher, this.configService);
+                return new TwoFactorAuthenticationEmailIntegrationService(
+                    this.repository,
+                    this.publisher,
+                    this.secretManager,
+                    this.configService
+                );
             default:
                 this.logger.error({ method }, "Unsupported 2FA method.");
                 throw new IntegrationMethodNotSupportedError(method);

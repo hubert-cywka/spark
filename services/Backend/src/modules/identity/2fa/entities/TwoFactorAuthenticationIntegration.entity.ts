@@ -32,4 +32,7 @@ export class TwoFactorAuthenticationIntegrationEntity {
         onDelete: "CASCADE",
     })
     owner!: Relation<BaseAccountEntity>;
+
+    @Column({ type: "varchar" })
+    ownerId!: string;
 }

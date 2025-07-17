@@ -41,6 +41,10 @@ async function bootstrap() {
         }
     );
 
+    await app.register(fastifyCookie, {
+        secret: config.getOrThrow<string>("cookies.secret"),
+    });
+
     const appLogger = app.get(Logger);
     app.useLogger(appLogger);
     app.setGlobalPrefix("api");
@@ -50,10 +54,6 @@ async function bootstrap() {
             transform: true,
         })
     );
-
-    await app.register(fastifyCookie, {
-        secret: config.getOrThrow<string>("cookies.secret"),
-    });
 
     // TODO: Update schemas and responses for each endpoint
     const swaggerConfig = new DocumentBuilder().setTitle("codename - OpenAPI").setVersion("1.0").addTag("codename").build();

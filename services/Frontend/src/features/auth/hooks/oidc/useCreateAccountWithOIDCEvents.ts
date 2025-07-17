@@ -18,7 +18,7 @@ export const useCreateAccountWithOIDCEvents = () => {
             message: t("authentication.oidc.register.notifications.success.body"),
             title: t("authentication.oidc.register.notifications.success.title"),
         });
-        router.push(AppRoute.HOME);
+        router.push(AppRoute.DAILY);
     }, [router, t]);
 
     const onRegisterError = useCallback(

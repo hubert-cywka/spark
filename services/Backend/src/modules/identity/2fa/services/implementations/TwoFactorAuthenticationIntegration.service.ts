@@ -1,7 +1,7 @@
-import { Logger } from "@nestjs/common";
+import { Inject, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Secret, TOTP } from "otpauth";
+import { TOTP } from "otpauth";
 import { IsNull, Not, Repository } from "typeorm";
 import { Transactional } from "typeorm-transactional";
 
@@ -12,6 +12,10 @@ import { IntegrationNotFoundError } from "@/modules/identity/2fa/errors/Integrat
 import { NotEnoughIntegrationsEnabledError } from "@/modules/identity/2fa/errors/NotEnoughIntegrationsEnabled.error";
 import { TOTPInvalidError } from "@/modules/identity/2fa/errors/TOTPInvalid.error";
 import { type ITwoFactorAuthenticationIntegrationService } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationIntegration.service";
+import {
+    type ITwoFactorAuthenticationSecretManager,
+    TwoFactorAuthenticationSecretManagerToken,
+} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationSecretManager.service";
 import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 import { type User } from "@/types/User";
@@ -25,6 +29,8 @@ export abstract class TwoFactorAuthenticationIntegrationService implements ITwoF
     protected constructor(
         @InjectRepository(TwoFactorAuthenticationIntegrationEntity, IDENTITY_MODULE_DATA_SOURCE)
         private readonly repository: Repository<TwoFactorAuthenticationIntegrationEntity>,
+        @Inject(TwoFactorAuthenticationSecretManagerToken)
+        private readonly secretManager: ITwoFactorAuthenticationSecretManager,
         configService: ConfigService
     ) {
         this.appName = configService.getOrThrow<string>("appName");
@@ -58,13 +64,10 @@ export abstract class TwoFactorAuthenticationIntegrationService implements ITwoF
             throw new IntegrationAlreadyEnabledError();
         }
 
-        let secret: string;
-
-        if (method) {
-            secret = await this.overwrite2FAMethodSecret(method.id);
-        } else {
-            secret = await this.createNew2FAMethod(user.id);
-        }
+        const secret = await this.save2FAMethod({
+            ownerId: user.id,
+            methodId: method?.id,
+        });
 
         const totpTTL = method?.totpTTL ?? this.getTOTPDefaultTimeToLive();
         const otpProvider = this.createOtpProvider(user, secret, totpTTL);
@@ -148,35 +151,34 @@ export abstract class TwoFactorAuthenticationIntegrationService implements ITwoF
         return delta !== null;
     }
 
-    private async createNew2FAMethod(accountId: string) {
+    private async save2FAMethod({ methodId, ownerId }: { methodId?: string; ownerId?: string }) {
         const repository = this.getRepository();
-        const secret = this.generateSecret();
-
-        await repository.save({
-            owner: { id: accountId },
-            method: this.get2FAMethod(),
-            secret,
-            totpTTL: this.getTOTPDefaultTimeToLive(),
-        });
-        return secret;
-    }
-
-    private async overwrite2FAMethodSecret(methodId: string) {
-        const repository = this.getRepository();
-        const secret = this.generateSecret();
+        const { encryptedSecret, decryptedSecret } = await this.secretManager.generateSecret();
 
         await repository.save({
             id: methodId,
-            secret,
+            ownerId,
+            secret: encryptedSecret,
+            method: this.get2FAMethod(),
             totpTTL: this.getTOTPDefaultTimeToLive(),
         });
-        return secret;
+
+        return decryptedSecret;
     }
 
     private async findMethodByAccountId(accountId: string) {
-        return await this.getRepository().findOne({
+        const method = await this.getRepository().findOne({
             where: { method: this.get2FAMethod(), owner: { id: accountId } },
         });
+
+        if (!method) {
+            return null;
+        }
+
+        return {
+            ...method,
+            secret: await this.secretManager.decryptSecret(method.secret),
+        };
     }
 
     private createOtpProvider(user: User, secret: string, totpTTL: number) {
@@ -191,10 +193,6 @@ export abstract class TwoFactorAuthenticationIntegrationService implements ITwoF
 
     private getRepository(): Repository<TwoFactorAuthenticationIntegrationEntity> {
         return this.repository;
-    }
-
-    private generateSecret() {
-        return new Secret().base32;
     }
 
     protected onCodeIssued(user: User, code: string): Promise<void> | void {}
