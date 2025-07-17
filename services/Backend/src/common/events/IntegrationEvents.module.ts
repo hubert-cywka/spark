@@ -1,4 +1,5 @@
 import { type DynamicModule, Module } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
@@ -47,9 +48,11 @@ import {
 import { IntegrationEventsJobsOrchestratorToken } from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
 import { IntegrationEventsSubscriberToken } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
 import { type IPartitionAssigner, PartitionAssignerToken } from "@/common/events/services/interfaces/IPartitionAssigner";
+import { IntegrationEventsEncryptionAlgorithmToken } from "@/common/events/services/tokens/IntegrationEventsEncryptionAlgorithm.token";
 import { IntegrationEventsModuleOptions } from "@/common/events/types";
 import { ExponentialRetryBackoffPolicy } from "@/common/retry/ExponentialRetryBackoffPolicy";
 import { RetryBackoffPolicy } from "@/common/retry/RetryBackoffPolicy";
+import { AesGcmEncryptionAlgorithm } from "@/common/services/implementations/AesGcmEncryptionAlgorithm";
 import { IThrottler, ThrottlerToken } from "@/common/services/interfaces/IThrottler";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 
@@ -258,6 +261,12 @@ export class IntegrationEventsModule {
                 {
                     provide: IntegrationEventsJobsOrchestratorToken,
                     useClass: IntegrationEventsJobsOrchestrator,
+                },
+                {
+                    provide: IntegrationEventsEncryptionAlgorithmToken,
+                    useFactory: (config: ConfigService) =>
+                        new AesGcmEncryptionAlgorithm(config.getOrThrow<string>("events.encryption.secret")),
+                    inject: [ConfigService],
                 },
                 {
                     provide: IntegrationEventsEncryptionServiceToken,

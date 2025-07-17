@@ -1,6 +1,5 @@
 import { Inject, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Secret } from "otpauth";
 import { IsNull, Not, Repository } from "typeorm";
 
 import { TwoFactorAuthenticationIntegrationEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationIntegration.entity";
@@ -9,6 +8,10 @@ import {
     TwoFactorAuthenticationIntegrationMapperToken,
 } from "@/modules/identity/2fa/mappers/ITwoFactorAuthenticationIntegration.mapper";
 import { type ITwoFactorAuthenticationIntegrationsProviderService } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationIntegrationsProvider.service";
+import {
+    type ITwoFactorAuthenticationSecretManager,
+    TwoFactorAuthenticationSecretManagerToken,
+} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationSecretManager.service";
 import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
@@ -19,7 +22,9 @@ export class TwoFactorAuthenticationIntegrationsProviderService implements ITwoF
         @InjectRepository(TwoFactorAuthenticationIntegrationEntity, IDENTITY_MODULE_DATA_SOURCE)
         private readonly repository: Repository<TwoFactorAuthenticationIntegrationEntity>,
         @Inject(TwoFactorAuthenticationIntegrationMapperToken)
-        private readonly mapper: ITwoFactorAuthenticationIntegrationMapper
+        private readonly mapper: ITwoFactorAuthenticationIntegrationMapper,
+        @Inject(TwoFactorAuthenticationSecretManagerToken)
+        private readonly secretManager: ITwoFactorAuthenticationSecretManager
     ) {}
 
     public async findActiveIntegrations(accountId: string) {
@@ -33,12 +38,13 @@ export class TwoFactorAuthenticationIntegrationsProviderService implements ITwoF
     // TODO: Is this the correct place for this?
     public async enableDefaultIntegrations(accountId: string): Promise<void> {
         const repository = this.getRepository();
-        const secret = new Secret().base32;
+        const { encryptedSecret } = await this.secretManager.generateSecret();
+
         await repository.save({
             owner: { id: accountId },
             method: TwoFactorAuthenticationMethod.EMAIL,
             enabledAt: new Date(),
-            secret,
+            secret: encryptedSecret,
         });
 
         this.logger.log({ accountId }, "Enabled default 2FA integrations.");

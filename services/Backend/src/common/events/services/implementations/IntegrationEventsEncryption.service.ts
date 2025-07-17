@@ -1,19 +1,16 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+import { Inject, Injectable } from "@nestjs/common";
 
 import { IntegrationEvent } from "@/common/events";
 import { type IIntegrationEventsEncryptionService } from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
-import { AesGcmEncryptionAlgorithm } from "@/common/services/implementations/AesGcmEncryptionAlgorithm";
-import { IEncryptionAlgorithm } from "@/common/services/interfaces/IEncryptionAlgorithm";
+import { IntegrationEventsEncryptionAlgorithmToken } from "@/common/events/services/tokens/IntegrationEventsEncryptionAlgorithm.token";
+import { type IEncryptionAlgorithm } from "@/common/services/interfaces/IEncryptionAlgorithm";
 
 @Injectable()
 export class IntegrationEventsEncryptionService implements IIntegrationEventsEncryptionService {
-    private readonly encryptionAlgorithm: IEncryptionAlgorithm;
-
-    public constructor(configService: ConfigService) {
-        const encryptionSecret = configService.getOrThrow("events.encryption.secret");
-        this.encryptionAlgorithm = new AesGcmEncryptionAlgorithm(encryptionSecret);
-    }
+    public constructor(
+        @Inject(IntegrationEventsEncryptionAlgorithmToken)
+        private readonly encryptionAlgorithm: IEncryptionAlgorithm
+    ) {}
 
     public async encrypt<T = unknown>(event: IntegrationEvent<T>): Promise<IntegrationEvent<T>> {
         if (event.isEncrypted()) {

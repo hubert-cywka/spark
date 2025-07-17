@@ -11,6 +11,10 @@ import {
     TwoFactorAuthenticationEmailIntegrationPublisherServiceToken,
 } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationEmailIntegrationPublisher.service";
 import { type ITwoFactorAuthenticationIntegrationService } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationIntegration.service";
+import {
+    type ITwoFactorAuthenticationSecretManager,
+    TwoFactorAuthenticationSecretManagerToken,
+} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationSecretManager.service";
 import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 import { type User } from "@/types/User";
@@ -25,9 +29,11 @@ export class TwoFactorAuthenticationEmailIntegrationService
         repository: Repository<TwoFactorAuthenticationIntegrationEntity>,
         @Inject(TwoFactorAuthenticationEmailIntegrationPublisherServiceToken)
         private readonly publisher: ITwoFactorAuthenticationEmailIntegrationPublisherService,
+        @Inject(TwoFactorAuthenticationSecretManagerToken)
+        secretManager: ITwoFactorAuthenticationSecretManager,
         configService: ConfigService
     ) {
-        super(repository, configService);
+        super(repository, secretManager, configService);
     }
 
     protected canIssueCode(): boolean {

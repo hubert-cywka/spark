@@ -176,7 +176,7 @@ export class ManagedAccountService implements IManagedAccountService {
 
         const activationToken = await this.accountActivationTokenService.issue(account.id);
         const accountActivationRedirectUrl = `${clientRedirectUrl}?token=${activationToken}`;
-        await this.publisher.onAccountActivationTokenRequested(account.id, accountActivationRedirectUrl);
+        await this.publisher.onAccountActivationTokenRequested(account.id, account.email, accountActivationRedirectUrl);
     }
 
     private async findOne(providerAccountId: string): Promise<ManagedAccountEntity> {

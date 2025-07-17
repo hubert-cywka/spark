@@ -99,8 +99,8 @@ export class OpenIDConnectController {
             registerRedirectUrl: registerRedirectUrl,
         });
 
-        response.cookie(OIDC_CODE_VERIFIER_COOKIE_NAME, codeVerifier, this.getOIDCCookieOptions());
-        response.cookie(OIDC_STATE_COOKIE_NAME, state, this.getOIDCCookieOptions());
+        response.setCookie(OIDC_CODE_VERIFIER_COOKIE_NAME, codeVerifier, this.getOIDCCookieOptions());
+        response.setCookie(OIDC_STATE_COOKIE_NAME, state, this.getOIDCCookieOptions());
         return response.send(this.authenticationMapper.toOIDCRedirectDTO(url));
     }
 
@@ -135,12 +135,12 @@ export class OpenIDConnectController {
 
         try {
             externalIdentity = await provider.getIdentity(code, storedCodeVerifier);
-            response.cookie(OIDC_EXTERNAL_IDENTITY, JSON.stringify(externalIdentity), this.getExternalIdentityCookieOptions());
+            response.setCookie(OIDC_EXTERNAL_IDENTITY, JSON.stringify(externalIdentity), this.getExternalIdentityCookieOptions());
 
             const { accessToken, refreshToken, account, accessScopes } = await this.authService.loginWithExternalIdentity(externalIdentity);
             const cookieOptions = this.refreshTokenCookieStrategy.getCookieOptions(this.refreshTokenCookieMaxAge);
 
-            response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieOptions);
+            response.setCookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieOptions);
             loginRedirectUrl.searchParams.set("accessToken", accessToken);
             loginRedirectUrl.searchParams.set("accessScopes", encodeURIComponent(JSON.stringify(accessScopes)));
             loginRedirectUrl.searchParams.set("account", encodeURIComponent(JSON.stringify(account)));
@@ -182,7 +182,7 @@ export class OpenIDConnectController {
             const result = await this.authService.registerWithExternalIdentity(externalIdentity);
             const cookieOptions = this.refreshTokenCookieStrategy.getCookieOptions(this.refreshTokenCookieMaxAge);
 
-            response.cookie(REFRESH_TOKEN_COOKIE_NAME, result.refreshToken, cookieOptions);
+            response.setCookie(REFRESH_TOKEN_COOKIE_NAME, result.refreshToken, cookieOptions);
             return response.send(this.authenticationMapper.toAuthenticationResultDTO(result));
         } catch (err) {
             whenError(err)

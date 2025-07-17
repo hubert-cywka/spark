@@ -1,12 +1,12 @@
-import { ConfigService } from "@nestjs/config";
-
 import { IntegrationEventsEncryptionService } from "./IntegrationEventsEncryption.service";
 
 import { IntegrationEvent } from "@/common/events";
+import { AesGcmEncryptionAlgorithm } from "@/common/services/implementations/AesGcmEncryptionAlgorithm";
+import { type IEncryptionAlgorithm } from "@/common/services/interfaces/IEncryptionAlgorithm";
 
 describe("IntegrationEventsEncryptionService", () => {
     let service: IntegrationEventsEncryptionService;
-    let configService: ConfigService;
+    let encryptionAlgorithm: IEncryptionAlgorithm;
 
     const mockSecret = "a".repeat(64);
 
@@ -20,12 +20,8 @@ describe("IntegrationEventsEncryptionService", () => {
     });
 
     beforeEach(() => {
-        // @ts-expect-error: No need to mock every property
-        configService = {
-            getOrThrow: jest.fn().mockReturnValue(mockSecret),
-        };
-
-        service = new IntegrationEventsEncryptionService(configService);
+        encryptionAlgorithm = new AesGcmEncryptionAlgorithm(mockSecret);
+        service = new IntegrationEventsEncryptionService(encryptionAlgorithm);
     });
 
     describe("encrypt", () => {

@@ -1,7 +1,7 @@
 import { IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 
 export type AccountActivationTokenRequestedEventPayload = {
-    account: { id: string };
+    account: { id: string; email: string };
     redirectUrl: string;
 };
 

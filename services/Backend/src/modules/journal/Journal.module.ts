@@ -26,6 +26,7 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
         },
     ],
     imports: [JournalSharedModule, AuthorsModule, DailyModule, GoalsModule, EntriesModule],
+    exports: [],
     controllers: [],
 })
 export class JournalModule implements OnModuleInit {

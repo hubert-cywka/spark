@@ -6,6 +6,10 @@ variable "EVENTS_ENCRYPTION_SECRET_64_BYTES" {
   type = string
 }
 
+variable "TWO_FACTOR_AUTH_ENCRYPTION_SECRET_64_BYTES" {
+  type = string
+}
+
 variable "RATE_LIMITING_BASE_TTL" {
   type = number
 }

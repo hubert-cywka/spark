@@ -33,10 +33,10 @@ export class AccountPublisherService implements IAccountPublisherService {
         );
     }
 
-    public async onAccountActivationTokenRequested(tenantId: string, accountActivationRedirectUrl: string) {
+    public async onAccountActivationTokenRequested(tenantId: string, email: string, accountActivationRedirectUrl: string) {
         await this.outbox.enqueue(
             new AccountActivationTokenRequestedEvent(tenantId, {
-                account: { id: tenantId },
+                account: { id: tenantId, email },
                 redirectUrl: accountActivationRedirectUrl,
             }),
             { encrypt: true }

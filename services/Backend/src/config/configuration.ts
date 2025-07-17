@@ -125,6 +125,9 @@ export const AppConfig = () => ({
         },
 
         identity: {
+            twoFactorAuth: {
+                encryptionSecret: process.env.TWO_FACTOR_AUTH_ENCRYPTION_SECRET_64_BYTES,
+            },
             refreshToken: {
                 signingSecret: process.env.REFRESH_TOKEN_SIGNING_SECRET,
                 expirationTimeInSeconds: parseInt(process.env.REFRESH_TOKEN_EXPIRATION_TIME_IN_SECONDS ?? ""),
