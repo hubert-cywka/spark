@@ -23,6 +23,7 @@ import { DailyReminderTriggeredEventHandler } from "@/modules/mail/events/DailyR
 import { TwoFactorAuthCodeIssuedEventHandler } from "@/modules/mail/events/TwoFactorAuthCodeIssuedEvent.handler";
 import { MAIL_MODULE_DATA_SOURCE } from "@/modules/mail/infrastructure/database/constants";
 import { RegenerateMigrations1749289938815 } from "@/modules/mail/infrastructure/database/migrations/1749289938815-regenerate-migrations";
+import { AddTimestamps1752925904452 } from "@/modules/mail/infrastructure/database/migrations/1752925904452-AddTimestamps";
 import { RecipientMapperToken } from "@/modules/mail/mappers/IRecipient.mapper";
 import { RecipientMapper } from "@/modules/mail/mappers/Recipient.mapper";
 import { EmailLookup } from "@/modules/mail/services/implementations/EmailLookup.service";
@@ -112,7 +113,7 @@ import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/
                 password: configService.getOrThrow<string>("modules.mail.database.password"),
                 host: configService.getOrThrow<string>("modules.mail.database.host"),
                 database: configService.getOrThrow<string>("modules.mail.database.name"),
-                migrations: [RegenerateMigrations1749289938815, InboxAndOutbox1749299050551],
+                migrations: [RegenerateMigrations1749289938815, InboxAndOutbox1749299050551, AddTimestamps1752925904452],
             }),
             inject: [ConfigService],
         }),

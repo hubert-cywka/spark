@@ -8,8 +8,8 @@ import { Transactional } from "typeorm-transactional";
 import { DataPurgePlanEntity } from "@/modules/gdpr/entities/DataPurgePlan.entity";
 import { GDPR_MODULE_DATA_SOURCE } from "@/modules/gdpr/infrastructure/database/constants";
 import {
+    type IDataPurgeEventsPublisher,
     DataPurgeEventsPublisherToken,
-    IDataPurgeEventsPublisher,
 } from "@/modules/gdpr/services/interfaces/IDataPurgeEventsPublisher.service";
 import { IDataPurgeProcessor } from "@/modules/gdpr/services/interfaces/IDataPurgeProcessor.service";
 

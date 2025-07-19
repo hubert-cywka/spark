@@ -19,6 +19,7 @@ import { RecipientCreatedEventHandler } from "@/modules/alerts/events/RecipientC
 import { RecipientRemovedEventHandler } from "@/modules/alerts/events/RecipientRemovedEvent.handler";
 import { ALERTS_MODULE_DATA_SOURCE } from "@/modules/alerts/infrastructure/database/constants";
 import { RegenerateMigrations1749289896371 } from "@/modules/alerts/infrastructure/database/migrations/1749289896371-regenerate-migrations";
+import { AddTimestamps1752925853545 } from "@/modules/alerts/infrastructure/database/migrations/1752925853545-AddTimestamps";
 import { AlertMapper } from "@/modules/alerts/mappers/Alert.mapper";
 import { AlertMapperToken } from "@/modules/alerts/mappers/IAlert.mapper";
 import { RecipientMapperToken } from "@/modules/alerts/mappers/IRecipient.mapper";
@@ -75,7 +76,7 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
                 password: configService.getOrThrow<string>("modules.alerts.database.password"),
                 host: configService.getOrThrow<string>("modules.alerts.database.host"),
                 database: configService.getOrThrow<string>("modules.alerts.database.name"),
-                migrations: [RegenerateMigrations1749289896371, InboxAndOutbox1749299050551],
+                migrations: [RegenerateMigrations1749289896371, InboxAndOutbox1749299050551, AddTimestamps1752925853545],
             }),
             inject: [ConfigService],
         }),

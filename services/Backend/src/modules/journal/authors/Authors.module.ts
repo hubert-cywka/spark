@@ -22,6 +22,6 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
         AccountCreatedEventHandler,
         AuthorRemovedEventHandler,
     ],
-    exports: [AuthorServiceToken, AccountCreatedEventHandler, AuthorRemovedEventHandler],
+    exports: [AccountCreatedEventHandler, AuthorRemovedEventHandler],
 })
 export class AuthorsModule {}

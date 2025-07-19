@@ -49,8 +49,15 @@ export class RecipientService implements IRecipientService {
 
     @Transactional({ connectionName: MAIL_MODULE_DATA_SOURCE })
     public async remove(id: string): Promise<void> {
-        const recipient = await this.find(id);
-        await this.getRepository().remove([recipient]);
+        const repository = this.getRepository();
+        const recipient = await repository.findOne({ where: { id } });
+
+        if (!recipient) {
+            this.logger.warn({ recipientId: id }, "Couldn't find recipient.");
+            throw new RecipientNotFoundError();
+        }
+
+        await repository.remove([recipient]);
     }
 
     private getRepository(): Repository<RecipientEntity> {

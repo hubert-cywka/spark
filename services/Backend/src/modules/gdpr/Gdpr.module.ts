@@ -19,6 +19,7 @@ import { TenantRemovalRequestedEventHandler } from "@/modules/gdpr/events/Tenant
 import { TenantRemovedEventHandler } from "@/modules/gdpr/events/TenantRemovedEvent.handler";
 import { GDPR_MODULE_DATA_SOURCE } from "@/modules/gdpr/infrastructure/database/constants";
 import { RegenerateMigrations1749289951431 } from "@/modules/gdpr/infrastructure/database/migrations/1749289951431-regenerate-migrations";
+import { AddTimestamps1752925879790 } from "@/modules/gdpr/infrastructure/database/migrations/1752925879790-AddTimestamps";
 import { TenantMapperToken } from "@/modules/gdpr/mappers/ITenant.mapper";
 import { TenantMapper } from "@/modules/gdpr/mappers/Tenant.mapper";
 import { DataPurgeEventsPublisher } from "@/modules/gdpr/services/implementations/DataPurgeEventsPublisher.service";
@@ -67,7 +68,7 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
                 password: configService.getOrThrow<string>("modules.gdpr.database.password"),
                 host: configService.getOrThrow<string>("modules.gdpr.database.host"),
                 database: configService.getOrThrow<string>("modules.gdpr.database.name"),
-                migrations: [RegenerateMigrations1749289951431, InboxAndOutbox1749299050551],
+                migrations: [RegenerateMigrations1749289951431, InboxAndOutbox1749299050551, AddTimestamps1752925879790],
             }),
             inject: [ConfigService],
         }),
