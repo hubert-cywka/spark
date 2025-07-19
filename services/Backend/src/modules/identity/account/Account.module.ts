@@ -48,6 +48,7 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
         AccountRemovalRequestedEventHandler,
     ],
     controllers: [AccountController],
+    // TODO: Modules should export only a facade. Applies to all modules.
     exports: [
         AccountEventsPublisherToken,
         FederatedAccountServiceToken,
