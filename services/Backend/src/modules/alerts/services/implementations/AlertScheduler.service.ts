@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import dayjs from "dayjs";
 
-import { type IAlertSchedulerService } from "@/modules/alerts/services/interfaces/IAlertScheduler.service";
+import { type IAlertScheduler } from "@/modules/alerts/services/interfaces/IAlertScheduler.service";
 import { type UTCDay } from "@/modules/alerts/types/UTCDay";
 
 @Injectable()
-export class AlertSchedulerService implements IAlertSchedulerService {
+export class AlertScheduler implements IAlertScheduler {
     public scheduleNextTrigger(time: string, daysOfWeek: UTCDay[]): Date | null {
         if (!daysOfWeek.length) {
             return null;

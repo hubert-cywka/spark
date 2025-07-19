@@ -1,5 +1,5 @@
 export const AlertPublisherServiceToken = Symbol("AlertPublisherService");
 
-export interface IAlertPublisherService {
+export interface IAlertPublisher {
     onReminderTriggered(tenantId: string): Promise<void>;
 }

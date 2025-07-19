@@ -10,7 +10,7 @@ import { ALERTS_MODULE_DATA_SOURCE } from "@/modules/alerts/infrastructure/datab
 import { type IAlertMapper, AlertMapperToken } from "@/modules/alerts/mappers/IAlert.mapper";
 import { type Alert } from "@/modules/alerts/models/Alert.model";
 import { type IAlertService } from "@/modules/alerts/services/interfaces/IAlert.service";
-import { type IAlertSchedulerService, AlertSchedulerServiceToken } from "@/modules/alerts/services/interfaces/IAlertScheduler.service";
+import { type IAlertScheduler, AlertSchedulerServiceToken } from "@/modules/alerts/services/interfaces/IAlertScheduler.service";
 import { type UTCDay } from "@/modules/alerts/types/UTCDay";
 
 const MAX_NUMBER_OF_ALERTS_PER_RECIPIENT = 5;
@@ -24,7 +24,7 @@ export class AlertService implements IAlertService {
         private readonly repository: Repository<AlertEntity>,
         @Inject(AlertMapperToken) private readonly alertMapper: IAlertMapper,
         @Inject(AlertSchedulerServiceToken)
-        private readonly alertScheduler: IAlertSchedulerService
+        private readonly alertScheduler: IAlertScheduler
     ) {}
 
     public async getAll(recipientId: string): Promise<Alert[]> {
