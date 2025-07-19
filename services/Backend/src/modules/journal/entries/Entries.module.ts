@@ -6,9 +6,9 @@ import { EntryMapper } from "@/modules/journal/entries/mappers/Entry.mapper";
 import { EntryDetailMapper } from "@/modules/journal/entries/mappers/EntryDetail.mapper";
 import { EntryMapperToken } from "@/modules/journal/entries/mappers/IEntry.mapper";
 import { EntryDetailMapperToken } from "@/modules/journal/entries/mappers/IEntryDetail.mapper";
-import { EntriesInsightsService } from "@/modules/journal/entries/services/implementations/EntriesInsights.service";
+import { EntriesInsightsProvider } from "@/modules/journal/entries/services/implementations/EntriesInsightsProvider.service";
 import { EntryService } from "@/modules/journal/entries/services/implementations/Entry.service";
-import { EntriesInsightsServiceToken } from "@/modules/journal/entries/services/interfaces/IEntriesInsights.service";
+import { EntriesInsightsProviderToken } from "@/modules/journal/entries/services/interfaces/IEntriesInsightsProvider.service";
 import { EntryServiceToken } from "@/modules/journal/entries/services/interfaces/IEntry.service";
 import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.module";
 
@@ -19,8 +19,8 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
         { provide: EntryDetailMapperToken, useClass: EntryDetailMapper },
         { provide: EntryServiceToken, useClass: EntryService },
         {
-            provide: EntriesInsightsServiceToken,
-            useClass: EntriesInsightsService,
+            provide: EntriesInsightsProviderToken,
+            useClass: EntriesInsightsProvider,
         },
     ],
     controllers: [EntryController, DailyEntryController],

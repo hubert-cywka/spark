@@ -6,9 +6,9 @@ import { Transactional } from "typeorm-transactional";
 import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccountEntity";
 import { AccountNotFoundError } from "@/modules/identity/account/errors/AccountNotFound.error";
 import {
-    type IAccountPublisherService,
-    AccountPublisherServiceToken,
-} from "@/modules/identity/account/services/interfaces/IAccountPublisher.service";
+    type IAccountEventsPublisher,
+    AccountEventsPublisherToken,
+} from "@/modules/identity/account/services/interfaces/IAccountEventsPublisher.service";
 import { type IAccountRemovalService } from "@/modules/identity/account/services/interfaces/IAccountRemoval.service";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
@@ -19,8 +19,8 @@ export class AccountRemovalService implements IAccountRemovalService {
     constructor(
         @InjectRepository(BaseAccountEntity, IDENTITY_MODULE_DATA_SOURCE)
         private readonly repository: Repository<BaseAccountEntity>,
-        @Inject(AccountPublisherServiceToken)
-        private readonly publisher: IAccountPublisherService
+        @Inject(AccountEventsPublisherToken)
+        private readonly publisher: IAccountEventsPublisher
     ) {}
 
     @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })

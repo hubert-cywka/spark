@@ -5,9 +5,9 @@ import {
     OIDCAuthorizationOptions,
 } from "@/modules/identity/authentication/types/OpenIDConnect";
 
-export const OIDCProviderServiceToken = Symbol("IOIDCProviderService");
+export const OIDCProviderToken = Symbol("IOIDCProvider");
 
-export interface IOIDCProviderService {
+export interface IOIDCProvider {
     startAuthorizationProcess(options?: OIDCAuthorizationOptions): OIDCAuthorizationMeans;
     validateAuthorizationResponse(response: OIDCAuthorizationResponse): OIDCAuthorizationOptions | null;
     validateExternalIdentity(identity: ExternalIdentity): boolean;

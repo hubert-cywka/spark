@@ -6,31 +6,28 @@ import { Repository } from "typeorm";
 
 import { TwoFactorAuthenticationIntegrationEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationIntegration.entity";
 import { TwoFactorAuthenticationIntegrationService } from "@/modules/identity/2fa/services/implementations/TwoFactorAuthenticationIntegration.service";
+import { type ITOTPSecretsManager, TOTPSecretsManagerToken } from "@/modules/identity/2fa/services/interfaces/ITOTPSecretsManager.service";
 import {
-    type ITwoFactorAuthenticationEmailIntegrationPublisherService,
-    TwoFactorAuthenticationEmailIntegrationPublisherServiceToken,
-} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationEmailIntegrationPublisher.service";
+    type ITwoFactorAuthenticationEventsPublisher,
+    TwoFactorAuthenticationEventsPublisherToken,
+} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationEventsPublisher.service";
 import { type ITwoFactorAuthenticationIntegrationService } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationIntegration.service";
-import {
-    type ITwoFactorAuthenticationSecretManager,
-    TwoFactorAuthenticationSecretManagerToken,
-} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationSecretManager.service";
 import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 import { type User } from "@/types/User";
 
 @Injectable()
-export class TwoFactorAuthenticationEmailIntegrationService
+export class Email2FAIntegrationService
     extends TwoFactorAuthenticationIntegrationService
     implements ITwoFactorAuthenticationIntegrationService
 {
     constructor(
         @InjectRepository(TwoFactorAuthenticationIntegrationEntity, IDENTITY_MODULE_DATA_SOURCE)
         repository: Repository<TwoFactorAuthenticationIntegrationEntity>,
-        @Inject(TwoFactorAuthenticationEmailIntegrationPublisherServiceToken)
-        private readonly publisher: ITwoFactorAuthenticationEmailIntegrationPublisherService,
-        @Inject(TwoFactorAuthenticationSecretManagerToken)
-        secretManager: ITwoFactorAuthenticationSecretManager,
+        @Inject(TwoFactorAuthenticationEventsPublisherToken)
+        private readonly publisher: ITwoFactorAuthenticationEventsPublisher,
+        @Inject(TOTPSecretsManagerToken)
+        secretManager: ITOTPSecretsManager,
         configService: ConfigService
     ) {
         super(repository, secretManager, configService);

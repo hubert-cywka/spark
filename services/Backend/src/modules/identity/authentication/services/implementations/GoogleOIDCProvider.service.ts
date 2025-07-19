@@ -2,7 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { decodeIdToken, generateCodeVerifier, generateState, Google } from "arctic";
 
-import { type IOIDCProviderService } from "@/modules/identity/authentication/services/interfaces/IOIDCProvider.service";
+import { type IOIDCProvider } from "@/modules/identity/authentication/services/interfaces/IOIDCProvider.service";
 import { FederatedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
 import {
     ExternalIdentity,
@@ -16,8 +16,8 @@ const SELECT_ACCOUNT_PROMPT = "select_account";
 const CONSENT_PROMPT = "consent";
 
 @Injectable()
-export class GoogleOIDCProviderService implements IOIDCProviderService {
-    private readonly logger = new Logger(GoogleOIDCProviderService.name);
+export class GoogleOIDCProvider implements IOIDCProvider {
+    private readonly logger = new Logger(GoogleOIDCProvider.name);
     private provider: Google;
 
     constructor(private configService: ConfigService) {

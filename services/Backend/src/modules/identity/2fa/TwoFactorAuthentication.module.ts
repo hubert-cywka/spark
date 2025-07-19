@@ -6,14 +6,14 @@ import { TwoFactorAuthenticationController } from "@/modules/identity/2fa/contro
 import { AccountActivatedEventHandler } from "@/modules/identity/2fa/events/AccountActivatedEvent.handler";
 import { TwoFactorAuthenticationIntegrationMapperToken } from "@/modules/identity/2fa/mappers/ITwoFactorAuthenticationIntegration.mapper";
 import { TwoFactorAuthenticationIntegrationMapper } from "@/modules/identity/2fa/mappers/TwoFactorAuthenticationIntegration.mapper";
+import { TOTPSecretsManager } from "@/modules/identity/2fa/services/implementations/TOTPSecretsManager.service";
 import { TwoFactorAuthenticationFactory } from "@/modules/identity/2fa/services/implementations/TwoFactorAuthentication.factory";
-import { TwoFactorAuthenticationEmailIntegrationPublisherService } from "@/modules/identity/2fa/services/implementations/TwoFactorAuthenticationEmailIntegrationPublisher.service";
+import { TwoFactorAuthenticationEventsPublisher } from "@/modules/identity/2fa/services/implementations/TwoFactorAuthenticationEventsPublisher.service";
 import { TwoFactorAuthenticationIntegrationsProviderService } from "@/modules/identity/2fa/services/implementations/TwoFactorAuthenticationIntegrationsProvider.service";
-import { TwoFactorAuthenticationSecretManager } from "@/modules/identity/2fa/services/implementations/TwoFactorAuthenticationSecretManager.service";
+import { TOTPSecretsManagerToken } from "@/modules/identity/2fa/services/interfaces/ITOTPSecretsManager.service";
 import { TwoFactorAuthenticationFactoryToken } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthentication.factory";
-import { TwoFactorAuthenticationEmailIntegrationPublisherServiceToken } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationEmailIntegrationPublisher.service";
+import { TwoFactorAuthenticationEventsPublisherToken } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationEventsPublisher.service";
 import { TwoFactorAuthenticationMethodsProviderServiceToken } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationIntegrationsProvider.service";
-import { TwoFactorAuthenticationSecretManagerToken } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationSecretManager.service";
 import { TwoFactorAuthSecretEncryptionAlgorithmToken } from "@/modules/identity/2fa/services/tokens/TwoFactorAuthSecretEncryptionAlgorithm.token";
 import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.module";
 
@@ -27,8 +27,8 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
             inject: [ConfigService],
         },
         {
-            provide: TwoFactorAuthenticationSecretManagerToken,
-            useClass: TwoFactorAuthenticationSecretManager,
+            provide: TOTPSecretsManagerToken,
+            useClass: TOTPSecretsManager,
         },
         {
             provide: TwoFactorAuthenticationIntegrationMapperToken,
@@ -39,8 +39,8 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
             useClass: TwoFactorAuthenticationFactory,
         },
         {
-            provide: TwoFactorAuthenticationEmailIntegrationPublisherServiceToken,
-            useClass: TwoFactorAuthenticationEmailIntegrationPublisherService,
+            provide: TwoFactorAuthenticationEventsPublisherToken,
+            useClass: TwoFactorAuthenticationEventsPublisher,
         },
         {
             provide: TwoFactorAuthenticationMethodsProviderServiceToken,

@@ -3,10 +3,10 @@ import { Repository } from "typeorm";
 
 import { EntryEntity } from "@/modules/journal/entries/entities/Entry.entity";
 import { EntriesInsights } from "@/modules/journal/entries/models/EntriesInsights.model";
-import { type IEntriesInsightsService } from "@/modules/journal/entries/services/interfaces/IEntriesInsights.service";
+import { type IEntriesInsightsProvider } from "@/modules/journal/entries/services/interfaces/IEntriesInsightsProvider.service";
 import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
 
-export class EntriesInsightsService implements IEntriesInsightsService {
+export class EntriesInsightsProvider implements IEntriesInsightsProvider {
     public constructor(
         @InjectRepository(EntryEntity, JOURNAL_MODULE_DATA_SOURCE)
         private readonly repository: Repository<EntryEntity>

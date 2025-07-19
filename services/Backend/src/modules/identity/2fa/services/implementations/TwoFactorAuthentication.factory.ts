@@ -5,18 +5,15 @@ import { Repository } from "typeorm";
 
 import { TwoFactorAuthenticationIntegrationEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationIntegration.entity";
 import { IntegrationMethodNotSupportedError } from "@/modules/identity/2fa/errors/IntegrationMethodNotSupported.error";
-import { TwoFactorAuthenticationAppIntegrationService } from "@/modules/identity/2fa/services/implementations/TwoFactorAuthenticationAppIntegration.service";
-import { TwoFactorAuthenticationEmailIntegrationService } from "@/modules/identity/2fa/services/implementations/TwoFactorAuthenticationEmailIntegration.service";
+import { App2FAIntegrationService } from "@/modules/identity/2fa/services/implementations/App2FAIntegration.service";
+import { Email2FAIntegrationService } from "@/modules/identity/2fa/services/implementations/Email2FAIntegration.service";
+import { type ITOTPSecretsManager, TOTPSecretsManagerToken } from "@/modules/identity/2fa/services/interfaces/ITOTPSecretsManager.service";
 import { type ITwoFactorAuthenticationFactory } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthentication.factory";
 import {
-    type ITwoFactorAuthenticationEmailIntegrationPublisherService,
-    TwoFactorAuthenticationEmailIntegrationPublisherServiceToken,
-} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationEmailIntegrationPublisher.service";
+    type ITwoFactorAuthenticationEventsPublisher,
+    TwoFactorAuthenticationEventsPublisherToken,
+} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationEventsPublisher.service";
 import { type ITwoFactorAuthenticationIntegrationService } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationIntegration.service";
-import {
-    type ITwoFactorAuthenticationSecretManager,
-    TwoFactorAuthenticationSecretManagerToken,
-} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationSecretManager.service";
 import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
@@ -27,24 +24,19 @@ export class TwoFactorAuthenticationFactory implements ITwoFactorAuthenticationF
     constructor(
         @InjectRepository(TwoFactorAuthenticationIntegrationEntity, IDENTITY_MODULE_DATA_SOURCE)
         private readonly repository: Repository<TwoFactorAuthenticationIntegrationEntity>,
-        @Inject(TwoFactorAuthenticationEmailIntegrationPublisherServiceToken)
-        private readonly publisher: ITwoFactorAuthenticationEmailIntegrationPublisherService,
-        @Inject(TwoFactorAuthenticationSecretManagerToken)
-        private readonly secretManager: ITwoFactorAuthenticationSecretManager,
+        @Inject(TwoFactorAuthenticationEventsPublisherToken)
+        private readonly publisher: ITwoFactorAuthenticationEventsPublisher,
+        @Inject(TOTPSecretsManagerToken)
+        private readonly secretManager: ITOTPSecretsManager,
         private readonly configService: ConfigService
     ) {}
 
     public createIntegrationService(method: TwoFactorAuthenticationMethod): ITwoFactorAuthenticationIntegrationService {
         switch (method) {
             case TwoFactorAuthenticationMethod.AUTHENTICATOR:
-                return new TwoFactorAuthenticationAppIntegrationService(this.repository, this.secretManager, this.configService);
+                return new App2FAIntegrationService(this.repository, this.secretManager, this.configService);
             case TwoFactorAuthenticationMethod.EMAIL:
-                return new TwoFactorAuthenticationEmailIntegrationService(
-                    this.repository,
-                    this.publisher,
-                    this.secretManager,
-                    this.configService
-                );
+                return new Email2FAIntegrationService(this.repository, this.publisher, this.secretManager, this.configService);
             default:
                 this.logger.error({ method }, "Unsupported 2FA method.");
                 throw new IntegrationMethodNotSupportedError(method);

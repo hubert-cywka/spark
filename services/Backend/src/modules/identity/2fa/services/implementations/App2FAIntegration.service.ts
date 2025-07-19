@@ -5,24 +5,21 @@ import { Repository } from "typeorm";
 
 import { TwoFactorAuthenticationIntegrationEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationIntegration.entity";
 import { TwoFactorAuthenticationIntegrationService } from "@/modules/identity/2fa/services/implementations/TwoFactorAuthenticationIntegration.service";
+import { type ITOTPSecretsManager, TOTPSecretsManagerToken } from "@/modules/identity/2fa/services/interfaces/ITOTPSecretsManager.service";
 import { type ITwoFactorAuthenticationIntegrationService } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationIntegration.service";
-import {
-    type ITwoFactorAuthenticationSecretManager,
-    TwoFactorAuthenticationSecretManagerToken,
-} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationSecretManager.service";
 import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
 @Injectable()
-export class TwoFactorAuthenticationAppIntegrationService
+export class App2FAIntegrationService
     extends TwoFactorAuthenticationIntegrationService
     implements ITwoFactorAuthenticationIntegrationService
 {
     constructor(
         @InjectRepository(TwoFactorAuthenticationIntegrationEntity, IDENTITY_MODULE_DATA_SOURCE)
         repository: Repository<TwoFactorAuthenticationIntegrationEntity>,
-        @Inject(TwoFactorAuthenticationSecretManagerToken)
-        secretManager: ITwoFactorAuthenticationSecretManager,
+        @Inject(TOTPSecretsManagerToken)
+        secretManager: ITOTPSecretsManager,
         configService: ConfigService
     ) {
         super(repository, secretManager, configService);
