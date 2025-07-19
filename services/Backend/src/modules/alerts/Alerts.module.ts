@@ -29,9 +29,9 @@ import { AlertScheduler } from "@/modules/alerts/services/implementations/AlertS
 import { AlertsProcessor } from "@/modules/alerts/services/implementations/AlertsProcessor.service";
 import { RecipientService } from "@/modules/alerts/services/implementations/Recipient.service";
 import { AlertServiceToken } from "@/modules/alerts/services/interfaces/IAlert.service";
-import { AlertPublisherServiceToken } from "@/modules/alerts/services/interfaces/IAlertPublisher.service";
-import { AlertSchedulerServiceToken } from "@/modules/alerts/services/interfaces/IAlertScheduler.service";
-import { AlertsProcessorServiceToken } from "@/modules/alerts/services/interfaces/IAlertsProcessor.service";
+import { AlertPublisherToken } from "@/modules/alerts/services/interfaces/IAlertPublisher.service";
+import { AlertSchedulerToken } from "@/modules/alerts/services/interfaces/IAlertScheduler.service";
+import { AlertsProcessorToken } from "@/modules/alerts/services/interfaces/IAlertsProcessor.service";
 import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRecipient.service";
 
 @Module({
@@ -40,16 +40,16 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
         { provide: RecipientServiceToken, useClass: RecipientService },
         { provide: AlertServiceToken, useClass: AlertService },
         {
-            provide: AlertsProcessorServiceToken,
+            provide: AlertsProcessorToken,
             useClass: AlertsProcessor,
         },
         {
-            provide: AlertSchedulerServiceToken,
+            provide: AlertSchedulerToken,
             useClass: AlertScheduler,
         },
         { provide: AlertMapperToken, useClass: AlertMapper },
         {
-            provide: AlertPublisherServiceToken,
+            provide: AlertPublisherToken,
             useClass: AlertPublisher,
         },
         {

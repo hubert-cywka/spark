@@ -3,7 +3,7 @@ import { AccountRemovalScheduledEventPayload } from "@/common/events/types/accou
 
 export const DataPurgePublisherServiceToken = Symbol("DataPurgePublisherService");
 
-export interface IDataPurgePublisherService {
+export interface IDataPurgePublisher {
     onPurgePlanProcessed(tenantId: string, payload: AccountRemovalCompletedEventPayload): Promise<void>;
     onPurgePlanScheduled(tenantId: string, payload: AccountRemovalScheduledEventPayload): Promise<void>;
 }

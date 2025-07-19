@@ -21,21 +21,24 @@ import { GDPR_MODULE_DATA_SOURCE } from "@/modules/gdpr/infrastructure/database/
 import { RegenerateMigrations1749289951431 } from "@/modules/gdpr/infrastructure/database/migrations/1749289951431-regenerate-migrations";
 import { TenantMapperToken } from "@/modules/gdpr/mappers/ITenant.mapper";
 import { TenantMapper } from "@/modules/gdpr/mappers/Tenant.mapper";
-import { DataPurgeService } from "@/modules/gdpr/services/implementations/DataPurge.service";
-import { DataPurgePublisherService } from "@/modules/gdpr/services/implementations/DataPurgePublisher.service";
+import { DataPurgeProcessor } from "@/modules/gdpr/services/implementations/DataPurgeProcessor.service";
+import { DataPurgePublisher } from "@/modules/gdpr/services/implementations/DataPurgePublisher.service";
+import { DataPurgeScheduler } from "@/modules/gdpr/services/implementations/DataPurgeScheduler.service";
 import { TenantService } from "@/modules/gdpr/services/implementations/Tenant.service";
-import { DataPurgeServiceToken } from "@/modules/gdpr/services/interfaces/IDataPurge.service";
+import { DataPurgeProcessorToken } from "@/modules/gdpr/services/interfaces/IDataPurgeProcessor.service";
 import { DataPurgePublisherServiceToken } from "@/modules/gdpr/services/interfaces/IDataPurgePublisher.service";
+import { DataPurgeSchedulerToken } from "@/modules/gdpr/services/interfaces/IDataPurgeScheduler.service";
 import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.service";
 
 @Module({
     providers: [
         { provide: TenantMapperToken, useClass: TenantMapper },
         { provide: TenantServiceToken, useClass: TenantService },
-        { provide: DataPurgeServiceToken, useClass: DataPurgeService },
+        { provide: DataPurgeSchedulerToken, useClass: DataPurgeScheduler },
+        { provide: DataPurgeProcessorToken, useClass: DataPurgeProcessor },
         {
             provide: DataPurgePublisherServiceToken,
-            useClass: DataPurgePublisherService,
+            useClass: DataPurgePublisher,
         },
         {
             provide: TenantCreatedEventHandler,

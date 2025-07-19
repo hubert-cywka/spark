@@ -10,10 +10,10 @@ import {
     AccountRemovalScheduledEvent,
     AccountRemovalScheduledEventPayload,
 } from "@/common/events/types/account/AccountRemovalScheduledEvent";
-import { type IDataPurgePublisherService } from "@/modules/gdpr/services/interfaces/IDataPurgePublisher.service";
+import { type IDataPurgePublisher } from "@/modules/gdpr/services/interfaces/IDataPurgePublisher.service";
 
 @Injectable()
-export class DataPurgePublisherService implements IDataPurgePublisherService {
+export class DataPurgePublisher implements IDataPurgePublisher {
     public constructor(
         @Inject(EventOutboxToken)
         private readonly outbox: IEventOutbox
