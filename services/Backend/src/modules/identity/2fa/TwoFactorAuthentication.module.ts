@@ -4,6 +4,8 @@ import { ConfigService } from "@nestjs/config";
 import { AesGcmEncryptionAlgorithm } from "@/common/services/implementations/AesGcmEncryptionAlgorithm";
 import { TwoFactorAuthenticationController } from "@/modules/identity/2fa/controllers/TwoFactorAuthentication.controller";
 import { AccountActivatedEventHandler } from "@/modules/identity/2fa/events/AccountActivatedEvent.handler";
+import { TwoFactorAuthenticationModuleFacadeToken } from "@/modules/identity/2fa/facade/ITwoFactorAuthenticationModule.facade";
+import { TwoFactorAuthenticationModuleFacade } from "@/modules/identity/2fa/facade/TwoFactorAuthenticationModule.facade";
 import { TwoFactorAuthenticationIntegrationMapperToken } from "@/modules/identity/2fa/mappers/ITwoFactorAuthenticationIntegration.mapper";
 import { TwoFactorAuthenticationIntegrationMapper } from "@/modules/identity/2fa/mappers/TwoFactorAuthenticationIntegration.mapper";
 import { TOTPSecretsManager } from "@/modules/identity/2fa/services/implementations/TOTPSecretsManager.service";
@@ -20,6 +22,10 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
 @Module({
     imports: [IdentitySharedModule],
     providers: [
+        {
+            provide: TwoFactorAuthenticationModuleFacadeToken,
+            useClass: TwoFactorAuthenticationModuleFacade,
+        },
         {
             provide: TwoFactorAuthSecretEncryptionAlgorithmToken,
             useFactory: (config: ConfigService) =>
@@ -49,6 +55,6 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
         AccountActivatedEventHandler,
     ],
     controllers: [TwoFactorAuthenticationController],
-    exports: [TwoFactorAuthenticationFactoryToken, AccountActivatedEventHandler],
+    exports: [TwoFactorAuthenticationModuleFacadeToken, AccountActivatedEventHandler],
 })
 export class TwoFactorAuthenticationModule {}

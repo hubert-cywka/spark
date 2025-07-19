@@ -15,7 +15,7 @@ import {
     AccountEventsPublisherToken,
 } from "@/modules/identity/account/services/interfaces/IAccountEventsPublisher.service";
 import { type IFederatedAccountService } from "@/modules/identity/account/services/interfaces/IFederatedAccount.service";
-import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
+import { FederatedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
 @Injectable()
@@ -31,19 +31,19 @@ export class FederatedAccountService implements IFederatedAccountService {
         private readonly publisher: IAccountEventsPublisher
     ) {}
 
-    public async findByExternalIdentity(identity: ExternalIdentity): Promise<Account> {
+    public async findByExternalIdentity(providerAccountId: string, providerId: FederatedAccountProvider): Promise<Account> {
         const account = await this.getRepository().findOne({
             where: {
-                providerAccountId: identity.id,
-                providerId: identity.providerId,
+                providerAccountId,
+                providerId,
             },
         });
 
         if (!account) {
             this.logger.warn(
                 {
-                    providerAccountId: identity.id,
-                    providerId: identity.providerId,
+                    providerAccountId,
+                    providerId,
                 },
                 "Account not found."
             );
@@ -53,8 +53,8 @@ export class FederatedAccountService implements IFederatedAccountService {
         if (account.suspendedAt) {
             this.logger.warn(
                 {
-                    providerAccountId: identity.id,
-                    providerId: identity.providerId,
+                    providerId,
+                    providerAccountId,
                     suspendedAt: account.suspendedAt,
                 },
                 "Account is suspended."
@@ -66,20 +66,24 @@ export class FederatedAccountService implements IFederatedAccountService {
     }
 
     @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })
-    public async createAccountWithExternalIdentity(identity: ExternalIdentity): Promise<Account> {
+    public async createAccountWithExternalIdentity(
+        providerAccountId: string,
+        providerId: FederatedAccountProvider,
+        email: string
+    ): Promise<Account> {
         const repository = this.getRepository();
         const existingAccount = await repository.findOne({
             where: {
-                providerAccountId: identity.id,
-                providerId: identity.providerId,
+                providerAccountId,
+                providerId,
             },
         });
 
         if (existingAccount) {
             this.logger.warn(
                 {
-                    providerAccountId: identity.id,
-                    providerId: identity.providerId,
+                    providerAccountId,
+                    providerId,
                 },
                 "Account already exists."
             );
@@ -93,9 +97,9 @@ export class FederatedAccountService implements IFederatedAccountService {
             .insert()
             .into(FederatedAccountEntity)
             .values({
-                email: identity.email,
-                providerId: identity.providerId,
-                providerAccountId: identity.id,
+                email,
+                providerId,
+                providerAccountId,
                 termsAndConditionsAcceptedAt: now,
             })
             .returning("*")

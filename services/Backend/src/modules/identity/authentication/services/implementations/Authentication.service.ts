@@ -1,18 +1,10 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
-import { Transactional } from "typeorm-transactional";
 
 import { type AccessScopes, AccessScope } from "@/common/types/AccessScope";
+import { type IAccountModuleFacade, AccountModuleFacadeToken } from "@/modules/identity/account/facade/IAccountModule.facade";
 import type { Account } from "@/modules/identity/account/models/Account.model";
-import {
-    type IFederatedAccountService,
-    FederatedAccountServiceToken,
-} from "@/modules/identity/account/services/interfaces/IFederatedAccount.service";
-import {
-    type IManagedAccountService,
-    ManagedAccountServiceToken,
-} from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
 import { CURRENT_JWT_VERSION } from "@/modules/identity/authentication/constants";
 import { InvalidAccessTokenError } from "@/modules/identity/authentication/errors/InvalidAccessToken.error";
 import {
@@ -31,7 +23,6 @@ import {
     type ExtendedAuthenticationResult,
 } from "@/modules/identity/authentication/types/Authentication";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
-import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
 @Injectable()
 export class AuthenticationService implements IAuthenticationService {
@@ -42,10 +33,8 @@ export class AuthenticationService implements IAuthenticationService {
     constructor(
         configService: ConfigService,
         private jwtService: JwtService,
-        @Inject(ManagedAccountServiceToken)
-        private managedAccountService: IManagedAccountService,
-        @Inject(FederatedAccountServiceToken)
-        private federatedAccountService: IFederatedAccountService,
+        @Inject(AccountModuleFacadeToken)
+        private accountModule: IAccountModuleFacade,
         @Inject(RefreshTokenServiceToken)
         private refreshTokenService: IRefreshTokenService,
         @Inject(AccessScopesServiceToken)
@@ -56,25 +45,21 @@ export class AuthenticationService implements IAuthenticationService {
     }
 
     public async loginWithCredentials({ email, password }: Credentials): Promise<ExtendedAuthenticationResult> {
-        const account = await this.managedAccountService.findActivatedByCredentials(email, password);
+        const account = await this.accountModule.findManagedAccount(email, password);
         return await this.createAuthenticationResult(account, this.scopesService.getByAccountId(account.id), { includeRefreshToken: true });
     }
 
-    @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })
     public async registerWithCredentials({ email, password }: Credentials, clientRedirectUrl: string): Promise<void> {
-        await this.managedAccountService.createAccountWithCredentials(email, password);
-        await this.managedAccountService.requestActivation(email, clientRedirectUrl);
+        await this.accountModule.createManagedAccount(email, password, clientRedirectUrl);
     }
 
     public async loginWithExternalIdentity(identity: ExternalIdentity): Promise<ExtendedAuthenticationResult> {
-        const account = await this.federatedAccountService.findByExternalIdentity(identity);
+        const account = await this.accountModule.findFederatedAccount(identity.id, identity.providerId);
         return await this.createAuthenticationResult(account, this.scopesService.getByAccountId(account.id), { includeRefreshToken: true });
     }
 
-    @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })
     public async registerWithExternalIdentity(identity: ExternalIdentity): Promise<ExtendedAuthenticationResult> {
-        const account = await this.federatedAccountService.createAccountWithExternalIdentity(identity);
-        await this.federatedAccountService.activateByInternalId(account.id);
+        const account = await this.accountModule.createFederatedAccount(identity.id, identity.providerId, identity.email);
         return await this.createAuthenticationResult(account, this.scopesService.getByAccountId(account.id), { includeRefreshToken: true });
     }
 

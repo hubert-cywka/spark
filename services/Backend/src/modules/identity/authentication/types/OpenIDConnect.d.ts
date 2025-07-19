@@ -21,8 +21,6 @@ export type OIDCAuthorizationResponse = {
 };
 
 export type ExternalIdentity = {
-    firstName: string;
-    lastName: string;
     email: string;
     id: string;
     providerId: FederatedAccountProvider;

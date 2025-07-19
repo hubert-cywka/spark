@@ -8,9 +8,9 @@ import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
 import { AccessGuard } from "@/common/guards/Access.guard";
 import {
-    type ITwoFactorAuthenticationFactory,
-    TwoFactorAuthenticationFactoryToken,
-} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthentication.factory";
+    type ITwoFactorAuthenticationModuleFacade,
+    TwoFactorAuthenticationModuleFacadeToken,
+} from "@/modules/identity/2fa/facade/ITwoFactorAuthenticationModule.facade";
 import { ActivateAccessScopesDto } from "@/modules/identity/authentication/dto/incoming/ActivateAccessScopes.dto";
 import { type IAuthenticationMapper, AuthenticationMapperToken } from "@/modules/identity/authentication/mappers/IAuthentication.mapper";
 import {
@@ -24,8 +24,8 @@ import { type User } from "@/types/User";
 @Controller("scopes")
 export class AccessScopesController {
     public constructor(
-        @Inject(TwoFactorAuthenticationFactoryToken)
-        private readonly twoFactorAuthFactory: ITwoFactorAuthenticationFactory,
+        @Inject(TwoFactorAuthenticationModuleFacadeToken)
+        private readonly twoFactorAuthModule: ITwoFactorAuthenticationModuleFacade,
         @Inject(AuthenticationMapperToken)
         private readonly authenticationMapper: IAuthenticationMapper,
         @Inject(AuthenticationServiceToken)
@@ -46,8 +46,7 @@ export class AccessScopesController {
             throw new ForbiddenException();
         }
 
-        const twoFactorAuthService = this.twoFactorAuthFactory.createIntegrationService(dto.method);
-        const validationResult = await twoFactorAuthService.validateTOTP(user, dto.code);
+        const validationResult = await this.twoFactorAuthModule.validateTOTP(user, dto.code, dto.method);
 
         if (!validationResult) {
             throw new ForbiddenException();

@@ -3,6 +3,8 @@ import { Module } from "@nestjs/common";
 import { AccountController } from "@/modules/identity/account/controllers/Account.controller";
 import { AccountRemovalRequestedEventHandler } from "@/modules/identity/account/events/AccountRemovalRequestedEvent.handler";
 import { AccountRemovedEventHandler } from "@/modules/identity/account/events/AccountRemovedEvent.handler";
+import { AccountModuleFacade } from "@/modules/identity/account/facade/AccountModule.facade";
+import { AccountModuleFacadeToken } from "@/modules/identity/account/facade/IAccountModule.facade";
 import { AccountMapper } from "@/modules/identity/account/mappers/Account.mapper";
 import { AccountMapperToken } from "@/modules/identity/account/mappers/IAccount.mapper";
 import { AccountEventsPublisher } from "@/modules/identity/account/services/implementations/AccountEventsPublisher.service";
@@ -20,6 +22,10 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
 @Module({
     imports: [IdentitySharedModule],
     providers: [
+        {
+            provide: AccountModuleFacadeToken,
+            useClass: AccountModuleFacade,
+        },
         {
             provide: SingleUseTokenServiceFactoryToken,
             useClass: SingleUseTokenServiceFactory,
@@ -48,13 +54,6 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
         AccountRemovalRequestedEventHandler,
     ],
     controllers: [AccountController],
-    // TODO: Modules should export only a facade. Applies to all modules.
-    exports: [
-        AccountEventsPublisherToken,
-        FederatedAccountServiceToken,
-        ManagedAccountServiceToken,
-        AccountRemovedEventHandler,
-        AccountRemovalRequestedEventHandler,
-    ],
+    exports: [AccountModuleFacadeToken, AccountRemovedEventHandler, AccountRemovalRequestedEventHandler],
 })
 export class AccountModule {}
