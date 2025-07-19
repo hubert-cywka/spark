@@ -11,17 +11,15 @@ import { IntegrationAlreadyEnabledError } from "@/modules/identity/2fa/errors/In
 import { IntegrationNotFoundError } from "@/modules/identity/2fa/errors/IntegrationNotFound.error";
 import { NotEnoughIntegrationsEnabledError } from "@/modules/identity/2fa/errors/NotEnoughIntegrationsEnabled.error";
 import { TOTPInvalidError } from "@/modules/identity/2fa/errors/TOTPInvalid.error";
+import { type ITOTPSecretsManager, TOTPSecretsManagerToken } from "@/modules/identity/2fa/services/interfaces/ITOTPSecretsManager.service";
 import { type ITwoFactorAuthenticationIntegrationService } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationIntegration.service";
-import {
-    type ITwoFactorAuthenticationSecretManager,
-    TwoFactorAuthenticationSecretManagerToken,
-} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationSecretManager.service";
 import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 import { type User } from "@/types/User";
 
 const DEFAULT_VERIFICATION_WINDOW = 3;
 
+// TODO: Handle client-side time drift
 export abstract class TwoFactorAuthenticationIntegrationService implements ITwoFactorAuthenticationIntegrationService {
     protected readonly logger = new Logger(TwoFactorAuthenticationIntegrationService.name);
     private readonly appName: string;
@@ -29,8 +27,8 @@ export abstract class TwoFactorAuthenticationIntegrationService implements ITwoF
     protected constructor(
         @InjectRepository(TwoFactorAuthenticationIntegrationEntity, IDENTITY_MODULE_DATA_SOURCE)
         private readonly repository: Repository<TwoFactorAuthenticationIntegrationEntity>,
-        @Inject(TwoFactorAuthenticationSecretManagerToken)
-        private readonly secretManager: ITwoFactorAuthenticationSecretManager,
+        @Inject(TOTPSecretsManagerToken)
+        private readonly secretManager: ITOTPSecretsManager,
         configService: ConfigService
     ) {
         this.appName = configService.getOrThrow<string>("appName");

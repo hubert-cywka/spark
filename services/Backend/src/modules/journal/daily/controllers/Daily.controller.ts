@@ -28,15 +28,18 @@ import { FindDailyMetricsDto } from "@/modules/journal/daily/dto/FindDailyMetric
 import { UpdateDailyDateDto } from "@/modules/journal/daily/dto/UpdateDailyDate.dto";
 import { type IDailyMapper, DailyMapperToken } from "@/modules/journal/daily/mappers/IDaily.mapper";
 import { type IDailyService, DailyServiceToken } from "@/modules/journal/daily/services/interfaces/IDaily.service";
-import { type IDailyInsightsService, DailyActivityServiceToken } from "@/modules/journal/daily/services/interfaces/IDailyInsights.service";
+import {
+    type IDailyInsightsProvider,
+    DailyInsightsProviderToken,
+} from "@/modules/journal/daily/services/interfaces/IDailyInsightsProvider.service";
 import { type User } from "@/types/User";
 
 @Controller("daily")
 export class DailyController {
     public constructor(
         @Inject(DailyServiceToken) private readonly dailyService: IDailyService,
-        @Inject(DailyActivityServiceToken)
-        private readonly insightsService: IDailyInsightsService,
+        @Inject(DailyInsightsProviderToken)
+        private readonly insightsService: IDailyInsightsProvider,
         @Inject(DailyMapperToken) private readonly dailyMapper: IDailyMapper
     ) {}
 

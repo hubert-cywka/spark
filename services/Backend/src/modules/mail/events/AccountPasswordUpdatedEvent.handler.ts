@@ -1,16 +1,16 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { AccountPasswordUpdatedEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
-import { type IEmailLookupService, EmailLookupServiceToken } from "@/modules/mail/services/interfaces/IEmailLookup.service";
-import { type IMailerService, MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
+import { type IEmailLookup, EmailLookupToken } from "@/modules/mail/services/interfaces/IEmailLookup.service";
+import { type IMailSender, MailSenderToken } from "@/modules/mail/services/interfaces/IMailSender.service";
 import { type IEmailTemplateFactory, EmailTemplateFactoryToken } from "@/modules/mail/templates/IEmailTemplate.factory";
 
 @Injectable()
 export class AccountPasswordUpdatedEventHandler implements IInboxEventHandler {
     constructor(
-        @Inject(MailerServiceToken) private mailer: IMailerService,
-        @Inject(EmailLookupServiceToken)
-        private emailLookup: IEmailLookupService,
+        @Inject(MailSenderToken) private mailer: IMailSender,
+        @Inject(EmailLookupToken)
+        private emailLookup: IEmailLookup,
         @Inject(EmailTemplateFactoryToken)
         private emailFactory: IEmailTemplateFactory
     ) {}

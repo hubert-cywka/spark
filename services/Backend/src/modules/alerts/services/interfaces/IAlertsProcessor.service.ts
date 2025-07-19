@@ -1,5 +1,5 @@
-export const AlertsProcessorServiceToken = Symbol("AlertsProcessorService");
+export const AlertsProcessorToken = Symbol("AlertsProcessor");
 
-export interface IAlertsProcessorService {
+export interface IAlertsProcessor {
     triggerPendingAlerts(): Promise<void>;
 }

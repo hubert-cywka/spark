@@ -5,12 +5,12 @@ import { AccountRemovalRequestedEventHandler } from "@/modules/identity/account/
 import { AccountRemovedEventHandler } from "@/modules/identity/account/events/AccountRemovedEvent.handler";
 import { AccountMapper } from "@/modules/identity/account/mappers/Account.mapper";
 import { AccountMapperToken } from "@/modules/identity/account/mappers/IAccount.mapper";
-import { AccountPublisherService } from "@/modules/identity/account/services/implementations/AccountPublisher.service";
+import { AccountEventsPublisher } from "@/modules/identity/account/services/implementations/AccountEventsPublisher.service";
 import { AccountRemovalService } from "@/modules/identity/account/services/implementations/AccountRemoval.service";
 import { FederatedAccountService } from "@/modules/identity/account/services/implementations/FederatedAccount.service";
 import { ManagedAccountService } from "@/modules/identity/account/services/implementations/ManagedAccount.service";
 import { SingleUseTokenServiceFactory } from "@/modules/identity/account/services/implementations/SingleUseTokenService.factory";
-import { AccountPublisherServiceToken } from "@/modules/identity/account/services/interfaces/IAccountPublisher.service";
+import { AccountEventsPublisherToken } from "@/modules/identity/account/services/interfaces/IAccountEventsPublisher.service";
 import { AccountRemovalServiceToken } from "@/modules/identity/account/services/interfaces/IAccountRemoval.service";
 import { FederatedAccountServiceToken } from "@/modules/identity/account/services/interfaces/IFederatedAccount.service";
 import { ManagedAccountServiceToken } from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
@@ -37,8 +37,8 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
             useClass: FederatedAccountService,
         },
         {
-            provide: AccountPublisherServiceToken,
-            useClass: AccountPublisherService,
+            provide: AccountEventsPublisherToken,
+            useClass: AccountEventsPublisher,
         },
         {
             provide: AccountRemovalServiceToken,
@@ -48,8 +48,9 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
         AccountRemovalRequestedEventHandler,
     ],
     controllers: [AccountController],
+    // TODO: Modules should export only a facade. Applies to all modules.
     exports: [
-        AccountPublisherServiceToken,
+        AccountEventsPublisherToken,
         FederatedAccountServiceToken,
         ManagedAccountServiceToken,
         AccountRemovedEventHandler,

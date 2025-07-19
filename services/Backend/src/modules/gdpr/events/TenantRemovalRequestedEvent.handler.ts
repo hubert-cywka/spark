@@ -2,13 +2,13 @@ import { Inject, Injectable } from "@nestjs/common";
 
 import { type IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 import { AccountRemovalRequestedEventPayload } from "@/common/events/types/account/AccountRemovalRequestedEvent";
-import { type IDataPurgeService, DataPurgeServiceToken } from "@/modules/gdpr/services/interfaces/IDataPurge.service";
+import { type IDataPurgeScheduler, DataPurgeSchedulerToken } from "@/modules/gdpr/services/interfaces/IDataPurgeScheduler.service";
 
 @Injectable()
 export class TenantRemovalRequestedEventHandler implements IInboxEventHandler {
     public constructor(
-        @Inject(DataPurgeServiceToken)
-        private readonly dataPurgeService: IDataPurgeService
+        @Inject(DataPurgeSchedulerToken)
+        private readonly dataPurgeService: IDataPurgeScheduler
     ) {}
 
     public canHandle(topic: string): boolean {

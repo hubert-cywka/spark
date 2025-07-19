@@ -6,10 +6,10 @@ import {
     type AccountRemovalRequestedEventPayload,
     AccountRemovalRequestedEvent,
 } from "@/common/events/types/account/AccountRemovalRequestedEvent";
-import { type IUserPublisherService } from "@/modules/users/services/interfaces/IUserPublisher.service";
+import { type IUserEventsPublisher } from "@/modules/users/services/interfaces/IUserEventsPublisher.service";
 
 @Injectable()
-export class UserPublisherService implements IUserPublisherService {
+export class UserEventsPublisher implements IUserEventsPublisher {
     public constructor(
         @Inject(EventOutboxToken)
         private readonly outbox: IEventOutbox

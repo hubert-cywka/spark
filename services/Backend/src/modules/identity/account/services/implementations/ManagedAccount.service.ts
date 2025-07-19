@@ -14,9 +14,9 @@ import { AccountSuspendedError } from "@/modules/identity/account/errors/Account
 import { type IAccountMapper, AccountMapperToken } from "@/modules/identity/account/mappers/IAccount.mapper";
 import { Account } from "@/modules/identity/account/models/Account.model";
 import {
-    type IAccountPublisherService,
-    AccountPublisherServiceToken,
-} from "@/modules/identity/account/services/interfaces/IAccountPublisher.service";
+    type IAccountEventsPublisher,
+    AccountEventsPublisherToken,
+} from "@/modules/identity/account/services/interfaces/IAccountEventsPublisher.service";
 import { IManagedAccountService } from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
 import {
     type ISingleUseTokenServiceFactory,
@@ -37,8 +37,8 @@ export class ManagedAccountService implements IManagedAccountService {
     constructor(
         @InjectRepository(ManagedAccountEntity, IDENTITY_MODULE_DATA_SOURCE)
         private readonly repository: Repository<ManagedAccountEntity>,
-        @Inject(AccountPublisherServiceToken)
-        private readonly publisher: IAccountPublisherService,
+        @Inject(AccountEventsPublisherToken)
+        private readonly publisher: IAccountEventsPublisher,
         @Inject(AccountMapperToken)
         private readonly accountMapper: IAccountMapper,
         @Inject(SingleUseTokenServiceFactoryToken)

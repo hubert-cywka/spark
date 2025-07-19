@@ -3,10 +3,10 @@ import { Inject, Injectable } from "@nestjs/common";
 import { EmailIntegrationTOTPIssuedEvent, EmailIntegrationTOTPIssuedEventPayload } from "@/common/events";
 import { EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
 import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
-import { type ITwoFactorAuthenticationEmailIntegrationPublisherService } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationEmailIntegrationPublisher.service";
+import { type ITwoFactorAuthenticationEventsPublisher } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationEventsPublisher.service";
 
 @Injectable()
-export class TwoFactorAuthenticationEmailIntegrationPublisherService implements ITwoFactorAuthenticationEmailIntegrationPublisherService {
+export class TwoFactorAuthenticationEventsPublisher implements ITwoFactorAuthenticationEventsPublisher {
     public constructor(
         @Inject(EventOutboxToken)
         private readonly outbox: IEventOutbox

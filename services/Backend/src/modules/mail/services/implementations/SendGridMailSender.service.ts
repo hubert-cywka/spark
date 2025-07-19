@@ -3,12 +3,12 @@ import { ConfigService } from "@nestjs/config";
 import sendgridMailer from "@sendgrid/mail";
 
 import { EmailDeliveryError } from "@/modules/mail/errors/EmailDelivery.error";
-import { type IMailerService } from "@/modules/mail/services/interfaces/IMailer.service";
+import { type IMailSender } from "@/modules/mail/services/interfaces/IMailSender.service";
 import { IEmailTemplate } from "@/modules/mail/templates/IEmailTemplate";
 
 @Injectable()
-export class SendGridMailerService implements IMailerService {
-    private readonly logger = new Logger(SendGridMailerService.name);
+export class SendGridMailSender implements IMailSender {
+    private readonly logger = new Logger(SendGridMailSender.name);
     private readonly senderName: string;
     private readonly isInDebugMode: boolean;
 

@@ -11,9 +11,9 @@ import { AccountSuspendedError } from "@/modules/identity/account/errors/Account
 import { type IAccountMapper, AccountMapperToken } from "@/modules/identity/account/mappers/IAccount.mapper";
 import { Account } from "@/modules/identity/account/models/Account.model";
 import {
-    type IAccountPublisherService,
-    AccountPublisherServiceToken,
-} from "@/modules/identity/account/services/interfaces/IAccountPublisher.service";
+    type IAccountEventsPublisher,
+    AccountEventsPublisherToken,
+} from "@/modules/identity/account/services/interfaces/IAccountEventsPublisher.service";
 import { type IFederatedAccountService } from "@/modules/identity/account/services/interfaces/IFederatedAccount.service";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
@@ -27,8 +27,8 @@ export class FederatedAccountService implements IFederatedAccountService {
         private readonly repository: Repository<FederatedAccountEntity>,
         @Inject(AccountMapperToken)
         private readonly accountMapper: IAccountMapper,
-        @Inject(AccountPublisherServiceToken)
-        private readonly publisher: IAccountPublisherService
+        @Inject(AccountEventsPublisherToken)
+        private readonly publisher: IAccountEventsPublisher
     ) {}
 
     public async findByExternalIdentity(identity: ExternalIdentity): Promise<Account> {

@@ -9,7 +9,7 @@ import { UserNotFoundError } from "@/modules/users/errors/UserNotFound.error";
 import { USERS_MODULE_DATA_SOURCE } from "@/modules/users/infrastructure/database/constants";
 import { type IUserMapper, UserMapperToken } from "@/modules/users/mappers/IUser.mapper";
 import { type User } from "@/modules/users/models/User.model";
-import { type IUserPublisherService, UserPublisherServiceToken } from "@/modules/users/services/interfaces/IUserPublisher.service";
+import { type IUserEventsPublisher, UserEventsPublisherToken } from "@/modules/users/services/interfaces/IUserEventsPublisher.service";
 import { type IUsersService } from "@/modules/users/services/interfaces/IUsers.service";
 
 @Injectable()
@@ -20,8 +20,8 @@ export class UsersService implements IUsersService {
         @InjectRepository(UserEntity, USERS_MODULE_DATA_SOURCE)
         private readonly repository: Repository<UserEntity>,
         @Inject(UserMapperToken) private readonly userMapper: IUserMapper,
-        @Inject(UserPublisherServiceToken)
-        private readonly publisher: IUserPublisherService
+        @Inject(UserEventsPublisherToken)
+        private readonly publisher: IUserEventsPublisher
     ) {}
 
     public async findOneById(id: string): Promise<User> {

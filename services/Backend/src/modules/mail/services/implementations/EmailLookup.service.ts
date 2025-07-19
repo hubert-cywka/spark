@@ -1,10 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { type IEmailLookupService } from "@/modules/mail/services/interfaces/IEmailLookup.service";
+import { type IEmailLookup } from "@/modules/mail/services/interfaces/IEmailLookup.service";
 import { type IRecipientService, RecipientServiceToken } from "@/modules/mail/services/interfaces/IRecipient.service";
 
 @Injectable()
-export class EmailLookupService implements IEmailLookupService {
+export class EmailLookup implements IEmailLookup {
     public constructor(
         @Inject(RecipientServiceToken)
         private recipientService: IRecipientService

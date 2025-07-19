@@ -1,7 +1,7 @@
 import { AccountRemovalRequestedEventPayload } from "@/common/events/types/account/AccountRemovalRequestedEvent";
 
-export const UserPublisherServiceToken = Symbol("UserPublisherService");
+export const UserEventsPublisherToken = Symbol("UserEventsPublisher");
 
-export interface IUserPublisherService {
+export interface IUserEventsPublisher {
     onDataRemovalRequested(tenantId: string, payload: AccountRemovalRequestedEventPayload): Promise<void>;
 }

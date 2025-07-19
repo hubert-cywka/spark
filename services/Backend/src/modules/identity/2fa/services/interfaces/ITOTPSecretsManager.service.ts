@@ -1,6 +1,6 @@
-export const TwoFactorAuthenticationSecretManagerToken = Symbol("TwoFactorAuthenticationSecretManager");
+export const TOTPSecretsManagerToken = Symbol("TOTPSecretsManager");
 
-export interface ITwoFactorAuthenticationSecretManager {
+export interface ITOTPSecretsManager {
     generateSecret(): Promise<{
         encryptedSecret: string;
         decryptedSecret: string;

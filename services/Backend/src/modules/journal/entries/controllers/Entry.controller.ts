@@ -14,9 +14,9 @@ import { FindEntryDetailsFiltersDto } from "@/modules/journal/entries/dto/FindEn
 import { type IEntryMapper, EntryMapperToken } from "@/modules/journal/entries/mappers/IEntry.mapper";
 import { type IEntryDetailMapper, EntryDetailMapperToken } from "@/modules/journal/entries/mappers/IEntryDetail.mapper";
 import {
-    type IEntriesInsightsService,
-    EntriesInsightsServiceToken,
-} from "@/modules/journal/entries/services/interfaces/IEntriesInsights.service";
+    type IEntriesInsightsProvider,
+    EntriesInsightsProviderToken,
+} from "@/modules/journal/entries/services/interfaces/IEntriesInsightsProvider.service";
 import { type IEntryService, EntryServiceToken } from "@/modules/journal/entries/services/interfaces/IEntry.service";
 import { type User } from "@/types/User";
 
@@ -24,8 +24,8 @@ import { type User } from "@/types/User";
 export class EntryController {
     public constructor(
         @Inject(EntryServiceToken) private readonly entryService: IEntryService,
-        @Inject(EntriesInsightsServiceToken)
-        private readonly insightsService: IEntriesInsightsService,
+        @Inject(EntriesInsightsProviderToken)
+        private readonly insightsService: IEntriesInsightsProvider,
         @Inject(EntryMapperToken) private readonly entryMapper: IEntryMapper,
         @Inject(EntryDetailMapperToken)
         private readonly entryDetailMapper: IEntryDetailMapper

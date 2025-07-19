@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity("recipient")
 export class RecipientEntity {
@@ -7,4 +7,10 @@ export class RecipientEntity {
 
     @Column({ type: "varchar" })
     email!: string;
+
+    @CreateDateColumn({ type: "timestamptz" })
+    createdAt!: Date;
+
+    @UpdateDateColumn({ type: "timestamptz" })
+    updatedAt!: Date;
 }

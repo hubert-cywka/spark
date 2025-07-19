@@ -8,13 +8,13 @@ import { mean } from "@/common/utils/mathUtils";
 import { DailyEntity } from "@/modules/journal/daily/entities/Daily.entity";
 import { type DailyActivity } from "@/modules/journal/daily/models/DailyActivity.model";
 import { DailyMetrics } from "@/modules/journal/daily/models/DailyMetrics.model";
-import { type IDailyInsightsService } from "@/modules/journal/daily/services/interfaces/IDailyInsights.service";
+import { type IDailyInsightsProvider } from "@/modules/journal/daily/services/interfaces/IDailyInsightsProvider.service";
 import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
 import { getFormattedDailyDate } from "@/modules/journal/shared/utils/getFormattedDailyDate";
 import { type ISODateStringRange } from "@/types/Date";
 
 @Injectable()
-export class DailyInsightsService implements IDailyInsightsService {
+export class DailyInsightsProvider implements IDailyInsightsProvider {
     public constructor(
         @InjectRepository(DailyEntity, JOURNAL_MODULE_DATA_SOURCE)
         private readonly repository: Repository<DailyEntity>
@@ -24,7 +24,7 @@ export class DailyInsightsService implements IDailyInsightsService {
         const activityHistory = await this.getActivityHistoryByDateRange(authorId, dateRange);
 
         const currentActivityStreak = !isOutsideDateRange(dateRange, timezone)
-            ? DailyInsightsService.findActivityStreak(activityHistory, {
+            ? DailyInsightsProvider.findActivityStreak(activityHistory, {
                   isCurrent: true,
                   timezone,
               })
@@ -34,10 +34,10 @@ export class DailyInsightsService implements IDailyInsightsService {
             dailyRange: dateRange,
             activityHistory,
             currentActivityStreak,
-            longestActivityStreak: DailyInsightsService.findActivityStreak(activityHistory, { isCurrent: false, timezone }),
-            totalActiveDays: DailyInsightsService.findTotalActiveDays(activityHistory),
-            activeDayRate: DailyInsightsService.findActiveDayRate(activityHistory),
-            meanActivityPerDay: DailyInsightsService.findMeanActivityPerDay(activityHistory),
+            longestActivityStreak: DailyInsightsProvider.findActivityStreak(activityHistory, { isCurrent: false, timezone }),
+            totalActiveDays: DailyInsightsProvider.findTotalActiveDays(activityHistory),
+            activeDayRate: DailyInsightsProvider.findActiveDayRate(activityHistory),
+            meanActivityPerDay: DailyInsightsProvider.findMeanActivityPerDay(activityHistory),
         };
     }
 
@@ -57,7 +57,7 @@ export class DailyInsightsService implements IDailyInsightsService {
             entriesCount: parseInt(row.entriescount),
         }));
 
-        return DailyInsightsService.fillGapsInActivityHistory(mappedResult, dateRange);
+        return DailyInsightsProvider.fillGapsInActivityHistory(mappedResult, dateRange);
     }
 
     private static fillGapsInActivityHistory(history: DailyActivity[], { from, to }: ISODateStringRange): DailyActivity[] {
@@ -122,7 +122,7 @@ export class DailyInsightsService implements IDailyInsightsService {
     }
 
     private static findActiveDayRate(activityHistory: DailyActivity[]) {
-        return (DailyInsightsService.findTotalActiveDays(activityHistory) / activityHistory.length) * 100;
+        return (DailyInsightsProvider.findTotalActiveDays(activityHistory) / activityHistory.length) * 100;
     }
 
     private static findMeanActivityPerDay(activityHistory: DailyActivity[]) {

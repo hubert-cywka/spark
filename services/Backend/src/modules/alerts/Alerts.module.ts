@@ -19,19 +19,20 @@ import { RecipientCreatedEventHandler } from "@/modules/alerts/events/RecipientC
 import { RecipientRemovedEventHandler } from "@/modules/alerts/events/RecipientRemovedEvent.handler";
 import { ALERTS_MODULE_DATA_SOURCE } from "@/modules/alerts/infrastructure/database/constants";
 import { RegenerateMigrations1749289896371 } from "@/modules/alerts/infrastructure/database/migrations/1749289896371-regenerate-migrations";
+import { AddTimestamps1752925853545 } from "@/modules/alerts/infrastructure/database/migrations/1752925853545-AddTimestamps";
 import { AlertMapper } from "@/modules/alerts/mappers/Alert.mapper";
 import { AlertMapperToken } from "@/modules/alerts/mappers/IAlert.mapper";
 import { RecipientMapperToken } from "@/modules/alerts/mappers/IRecipient.mapper";
 import { RecipientMapper } from "@/modules/alerts/mappers/Recipient.mapper";
 import { AlertService } from "@/modules/alerts/services/implementations/Alert.service";
-import { AlertPublisherService } from "@/modules/alerts/services/implementations/AlertPublisher.service";
-import { AlertSchedulerService } from "@/modules/alerts/services/implementations/AlertScheduler.service";
-import { AlertsProcessorService } from "@/modules/alerts/services/implementations/AlertsProcessor.service";
+import { AlertEventsPublisher } from "@/modules/alerts/services/implementations/AlertEventsPublisher.service";
+import { AlertScheduler } from "@/modules/alerts/services/implementations/AlertScheduler.service";
+import { AlertsProcessor } from "@/modules/alerts/services/implementations/AlertsProcessor.service";
 import { RecipientService } from "@/modules/alerts/services/implementations/Recipient.service";
 import { AlertServiceToken } from "@/modules/alerts/services/interfaces/IAlert.service";
-import { AlertPublisherServiceToken } from "@/modules/alerts/services/interfaces/IAlertPublisher.service";
-import { AlertSchedulerServiceToken } from "@/modules/alerts/services/interfaces/IAlertScheduler.service";
-import { AlertsProcessorServiceToken } from "@/modules/alerts/services/interfaces/IAlertsProcessor.service";
+import { AlertEventsPublisherToken } from "@/modules/alerts/services/interfaces/IAlertEventsPublisher.service";
+import { AlertSchedulerToken } from "@/modules/alerts/services/interfaces/IAlertScheduler.service";
+import { AlertsProcessorToken } from "@/modules/alerts/services/interfaces/IAlertsProcessor.service";
 import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRecipient.service";
 
 @Module({
@@ -40,17 +41,17 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
         { provide: RecipientServiceToken, useClass: RecipientService },
         { provide: AlertServiceToken, useClass: AlertService },
         {
-            provide: AlertsProcessorServiceToken,
-            useClass: AlertsProcessorService,
+            provide: AlertsProcessorToken,
+            useClass: AlertsProcessor,
         },
         {
-            provide: AlertSchedulerServiceToken,
-            useClass: AlertSchedulerService,
+            provide: AlertSchedulerToken,
+            useClass: AlertScheduler,
         },
         { provide: AlertMapperToken, useClass: AlertMapper },
         {
-            provide: AlertPublisherServiceToken,
-            useClass: AlertPublisherService,
+            provide: AlertEventsPublisherToken,
+            useClass: AlertEventsPublisher,
         },
         {
             provide: RecipientCreatedEventHandler,
@@ -75,7 +76,7 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
                 password: configService.getOrThrow<string>("modules.alerts.database.password"),
                 host: configService.getOrThrow<string>("modules.alerts.database.host"),
                 database: configService.getOrThrow<string>("modules.alerts.database.name"),
-                migrations: [RegenerateMigrations1749289896371, InboxAndOutbox1749299050551],
+                migrations: [RegenerateMigrations1749289896371, InboxAndOutbox1749299050551, AddTimestamps1752925853545],
             }),
             inject: [ConfigService],
         }),

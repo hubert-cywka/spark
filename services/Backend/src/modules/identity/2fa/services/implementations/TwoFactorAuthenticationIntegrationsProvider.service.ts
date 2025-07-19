@@ -7,11 +7,8 @@ import {
     type ITwoFactorAuthenticationIntegrationMapper,
     TwoFactorAuthenticationIntegrationMapperToken,
 } from "@/modules/identity/2fa/mappers/ITwoFactorAuthenticationIntegration.mapper";
+import { type ITOTPSecretsManager, TOTPSecretsManagerToken } from "@/modules/identity/2fa/services/interfaces/ITOTPSecretsManager.service";
 import { type ITwoFactorAuthenticationIntegrationsProviderService } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationIntegrationsProvider.service";
-import {
-    type ITwoFactorAuthenticationSecretManager,
-    TwoFactorAuthenticationSecretManagerToken,
-} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationSecretManager.service";
 import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
@@ -23,8 +20,8 @@ export class TwoFactorAuthenticationIntegrationsProviderService implements ITwoF
         private readonly repository: Repository<TwoFactorAuthenticationIntegrationEntity>,
         @Inject(TwoFactorAuthenticationIntegrationMapperToken)
         private readonly mapper: ITwoFactorAuthenticationIntegrationMapper,
-        @Inject(TwoFactorAuthenticationSecretManagerToken)
-        private readonly secretManager: ITwoFactorAuthenticationSecretManager
+        @Inject(TOTPSecretsManagerToken)
+        private readonly secretManager: ITOTPSecretsManager
     ) {}
 
     public async findActiveIntegrations(accountId: string) {

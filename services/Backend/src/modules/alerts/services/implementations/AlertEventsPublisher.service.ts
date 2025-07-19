@@ -2,9 +2,9 @@ import { Inject } from "@nestjs/common";
 
 import { type IEventOutbox, EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
 import { DailyReminderTriggeredEvent } from "@/common/events/types/alert/DailyReminderTriggeredEvent";
-import { IAlertPublisherService } from "@/modules/alerts/services/interfaces/IAlertPublisher.service";
+import { IAlertEventsPublisher } from "@/modules/alerts/services/interfaces/IAlertEventsPublisher.service";
 
-export class AlertPublisherService implements IAlertPublisherService {
+export class AlertEventsPublisher implements IAlertEventsPublisher {
     public constructor(
         @Inject(EventOutboxToken)
         private readonly outbox: IEventOutbox

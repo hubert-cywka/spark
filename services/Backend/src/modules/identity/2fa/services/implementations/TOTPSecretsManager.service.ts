@@ -2,10 +2,10 @@ import { Inject } from "@nestjs/common";
 import { Secret } from "otpauth";
 
 import { type IEncryptionAlgorithm } from "@/common/services/interfaces/IEncryptionAlgorithm";
-import { type ITwoFactorAuthenticationSecretManager } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationSecretManager.service";
+import { type ITOTPSecretsManager } from "@/modules/identity/2fa/services/interfaces/ITOTPSecretsManager.service";
 import { TwoFactorAuthSecretEncryptionAlgorithmToken } from "@/modules/identity/2fa/services/tokens/TwoFactorAuthSecretEncryptionAlgorithm.token";
 
-export class TwoFactorAuthenticationSecretManager implements ITwoFactorAuthenticationSecretManager {
+export class TOTPSecretsManager implements ITOTPSecretsManager {
     public constructor(
         @Inject(TwoFactorAuthSecretEncryptionAlgorithmToken)
         private readonly encryptionAlgorithm: IEncryptionAlgorithm
