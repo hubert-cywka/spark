@@ -21,16 +21,16 @@ import { USERS_MODULE_DATA_SOURCE } from "@/modules/users/infrastructure/databas
 import { RegenerateMigrations1749289881465 } from "@/modules/users/infrastructure/database/migrations/1749289881465-regenerate-migrations";
 import { UserMapperToken } from "@/modules/users/mappers/IUser.mapper";
 import { UserMapper } from "@/modules/users/mappers/User.mapper";
-import { UserPublisherService } from "@/modules/users/services/implementations/UserPublisher.service";
+import { UserEventsPublisher } from "@/modules/users/services/implementations/UserEventsPublisher.service";
 import { UsersService } from "@/modules/users/services/implementations/Users.service";
-import { UserPublisherServiceToken } from "@/modules/users/services/interfaces/IUserPublisher.service";
+import { UserEventsPublisherToken } from "@/modules/users/services/interfaces/IUserEventsPublisher.service";
 import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
 
 @Module({
     providers: [
         { provide: UserMapperToken, useClass: UserMapper },
         { provide: UsersServiceToken, useClass: UsersService },
-        { provide: UserPublisherServiceToken, useClass: UserPublisherService },
+        { provide: UserEventsPublisherToken, useClass: UserEventsPublisher },
         {
             provide: UserActivatedEventHandler,
             useClass: UserActivatedEventHandler,
