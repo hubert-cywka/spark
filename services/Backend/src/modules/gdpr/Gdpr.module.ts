@@ -21,12 +21,12 @@ import { GDPR_MODULE_DATA_SOURCE } from "@/modules/gdpr/infrastructure/database/
 import { RegenerateMigrations1749289951431 } from "@/modules/gdpr/infrastructure/database/migrations/1749289951431-regenerate-migrations";
 import { TenantMapperToken } from "@/modules/gdpr/mappers/ITenant.mapper";
 import { TenantMapper } from "@/modules/gdpr/mappers/Tenant.mapper";
+import { DataPurgeEventsPublisher } from "@/modules/gdpr/services/implementations/DataPurgeEventsPublisher.service";
 import { DataPurgeProcessor } from "@/modules/gdpr/services/implementations/DataPurgeProcessor.service";
-import { DataPurgePublisher } from "@/modules/gdpr/services/implementations/DataPurgePublisher.service";
 import { DataPurgeScheduler } from "@/modules/gdpr/services/implementations/DataPurgeScheduler.service";
 import { TenantService } from "@/modules/gdpr/services/implementations/Tenant.service";
+import { DataPurgeEventsPublisherToken } from "@/modules/gdpr/services/interfaces/IDataPurgeEventsPublisher.service";
 import { DataPurgeProcessorToken } from "@/modules/gdpr/services/interfaces/IDataPurgeProcessor.service";
-import { DataPurgePublisherServiceToken } from "@/modules/gdpr/services/interfaces/IDataPurgePublisher.service";
 import { DataPurgeSchedulerToken } from "@/modules/gdpr/services/interfaces/IDataPurgeScheduler.service";
 import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.service";
 
@@ -37,8 +37,8 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
         { provide: DataPurgeSchedulerToken, useClass: DataPurgeScheduler },
         { provide: DataPurgeProcessorToken, useClass: DataPurgeProcessor },
         {
-            provide: DataPurgePublisherServiceToken,
-            useClass: DataPurgePublisher,
+            provide: DataPurgeEventsPublisherToken,
+            useClass: DataPurgeEventsPublisher,
         },
         {
             provide: TenantCreatedEventHandler,

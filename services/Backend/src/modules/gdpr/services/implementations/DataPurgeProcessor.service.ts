@@ -7,8 +7,11 @@ import { Transactional } from "typeorm-transactional";
 
 import { DataPurgePlanEntity } from "@/modules/gdpr/entities/DataPurgePlan.entity";
 import { GDPR_MODULE_DATA_SOURCE } from "@/modules/gdpr/infrastructure/database/constants";
+import {
+    DataPurgeEventsPublisherToken,
+    IDataPurgeEventsPublisher,
+} from "@/modules/gdpr/services/interfaces/IDataPurgeEventsPublisher.service";
 import { IDataPurgeProcessor } from "@/modules/gdpr/services/interfaces/IDataPurgeProcessor.service";
-import { DataPurgePublisherServiceToken, IDataPurgePublisher } from "@/modules/gdpr/services/interfaces/IDataPurgePublisher.service";
 
 const PURGE_PROCESSING_INTERVAL = 1000 * 60 * 60;
 
@@ -19,8 +22,8 @@ export class DataPurgeProcessor implements IDataPurgeProcessor {
     public constructor(
         @InjectRepository(DataPurgePlanEntity, GDPR_MODULE_DATA_SOURCE)
         private readonly repository: Repository<DataPurgePlanEntity>,
-        @Inject(DataPurgePublisherServiceToken)
-        private readonly publisher: IDataPurgePublisher
+        @Inject(DataPurgeEventsPublisherToken)
+        private readonly publisher: IDataPurgeEventsPublisher
     ) {}
 
     @Transactional({ connectionName: GDPR_MODULE_DATA_SOURCE })

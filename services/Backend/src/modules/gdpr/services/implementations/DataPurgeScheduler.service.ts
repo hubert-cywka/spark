@@ -6,7 +6,10 @@ import { Transactional } from "typeorm-transactional";
 
 import { DataPurgePlanEntity } from "@/modules/gdpr/entities/DataPurgePlan.entity";
 import { GDPR_MODULE_DATA_SOURCE } from "@/modules/gdpr/infrastructure/database/constants";
-import { type IDataPurgePublisher, DataPurgePublisherServiceToken } from "@/modules/gdpr/services/interfaces/IDataPurgePublisher.service";
+import {
+    type IDataPurgeEventsPublisher,
+    DataPurgeEventsPublisherToken,
+} from "@/modules/gdpr/services/interfaces/IDataPurgeEventsPublisher.service";
 import { type IDataPurgeScheduler } from "@/modules/gdpr/services/interfaces/IDataPurgeScheduler.service";
 
 const DATA_RETENTION_PERIOD_IN_DAYS = 7;
@@ -18,8 +21,8 @@ export class DataPurgeScheduler implements IDataPurgeScheduler {
     public constructor(
         @InjectRepository(DataPurgePlanEntity, GDPR_MODULE_DATA_SOURCE)
         private readonly repository: Repository<DataPurgePlanEntity>,
-        @Inject(DataPurgePublisherServiceToken)
-        private readonly publisher: IDataPurgePublisher
+        @Inject(DataPurgeEventsPublisherToken)
+        private readonly publisher: IDataPurgeEventsPublisher
     ) {}
 
     @Transactional({ connectionName: GDPR_MODULE_DATA_SOURCE })

@@ -24,12 +24,12 @@ import { AlertMapperToken } from "@/modules/alerts/mappers/IAlert.mapper";
 import { RecipientMapperToken } from "@/modules/alerts/mappers/IRecipient.mapper";
 import { RecipientMapper } from "@/modules/alerts/mappers/Recipient.mapper";
 import { AlertService } from "@/modules/alerts/services/implementations/Alert.service";
-import { AlertPublisher } from "@/modules/alerts/services/implementations/AlertPublisher.service";
+import { AlertEventsPublisher } from "@/modules/alerts/services/implementations/AlertEventsPublisher.service";
 import { AlertScheduler } from "@/modules/alerts/services/implementations/AlertScheduler.service";
 import { AlertsProcessor } from "@/modules/alerts/services/implementations/AlertsProcessor.service";
 import { RecipientService } from "@/modules/alerts/services/implementations/Recipient.service";
 import { AlertServiceToken } from "@/modules/alerts/services/interfaces/IAlert.service";
-import { AlertPublisherToken } from "@/modules/alerts/services/interfaces/IAlertPublisher.service";
+import { AlertEventsPublisherToken } from "@/modules/alerts/services/interfaces/IAlertEventsPublisher.service";
 import { AlertSchedulerToken } from "@/modules/alerts/services/interfaces/IAlertScheduler.service";
 import { AlertsProcessorToken } from "@/modules/alerts/services/interfaces/IAlertsProcessor.service";
 import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRecipient.service";
@@ -49,8 +49,8 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
         },
         { provide: AlertMapperToken, useClass: AlertMapper },
         {
-            provide: AlertPublisherToken,
-            useClass: AlertPublisher,
+            provide: AlertEventsPublisherToken,
+            useClass: AlertEventsPublisher,
         },
         {
             provide: RecipientCreatedEventHandler,

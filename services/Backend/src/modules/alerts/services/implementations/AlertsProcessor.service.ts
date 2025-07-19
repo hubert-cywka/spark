@@ -7,7 +7,7 @@ import { Transactional } from "typeorm-transactional";
 
 import { AlertEntity } from "@/modules/alerts/entities/Alert.entity";
 import { ALERTS_MODULE_DATA_SOURCE } from "@/modules/alerts/infrastructure/database/constants";
-import { type IAlertPublisher, AlertPublisherToken } from "@/modules/alerts/services/interfaces/IAlertPublisher.service";
+import { type IAlertEventsPublisher, AlertEventsPublisherToken } from "@/modules/alerts/services/interfaces/IAlertEventsPublisher.service";
 import { type IAlertScheduler, AlertSchedulerToken } from "@/modules/alerts/services/interfaces/IAlertScheduler.service";
 import { type IAlertsProcessor } from "@/modules/alerts/services/interfaces/IAlertsProcessor.service";
 
@@ -16,8 +16,8 @@ export class AlertsProcessor implements IAlertsProcessor {
     public constructor(
         @InjectRepository(AlertEntity, ALERTS_MODULE_DATA_SOURCE)
         private readonly repository: Repository<AlertEntity>,
-        @Inject(AlertPublisherToken)
-        private readonly alertPublisher: IAlertPublisher,
+        @Inject(AlertEventsPublisherToken)
+        private readonly alertPublisher: IAlertEventsPublisher,
         @Inject(AlertSchedulerToken)
         private readonly alertScheduler: IAlertScheduler
     ) {}
