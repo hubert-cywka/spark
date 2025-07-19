@@ -77,15 +77,13 @@ export class GoogleOIDCProvider implements IOIDCProvider {
     }
 
     public validateExternalIdentity(identity: ExternalIdentity): boolean {
-        return !!identity.id && !!identity.email && !!identity.firstName && !!identity.lastName;
+        return !!identity.id && !!identity.email;
     }
 
     public async getIdentity(code: string, codeVerifier: string): Promise<ExternalIdentity> {
         const tokens = await this.provider.validateAuthorizationCode(code, codeVerifier);
         const claims = decodeIdToken(tokens.idToken()) as GoogleClaims;
         return {
-            firstName: claims.given_name,
-            lastName: claims.family_name,
             email: claims.email,
             id: claims.sub,
             providerId: FederatedAccountProvider.GOOGLE,
