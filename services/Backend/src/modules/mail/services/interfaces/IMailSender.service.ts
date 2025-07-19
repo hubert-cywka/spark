@@ -1,7 +1,7 @@
 import { IEmailTemplate } from "@/modules/mail/templates/IEmailTemplate";
 
-export const MailerServiceToken = Symbol("IMailerServiceToken");
+export const MailSenderToken = Symbol("MailSender");
 
-export interface IMailerService {
+export interface IMailSender {
     send(recipient: string, template: IEmailTemplate): Promise<void>;
 }

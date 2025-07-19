@@ -2,8 +2,8 @@ import { Inject, Injectable, Logger } from "@nestjs/common";
 
 import { type IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
 import { AccountRemovalScheduledEventPayload } from "@/common/events/types/account/AccountRemovalScheduledEvent";
-import { type IEmailLookupService, EmailLookupServiceToken } from "@/modules/mail/services/interfaces/IEmailLookup.service";
-import { type IMailerService, MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
+import { type IEmailLookup, EmailLookupToken } from "@/modules/mail/services/interfaces/IEmailLookup.service";
+import { type IMailSender, MailSenderToken } from "@/modules/mail/services/interfaces/IMailSender.service";
 import { type IEmailTemplateFactory, EmailTemplateFactoryToken } from "@/modules/mail/templates/IEmailTemplate.factory";
 
 @Injectable()
@@ -11,9 +11,9 @@ export class AccountRemovalScheduledEventHandler implements IInboxEventHandler {
     private readonly logger = new Logger(AccountRemovalScheduledEventHandler.name);
 
     public constructor(
-        @Inject(MailerServiceToken) private mailer: IMailerService,
-        @Inject(EmailLookupServiceToken)
-        private emailLookup: IEmailLookupService,
+        @Inject(MailSenderToken) private mailer: IMailSender,
+        @Inject(EmailLookupToken)
+        private emailLookup: IEmailLookup,
         @Inject(EmailTemplateFactoryToken)
         private emailFactory: IEmailTemplateFactory
     ) {}

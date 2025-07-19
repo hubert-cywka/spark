@@ -1,5 +1,5 @@
-export const EmailLookupServiceToken = Symbol("EmailLookupServiceToken");
+export const EmailLookupToken = Symbol("EmailLookupToken");
 
-export interface IEmailLookupService {
+export interface IEmailLookup {
     findByRecipientId(id: string): Promise<string>;
 }

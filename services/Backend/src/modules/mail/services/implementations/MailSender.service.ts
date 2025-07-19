@@ -5,12 +5,12 @@ import { createTransport } from "nodemailer";
 
 import { EmailDeliveryError } from "@/modules/mail/errors/EmailDelivery.error";
 import { IMailCompilerService, MailCompilerServiceToken } from "@/modules/mail/services/interfaces/IMailCompiler.service";
-import { type IMailerService } from "@/modules/mail/services/interfaces/IMailer.service";
+import { type IMailSender } from "@/modules/mail/services/interfaces/IMailSender.service";
 import { type IEmailTemplate } from "@/modules/mail/templates/IEmailTemplate";
 
 @Injectable()
-export class MailerService implements IMailerService {
-    private readonly logger = new Logger(MailerService.name);
+export class MailSender implements IMailSender {
+    private readonly logger = new Logger(MailSender.name);
     private readonly transporter: Transporter;
     private readonly senderName: string;
     private readonly isInDebugMode: boolean;

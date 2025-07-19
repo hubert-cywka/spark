@@ -25,11 +25,11 @@ import { MAIL_MODULE_DATA_SOURCE } from "@/modules/mail/infrastructure/database/
 import { RegenerateMigrations1749289938815 } from "@/modules/mail/infrastructure/database/migrations/1749289938815-regenerate-migrations";
 import { RecipientMapperToken } from "@/modules/mail/mappers/IRecipient.mapper";
 import { RecipientMapper } from "@/modules/mail/mappers/Recipient.mapper";
-import { EmailLookupService } from "@/modules/mail/services/implementations/EmailLookup.service";
+import { EmailLookup } from "@/modules/mail/services/implementations/EmailLookup.service";
 import { RecipientService } from "@/modules/mail/services/implementations/Recipient.service";
-import { SendGridMailerService } from "@/modules/mail/services/implementations/SendGridMailer.service";
-import { EmailLookupServiceToken } from "@/modules/mail/services/interfaces/IEmailLookup.service";
-import { MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
+import { SendGridMailSender } from "@/modules/mail/services/implementations/SendGridMailSender.service";
+import { EmailLookupToken } from "@/modules/mail/services/interfaces/IEmailLookup.service";
+import { MailSenderToken } from "@/modules/mail/services/interfaces/IMailSender.service";
 import { RecipientServiceToken } from "@/modules/mail/services/interfaces/IRecipient.service";
 import { EmailTemplateFactoryToken } from "@/modules/mail/templates/IEmailTemplate.factory";
 import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/SendgridEmailTemplate.factory";
@@ -45,12 +45,12 @@ import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/
             useClass: RecipientService,
         },
         {
-            provide: EmailLookupServiceToken,
-            useClass: EmailLookupService,
+            provide: EmailLookupToken,
+            useClass: EmailLookup,
         },
         {
-            provide: MailerServiceToken,
-            useClass: SendGridMailerService,
+            provide: MailSenderToken,
+            useClass: SendGridMailSender,
         },
         {
             provide: EmailTemplateFactoryToken,

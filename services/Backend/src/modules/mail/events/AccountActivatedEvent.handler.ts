@@ -1,14 +1,14 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { AccountActivatedEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
-import { type IMailerService, MailerServiceToken } from "@/modules/mail/services/interfaces/IMailer.service";
+import { type IMailSender, MailSenderToken } from "@/modules/mail/services/interfaces/IMailSender.service";
 import { type IRecipientService, RecipientServiceToken } from "@/modules/mail/services/interfaces/IRecipient.service";
 import { type IEmailTemplateFactory, EmailTemplateFactoryToken } from "@/modules/mail/templates/IEmailTemplate.factory";
 
 @Injectable()
 export class AccountActivatedEventHandler implements IInboxEventHandler {
     constructor(
-        @Inject(MailerServiceToken) private mailer: IMailerService,
+        @Inject(MailSenderToken) private mailer: IMailSender,
         @Inject(RecipientServiceToken)
         private recipientService: IRecipientService,
         @Inject(EmailTemplateFactoryToken)
