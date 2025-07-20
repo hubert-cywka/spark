@@ -15,7 +15,7 @@ export class KafkaProducer implements IEventProducer {
 
     public publish(event: IntegrationEvent): Promise<PublishAck> {
         const message = {
-            key: event.getTenantId(),
+            key: event.getPartitionKey(),
             value: event.toBuffer(),
         };
 
