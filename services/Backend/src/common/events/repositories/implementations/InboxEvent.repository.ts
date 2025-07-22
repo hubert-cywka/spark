@@ -28,32 +28,11 @@ export class InboxEventRepository extends IntegrationEventRepository<InboxEventE
         return await this.repository.existsBy({ id });
     }
 
-    public async markAsPostponed(events: InboxEventEntity[], postponeTimeResolver: (attempt: number) => Date) {
-        await this.repository.save(
-            events.map((event) => {
-                const attempts = event.attempts + 1;
-
-                return {
-                    ...event,
-                    attempts,
-                    processAfter: postponeTimeResolver(attempts),
-                };
-            })
-        );
-    }
-
-    public async markAsProcessed(events: InboxEventEntity[]) {
-        await this.repository.save(
-            events.map((event) => {
-                const attempts = event.attempts + 1;
-
-                return {
-                    ...event,
-                    attempts,
-                    processedAt: new Date(),
-                };
-            })
-        );
+    public async update(events: InboxEventEntity[]) {
+        await this.repository.upsert(events, {
+            conflictPaths: ["id"],
+            skipUpdateIfNoValuesChanged: true,
+        });
     }
 
     public async getBlockedEventsPartitionKeysByPartition({

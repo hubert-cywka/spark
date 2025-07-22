@@ -1,4 +1,5 @@
 import { Logger } from "@nestjs/common";
+import Bottleneck from "bottleneck";
 import dayjs from "dayjs";
 import { runInTransaction } from "typeorm-transactional";
 
@@ -139,22 +140,17 @@ export class EventInboxProcessor implements IEventInboxProcessor {
                     const { successfulEvents, failedEvents, blockedPartitionKeys } = await this.bulkHandle(events);
                     blocked.push(...blockedPartitionKeys);
 
-                    if (successfulEvents.length > 0) {
-                        await this.eventsRepository.markAsProcessed(successfulEvents);
-                    }
-
-                    if (failedEvents.length > 0) {
-                        await this.eventsRepository.markAsPostponed(failedEvents, (attempt) =>
-                            this.retryPolicy.getNextAttemptDate(attempt)
-                        );
-                    }
-
-                    if (!failedEvents.length) {
-                        const staleAt = dayjs().add(this.stalePartitionThreshold, "milliseconds").toDate();
-                        await this.partitionsRepository.markAsProcessed(partitionId, staleAt);
+                    if (successfulEvents.length > 0 || failedEvents.length > 0) {
+                        await this.eventsRepository.update([...successfulEvents, ...failedEvents]);
                     }
 
                     if (events.length < this.maxBatchSize) {
+                        const staleAt = !failedEvents.length
+                            ? dayjs().add(this.stalePartitionThreshold, "milliseconds").toDate()
+                            : new Date();
+
+                        await this.partitionsRepository.markAsProcessed(partitionId, staleAt);
+
                         return;
                     }
                 }
@@ -167,48 +163,63 @@ export class EventInboxProcessor implements IEventInboxProcessor {
         const successfulEvents: InboxEventEntity[] = [];
         const failedEvents: InboxEventEntity[] = [];
         const skippedEvents: InboxEventEntity[] = [];
-        const blockedPartitionKeys: string[] = [];
+        const blockedPartitionKeys = new Set<string>();
 
-        for (const { event, entity, handler } of this.mapToEventsWithHandler(events)) {
-            if (blockedPartitionKeys.includes(entity.partitionKey)) {
-                skippedEvents.push(entity);
-                continue;
-            }
+        const limiter = new Bottleneck.Group({
+            maxConcurrent: 1,
+        });
 
-            try {
-                await this.handleEvent(event, handler);
-                successfulEvents.push(entity);
-            } catch (error) {
-                this.logger.error(error, "Failed to process event.");
-                blockedPartitionKeys.push(entity.partitionKey);
-                failedEvents.push(entity);
-            }
-        }
+        const processingPromises = events.map((entity) =>
+            limiter.key(entity.partitionKey).schedule(async () => {
+                if (blockedPartitionKeys.has(entity.partitionKey)) {
+                    skippedEvents.push(entity);
+                    return;
+                }
+
+                const { event, handler } = this.mapEventToHandler(entity);
+
+                try {
+                    await this.handleEvent(event, handler);
+                    successfulEvents.push({
+                        ...entity,
+                        processedAt: new Date(),
+                        attempts: entity.attempts + 1,
+                    });
+                } catch (error) {
+                    this.logger.error(error, "Failed to process event.");
+                    blockedPartitionKeys.add(entity.partitionKey);
+                    failedEvents.push({
+                        ...entity,
+                        processAfter: this.retryPolicy.getNextAttemptDate(entity.attempts),
+                        attempts: entity.attempts + 1,
+                    });
+                }
+            })
+        );
+
+        await Promise.all(processingPromises);
 
         return {
             successfulEvents,
             failedEvents,
             skippedEvents,
-            blockedPartitionKeys,
+            blockedPartitionKeys: Array.from(blockedPartitionKeys),
         };
     }
 
-    private mapToEventsWithHandler(entities: InboxEventEntity[]) {
-        return entities.map((entity) => {
-            const event = IntegrationEvent.fromEntity(entity);
-            const handler = this.handlers.find((h) => h.canHandle(event.getTopic()));
+    private mapEventToHandler(entity: InboxEventEntity) {
+        const event = IntegrationEvent.fromEntity(entity);
+        const handler = this.handlers.find((h) => h.canHandle(event.getTopic()));
 
-            if (!handler) {
-                this.logger.error(event, "Event cannot be processed - no handler found.");
-                throw new EventHandlersNotFoundError();
-            }
+        if (!handler) {
+            this.logger.error(event, "Event cannot be processed - no handler found.");
+            throw new EventHandlersNotFoundError();
+        }
 
-            return {
-                entity,
-                event,
-                handler,
-            };
-        });
+        return {
+            event,
+            handler,
+        };
     }
 
     private async handleEvent(event: IntegrationEvent, handler: IInboxEventHandler) {

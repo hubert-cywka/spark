@@ -111,12 +111,13 @@ describe("IntegrationEventsModule", () => {
         await app.init();
 
         const dataSource = app.get<DataSource>(getDataSourceToken(TEST_ID));
+        const config = app.get<ConfigService>(ConfigService);
         const inboxPartitionRepository = dataSource.getRepository(InboxEventPartitionEntity);
         const outboxPartitionRepository = dataSource.getRepository(OutboxEventPartitionEntity);
         const outboxPartitionsToInsert: OutboxEventPartitionEntity[] = [];
         const inboxPartitionsToInsert: InboxEventPartitionEntity[] = [];
 
-        const initialNumberOfPartitions = 16;
+        const initialNumberOfPartitions = config.getOrThrow<number>("events.partitioning.numberOfPartitions");
 
         for (let i = 1; i <= initialNumberOfPartitions; i++) {
             outboxPartitionsToInsert.push({
@@ -628,6 +629,130 @@ describe("IntegrationEventsModule", () => {
             expect(unprocessedBefore).toBe(seededEventsCount);
             expect(unprocessedAfter).toBe(unprocessedEventsWithPoisonedPartitionKey);
             expect(unprocessedAfter).toBe(unprocessedMiddle);
+        });
+    });
+
+    // TODO: Move to a separate test
+    describe.skip("Performance tests", () => {
+        const setup = () => {
+            const admin = app.get<IEventAdmin>(EventAdminToken);
+            const inbox = app.get<IEventInbox>(EventInboxToken);
+            const outbox = app.get<IEventOutbox>(EventOutboxToken);
+
+            const outboxProcessor = app.get<IEventOutboxProcessor>(EventOutboxProcessorToken);
+            const inboxProcessor = app.get<IEventInboxProcessor>(EventInboxProcessorToken);
+
+            const outboxEventRepository = app.get<IOutboxEventRepository>(OutboxEventRepositoryToken);
+            const inboxEventRepository = app.get<IInboxEventRepository>(InboxEventRepositoryToken);
+
+            const outboxPartitionRepository = app.get<IOutboxPartitionRepository>(OutboxPartitionRepositoryToken);
+            const inboxPartitionRepository = app.get<IInboxPartitionRepository>(InboxPartitionRepositoryToken);
+
+            const config = app.get<ConfigService>(ConfigService);
+            const eventHandler = new TestEventHandler(EVENT_TOPIC);
+            return {
+                inbox,
+                outbox,
+                outboxProcessor,
+                inboxProcessor,
+                outboxEventRepository,
+                inboxEventRepository,
+                outboxPartitionRepository,
+                inboxPartitionRepository,
+                eventHandler,
+                admin,
+                config,
+            };
+        };
+
+        const seedOutbox = async ({ numOfTenants, eventsPerTenant }: { numOfTenants: number; eventsPerTenant: number }) => {
+            const events = generateEvents(numOfTenants, eventsPerTenant, EVENT_TOPIC);
+            const { outbox } = setup();
+            await outbox.enqueueMany(events);
+            return {
+                numOfTenants,
+                eventsPerTenant,
+                seededEventsCount: numOfTenants * eventsPerTenant,
+                events,
+            };
+        };
+
+        const seedInbox = async ({ numOfTenants, eventsPerTenant }: { numOfTenants: number; eventsPerTenant: number }) => {
+            const events = generateEvents(numOfTenants, eventsPerTenant, EVENT_TOPIC);
+            const { inbox } = setup();
+            await inbox.enqueueMany(events);
+            return {
+                numOfTenants,
+                eventsPerTenant,
+                seededEventsCount: numOfTenants * eventsPerTenant,
+                events,
+            };
+        };
+
+        beforeEach(async () => {
+            const { inboxEventRepository, outboxEventRepository, outboxPartitionRepository, inboxPartitionRepository } = setup();
+            await inboxEventRepository.removeAll();
+            await inboxPartitionRepository.invalidateAll();
+            await outboxEventRepository.removeAll();
+            await outboxPartitionRepository.invalidateAll();
+        });
+
+        afterEach(async () => {
+            const { admin } = setup();
+            await admin.purgeTopic(EVENT_TOPIC);
+        });
+
+        it("outbox processing performance test", async () => {
+            const { outboxProcessor, outboxEventRepository } = setup();
+            const parallelProcesses = 16;
+
+            const seedingFactor = 500;
+            const numOfTenants = 100;
+            const eventsPerTenant = 20;
+
+            for (let i = 0; i < seedingFactor; i++) {
+                await seedOutbox({ numOfTenants, eventsPerTenant });
+            }
+
+            const unprocessedBefore = await outboxEventRepository.countUnprocessed();
+            const promises = [];
+
+            for (let i = 0; i < parallelProcesses; i++) {
+                promises.push(outboxProcessor.processPendingEvents());
+            }
+
+            await Promise.all(promises);
+            const unprocessedAfter = await outboxEventRepository.countUnprocessed();
+
+            expect(unprocessedBefore).toBe(seedingFactor * numOfTenants * eventsPerTenant);
+            expect(unprocessedAfter).toBe(0);
+        });
+
+        it("inbox processing performance test", async () => {
+            const { eventHandler, inboxProcessor, inboxEventRepository } = setup();
+            inboxProcessor.setEventHandlers([eventHandler]);
+            jest.spyOn(eventHandler, "handle");
+            const parallelProcesses = 16;
+
+            const seedingFactor = 100;
+            const numOfTenants = 100;
+            const eventsPerTenant = 25;
+
+            for (let i = 0; i < seedingFactor; i++) {
+                await seedInbox({ numOfTenants, eventsPerTenant });
+            }
+
+            const unprocessedBefore = await inboxEventRepository.countUnprocessed();
+            const promises = [];
+
+            for (let i = 0; i < parallelProcesses; i++) {
+                promises.push(inboxProcessor.processPendingEvents());
+            }
+
+            await Promise.all(promises);
+
+            expect(unprocessedBefore).toBe(seedingFactor * numOfTenants * eventsPerTenant);
+            expect(eventHandler.handle).toHaveBeenCalledTimes(seedingFactor * numOfTenants * eventsPerTenant);
         });
     });
 });

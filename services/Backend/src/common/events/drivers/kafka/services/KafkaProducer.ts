@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { type Producer, CompressionTypes } from "kafkajs";
+import { type Producer, CompressionTypes, TopicMessages } from "kafkajs";
 
 import { IntegrationEvent } from "@/common/events";
 import { type IEventProducer } from "@/common/events/drivers/interfaces/IEventProducer";
@@ -23,6 +23,33 @@ export class KafkaProducer implements IEventProducer {
             compression: this.compression,
             topic: event.getTopic(),
             messages: [message],
+        });
+
+        return new Promise((resolve, reject) => {
+            publishPromise.then(() => resolve({ ack: true })).catch(reject);
+        });
+    }
+
+    public async publishBatch(events: IntegrationEvent[]): Promise<PublishAck> {
+        const messagesByTopic = new Map<string, TopicMessages>();
+
+        for (const event of events) {
+            const topic = event.getTopic();
+            const topicMessages = messagesByTopic.get(topic);
+
+            if (!topicMessages) {
+                messagesByTopic.set(topic, { topic, messages: [] });
+            } else {
+                topicMessages.messages.push({
+                    key: event.getPartitionKey(),
+                    value: event.toBuffer(),
+                });
+            }
+        }
+
+        const publishPromise = this.producer.sendBatch({
+            topicMessages: Array.from(messagesByTopic.values()),
+            compression: this.compression,
         });
 
         return new Promise((resolve, reject) => {

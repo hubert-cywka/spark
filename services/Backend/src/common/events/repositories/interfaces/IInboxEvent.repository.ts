@@ -25,8 +25,7 @@ export interface IInboxEventRepository extends IIntegrationEventRepository<Inbox
     save(fields: InboxEventInput): Promise<InboxEventEntity>;
     saveManyAndSkipDuplicates(fields: InboxEventInput[]): Promise<InboxEventEntity[]>;
 
-    markAsProcessed(events: InboxEventEntity[]): Promise<void>;
-    markAsPostponed(events: InboxEventEntity[], postponeTimeResolver: (attempt: number) => Date): Promise<void>;
+    update(events: InboxEventEntity[]): Promise<void>;
 
     getBlockedEventsPartitionKeysByPartition(options: GetBlockedInboxPartitionKeysQueryOptions): Promise<string[]>;
     getBatchOfUnprocessedEvents(options: GetUnprocessedInboxEventsQueryOptions): Promise<InboxEventEntity[]>;
