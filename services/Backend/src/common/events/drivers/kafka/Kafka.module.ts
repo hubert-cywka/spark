@@ -29,6 +29,7 @@ export type KafkaModuleOptions = {
 
 export type KafkaForFeatureOptions = Pick<KafkaModuleOptions, "brokers" | "clientId">;
 
+// TODO: Kafka guarantees order within a partition, but not across topics. Is it okay?
 // TODO: Consider switching to https://www.npmjs.com/package/@confluentinc/kafka-javascript
 @Module({})
 export class KafkaModule implements OnApplicationShutdown {
