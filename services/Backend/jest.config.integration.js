@@ -4,7 +4,7 @@ export default {
     moduleNameMapper: {
         "^@/(.*)$": "<rootDir>/$1",
     },
-    testRegex: ".*\\integration.test\\.ts$",
+    testRegex: ".*\\.integration\\.test\\.ts$",
     transform: {
         "^.+\\.(ts|js)$": "ts-jest",
     },
