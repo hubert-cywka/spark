@@ -4,6 +4,7 @@ import { ConfigService } from "@nestjs/config";
 import { DatabaseModule } from "@/common/database/Database.module";
 import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule, IntegrationEventTopics } from "@/common/events";
 import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
+import { InboxAndOutboxSequenceNumber1753291628862 } from "@/common/events/migrations/1753291628862-inbox-and-outbox-sequence-number";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -113,7 +114,12 @@ import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/
                 password: configService.getOrThrow<string>("modules.mail.database.password"),
                 host: configService.getOrThrow<string>("modules.mail.database.host"),
                 database: configService.getOrThrow<string>("modules.mail.database.name"),
-                migrations: [RegenerateMigrations1749289938815, InboxAndOutbox1749299050551, AddTimestamps1752925904452],
+                migrations: [
+                    RegenerateMigrations1749289938815,
+                    InboxAndOutbox1749299050551,
+                    AddTimestamps1752925904452,
+                    InboxAndOutboxSequenceNumber1753291628862,
+                ],
             }),
             inject: [ConfigService],
         }),

@@ -22,6 +22,9 @@ export class IntegrationEventEntity<T = string | object> {
     @Column({ type: "jsonb" })
     payload!: T;
 
+    @Column({ type: "bigint", generated: "increment" })
+    sequence!: number;
+
     @Column({ type: "int", default: 0 })
     attempts!: number;
 
