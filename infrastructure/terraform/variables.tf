@@ -117,21 +117,9 @@ variable "MAIL_SENDER_NAME" {
   type = string
 }
 
-variable "MAIL_SENDER_USER" {
-  type = string
-}
-
 variable "MAIL_SENDER_PASSWORD" {
   sensitive = true
   type      = string
-}
-
-variable "MAIL_SENDER_HOST" {
-  type = string
-}
-
-variable "MAIL_SENDER_PORT" {
-  type = number
 }
 
 variable "MAIL_DEBUG_MODE" {

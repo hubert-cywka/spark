@@ -29,12 +29,12 @@ import { RecipientMapperToken } from "@/modules/mail/mappers/IRecipient.mapper";
 import { RecipientMapper } from "@/modules/mail/mappers/Recipient.mapper";
 import { EmailLookup } from "@/modules/mail/services/implementations/EmailLookup.service";
 import { RecipientService } from "@/modules/mail/services/implementations/Recipient.service";
-import { SendGridMailSender } from "@/modules/mail/services/implementations/SendGridMailSender.service";
+import { ResendMailSender } from "@/modules/mail/services/implementations/ResendMailSender.service";
 import { EmailLookupToken } from "@/modules/mail/services/interfaces/IEmailLookup.service";
 import { MailSenderToken } from "@/modules/mail/services/interfaces/IMailSender.service";
 import { RecipientServiceToken } from "@/modules/mail/services/interfaces/IRecipient.service";
+import { HtmlEmailTemplateFactory } from "@/modules/mail/templates/html/HtmlEmailTemplate.factory";
 import { EmailTemplateFactoryToken } from "@/modules/mail/templates/IEmailTemplate.factory";
-import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/SendgridEmailTemplate.factory";
 
 @Module({
     providers: [
@@ -52,11 +52,11 @@ import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/
         },
         {
             provide: MailSenderToken,
-            useClass: SendGridMailSender,
+            useClass: ResendMailSender,
         },
         {
             provide: EmailTemplateFactoryToken,
-            useClass: SendgridEmailTemplateFactory,
+            useClass: HtmlEmailTemplateFactory,
         },
         {
             provide: AccountActivatedEventHandler,
