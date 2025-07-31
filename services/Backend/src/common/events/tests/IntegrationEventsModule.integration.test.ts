@@ -477,7 +477,7 @@ describe("IntegrationEventsModule", () => {
             const processor = app.get<IEventInboxProcessor>(EventInboxProcessorToken);
             const eventRepository = app.get<IInboxEventRepository>(InboxEventRepositoryToken);
             const partitionRepository = app.get<IInboxPartitionRepository>(InboxPartitionRepositoryToken);
-            const eventHandler = new TestEventHandler(EVENT_SUBJECT);
+            const eventHandler = new TestEventHandler();
             return {
                 inbox,
                 eventRepository,
@@ -663,7 +663,7 @@ describe("IntegrationEventsModule", () => {
             const inboxPartitionRepository = app.get<IInboxPartitionRepository>(InboxPartitionRepositoryToken);
 
             const config = app.get<ConfigService>(ConfigService);
-            const eventHandler = new TestEventHandler(EVENT_SUBJECT);
+            const eventHandler = new TestEventHandler();
             return {
                 inbox,
                 outbox,

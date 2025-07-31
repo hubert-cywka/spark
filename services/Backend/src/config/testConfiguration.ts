@@ -21,7 +21,7 @@ export const TestConfig = () => ({
     events: {
         partitioning: {
             numberOfPartitions: process.env.PUBSUB_PARTITIONS_NUM_OF_PARTITIONS,
-            staleThresholdInMs: process.env.PUBSUB_PARTITIONS_STALE_THRESHOLD_IN_MS,
+            staleThresholdInMs: 30_000,
         },
         encryption: {
             secret: process.env.EVENTS_ENCRYPTION_SECRET_64_BYTES,
@@ -29,7 +29,7 @@ export const TestConfig = () => ({
         inbox: {
             processing: {
                 clearingInterval: process.env.PUBSUB_INBOX_PROCESSOR_CLEARING_INTERVAL,
-                pollingInterval: process.env.PUBSUB_INBOX_PROCESSOR_POLLING_INTERVAL,
+                pollingInterval: 5000,
                 maxBatchSize: process.env.PUBSUB_INBOX_PROCESSOR_MAX_BATCH_SIZE,
                 maxAttempts: process.env.PUBSUB_INBOX_PROCESSOR_MAX_ATTEMPTS,
             },
@@ -37,7 +37,7 @@ export const TestConfig = () => ({
         outbox: {
             processing: {
                 clearingInterval: process.env.PUBSUB_OUTBOX_PROCESSOR_CLEARING_INTERVAL,
-                pollingInterval: process.env.PUBSUB_OUTBOX_PROCESSOR_POLLING_INTERVAL,
+                pollingInterval: 5000,
                 maxBatchSize: process.env.PUBSUB_OUTBOX_PROCESSOR_MAX_BATCH_SIZE,
                 maxAttempts: process.env.PUBSUB_OUTBOX_PROCESSOR_MAX_ATTEMPTS,
             },
