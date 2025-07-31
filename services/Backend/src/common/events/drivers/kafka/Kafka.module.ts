@@ -29,8 +29,6 @@ export type KafkaModuleOptions = {
 
 export type KafkaForFeatureOptions = Pick<KafkaModuleOptions, "brokers" | "clientId">;
 
-// TODO: Kafka guarantees order within partition. Rework topics, so all events that need to be ordered, are in the
-//  same topic and partition.
 @Module({})
 export class KafkaModule implements OnApplicationShutdown {
     private static readonly logger = new Logger(KafkaModule.name);
