@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { AccountActivatedEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEvents } from "@/common/events";
+import { IntegrationEventSubject } from "@/common/events/types";
 import {
     type ITwoFactorAuthenticationIntegrationsProviderService,
     TwoFactorAuthenticationMethodsProviderServiceToken,
@@ -13,7 +14,7 @@ export class AccountActivatedEventHandler implements IInboxEventHandler {
         private readonly service: ITwoFactorAuthenticationIntegrationsProviderService
     ) {}
 
-    public canHandle(subject: string): boolean {
+    public canHandle(subject: IntegrationEventSubject): boolean {
         return subject === IntegrationEvents.account.activation.completed.subject;
     }
 

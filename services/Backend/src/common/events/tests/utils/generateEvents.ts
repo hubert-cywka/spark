@@ -2,9 +2,14 @@ import dayjs from "dayjs";
 
 import { IntegrationEvent } from "@/common/events";
 import { TestEvent } from "@/common/events/tests/utils/TestEvent";
-import { IntegrationEventTopic } from "@/common/events/types";
+import { IntegrationEventSubject, IntegrationEventTopic } from "@/common/events/types";
 
-export function generateEvents(numOfTenants: number, eventsPerTenant: number, topic: IntegrationEventTopic, subject: string) {
+export function generateEvents(
+    numOfTenants: number,
+    eventsPerTenant: number,
+    topic: IntegrationEventTopic,
+    subject: IntegrationEventSubject
+) {
     const events: IntegrationEvent[] = [];
 
     for (let tenant = 0; tenant < numOfTenants; tenant++) {

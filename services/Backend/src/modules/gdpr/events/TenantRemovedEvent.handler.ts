@@ -7,6 +7,7 @@ import {
     InboxEventsRemovalServiceToken,
     OutboxEventsRemovalServiceToken,
 } from "@/common/events/services/interfaces/IEventsRemoval.service";
+import { IntegrationEventSubject } from "@/common/events/types";
 import { type AccountRemovalCompletedEventPayload } from "@/common/events/types/account/AccountRemovalCompletedEvent";
 import { GDPR_MODULE_DATA_SOURCE } from "@/modules/gdpr/infrastructure/database/constants";
 import { type ITenantService, TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.service";
@@ -22,7 +23,7 @@ export class TenantRemovedEventHandler implements IInboxEventHandler {
         private readonly outboxRemovalService: IEventsRemovalService
     ) {}
 
-    public canHandle(subject: string): boolean {
+    public canHandle(subject: IntegrationEventSubject): boolean {
         return subject === IntegrationEvents.account.removal.completed.subject;
     }
 

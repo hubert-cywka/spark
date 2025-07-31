@@ -6,7 +6,8 @@ export type PublishAck = {
 
 export type IntegrationEventLabel = {
     topic: IntegrationEventTopic;
-    subject: string;
+    subject: IntegrationEventSubject;
 };
 
 export type IntegrationEventTopic = "account" | "alert" | "2fa";
+export type IntegrationEventSubject = `${IntegrationEventTopic}.${string}`;

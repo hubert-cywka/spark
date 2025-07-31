@@ -1,13 +1,14 @@
 import { IInboxEventHandler, IntegrationEvent } from "@/common/events";
+import { IntegrationEventSubject } from "@/common/events/types";
 import { wait } from "@/common/utils/timeUtils";
 
 export class TestEventHandler implements IInboxEventHandler {
     public constructor(
-        private readonly subject: string,
+        private readonly subject: IntegrationEventSubject,
         private readonly waitTime: number = 0
     ) {}
 
-    public canHandle(subject: string): boolean {
+    public canHandle(subject: IntegrationEventSubject): boolean {
         return subject === this.subject;
     }
 

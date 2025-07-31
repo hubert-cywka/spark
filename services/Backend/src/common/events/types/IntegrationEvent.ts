@@ -4,7 +4,7 @@ import { deserialize, serialize } from "v8";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { PayloadEncryptedError } from "@/common/events/errors/PayloadEncrypted.error";
-import { IntegrationEventTopic } from "@/common/events/types";
+import { IntegrationEventSubject, IntegrationEventTopic } from "@/common/events/types";
 
 export type DefaultEventPayload = object | string;
 
@@ -15,7 +15,7 @@ type IntegrationEventMetadata = {
 
 type RequiredIntegrationEventFields<T = DefaultEventPayload> = {
     topic: IntegrationEventTopic;
-    subject: string;
+    subject: IntegrationEventSubject;
     tenantId: string;
     partitionKey: string;
     payload: T;
@@ -28,7 +28,7 @@ export class IntegrationEvent<T = DefaultEventPayload> {
     private readonly partitionKey: string;
     private readonly tenantId: string;
     private readonly topic: IntegrationEventTopic;
-    private readonly subject: string;
+    private readonly subject: IntegrationEventSubject;
     private readonly payload: T;
     private readonly createdAt: Date;
 
@@ -103,7 +103,7 @@ export class IntegrationEvent<T = DefaultEventPayload> {
         return this.topic;
     }
 
-    public getSubject(): string {
+    public getSubject(): IntegrationEventSubject {
         return this.subject;
     }
 

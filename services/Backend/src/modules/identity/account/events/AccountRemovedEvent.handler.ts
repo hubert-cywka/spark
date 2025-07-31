@@ -7,6 +7,7 @@ import {
     InboxEventsRemovalServiceToken,
     OutboxEventsRemovalServiceToken,
 } from "@/common/events/services/interfaces/IEventsRemoval.service";
+import { IntegrationEventSubject } from "@/common/events/types";
 import { type AccountRemovalCompletedEventPayload } from "@/common/events/types/account/AccountRemovalCompletedEvent";
 import {
     type IAccountRemovalService,
@@ -25,7 +26,7 @@ export class AccountRemovedEventHandler implements IInboxEventHandler {
         private readonly outboxRemovalService: IEventsRemovalService
     ) {}
 
-    public canHandle(subject: string): boolean {
+    public canHandle(subject: IntegrationEventSubject): boolean {
         return subject === IntegrationEvents.account.removal.completed.subject;
     }
 
