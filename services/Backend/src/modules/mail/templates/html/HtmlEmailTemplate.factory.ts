@@ -1,17 +1,17 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
+import { AccountRemovalScheduledEmail } from "@/modules/mail/templates/html/AccountRemovalScheduledEmail";
+import { DailyReminderEmail } from "@/modules/mail/templates/html/DailyReminderEmail";
+import { PasswordResetRequestedEmail } from "@/modules/mail/templates/html/PasswordResetRequestedEmail";
+import { PasswordUpdatedEmail } from "@/modules/mail/templates/html/PasswordUpdatedEmail";
+import { TwoFactorAuthCodeIssuedEmail } from "@/modules/mail/templates/html/TwoFactorAuthCodeIssuedEmail";
+import { UserActivatedEmail } from "@/modules/mail/templates/html/UserActivatedEmail";
+import { UserActivationEmail } from "@/modules/mail/templates/html/UserActivationEmail";
 import { IEmailTemplateFactory } from "@/modules/mail/templates/IEmailTemplate.factory";
-import { AccountRemovalScheduledEmail } from "@/modules/mail/templates/sendgrid/AccountRemovalScheduledEmail";
-import { DailyReminderEmail } from "@/modules/mail/templates/sendgrid/DailyReminderEmail";
-import { PasswordResetRequestedEmail } from "@/modules/mail/templates/sendgrid/PasswordResetRequestedEmail";
-import { PasswordUpdatedEmail } from "@/modules/mail/templates/sendgrid/PasswordUpdatedEmail";
-import { TwoFactorAuthCodeIssuedEmail } from "@/modules/mail/templates/sendgrid/TwoFactorAuthCodeIssuedEmail";
-import { UserActivatedEmail } from "@/modules/mail/templates/sendgrid/UserActivatedEmail";
-import { UserActivationEmail } from "@/modules/mail/templates/sendgrid/UserActivationEmail";
 
 @Injectable()
-export class SendgridEmailTemplateFactory implements IEmailTemplateFactory {
+export class HtmlEmailTemplateFactory implements IEmailTemplateFactory {
     private readonly appName: string;
     private readonly appUrl: string;
 

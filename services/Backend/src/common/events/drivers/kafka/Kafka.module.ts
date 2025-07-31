@@ -29,8 +29,8 @@ export type KafkaModuleOptions = {
 
 export type KafkaForFeatureOptions = Pick<KafkaModuleOptions, "brokers" | "clientId">;
 
-// TODO: Kafka guarantees order within a partition, but not across topics. Is it okay?
-// TODO: Consider switching to https://www.npmjs.com/package/@confluentinc/kafka-javascript
+// TODO: Kafka guarantees order within partition. Rework topics, so all events that need to be ordered, are in the
+//  same topic and partition.
 @Module({})
 export class KafkaModule implements OnApplicationShutdown {
     private static readonly logger = new Logger(KafkaModule.name);

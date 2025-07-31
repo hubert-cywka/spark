@@ -26,8 +26,7 @@ import {
 import { EventInboxProcessorToken, IEventInboxProcessor } from "@/common/events/services/interfaces/IEventInboxProcessor";
 import { EventOutboxProcessorToken, IEventOutboxProcessor } from "@/common/events/services/interfaces/IEventOutboxProcessor";
 import { generateEvents } from "@/common/events/tests/utils/generateEvents";
-import { groupEventsByPartition } from "@/common/events/tests/utils/groupEventsByPartition";
-import { sortByCreatedAtTimestamps } from "@/common/events/tests/utils/sortByCreatedAtTimestamp";
+import { groupEventsByPartitionKey } from "@/common/events/tests/utils/groupEventsByPartitionKey";
 import { TestEvent } from "@/common/events/tests/utils/TestEvent";
 import { TestEventHandler } from "@/common/events/tests/utils/TestEventHandler";
 import { TestEventEnqueueSubscriber } from "@/common/events/tests/utils/TestEventSubscriber";
@@ -399,12 +398,19 @@ describe("IntegrationEventsModule", () => {
             ]);
 
             expect(eventsInProcessingOrder.length).toBe(seededEventsCount);
-            const inputEventsByPartition = groupEventsByPartition(events);
-            const eventsInProcessingOrderByPartition = groupEventsByPartition(eventsInProcessingOrder);
+            const eventsInProcessingOrderByPartitionKey = groupEventsByPartitionKey(eventsInProcessingOrder);
 
-            for (const [partition, processedEvents] of Object.entries(eventsInProcessingOrderByPartition)) {
-                const inputEvents = sortByCreatedAtTimestamps(inputEventsByPartition[partition]);
-                expect(processedEvents).toEqual(inputEvents);
+            for (const [_, processedEvents] of Object.entries(eventsInProcessingOrderByPartitionKey)) {
+                let previous = null;
+
+                for (const event of processedEvents) {
+                    if (previous) {
+                        expect(event.getPartitionKey()).toBe(previous.getPartitionKey());
+                        expect(event.getCreatedAt().getTime()).toBeGreaterThanOrEqual(previous.getCreatedAt().getTime());
+                    }
+
+                    previous = event;
+                }
             }
         });
 
@@ -563,12 +569,19 @@ describe("IntegrationEventsModule", () => {
             ]);
 
             expect(eventsInProcessingOrder.length).toBe(seededEventsCount);
-            const inputEventsByPartition = groupEventsByPartition(events);
-            const eventsInProcessingOrderByPartition = groupEventsByPartition(eventsInProcessingOrder);
+            const eventsInProcessingOrderByPartitionKey = groupEventsByPartitionKey(eventsInProcessingOrder);
 
-            for (const [partition, processedEvents] of Object.entries(eventsInProcessingOrderByPartition)) {
-                const inputEvents = sortByCreatedAtTimestamps(inputEventsByPartition[partition]);
-                expect(processedEvents).toEqual(inputEvents);
+            for (const [_, processedEvents] of Object.entries(eventsInProcessingOrderByPartitionKey)) {
+                let previous = null;
+
+                for (const event of processedEvents) {
+                    if (previous) {
+                        expect(event.getPartitionKey()).toBe(previous.getPartitionKey());
+                        expect(event.getCreatedAt().getTime()).toBeGreaterThanOrEqual(previous.getCreatedAt().getTime());
+                    }
+
+                    previous = event;
+                }
             }
         });
 

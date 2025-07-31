@@ -44,7 +44,7 @@ export class OutboxEventRepository extends IntegrationEventRepository<OutboxEven
                 attempts: LessThan(maxAttempts),
             },
             order: {
-                createdAt: "ASC",
+                sequence: "ASC",
             },
             take,
         });

@@ -69,7 +69,7 @@ export class InboxEventRepository extends IntegrationEventRepository<InboxEventE
             baseQuery.andWhere("event.partitionKey NOT IN (:...blockedPartitionKeys)", { blockedPartitionKeys });
         }
 
-        return await baseQuery.orderBy("event.createdAt", "ASC").take(take).getMany();
+        return await baseQuery.orderBy("event.sequence", "ASC").take(take).getMany();
     }
 
     public async removeProcessed({ processedBefore }: RemoveProcessedEventsOptions) {

@@ -4,6 +4,7 @@ import { ConfigService } from "@nestjs/config";
 import { DatabaseModule } from "@/common/database/Database.module";
 import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule, IntegrationEventTopics } from "@/common/events";
 import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
+import { InboxAndOutboxSequenceNumber1753291628862 } from "@/common/events/migrations/1753291628862-inbox-and-outbox-sequence-number";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -28,12 +29,12 @@ import { RecipientMapperToken } from "@/modules/mail/mappers/IRecipient.mapper";
 import { RecipientMapper } from "@/modules/mail/mappers/Recipient.mapper";
 import { EmailLookup } from "@/modules/mail/services/implementations/EmailLookup.service";
 import { RecipientService } from "@/modules/mail/services/implementations/Recipient.service";
-import { SendGridMailSender } from "@/modules/mail/services/implementations/SendGridMailSender.service";
+import { ResendMailSender } from "@/modules/mail/services/implementations/ResendMailSender.service";
 import { EmailLookupToken } from "@/modules/mail/services/interfaces/IEmailLookup.service";
 import { MailSenderToken } from "@/modules/mail/services/interfaces/IMailSender.service";
 import { RecipientServiceToken } from "@/modules/mail/services/interfaces/IRecipient.service";
+import { HtmlEmailTemplateFactory } from "@/modules/mail/templates/html/HtmlEmailTemplate.factory";
 import { EmailTemplateFactoryToken } from "@/modules/mail/templates/IEmailTemplate.factory";
-import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/SendgridEmailTemplate.factory";
 
 @Module({
     providers: [
@@ -51,11 +52,11 @@ import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/
         },
         {
             provide: MailSenderToken,
-            useClass: SendGridMailSender,
+            useClass: ResendMailSender,
         },
         {
             provide: EmailTemplateFactoryToken,
-            useClass: SendgridEmailTemplateFactory,
+            useClass: HtmlEmailTemplateFactory,
         },
         {
             provide: AccountActivatedEventHandler,
@@ -113,7 +114,12 @@ import { SendgridEmailTemplateFactory } from "@/modules/mail/templates/sendgrid/
                 password: configService.getOrThrow<string>("modules.mail.database.password"),
                 host: configService.getOrThrow<string>("modules.mail.database.host"),
                 database: configService.getOrThrow<string>("modules.mail.database.name"),
-                migrations: [RegenerateMigrations1749289938815, InboxAndOutbox1749299050551, AddTimestamps1752925904452],
+                migrations: [
+                    RegenerateMigrations1749289938815,
+                    InboxAndOutbox1749299050551,
+                    AddTimestamps1752925904452,
+                    InboxAndOutboxSequenceNumber1753291628862,
+                ],
             }),
             inject: [ConfigService],
         }),

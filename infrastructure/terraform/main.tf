@@ -190,10 +190,7 @@ module "mail-service" {
     "JWT_SIGNING_SECRET"                        = var.JWT_SIGNING_SECRET
     "MAIL_DATABASE_NAME"                        = var.MAIL_DATABASE_NAME
     "MAIL_SENDER_NAME"                          = var.MAIL_SENDER_NAME
-    "MAIL_SENDER_USER"                          = var.MAIL_SENDER_USER
     "MAIL_SENDER_PASSWORD"                      = var.MAIL_SENDER_PASSWORD
-    "MAIL_SENDER_HOST"                          = var.MAIL_SENDER_HOST
-    "MAIL_SENDER_PORT"                          = var.MAIL_SENDER_PORT
     "MAIL_DEBUG_MODE"                           = var.MAIL_DEBUG_MODE
     "COOKIES_SECRET"                            = var.COOKIES_SECRET
     "RATE_LIMITING_BASE_LIMIT"                  = var.RATE_LIMITING_BASE_LIMIT

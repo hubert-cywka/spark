@@ -1,6 +1,6 @@
 import { IntegrationEvent } from "@/common/events";
 
-export function groupEventsByPartition(events: IntegrationEvent[]) {
+export function groupEventsByPartitionKey(events: IntegrationEvent[]) {
     return events.reduce(
         (acc, event) => {
             const key = event.getPartitionKey();

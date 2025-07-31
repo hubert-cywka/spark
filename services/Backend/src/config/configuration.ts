@@ -87,10 +87,7 @@ export const AppConfig = () => ({
             isDebugMode: process.env.MAIL_DEBUG_MODE === "true",
             sender: {
                 name: process.env.MAIL_SENDER_NAME,
-                user: process.env.MAIL_SENDER_USER,
-                port: process.env.MAIL_SENDER_PORT,
                 password: process.env.MAIL_SENDER_PASSWORD,
-                host: process.env.MAIL_SENDER_HOST,
             },
             database: {
                 logging: process.env.DATABASE_LOGGING_ENABLED === "true",
