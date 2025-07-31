@@ -17,7 +17,7 @@ export class TwoFactorAuthCodeIssuedEmail extends HtmlEmail implements IEmailTem
         return html;
     }
 
-    protected getTemplateVariables() {
+    public getVariables() {
         return {
             appName: this.appName,
             appUrl: this.appUrl,

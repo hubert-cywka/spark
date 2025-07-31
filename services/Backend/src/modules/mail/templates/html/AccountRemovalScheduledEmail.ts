@@ -18,7 +18,7 @@ export class AccountRemovalScheduledEmail extends HtmlEmail implements IEmailTem
         return html;
     }
 
-    protected getTemplateVariables() {
+    public getVariables() {
         return {
             appName: this.appName,
             appUrl: this.appUrl,
@@ -249,5 +249,4 @@ const html = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://w
       </div>
     </center>
   </body>
-</html>
-\``;
+</html>`;

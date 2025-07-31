@@ -39,9 +39,10 @@ Correct order is ensured for messages with the same partition's key:
 - messages with the same partition's key are processed in order, according to their sequential number.
 
 The sequential number is assigned automatically by the database and is a 64-bit number. The counter would only roll 
-over if over 2 billion messages were published for every person on earth, which isn't possible. However, it should 
-be noted that the sequential number is assigned at the beginning of a transaction, which raises two issues:
-- if the transaction fails, the number will never be used (the counter continues),
+over if over 2 billion messages were published from a single module for every person on earth, which isn't possible. 
+However, it should be noted that the sequential number is assigned at the beginning of a transaction, which raises 
+two issues:
+- if the transaction fails, the number will never be used (the counter simply continues and skips the number),
 - in the event of two parallel transactions, it's possible that a transaction that started later finishes earlier and 
   has a later sequential number.
 

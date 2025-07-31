@@ -9,22 +9,26 @@ import { IEmailTemplate } from "@/modules/mail/templates/IEmailTemplate";
 @Injectable()
 export class ResendMailSender implements IMailSender {
     private readonly logger = new Logger(ResendMailSender.name);
+    private readonly resendClient: Resend | null = null;
     private readonly senderName: string;
     private readonly isInDebugMode: boolean;
-    private readonly resendClient: Resend;
 
     public constructor(configService: ConfigService) {
         this.senderName = configService.getOrThrow<string>("modules.mail.sender.name");
         this.isInDebugMode = configService.getOrThrow<boolean>("modules.mail.isDebugMode");
-        this.resendClient = new Resend(configService.getOrThrow<string>("modules.mail.sender.password"));
+
+        if (!this.isInDebugMode) {
+            this.resendClient = new Resend(configService.getOrThrow<string>("modules.mail.sender.password"));
+        }
     }
 
     public async send(recipient: string, template: IEmailTemplate): Promise<void> {
         const subject = template.getSubject();
         const html = template.getHtml();
 
-        if (this.isInDebugMode) {
-            this.logger.log({ recipient, subject }, "Mailer is running in debug mode, the real email was not sent.");
+        if (this.isInDebugMode || !this.resendClient) {
+            const variables = template.getVariables();
+            this.logger.log({ recipient, subject, variables }, "Mailer is running in debug mode, the real email was" + " not sent.");
             return;
         }
 

@@ -17,7 +17,7 @@ export class PasswordResetRequestedEmail extends HtmlEmail implements IEmailTemp
         return html;
     }
 
-    protected getTemplateVariables() {
+    public getVariables() {
         return {
             appName: this.appName,
             appUrl: this.appUrl,

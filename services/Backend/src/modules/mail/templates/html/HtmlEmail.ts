@@ -8,14 +8,14 @@ export abstract class HtmlEmail implements IEmailTemplate {
     }
 
     public getHtml(): string {
-        const variables = this.getTemplateVariables();
+        const variables = this.getVariables();
         const rawHtml = this.getRawHtml();
 
         const compiledTemplate = Handlebars.compile(rawHtml);
         return compiledTemplate(variables);
     }
 
-    protected abstract getRawHtml(): string;
+    public abstract getVariables(): object;
 
-    protected abstract getTemplateVariables(): object;
+    protected abstract getRawHtml(): string;
 }

@@ -17,7 +17,7 @@ export class UserActivationEmail extends HtmlEmail implements IEmailTemplate {
         return html;
     }
 
-    protected getTemplateVariables() {
+    public getVariables() {
         return {
             appName: this.appName,
             appUrl: this.appUrl,
