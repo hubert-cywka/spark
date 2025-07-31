@@ -1,6 +1,7 @@
 # Spark (WIP)
 
 ## Useful links
+- [How to set up the local environment?](./docs/setting-up-environment.md)
 - [How to run the app?](./docs/local-development.md)
-- [How to add new services?](./docs/adding-new-services.md)
 - [Architectural decision records](docs/adr)
+- [Other docs](docs)
