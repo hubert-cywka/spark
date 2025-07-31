@@ -325,7 +325,7 @@ describe("IntegrationEventsModule", () => {
 
         const seedData = async ({ numOfTenants, eventsPerTenant }: { numOfTenants: number; eventsPerTenant: number }) => {
             const { outbox } = setup();
-            const events = generateEvents(numOfTenants, eventsPerTenant, EVENT_TOPIC, EVENT_SUBJECT);
+            const events = generateEvents(numOfTenants, eventsPerTenant, EVENT_TOPIC);
             await outbox.enqueueMany(events);
             return {
                 events,
@@ -490,7 +490,7 @@ describe("IntegrationEventsModule", () => {
 
         const seedData = async ({ numOfTenants, eventsPerTenant }: { numOfTenants: number; eventsPerTenant: number }) => {
             const { inbox } = setup();
-            const events = generateEvents(numOfTenants, eventsPerTenant, EVENT_TOPIC, EVENT_SUBJECT);
+            const events = generateEvents(numOfTenants, eventsPerTenant, EVENT_TOPIC);
             await inbox.enqueueMany(events);
             return {
                 numOfTenants,
@@ -680,7 +680,7 @@ describe("IntegrationEventsModule", () => {
         };
 
         const seedOutbox = async ({ numOfTenants, eventsPerTenant }: { numOfTenants: number; eventsPerTenant: number }) => {
-            const events = generateEvents(numOfTenants, eventsPerTenant, EVENT_TOPIC, EVENT_SUBJECT);
+            const events = generateEvents(numOfTenants, eventsPerTenant, EVENT_TOPIC);
             const { outbox } = setup();
             await outbox.enqueueMany(events);
             return {
@@ -692,7 +692,7 @@ describe("IntegrationEventsModule", () => {
         };
 
         const seedInbox = async ({ numOfTenants, eventsPerTenant }: { numOfTenants: number; eventsPerTenant: number }) => {
-            const events = generateEvents(numOfTenants, eventsPerTenant, EVENT_TOPIC, EVENT_SUBJECT);
+            const events = generateEvents(numOfTenants, eventsPerTenant, EVENT_TOPIC);
             const { inbox } = setup();
             await inbox.enqueueMany(events);
             return {
