@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 
-import { type IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import { type IInboxEventHandler, IntegrationEvent, IntegrationEvents } from "@/common/events";
 import { AccountRemovalScheduledEventPayload } from "@/common/events/types/account/AccountRemovalScheduledEvent";
 import { type IEmailLookup, EmailLookupToken } from "@/modules/mail/services/interfaces/IEmailLookup.service";
 import { type IMailSender, MailSenderToken } from "@/modules/mail/services/interfaces/IMailSender.service";
@@ -18,8 +18,8 @@ export class AccountRemovalScheduledEventHandler implements IInboxEventHandler {
         private emailFactory: IEmailTemplateFactory
     ) {}
 
-    public canHandle(topic: string): boolean {
-        return topic === IntegrationEventTopics.account.removal.scheduled;
+    public canHandle(subject: string): boolean {
+        return subject === IntegrationEvents.account.removal.scheduled.subject;
     }
 
     public async handle(event: IntegrationEvent): Promise<void> {

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { AccountCreatedEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import { AccountCreatedEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEvents } from "@/common/events";
 import { type IRecipientService, RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRecipient.service";
 
 @Injectable()
@@ -10,8 +10,8 @@ export class RecipientCreatedEventHandler implements IInboxEventHandler {
         private readonly recipientService: IRecipientService
     ) {}
 
-    public canHandle(topic: string): boolean {
-        return topic === IntegrationEventTopics.account.created;
+    public canHandle(subject: string): boolean {
+        return subject === IntegrationEvents.account.created.subject;
     }
 
     async handle(event: IntegrationEvent): Promise<void> {

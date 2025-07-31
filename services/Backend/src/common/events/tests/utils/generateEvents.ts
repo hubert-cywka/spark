@@ -2,8 +2,9 @@ import dayjs from "dayjs";
 
 import { IntegrationEvent } from "@/common/events";
 import { TestEvent } from "@/common/events/tests/utils/TestEvent";
+import { IntegrationEventTopic } from "@/common/events/types";
 
-export function generateEvents(numOfTenants: number, eventsPerTenant: number, topic: string) {
+export function generateEvents(numOfTenants: number, eventsPerTenant: number, topic: IntegrationEventTopic, subject: string) {
     const events: IntegrationEvent[] = [];
 
     for (let tenant = 0; tenant < numOfTenants; tenant++) {
@@ -14,7 +15,7 @@ export function generateEvents(numOfTenants: number, eventsPerTenant: number, to
                 .add(event * 100, "ms")
                 .toDate();
 
-            events.push(new TestEvent(topic, tenantId, createdAt));
+            events.push(new TestEvent(topic, subject, tenantId, createdAt));
         }
     }
 

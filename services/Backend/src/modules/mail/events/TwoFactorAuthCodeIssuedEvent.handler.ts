@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { EmailIntegrationTOTPIssuedEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import { EmailIntegrationTOTPIssuedEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEvents } from "@/common/events";
 import { type IEmailLookup, EmailLookupToken } from "@/modules/mail/services/interfaces/IEmailLookup.service";
 import { type IMailSender, MailSenderToken } from "@/modules/mail/services/interfaces/IMailSender.service";
 import { type IEmailTemplateFactory, EmailTemplateFactoryToken } from "@/modules/mail/templates/IEmailTemplate.factory";
@@ -15,8 +15,8 @@ export class TwoFactorAuthCodeIssuedEventHandler implements IInboxEventHandler {
         private emailFactory: IEmailTemplateFactory
     ) {}
 
-    public canHandle(topic: string): boolean {
-        return topic === IntegrationEventTopics.twoFactorAuth.email.issued;
+    public canHandle(subject: string): boolean {
+        return subject === IntegrationEvents.twoFactorAuth.email.issued.subject;
     }
 
     public async handle(event: IntegrationEvent): Promise<void> {

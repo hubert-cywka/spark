@@ -1,5 +1,7 @@
 import { Column, PrimaryGeneratedColumn } from "typeorm";
 
+import { type IntegrationEventTopic } from "@/common/events/types";
+
 export class IntegrationEventEntity<T = string | object> {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
@@ -14,7 +16,10 @@ export class IntegrationEventEntity<T = string | object> {
     partition!: number;
 
     @Column({ type: "varchar" })
-    topic!: string;
+    topic!: IntegrationEventTopic;
+
+    @Column({ type: "varchar" })
+    subject!: string;
 
     @Column({ type: "boolean", default: false })
     isEncrypted!: boolean;

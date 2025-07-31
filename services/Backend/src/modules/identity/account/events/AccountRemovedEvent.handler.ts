@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { Transactional } from "typeorm-transactional";
 
-import { type IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import { type IInboxEventHandler, IntegrationEvent, IntegrationEvents } from "@/common/events";
 import {
     type IEventsRemovalService,
     InboxEventsRemovalServiceToken,
@@ -25,8 +25,8 @@ export class AccountRemovedEventHandler implements IInboxEventHandler {
         private readonly outboxRemovalService: IEventsRemovalService
     ) {}
 
-    public canHandle(topic: string): boolean {
-        return topic === IntegrationEventTopics.account.removal.completed;
+    public canHandle(subject: string): boolean {
+        return subject === IntegrationEvents.account.removal.completed.subject;
     }
 
     @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })

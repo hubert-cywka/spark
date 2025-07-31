@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import { IInboxEventHandler, IntegrationEvent, IntegrationEvents } from "@/common/events";
 import { type DailyReminderTriggeredEventPayload } from "@/common/events/types/alert/DailyReminderTriggeredEvent";
 import { type IEmailLookup, EmailLookupToken } from "@/modules/mail/services/interfaces/IEmailLookup.service";
 import { type IMailSender, MailSenderToken } from "@/modules/mail/services/interfaces/IMailSender.service";
@@ -16,8 +16,8 @@ export class DailyReminderTriggeredEventHandler implements IInboxEventHandler {
         private emailFactory: IEmailTemplateFactory
     ) {}
 
-    public canHandle(topic: string): boolean {
-        return topic === IntegrationEventTopics.alert.daily.reminder.triggered;
+    public canHandle(subject: string): boolean {
+        return subject === IntegrationEvents.alert.daily.reminder.triggered.subject;
     }
 
     public async handle(event: IntegrationEvent): Promise<void> {

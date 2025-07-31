@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { AccountRequestedPasswordResetEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import { AccountRequestedPasswordResetEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEvents } from "@/common/events";
 import { type IEmailLookup, EmailLookupToken } from "@/modules/mail/services/interfaces/IEmailLookup.service";
 import { type IMailSender, MailSenderToken } from "@/modules/mail/services/interfaces/IMailSender.service";
 import { type IEmailTemplateFactory, EmailTemplateFactoryToken } from "@/modules/mail/templates/IEmailTemplate.factory";
@@ -15,8 +15,8 @@ export class AccountRequestedPasswordResetEventHandler implements IInboxEventHan
         private emailFactory: IEmailTemplateFactory
     ) {}
 
-    public canHandle(topic: string): boolean {
-        return topic === IntegrationEventTopics.account.password.resetRequested;
+    public canHandle(subject: string): boolean {
+        return subject === IntegrationEvents.account.password.resetRequested.subject;
     }
 
     public async handle(event: IntegrationEvent): Promise<void> {

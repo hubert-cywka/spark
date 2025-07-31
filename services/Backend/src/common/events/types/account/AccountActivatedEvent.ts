@@ -1,4 +1,4 @@
-import { IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import { IntegrationEvent, IntegrationEvents } from "@/common/events";
 
 export type AccountActivatedEventPayload = {
     account: {
@@ -9,10 +9,14 @@ export type AccountActivatedEventPayload = {
 
 export class AccountActivatedEvent extends IntegrationEvent<AccountActivatedEventPayload> {
     public constructor(tenantId: string, payload: AccountActivatedEventPayload) {
+        const topic = IntegrationEvents.account.activation.completed.topic;
+        const subject = IntegrationEvents.account.activation.completed.subject;
+
         super({
-            topic: IntegrationEventTopics.account.activation.completed,
+            topic,
+            subject,
+            partitionKey: `${topic}_${tenantId}`,
             payload,
-            partitionKey: tenantId,
             tenantId,
         });
     }

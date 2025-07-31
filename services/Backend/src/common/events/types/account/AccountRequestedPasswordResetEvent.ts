@@ -1,4 +1,4 @@
-import { IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import { IntegrationEvent, IntegrationEvents } from "@/common/events";
 
 export type AccountRequestedPasswordResetEventPayload = {
     account: { id: string };
@@ -7,10 +7,14 @@ export type AccountRequestedPasswordResetEventPayload = {
 
 export class AccountRequestedPasswordResetEvent extends IntegrationEvent<AccountRequestedPasswordResetEventPayload> {
     public constructor(tenantId: string, payload: AccountRequestedPasswordResetEventPayload) {
+        const topic = IntegrationEvents.account.password.resetRequested.topic;
+        const subject = IntegrationEvents.account.password.resetRequested.subject;
+
         super({
-            topic: IntegrationEventTopics.account.password.resetRequested,
+            topic,
+            subject,
+            partitionKey: `${topic}_${tenantId}`,
             payload,
-            partitionKey: tenantId,
             tenantId,
         });
     }

@@ -3,12 +3,12 @@ import { wait } from "@/common/utils/timeUtils";
 
 export class TestEventHandler implements IInboxEventHandler {
     public constructor(
-        private readonly topic: string,
+        private readonly subject: string,
         private readonly waitTime: number = 0
     ) {}
 
-    public canHandle(topic: string): boolean {
-        return topic === this.topic;
+    public canHandle(subject: string): boolean {
+        return subject === this.subject;
     }
 
     async handle(event: IntegrationEvent): Promise<void> {

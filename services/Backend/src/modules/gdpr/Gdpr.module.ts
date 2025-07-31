@@ -2,9 +2,10 @@ import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule, IntegrationEventTopics } from "@/common/events";
+import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEvents, IntegrationEventsModule } from "@/common/events";
 import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
 import { InboxAndOutboxSequenceNumber1753291628862 } from "@/common/events/migrations/1753291628862-inbox-and-outbox-sequence-number";
+import { InboxAndOutboxSplitTopicAndSubject1753291628863 } from "@/common/events/migrations/1753291628863-inbox-and-outbox-split-topic-and-subject";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -74,6 +75,7 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
                     InboxAndOutbox1749299050551,
                     AddTimestamps1752925879790,
                     InboxAndOutboxSequenceNumber1753291628862,
+                    InboxAndOutboxSplitTopicAndSubject1753291628863,
                 ],
             }),
             inject: [ConfigService],
@@ -115,9 +117,9 @@ export class GdprModule implements OnModuleInit {
         this.orchestrator.startClearingOutbox();
 
         void this.subscriber.listen([
-            IntegrationEventTopics.account.created,
-            IntegrationEventTopics.account.removal.completed,
-            IntegrationEventTopics.account.removal.requested,
+            IntegrationEvents.account.created,
+            IntegrationEvents.account.removal.completed,
+            IntegrationEvents.account.removal.requested,
         ]);
     }
 }

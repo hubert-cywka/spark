@@ -1,4 +1,4 @@
-import { IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import { IntegrationEvent, IntegrationEvents } from "@/common/events";
 
 export type EmailIntegrationTOTPIssuedEventPayload = {
     account: {
@@ -9,10 +9,14 @@ export type EmailIntegrationTOTPIssuedEventPayload = {
 
 export class EmailIntegrationTOTPIssuedEvent extends IntegrationEvent<EmailIntegrationTOTPIssuedEventPayload> {
     public constructor(tenantId: string, payload: EmailIntegrationTOTPIssuedEventPayload) {
+        const topic = IntegrationEvents.twoFactorAuth.email.issued.topic;
+        const subject = IntegrationEvents.twoFactorAuth.email.issued.subject;
+
         super({
-            topic: IntegrationEventTopics.twoFactorAuth.email.issued,
+            topic,
+            subject,
+            partitionKey: `${topic}_${tenantId}`,
             payload,
-            partitionKey: tenantId,
             tenantId,
         });
     }

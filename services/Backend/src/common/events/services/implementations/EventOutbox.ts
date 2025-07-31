@@ -96,6 +96,7 @@ export class EventOutbox implements IEventOutbox {
             partitionKey: event.getPartitionKey(),
             partition: this.partitionAssigner.assign(event.getPartitionKey()),
             topic: event.getTopic(),
+            subject: event.getSubject(),
             payload: event.getRawPayload(),
             isEncrypted: event.isEncrypted(),
             createdAt: event.getCreatedAt(),

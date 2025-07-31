@@ -1,4 +1,4 @@
-import { IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import { IntegrationEvent, IntegrationEvents } from "@/common/events";
 
 export type AccountRemovalScheduledEventPayload = {
     toBeRemovedAt: string;
@@ -9,10 +9,14 @@ export type AccountRemovalScheduledEventPayload = {
 
 export class AccountRemovalScheduledEvent extends IntegrationEvent<AccountRemovalScheduledEventPayload> {
     public constructor(tenantId: string, payload: AccountRemovalScheduledEventPayload) {
+        const topic = IntegrationEvents.account.removal.scheduled.topic;
+        const subject = IntegrationEvents.account.removal.scheduled.subject;
+
         super({
-            topic: IntegrationEventTopics.account.removal.scheduled,
+            topic,
+            subject,
+            partitionKey: `${topic}_${tenantId}`,
             payload,
-            partitionKey: tenantId,
             tenantId,
         });
     }

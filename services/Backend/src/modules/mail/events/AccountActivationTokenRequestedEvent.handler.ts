@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { AccountActivationTokenRequestedEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import { AccountActivationTokenRequestedEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEvents } from "@/common/events";
 import { type IMailSender, MailSenderToken } from "@/modules/mail/services/interfaces/IMailSender.service";
 import { type IEmailTemplateFactory, EmailTemplateFactoryToken } from "@/modules/mail/templates/IEmailTemplate.factory";
 
@@ -12,8 +12,8 @@ export class AccountActivationTokenRequestedEventHandler implements IInboxEventH
         private emailFactory: IEmailTemplateFactory
     ) {}
 
-    public canHandle(topic: string): boolean {
-        return topic === IntegrationEventTopics.account.activation.requested;
+    public canHandle(subject: string): boolean {
+        return subject === IntegrationEvents.account.activation.requested.subject;
     }
 
     public async handle(event: IntegrationEvent): Promise<void> {
