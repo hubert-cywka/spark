@@ -4,8 +4,8 @@ import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 type DailyEntryPlaceholderProps = {
     id: string;
-    onNavigateUp: () => void;
-    onNavigateDown: () => void;
+    onNavigateUp?: () => void;
+    onNavigateDown?: () => void;
     onSaveContent: (content: string) => void;
     onDelete: () => void;
 };

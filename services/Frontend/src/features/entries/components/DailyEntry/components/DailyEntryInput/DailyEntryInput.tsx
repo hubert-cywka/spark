@@ -11,8 +11,8 @@ const CONTENT_UPDATE_DEBOUNCE = 2000;
 
 type DailyEntryInputProps = {
     initialContent: string;
-    onNavigateUp: () => void;
-    onNavigateDown: () => void;
+    onNavigateUp?: () => void;
+    onNavigateDown?: () => void;
     onNavigateLeft?: () => void;
     onSaveContent: (content: string) => void;
     onDelete: () => void;
@@ -65,20 +65,20 @@ export const DailyEntryInput = ({
             e.preventDefault();
             handleSaveContent(content);
             closeEditMode();
-            onNavigateDown();
+            onNavigateDown?.();
             return;
         }
 
         if (isEditing && e.key === "Backspace" && content === "") {
             e.preventDefault();
             onDelete();
-            onNavigateUp();
+            onNavigateUp?.();
             return;
         }
 
         if (e.key === "ArrowUp") {
             e.preventDefault();
-            onNavigateUp();
+            onNavigateUp?.();
             return;
         }
 
@@ -90,7 +90,7 @@ export const DailyEntryInput = ({
 
         if (e.key === "ArrowDown") {
             e.preventDefault();
-            onNavigateDown();
+            onNavigateDown?.();
         }
     };
 
