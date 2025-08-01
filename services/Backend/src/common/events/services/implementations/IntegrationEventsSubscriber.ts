@@ -13,8 +13,8 @@ export class IntegrationEventsSubscriber implements IIntegrationEventsSubscriber
         @Inject(EventInboxToken) private readonly inbox: IEventInbox
     ) {}
 
-    public async listen(events: IntegrationEventLabel[]): Promise<void> {
-        await this.consumer.listen(events, async (events) => {
+    public async listen(labels: IntegrationEventLabel[]): Promise<void> {
+        await this.consumer.listen(labels, async (events) => {
             await this.inbox.enqueueMany(events);
         });
     }

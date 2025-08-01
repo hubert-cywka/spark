@@ -92,7 +92,7 @@ export class ManagedAccountService implements IManagedAccountService {
 
         if (existingAccount) {
             this.logger.warn({ email }, "Account already exists.");
-            // TODO: Inform user about this
+            // TODO: Inform user about this - send an email, so they can log in or take other action.
             throw new AccountAlreadyExistsError();
         }
 
