@@ -23,7 +23,7 @@ export const GoalPageDashboard = ({ goalId }: EntriesProps) => {
         featured?: boolean;
     }>({});
 
-    const { data } = useEntries({
+    const { data, isLoading: areEntriesLoading } = useEntries({
         autoFetch: true,
         filters: {
             goals: [goalId],
@@ -46,9 +46,12 @@ export const GoalPageDashboard = ({ goalId }: EntriesProps) => {
             <div className={styles.wrapper}>
                 <GoalCard goal={goal} />
 
-                <GoalEntriesList entries={entries} goalId={goalId}>
-                    <EntryFiltersGroup size="1" onFiltersChange={setFilters} />
-                </GoalEntriesList>
+                <GoalEntriesList
+                    entries={entries}
+                    goalId={goalId}
+                    isLoading={areEntriesLoading}
+                    headerActions={<EntryFiltersGroup size="1" onFiltersChange={setFilters} />}
+                />
             </div>
         </main>
     );
