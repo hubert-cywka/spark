@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { type IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import { type IInboxEventHandler, IntegrationEvent, IntegrationEvents } from "@/common/events";
+import { IntegrationEventSubject } from "@/common/events/types";
 import { AccountSuspendedEventPayload } from "@/common/events/types/account/AccountSuspendedEvent";
 import {
     type IRefreshTokenService,
@@ -14,8 +15,8 @@ export class AccountSuspendedEventHandler implements IInboxEventHandler {
         private refreshTokenService: IRefreshTokenService
     ) {}
 
-    public canHandle(topic: string): boolean {
-        return topic === IntegrationEventTopics.account.suspended;
+    public canHandle(subject: IntegrationEventSubject): boolean {
+        return subject === IntegrationEvents.account.suspended.subject;
     }
 
     public async handle(event: IntegrationEvent): Promise<void> {

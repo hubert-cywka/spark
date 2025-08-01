@@ -1,4 +1,4 @@
-import { IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import { IntegrationEvent, IntegrationEvents } from "@/common/events";
 
 export type AccountActivationTokenRequestedEventPayload = {
     account: { id: string; email: string };
@@ -7,10 +7,14 @@ export type AccountActivationTokenRequestedEventPayload = {
 
 export class AccountActivationTokenRequestedEvent extends IntegrationEvent<AccountActivationTokenRequestedEventPayload> {
     public constructor(tenantId: string, payload: AccountActivationTokenRequestedEventPayload) {
+        const topic = IntegrationEvents.account.activation.requested.topic;
+        const subject = IntegrationEvents.account.activation.requested.subject;
+
         super({
-            topic: IntegrationEventTopics.account.activation.requested,
+            topic,
+            subject,
+            partitionKey: `${topic}_${tenantId}`,
             payload,
-            partitionKey: tenantId,
             tenantId,
         });
     }

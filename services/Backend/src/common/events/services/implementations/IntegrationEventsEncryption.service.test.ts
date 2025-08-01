@@ -15,7 +15,8 @@ describe("IntegrationEventsEncryptionService", () => {
         partitionKey: "abc",
         payload: { property: "value" },
         tenantId: "tenant-123",
-        topic: "topic",
+        topic: "account",
+        subject: "account.subject",
         id: "123",
     });
 

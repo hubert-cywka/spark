@@ -3,6 +3,7 @@ import { type Consumer, Batch } from "kafkajs";
 
 import { IntegrationEvent } from "@/common/events";
 import { type IEventConsumer, OnEventsReceivedHandler } from "@/common/events/drivers/interfaces/IEventConsumer";
+import { IntegrationEventLabel } from "@/common/events/types";
 
 @Injectable()
 export class KafkaConsumer implements IEventConsumer {
@@ -13,7 +14,10 @@ export class KafkaConsumer implements IEventConsumer {
         private readonly partitionsConsumedConcurrently: number
     ) {}
 
-    public async listen(topics: string[], onEventsReceived: OnEventsReceivedHandler): Promise<void> {
+    public async listen(events: IntegrationEventLabel[], onEventsReceived: OnEventsReceivedHandler): Promise<void> {
+        const topics = [...new Set(events.map((event) => event.topic))];
+        const subjects = [...new Set(events.map((event) => event.subject))];
+
         await this.consumer.subscribe({ topics, fromBeginning: true });
         this.logger.log({ topics }, "Subscribed to topics.");
 
@@ -28,7 +32,8 @@ export class KafkaConsumer implements IEventConsumer {
                 }
 
                 await heartbeat();
-                await onEventsReceived(events);
+                const eventsTheConsumerIsInterestedIn = events.filter((event) => subjects.includes(event.getSubject()));
+                await onEventsReceived(eventsTheConsumerIsInterestedIn);
 
                 for (const message of batch.messages) {
                     resolveOffset(message.offset);

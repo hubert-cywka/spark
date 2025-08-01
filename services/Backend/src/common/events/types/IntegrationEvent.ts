@@ -4,6 +4,7 @@ import { deserialize, serialize } from "v8";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { PayloadEncryptedError } from "@/common/events/errors/PayloadEncrypted.error";
+import { IntegrationEventSubject, IntegrationEventTopic } from "@/common/events/types";
 
 export type DefaultEventPayload = object | string;
 
@@ -13,7 +14,8 @@ type IntegrationEventMetadata = {
 };
 
 type RequiredIntegrationEventFields<T = DefaultEventPayload> = {
-    topic: string;
+    topic: IntegrationEventTopic;
+    subject: IntegrationEventSubject;
     tenantId: string;
     partitionKey: string;
     payload: T;
@@ -25,7 +27,8 @@ export class IntegrationEvent<T = DefaultEventPayload> {
     private readonly id: string;
     private readonly partitionKey: string;
     private readonly tenantId: string;
-    private readonly topic: string;
+    private readonly topic: IntegrationEventTopic;
+    private readonly subject: IntegrationEventSubject;
     private readonly payload: T;
     private readonly createdAt: Date;
 
@@ -33,12 +36,14 @@ export class IntegrationEvent<T = DefaultEventPayload> {
         tenantId,
         partitionKey,
         topic,
+        subject,
         payload,
         id = crypto.randomUUID(),
         createdAt = new Date(),
     }: IntegrationEventFields<T>) {
         this.id = id;
         this.topic = topic;
+        this.subject = subject;
         this.payload = payload;
         this.createdAt = createdAt;
         this.tenantId = tenantId;
@@ -52,6 +57,7 @@ export class IntegrationEvent<T = DefaultEventPayload> {
             tenantId: entity.tenantId,
             partitionKey: entity.partitionKey,
             topic: entity.topic,
+            subject: entity.subject,
             id: entity.id,
         });
     }
@@ -63,6 +69,7 @@ export class IntegrationEvent<T = DefaultEventPayload> {
             tenantId: plain.tenantId,
             partitionKey: plain.partitionKey,
             topic: plain.topic,
+            subject: plain.subject,
             id: plain.id,
         });
     }
@@ -77,6 +84,7 @@ export class IntegrationEvent<T = DefaultEventPayload> {
             createdAt: this.createdAt,
             payload: this.payload,
             topic: this.topic,
+            subject: this.subject,
             tenantId: this.tenantId,
             partitionKey: this.partitionKey,
             ...overrides,
@@ -91,8 +99,12 @@ export class IntegrationEvent<T = DefaultEventPayload> {
         return serialize(this);
     }
 
-    public getTopic(): string {
+    public getTopic(): IntegrationEventTopic {
         return this.topic;
+    }
+
+    public getSubject(): IntegrationEventSubject {
+        return this.subject;
     }
 
     public getPayload(): T {

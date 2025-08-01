@@ -1,4 +1,4 @@
-import { IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import { IntegrationEvent, IntegrationEvents } from "@/common/events";
 
 export type DailyReminderTriggeredEventPayload = {
     account: {
@@ -8,10 +8,14 @@ export type DailyReminderTriggeredEventPayload = {
 
 export class DailyReminderTriggeredEvent extends IntegrationEvent<DailyReminderTriggeredEventPayload> {
     public constructor(tenantId: string, payload: DailyReminderTriggeredEventPayload) {
+        const topic = IntegrationEvents.alert.daily.reminder.triggered.topic;
+        const subject = IntegrationEvents.alert.daily.reminder.triggered.subject;
+
         super({
-            topic: IntegrationEventTopics.alert.daily.reminder.triggered,
+            topic,
+            subject,
+            partitionKey: `${topic}_${tenantId}`,
             payload,
-            partitionKey: tenantId,
             tenantId,
         });
     }

@@ -1,12 +1,13 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { Transactional } from "typeorm-transactional";
 
-import { type IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import { type IInboxEventHandler, IntegrationEvent, IntegrationEvents } from "@/common/events";
 import {
     type IEventsRemovalService,
     InboxEventsRemovalServiceToken,
     OutboxEventsRemovalServiceToken,
 } from "@/common/events/services/interfaces/IEventsRemoval.service";
+import { IntegrationEventSubject } from "@/common/events/types";
 import { type AccountRemovalCompletedEventPayload } from "@/common/events/types/account/AccountRemovalCompletedEvent";
 import { type IAuthorService, AuthorServiceToken } from "@/modules/journal/authors/services/interfaces/IAuthor.service";
 import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
@@ -22,8 +23,8 @@ export class AuthorRemovedEventHandler implements IInboxEventHandler {
         private readonly outboxRemovalService: IEventsRemovalService
     ) {}
 
-    public canHandle(topic: string): boolean {
-        return topic === IntegrationEventTopics.account.removal.completed;
+    public canHandle(subject: IntegrationEventSubject): boolean {
+        return subject === IntegrationEvents.account.removal.completed.subject;
     }
 
     @Transactional({ connectionName: JOURNAL_MODULE_DATA_SOURCE })

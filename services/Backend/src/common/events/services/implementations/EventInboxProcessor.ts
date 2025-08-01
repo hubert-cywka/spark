@@ -209,7 +209,7 @@ export class EventInboxProcessor implements IEventInboxProcessor {
 
     private mapEventToHandler(entity: InboxEventEntity) {
         const event = IntegrationEvent.fromEntity(entity);
-        const handler = this.handlers.find((h) => h.canHandle(event.getTopic()));
+        const handler = this.handlers.find((h) => h.canHandle(event.getSubject()));
 
         if (!handler) {
             this.logger.error(event, "Event cannot be processed - no handler found.");

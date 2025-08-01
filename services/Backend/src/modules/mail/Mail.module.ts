@@ -2,9 +2,10 @@ import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule, IntegrationEventTopics } from "@/common/events";
+import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEvents, IntegrationEventsModule } from "@/common/events";
 import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
 import { InboxAndOutboxSequenceNumber1753291628862 } from "@/common/events/migrations/1753291628862-inbox-and-outbox-sequence-number";
+import { InboxAndOutboxSplitTopicAndSubject1753291628863 } from "@/common/events/migrations/1753291628863-inbox-and-outbox-split-topic-and-subject";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -119,6 +120,7 @@ import { EmailTemplateFactoryToken } from "@/modules/mail/templates/IEmailTempla
                     InboxAndOutbox1749299050551,
                     AddTimestamps1752925904452,
                     InboxAndOutboxSequenceNumber1753291628862,
+                    InboxAndOutboxSplitTopicAndSubject1753291628863,
                 ],
             }),
             inject: [ConfigService],
@@ -160,14 +162,14 @@ export class MailModule implements OnModuleInit {
         this.orchestrator.startClearingOutbox();
 
         void this.subscriber.listen([
-            IntegrationEventTopics.account.activation.requested,
-            IntegrationEventTopics.account.password.resetRequested,
-            IntegrationEventTopics.account.password.updated,
-            IntegrationEventTopics.account.activation.completed,
-            IntegrationEventTopics.account.removal.completed,
-            IntegrationEventTopics.account.removal.scheduled,
-            IntegrationEventTopics.alert.daily.reminder.triggered,
-            IntegrationEventTopics.twoFactorAuth.email.issued,
+            IntegrationEvents.account.activation.requested,
+            IntegrationEvents.account.password.resetRequested,
+            IntegrationEvents.account.password.updated,
+            IntegrationEvents.account.activation.completed,
+            IntegrationEvents.account.removal.completed,
+            IntegrationEvents.account.removal.scheduled,
+            IntegrationEvents.alert.daily.reminder.triggered,
+            IntegrationEvents.twoFactorAuth.email.issued,
         ]);
     }
 }

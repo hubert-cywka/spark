@@ -1,6 +1,6 @@
 import { Inject, Module, OnModuleInit } from "@nestjs/common";
 
-import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventTopics } from "@/common/events";
+import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEvents } from "@/common/events";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -45,6 +45,6 @@ export class JournalModule implements OnModuleInit {
         this.orchestrator.startClearingInbox();
         this.orchestrator.startClearingOutbox();
 
-        void this.subscriber.listen([IntegrationEventTopics.account.created, IntegrationEventTopics.account.removal.completed]);
+        void this.subscriber.listen([IntegrationEvents.account.created, IntegrationEvents.account.removal.completed]);
     }
 }

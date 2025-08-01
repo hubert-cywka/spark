@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { type IInboxEventHandler, AccountPasswordUpdatedEventPayload, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import { type IInboxEventHandler, AccountPasswordUpdatedEventPayload, IntegrationEvent, IntegrationEvents } from "@/common/events";
+import { IntegrationEventSubject } from "@/common/events/types";
 import {
     type IRefreshTokenService,
     RefreshTokenServiceToken,
@@ -13,8 +14,8 @@ export class AccountPasswordUpdatedEventHandler implements IInboxEventHandler {
         private refreshTokenService: IRefreshTokenService
     ) {}
 
-    public canHandle(topic: string): boolean {
-        return topic === IntegrationEventTopics.account.password.updated;
+    public canHandle(subject: IntegrationEventSubject): boolean {
+        return subject === IntegrationEvents.account.password.updated.subject;
     }
 
     public async handle(event: IntegrationEvent): Promise<void> {

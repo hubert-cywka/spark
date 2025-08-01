@@ -2,9 +2,10 @@ import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEventsModule, IntegrationEventTopics } from "@/common/events";
+import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEvents, IntegrationEventsModule } from "@/common/events";
 import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
 import { InboxAndOutboxSequenceNumber1753291628862 } from "@/common/events/migrations/1753291628862-inbox-and-outbox-sequence-number";
+import { InboxAndOutboxSplitTopicAndSubject1753291628863 } from "@/common/events/migrations/1753291628863-inbox-and-outbox-split-topic-and-subject";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -56,7 +57,12 @@ import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.se
                 password: configService.getOrThrow<string>("modules.users.database.password"),
                 host: configService.getOrThrow<string>("modules.users.database.host"),
                 database: configService.getOrThrow<string>("modules.users.database.name"),
-                migrations: [RegenerateMigrations1749289881465, InboxAndOutbox1749299050551, InboxAndOutboxSequenceNumber1753291628862],
+                migrations: [
+                    RegenerateMigrations1749289881465,
+                    InboxAndOutbox1749299050551,
+                    InboxAndOutboxSequenceNumber1753291628862,
+                    InboxAndOutboxSplitTopicAndSubject1753291628863,
+                ],
             }),
             inject: [ConfigService],
         }),
@@ -97,9 +103,9 @@ export class UsersModule implements OnModuleInit {
         this.orchestrator.startClearingOutbox();
 
         void this.subscriber.listen([
-            IntegrationEventTopics.account.created,
-            IntegrationEventTopics.account.activation.completed,
-            IntegrationEventTopics.account.removal.completed,
+            IntegrationEvents.account.created,
+            IntegrationEvents.account.activation.completed,
+            IntegrationEvents.account.removal.completed,
         ]);
     }
 }

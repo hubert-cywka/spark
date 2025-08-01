@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 
-import { type IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import { type IInboxEventHandler, IntegrationEvent, IntegrationEvents } from "@/common/events";
+import { IntegrationEventSubject } from "@/common/events/types";
 import { AccountRemovalRequestedEventPayload } from "@/common/events/types/account/AccountRemovalRequestedEvent";
 import {
     type IAccountRemovalService,
@@ -16,8 +17,8 @@ export class AccountRemovalRequestedEventHandler implements IInboxEventHandler {
         private readonly removalService: IAccountRemovalService
     ) {}
 
-    public canHandle(topic: string): boolean {
-        return topic === IntegrationEventTopics.account.removal.requested;
+    public canHandle(subject: IntegrationEventSubject): boolean {
+        return subject === IntegrationEvents.account.removal.requested.subject;
     }
 
     async handle(event: IntegrationEvent): Promise<void> {

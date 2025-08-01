@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { type IInboxEventHandler, AccountCreatedEventPayload, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import { type IInboxEventHandler, AccountCreatedEventPayload, IntegrationEvent, IntegrationEvents } from "@/common/events";
+import { IntegrationEventSubject } from "@/common/events/types";
 import { type ITenantService, TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.service";
 
 @Injectable()
@@ -10,8 +11,8 @@ export class TenantCreatedEventHandler implements IInboxEventHandler {
         private readonly tenantService: ITenantService
     ) {}
 
-    public canHandle(topic: string): boolean {
-        return topic === IntegrationEventTopics.account.created;
+    public canHandle(subject: IntegrationEventSubject): boolean {
+        return subject === IntegrationEvents.account.created.subject;
     }
 
     async handle(event: IntegrationEvent): Promise<void> {

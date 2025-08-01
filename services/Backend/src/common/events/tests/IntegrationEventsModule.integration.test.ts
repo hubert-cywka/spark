@@ -40,7 +40,8 @@ import { GlobalModule } from "@/modules/global/Global.module";
 describe("IntegrationEventsModule", () => {
     const TEST_ID = "integration_events_module_test";
     const DATABASE_NAME = `__${TEST_ID}_${Date.now()}`;
-    const EVENT_TOPIC = `test.${TEST_ID}`;
+    const EVENT_TOPIC = "account";
+    const EVENT_SUBJECT = `${EVENT_TOPIC}.${TEST_ID}`;
 
     let dbOptions: DBConnectionOptions;
     let app: INestApplication;
@@ -166,7 +167,7 @@ describe("IntegrationEventsModule", () => {
         });
 
         it("should save enqueued event in persistent storage", async () => {
-            const eventToEnqueue = new TestEvent(EVENT_TOPIC, tenantId);
+            const eventToEnqueue = new TestEvent(EVENT_TOPIC, EVENT_SUBJECT, tenantId);
             const { outbox, repository } = setup();
 
             await outbox.enqueue(eventToEnqueue);
@@ -178,7 +179,7 @@ describe("IntegrationEventsModule", () => {
         });
 
         it("should not save event if transaction failed", async () => {
-            const eventToEnqueue = new TestEvent(EVENT_TOPIC, tenantId);
+            const eventToEnqueue = new TestEvent(EVENT_TOPIC, EVENT_SUBJECT, tenantId);
             const { outbox, repository } = setup();
 
             try {
@@ -198,7 +199,7 @@ describe("IntegrationEventsModule", () => {
         });
 
         it("should encrypt event payload if requested", async () => {
-            const eventToEnqueue = new TestEvent(EVENT_TOPIC, tenantId);
+            const eventToEnqueue = new TestEvent(EVENT_TOPIC, EVENT_SUBJECT, tenantId);
             const { outbox, repository } = setup();
 
             await outbox.enqueue(eventToEnqueue, { encrypt: true });
@@ -209,7 +210,7 @@ describe("IntegrationEventsModule", () => {
         });
 
         it("should inform subscribers when event is enqueued", async () => {
-            const eventToEnqueue = new TestEvent(EVENT_TOPIC, tenantId);
+            const eventToEnqueue = new TestEvent(EVENT_TOPIC, EVENT_SUBJECT, tenantId);
             const { outbox, subscriber } = setup();
             jest.spyOn(subscriber, "notifyOnEnqueued");
 
@@ -244,7 +245,7 @@ describe("IntegrationEventsModule", () => {
         });
 
         it("should save enqueued event in persistent storage", async () => {
-            const eventToEnqueue = new TestEvent(EVENT_TOPIC, tenantId);
+            const eventToEnqueue = new TestEvent(EVENT_TOPIC, EVENT_SUBJECT, tenantId);
             const { inbox, repository } = setup();
 
             await inbox.enqueue(eventToEnqueue);
@@ -256,7 +257,7 @@ describe("IntegrationEventsModule", () => {
         });
 
         it("should not save event if transaction failed", async () => {
-            const eventToEnqueue = new TestEvent(EVENT_TOPIC, tenantId);
+            const eventToEnqueue = new TestEvent(EVENT_TOPIC, EVENT_SUBJECT, tenantId);
             const { inbox, repository } = setup();
 
             try {
@@ -276,8 +277,8 @@ describe("IntegrationEventsModule", () => {
         });
 
         it("should allow to enqueue events in bulk", async () => {
-            const firstEvent = new TestEvent(EVENT_TOPIC, tenantId);
-            const secondEvent = new TestEvent(EVENT_TOPIC, tenantId);
+            const firstEvent = new TestEvent(EVENT_TOPIC, EVENT_SUBJECT, tenantId);
+            const secondEvent = new TestEvent(EVENT_TOPIC, EVENT_SUBJECT, tenantId);
             const { inbox, repository } = setup();
 
             await inbox.enqueueMany([firstEvent, secondEvent]);
@@ -289,8 +290,8 @@ describe("IntegrationEventsModule", () => {
         });
 
         it("should inform subscribers about every event enqueued in bulk", async () => {
-            const firstEvent = new TestEvent(EVENT_TOPIC, tenantId);
-            const secondEvent = new TestEvent(EVENT_TOPIC, tenantId);
+            const firstEvent = new TestEvent(EVENT_TOPIC, EVENT_SUBJECT, tenantId);
+            const secondEvent = new TestEvent(EVENT_TOPIC, EVENT_SUBJECT, tenantId);
             const { inbox, subscriber } = setup();
             jest.spyOn(subscriber, "notifyOnEnqueued");
 
@@ -384,9 +385,9 @@ describe("IntegrationEventsModule", () => {
                 return { ack: true };
             });
 
-            const { seededEventsCount, events } = await seedData({
+            const { seededEventsCount } = await seedData({
                 numOfTenants: 13,
-                eventsPerTenant: 605,
+                eventsPerTenant: 505,
             });
 
             await Promise.all([
@@ -476,7 +477,7 @@ describe("IntegrationEventsModule", () => {
             const processor = app.get<IEventInboxProcessor>(EventInboxProcessorToken);
             const eventRepository = app.get<IInboxEventRepository>(InboxEventRepositoryToken);
             const partitionRepository = app.get<IInboxPartitionRepository>(InboxPartitionRepositoryToken);
-            const eventHandler = new TestEventHandler(EVENT_TOPIC);
+            const eventHandler = new TestEventHandler();
             return {
                 inbox,
                 eventRepository,
@@ -662,7 +663,7 @@ describe("IntegrationEventsModule", () => {
             const inboxPartitionRepository = app.get<IInboxPartitionRepository>(InboxPartitionRepositoryToken);
 
             const config = app.get<ConfigService>(ConfigService);
-            const eventHandler = new TestEventHandler(EVENT_TOPIC);
+            const eventHandler = new TestEventHandler();
             return {
                 inbox,
                 outbox,

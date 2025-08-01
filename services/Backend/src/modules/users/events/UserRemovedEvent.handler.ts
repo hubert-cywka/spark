@@ -1,12 +1,13 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { Transactional } from "typeorm-transactional";
 
-import { type IInboxEventHandler, IntegrationEvent, IntegrationEventTopics } from "@/common/events";
+import { type IInboxEventHandler, IntegrationEvent, IntegrationEvents } from "@/common/events";
 import {
     type IEventsRemovalService,
     InboxEventsRemovalServiceToken,
     OutboxEventsRemovalServiceToken,
 } from "@/common/events/services/interfaces/IEventsRemoval.service";
+import { IntegrationEventSubject } from "@/common/events/types";
 import { type AccountRemovalCompletedEventPayload } from "@/common/events/types/account/AccountRemovalCompletedEvent";
 import { USERS_MODULE_DATA_SOURCE } from "@/modules/users/infrastructure/database/constants";
 import { type IUsersService, UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
@@ -22,8 +23,8 @@ export class UserRemovedEventHandler implements IInboxEventHandler {
         private readonly outboxRemovalService: IEventsRemovalService
     ) {}
 
-    public canHandle(topic: string): boolean {
-        return topic === IntegrationEventTopics.account.removal.completed;
+    public canHandle(subject: IntegrationEventSubject): boolean {
+        return subject === IntegrationEvents.account.removal.completed.subject;
     }
 
     @Transactional({ connectionName: USERS_MODULE_DATA_SOURCE })

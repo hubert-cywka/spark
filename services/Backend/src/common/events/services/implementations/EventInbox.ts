@@ -86,6 +86,7 @@ export class EventInbox implements IEventInbox {
             partition: this.partitionAssigner.assign(event.getPartitionKey()),
             partitionKey: event.getPartitionKey(),
             topic: event.getTopic(),
+            subject: event.getSubject(),
             payload: event.getRawPayload(),
             isEncrypted: event.isEncrypted(),
             createdAt: event.getCreatedAt(),
