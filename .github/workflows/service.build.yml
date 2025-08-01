@@ -66,9 +66,11 @@ jobs:
                     cache: 'npm'
 
             -   name: Install dependencies
+                working-directory: ${{ inputs.service-directory }}
                 run: npm ci
 
             -   name: Run unit tests
+                working-directory: ${{ inputs.service-directory }}
                 run: npm run test:unit
 
     build:
