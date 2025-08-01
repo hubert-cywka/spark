@@ -14,9 +14,9 @@ export class KafkaConsumer implements IEventConsumer {
         private readonly partitionsConsumedConcurrently: number
     ) {}
 
-    public async listen(events: IntegrationEventLabel[], onEventsReceived: OnEventsReceivedHandler): Promise<void> {
-        const topics = [...new Set(events.map((event) => event.topic))];
-        const subjects = [...new Set(events.map((event) => event.subject))];
+    public async listen(labels: IntegrationEventLabel[], onEventsReceived: OnEventsReceivedHandler): Promise<void> {
+        const topics = [...new Set(labels.map((event) => event.topic))];
+        const subjects = [...new Set(labels.map((event) => event.subject))];
 
         await this.consumer.subscribe({ topics, fromBeginning: true });
         this.logger.log({ topics }, "Subscribed to topics.");
@@ -24,15 +24,15 @@ export class KafkaConsumer implements IEventConsumer {
         await this.consumer.run({
             partitionsConsumedConcurrently: this.partitionsConsumedConcurrently,
             eachBatch: async ({ resolveOffset, heartbeat, batch }) => {
-                const events = this.getEventsFromBatch(batch);
-                const emptyEventsCount = events.length - batch.messages.length;
+                const incomingEvents = this.getEventsFromBatch(batch);
+                const emptyEventsCount = incomingEvents.length - batch.messages.length;
 
                 if (emptyEventsCount) {
                     this.logger.warn({ topic: batch.topic, count: emptyEventsCount }, "Received empty messages.");
                 }
 
                 await heartbeat();
-                const eventsTheConsumerIsInterestedIn = events.filter((event) => subjects.includes(event.getSubject()));
+                const eventsTheConsumerIsInterestedIn = incomingEvents.filter((event) => subjects.includes(event.getSubject()));
                 await onEventsReceived(eventsTheConsumerIsInterestedIn);
 
                 for (const message of batch.messages) {

@@ -25,7 +25,7 @@ import { EntryFiltersGroup } from "@/features/entries/components/EntryFiltersGro
 import { useGetDailyEntriesByDateRange } from "@/features/entries/hooks";
 import { onNextTick } from "@/utils/onNextTick.ts";
 
-// TODO: Improve UX of navigation between entries
+// TODO: Improve UX of navigation between dailies
 export const DailyList = () => {
     const containerRef = useRef<HTMLElement | null>(null);
     const targetDailyDateRef = useRef<string | null>(null);
@@ -185,7 +185,6 @@ export const DailyList = () => {
                                 onDelete={() => removePlaceholder(daily.id)}
                                 onSaveContent={(content) => onSavePlaceholder(daily.id, content)}
                                 onNavigateUp={() => navigateByIndex("input", daily.id, entriesGroups[daily.id]?.length - 1)}
-                                onNavigateDown={() => navigateByIndex("input", daily.id, Infinity)}
                             />
                         )}
                     </ul>

@@ -1,5 +1,3 @@
-"use client";
-
 import { ReactElement, useState } from "react";
 import { Column, TreeDataGrid } from "react-data-grid";
 import classNames from "clsx";
@@ -11,7 +9,7 @@ import { useDataGridSort } from "@/components/DataGrid/hooks/useDataGridSort.ts"
 
 const HEADER_ROW_HEIGHT = 40;
 
-type DataGridProps<TData> = {
+type DataGridProps<TData extends object> = {
     data: TData[];
     columns: readonly Column<TData>[];
     groupBy: readonly Column<TData>["key"][];
@@ -20,7 +18,7 @@ type DataGridProps<TData> = {
     className?: string;
 };
 
-export function DataGrid<TData>({ data, columns, rowKeyGetter, noRowsFallback, className, groupBy }: DataGridProps<TData>) {
+export function DataGrid<TData extends object>({ data, columns, rowKeyGetter, noRowsFallback, className, groupBy }: DataGridProps<TData>) {
     const [expandedGroupIds, setExpandedGroupIds] = useState((): ReadonlySet<unknown> => new Set<unknown>([]));
     const { sortedRows, setSortColumns, sortColumns } = useDataGridSort({
         rows: data,
@@ -40,13 +38,17 @@ export function DataGrid<TData>({ data, columns, rowKeyGetter, noRowsFallback, c
             groupBy={groupBy}
             expandedGroupIds={expandedGroupIds}
             onExpandedGroupIdsChange={setExpandedGroupIds}
-            rowGrouper={rowGrouper}
+            rowGrouper={rowGrouper as RowGrouper<TData, string>}
             headerRowHeight={HEADER_ROW_HEIGHT}
         />
     );
 }
 
-function rowGrouper<TData>(rows: readonly TData[], columnKey: string) {
-    // @ts-expect-error TODO: Fix types
-    return Object.groupBy(rows, (r) => r[columnKey]) as Record<string, readonly TData[]>;
+type RowGrouper<TData extends object, TKey extends PropertyKey> = (
+    rows: readonly TData[],
+    columnKey: TKey
+) => Record<string, readonly TData[]>;
+
+function rowGrouper<TData extends object>(rows: readonly TData[], columnKey: keyof TData) {
+    return Object.groupBy(rows, (r) => r[columnKey] as PropertyKey);
 }

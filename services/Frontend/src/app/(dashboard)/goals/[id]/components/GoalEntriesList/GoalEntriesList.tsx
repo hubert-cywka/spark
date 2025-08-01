@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import { ReactNode } from "react";
 
 import styles from "./styles/GoalEntriesList.module.scss";
 
@@ -6,16 +6,18 @@ import { useDailyEntriesEvents } from "@/features/daily/components/DailyList/hoo
 import { useNavigationBetweenEntries } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
 import { getEntryElementId } from "@/features/daily/components/DailyList/utils/dailyEntriesSelectors";
 import { DailyEntry } from "@/features/entries/components/DailyEntry";
+import { EntriesListSkeleton } from "@/features/entries/components/EntriesListSkeleton";
 import { Entry } from "@/features/entries/types/Entry";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
-type GoalEntriesListProps = PropsWithChildren<{
+type GoalEntriesListProps = {
     entries: Entry[];
+    isLoading?: boolean;
     goalId: string;
-}>;
+    headerActions?: ReactNode;
+};
 
-// TODO: Handle loading state
-export const GoalEntriesList = ({ entries, goalId, children }: GoalEntriesListProps) => {
+export const GoalEntriesList = ({ entries, isLoading, goalId, headerActions }: GoalEntriesListProps) => {
     const t = useTranslate();
 
     const { onUpdateEntryContent, onDeleteEntry, onUpdateEntryStatus, onUpdateEntryIsFeatured } = useDailyEntriesEvents();
@@ -27,9 +29,11 @@ export const GoalEntriesList = ({ entries, goalId, children }: GoalEntriesListPr
         <section className={styles.container}>
             <header className={styles.headerWrapper}>
                 <h2 className={styles.header}>{t("goal.entries.header")}</h2>
-                {children}
+                {headerActions}
             </header>
-            {!entries.length && t("goal.entries.noResults")}
+
+            {isLoading && <EntriesListSkeleton />}
+            {!isLoading && !entries.length && t("goal.entries.noResults")}
 
             <ul className={styles.entries}>
                 {entries.map((entry, index) => (
