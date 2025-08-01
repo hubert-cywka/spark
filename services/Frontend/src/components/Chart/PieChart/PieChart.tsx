@@ -66,7 +66,7 @@ export const PieChart = ({
     );
 };
 
-// TODO: Generate color based on chart color
+// TODO: Generate color based on chart color.
 const generateColor = (index: number, total: number) => {
     const hue = (index / total) * DEFAULT_HUE_MULTIPLIER + DEFAULT_HUE_OFFSET;
     return `hsla(${hue}, 30%, 50%)`;
