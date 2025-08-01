@@ -19,7 +19,7 @@ import { type User } from "@/types/User";
 
 const DEFAULT_VERIFICATION_WINDOW = 3;
 
-// TODO: Handle client-side time drift
+// TODO: Handle client-side time drift.
 export abstract class TwoFactorAuthenticationIntegrationService implements ITwoFactorAuthenticationIntegrationService {
     protected readonly logger = new Logger(TwoFactorAuthenticationIntegrationService.name);
     private readonly appName: string;

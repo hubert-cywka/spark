@@ -27,12 +27,19 @@ on:
 jobs:
     preparation:
         runs-on: ubuntu-latest
-
         outputs:
             changes-probe: ${{ steps.filter.outputs.changes-probe }}
-
+            is-node-service: ${{ steps.check-node-service.outputs.is_node_service }}
         steps:
             - uses: actions/checkout@v3
+            -   name: Check for package.json
+                id: check-node-service
+                run: |
+                    if [ -f "${{ inputs.service-directory }}/package.json" ]; then
+                      echo "is_node_service=true" >> $GITHUB_OUTPUT
+                    else
+                      echo "is_node_service=false" >> $GITHUB_OUTPUT
+                    fi
             - name: Filter paths
               uses: dorny/paths-filter@v2
               id: filter
@@ -41,11 +48,35 @@ jobs:
                       changes-probe:
                         - ${{ inputs.service-directory }}/**
 
+    test:
+        runs-on: ubuntu-latest
+        needs: preparation
+        if: ${{ needs.preparation.outputs.changes-probe == 'true' && needs.preparation.outputs.is-node-service == 'true' }}
+        steps:
+            -   uses: actions/checkout@v3
+                with:
+                    ref: ${{ github.ref }}
+                    fetch-depth: 1
+                    clean: true
+                    token: ${{ secrets.GITHUB_TOKEN }}
+
+            -   uses: actions/setup-node@v4
+                with:
+                    node-version: 22
+                    cache: 'npm'
+
+            -   name: Install dependencies
+                working-directory: ${{ inputs.service-directory }}
+                run: npm ci
+
+            -   name: Run unit tests
+                working-directory: ${{ inputs.service-directory }}
+                run: npm run test:unit
+
     build:
         runs-on: ubuntu-latest
         needs: preparation
         if: ${{ needs.preparation.outputs.changes-probe == 'true' }}
-
         steps:
             - uses: actions/checkout@v3
               with:
@@ -53,12 +84,6 @@ jobs:
                   fetch-depth: 1
                   clean: true
                   token: ${{ secrets.GITHUB_TOKEN }}
-
-            - name: Create .npmrc file
-              working-directory: ${{ inputs.service-directory }}
-              run: |
-                  echo "//npm.pkg.github.com/:_authToken=${{ secrets.PACKAGES_REGISTRY_PAT }}" > .npmrc
-                  echo "@hubert-cywka:registry=https://npm.pkg.github.com/" >> .npmrc
 
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v2

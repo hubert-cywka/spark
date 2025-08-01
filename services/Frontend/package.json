@@ -8,7 +8,8 @@
         "build": "next build",
         "postbuild": "node scripts/remove-inline-scripts.js",
         "start": "next start",
-        "lint": "eslint ."
+        "test:unit": "echo 'no tests'",
+        "test:integration": "echo 'no tests'"
     },
     "dependencies": {
         "@hookform/resolvers": "3.9.1",

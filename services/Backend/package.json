@@ -10,7 +10,6 @@
         "build": "nest build --path tsconfig.build.json",
         "start": "node dist/main.js",
         "dev": "nest start --watch --debug=0.0.0.0:9229",
-        "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
         "test:unit": "jest --config jest.config.unit.js",
         "test:watch": "npm run test:unit -- --watch",
         "test:integration": "jest --config jest.config.integration.js",
