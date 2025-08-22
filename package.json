@@ -7,7 +7,9 @@
         "prepare": "husky install",
         "stop": "pwsh ./scripts/services.down.ps1",
         "start": "pwsh ./scripts/services.up.ps1",
-        "start:rebuild": "npm run start -- -Build"
+        "start:rebuild": "npm run start -- -Build",
+        "lint:commited": "npx lint-staged --config lint-staged.fix.cjs --diff origin/main...",
+        "lint:staged": "npx lint-staged --config lint-staged.fix.cjs"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx}": [
