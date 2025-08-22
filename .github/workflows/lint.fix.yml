@@ -41,8 +41,9 @@ jobs:
                   git fetch origin ${{ steps.find-base-branch.outputs.base_branch }}
                   BASE_SHA=$(git rev-parse origin/${{ steps.find-base-branch.outputs.base_branch }})
                   HEAD_SHA=$(git rev-parse HEAD)
+                  
                   echo "Comparing changes between $BASE_SHA and $HEAD_SHA"
-                  npx lint-staged --config lint-staged.fix.cjs --relative --diff $BASHE_SHA $HEAD_SHA
+                  npx lint-staged --config lint-staged.fix.cjs --relative --diff $BASE_SHA $HEAD_SHA
                   
             - name: Apply changes
               run: |
