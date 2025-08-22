@@ -31,7 +31,6 @@ jobs:
                     - { name: 'gateway', directory: 'services/Gateway', image-repository: "hejs22/codename-gateway" }
 
         uses: ./.github/workflows/service.build.yml
-        needs: [lint]
         with:
             service-image-tag: ${{ github.event.number == 0 && 'latest' ||  format('pr-{0}', github.event.pull_request.number)  }}
             service-directory: ${{ matrix.service.directory }}
