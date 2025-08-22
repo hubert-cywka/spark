@@ -1,0 +1,53 @@
+name: Run linter - fix
+
+on:
+    workflow_dispatch:
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            -   uses: actions/setup-node@v4
+                with:
+                    node-version: 22
+                    cache: 'npm'
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Find base branch of PR
+              id: find-base-branch
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  PR_NUMBER=$(gh pr list --head "${GITHUB_REF_NAME}" --json number -q '.[0].number')
+                  if [ -z "$PR_NUMBER" ]; then
+                    echo "No PR found for branch: ${GITHUB_REF_NAME}"
+                    exit 1
+                  fi
+                  
+                  BASE_BRANCH=$(gh pr view "$PR_NUMBER" --json baseRefName -q '.baseRefName')
+                  echo "Base branch is: $BASE_BRANCH"
+                  echo "base_branch=$BASE_BRANCH" >> $GITHUB_OUTPUT
+                  
+            - name: Run lint & format
+              run: |
+                  git fetch origin ${{ steps.find-base-branch.outputs.base_branch }}
+                  BASE_SHA=$(git rev-parse origin/${{ steps.find-base-branch.outputs.base_branch }})
+                  HEAD_SHA=$(git rev-parse HEAD)
+                  echo "Comparing changes between $BASE_SHA and $HEAD_SHA"
+                  npx lint-staged --config lint-staged.fix.cjs --relative --diff $BASHE_SHA $HEAD_SHA
+                  
+            - name: Apply changes
+              run: |
+                  git add .
+                  git config --local user.email "github-actions[bot]@users.noreply.github.com"
+                  git config --local user.name "Automated Linter"
+                  git commit -m "[autofix] Formatting"
+                  git push origin HEAD:${GITHUB_REF_NAME}
