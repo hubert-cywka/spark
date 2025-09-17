@@ -23,7 +23,7 @@ import { EventInboxProcessorToken, IEventInboxProcessor } from "@/common/events/
 import { EventOutboxProcessorToken, IEventOutboxProcessor } from "@/common/events/services/interfaces/IEventOutboxProcessor";
 import { generateEvents } from "@/common/events/tests/utils/generateEvents";
 import { groupEventsByPartitionKey } from "@/common/events/tests/utils/groupEventsByPartitionKey";
-import {     seedPartitions } from "@/common/events/tests/utils/seedPartitions";
+import { seedPartitions } from "@/common/events/tests/utils/seedPartitions";
 import { TestEvent } from "@/common/events/tests/utils/TestEvent";
 import { TestEventHandler } from "@/common/events/tests/utils/TestEventHandler";
 import { TestEventEnqueueSubscriber } from "@/common/events/tests/utils/TestEventSubscriber";
