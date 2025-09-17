@@ -11,22 +11,13 @@
         "lint:commited": "npx lint-staged --config lint-staged.fix.cjs --diff origin/main...",
         "lint:staged": "npx lint-staged --config lint-staged.fix.cjs"
     },
-    "lint-staged": {
-        "*.{js,jsx,ts,tsx}": [
-            "prettier --write --editorconfig",
-            "eslint --fix"
-        ],
-        "*.{tf,tfvars}": [
-            "terraform fmt"
-        ]
-    },
     "author": "",
     "license": "ISC",
     "devDependencies": {
         "@typescript-eslint/eslint-plugin": "^6.18.1",
         "@typescript-eslint/parser": "^6.18.1",
         "eslint": "^8.56.0",
-        "eslint-config-prettier": "^9.1.0",
+        "eslint-config-prettier": "9.1.2",
         "eslint-plugin-import": "2.27.5",
         "eslint-plugin-local-rules": "^3.0.2",
         "eslint-plugin-prettier": "^5.1.3",

@@ -36,21 +36,6 @@ module.exports = {
         "react/react-in-jsx-scope": "off",
         "import/no-named-as-default": "off",
         "sonarjs/no-duplicate-string": "off",
-        "prettier/prettier": [
-            "error",
-            {
-                printWidth: 140,
-                useTabs: false,
-                tabWidth: 4,
-                trailingComma: "es5",
-                singleQuote: false,
-                semi: true,
-                bracketSpacing: true,
-                bracketSameLine: false,
-                arrowParens: "always",
-                endOfLine: "auto",
-            },
-        ],
     },
     settings: {
         react: {
