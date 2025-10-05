@@ -17,60 +17,98 @@ import { logger } from "@/lib/logger";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-process.on("uncaughtException", (error) => {
-    logger.fatal(error, "Uncaught exception.");
-    process.exit(1);
-});
+class Application {
+    private readonly config: ConfigService;
+    private logger: Logger;
+    private app: NestFastifyApplication | null = null;
 
-process.on("unhandledRejection", (error) => {
-    logger.fatal(error, "Unhandled rejection");
-    process.exit(1);
-});
+    public constructor(configurationMap: object) {
+        initializeTransactionalContext();
+        this.config = new ConfigService(configurationMap);
+        this.logger = logger;
+    }
 
-async function bootstrap() {
-    initializeTransactionalContext();
+    public async start() {
+        const app = await NestFactory.create<NestFastifyApplication>(
+            AppModule,
+            new FastifyAdapter({
+                trustProxy: true,
+            }),
+            {
+                logger: this.logger,
+            }
+        );
 
-    const config = new ConfigService(AppConfig());
-    const app = await NestFactory.create<NestFastifyApplication>(
-        AppModule,
-        new FastifyAdapter({
-            trustProxy: true,
-        }),
-        {
-            logger,
+        await app.register(fastifyCookie, {
+            secret: this.config.getOrThrow<string>("cookies.secret"),
+        });
+
+        this.logger = app.get(Logger);
+        app.useLogger(this.logger);
+        app.setGlobalPrefix("api");
+        app.useGlobalPipes(
+            new ValidationPipe({
+                whitelist: true,
+                transform: true,
+            })
+        );
+
+        this.addSwagger();
+        this.enableGracefulShutdown();
+
+        await app.startAllMicroservices();
+        await app.listen(this.config.getOrThrow<number>("port"), "0.0.0.0", (err, address) => {
+            if (err) {
+                this.logger.fatal("Startup failed.");
+            } else {
+                this.logger.log({ address }, "Listening.");
+            }
+        });
+    }
+
+    private getApp() {
+        if (!this.app) {
+            throw new Error("App was not initialized properly.");
         }
-    );
 
-    await app.register(fastifyCookie, {
-        secret: config.getOrThrow<string>("cookies.secret"),
-    });
+        return this.app;
+    }
 
-    const appLogger = app.get(Logger);
-    app.useLogger(appLogger);
-    app.setGlobalPrefix("api");
-    app.useGlobalPipes(
-        new ValidationPipe({
-            whitelist: true,
-            transform: true,
-        })
-    );
+    private addSwagger() {
+        // TODO: Update schemas and responses for each endpoint
+        const swaggerConfig = new DocumentBuilder().setTitle("codename - OpenAPI").setVersion("1.0").addTag("codename").build();
+        const documentFactory = () => SwaggerModule.createDocument(this.getApp(), swaggerConfig);
+        SwaggerModule.setup("documentation", this.getApp(), documentFactory, {
+            useGlobalPrefix: true,
+        });
+    }
 
-    // TODO: Update schemas and responses for each endpoint
-    const swaggerConfig = new DocumentBuilder().setTitle("codename - OpenAPI").setVersion("1.0").addTag("codename").build();
-    const documentFactory = () => SwaggerModule.createDocument(app, swaggerConfig);
-    SwaggerModule.setup("documentation", app, documentFactory, {
-        useGlobalPrefix: true,
-    });
+    private enableGracefulShutdown() {
+        this.getApp().enableShutdownHooks();
 
-    app.enableShutdownHooks();
-    await app.startAllMicroservices();
-    await app.listen(config.getOrThrow<number>("port"), "0.0.0.0", (err, address) => {
-        if (err) {
-            appLogger.fatal("Startup failed.");
-        } else {
-            appLogger.log({ address }, "Listening.");
+        process.on("uncaughtException", async (error) => {
+            await this.terminate("uncaughtException", error);
+        });
+
+        process.on("unhandledRejection", async (reason) => {
+            const error = reason instanceof Error ? reason : new Error(`Unhandled rejection: ${reason}`);
+            await this.terminate("unhandledRejection", error);
+        });
+    }
+
+    private async terminate(signal: string, error?: Error | string) {
+        this.logger.error(error, `Process received ${signal}. Initiating graceful shutdown.`);
+
+        try {
+            await this.getApp().close();
+            this.logger.log("NestJS application closed gracefully.");
+        } catch (cleanupError) {
+            this.logger.error(cleanupError, "Error during NestJS application closure.");
+        } finally {
+            process.exitCode = 1;
         }
-    });
+    }
 }
 
-void bootstrap();
+const application = new Application(AppConfig());
+await application.start();
