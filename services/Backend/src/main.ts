@@ -29,7 +29,7 @@ class Application {
     }
 
     public async start() {
-        const app = await NestFactory.create<NestFastifyApplication>(
+        this.app = await NestFactory.create<NestFastifyApplication>(
             AppModule,
             new FastifyAdapter({
                 trustProxy: true,
@@ -39,14 +39,14 @@ class Application {
             }
         );
 
-        await app.register(fastifyCookie, {
+        await this.app.register(fastifyCookie, {
             secret: this.config.getOrThrow<string>("cookies.secret"),
         });
 
-        this.logger = app.get(Logger);
-        app.useLogger(this.logger);
-        app.setGlobalPrefix("api");
-        app.useGlobalPipes(
+        this.logger = this.app.get(Logger);
+        this.app.useLogger(this.logger);
+        this.app.setGlobalPrefix("api");
+        this.app.useGlobalPipes(
             new ValidationPipe({
                 whitelist: true,
                 transform: true,
@@ -56,8 +56,8 @@ class Application {
         this.addSwagger();
         this.enableGracefulShutdown();
 
-        await app.startAllMicroservices();
-        await app.listen(this.config.getOrThrow<number>("port"), "0.0.0.0", (err, address) => {
+        await this.app.startAllMicroservices();
+        await this.app.listen(this.config.getOrThrow<number>("port"), "0.0.0.0", (err, address) => {
             if (err) {
                 this.logger.fatal("Startup failed.");
             } else {

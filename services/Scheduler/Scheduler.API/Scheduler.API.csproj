@@ -11,4 +11,9 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
+    
+    <ItemGroup>
+        <ProjectReference Include="../Scheduler.Core/Scheduler.Core.csproj" />
+        <ProjectReference Include="../Scheduler.Database/Scheduler.Database.csproj" />
+    </ItemGroup>
 </Project>

@@ -30,3 +30,4 @@ export * from "./types/account/AccountRemovalRequestedEvent";
 export * from "./types/account/AccountRequestedPasswordResetEvent";
 export * from "./types/account/AccountSuspendedEvent";
 export * from "./types/alert/DailyReminderTriggeredEvent";
+export * from "./types/configuration/JobScheduleUpdatedEvent";

@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "Paq971+XVQw=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Hubert\\Desktop\\codename\\services\\Scheduler\\Scheduler.Database\\Scheduler.Database.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Hubert\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\10.0.0\\microsoft.netcore.app.runtime.win-x64.10.0.0.nupkg.sha512",
+    "C:\\Users\\Hubert\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\10.0.0\\microsoft.windowsdesktop.app.runtime.win-x64.10.0.0.nupkg.sha512",
+    "C:\\Users\\Hubert\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\10.0.0\\microsoft.aspnetcore.app.runtime.win-x64.10.0.0.nupkg.sha512",
+    "C:\\Users\\Hubert\\.nuget\\packages\\microsoft.netcore.app.crossgen2.win-x64\\10.0.0\\microsoft.netcore.app.crossgen2.win-x64.10.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -75,6 +75,8 @@ module "gateway" {
   journal_service_name  = module.journal-service.service_name
   users_service_name    = module.users-service.service_name
   alerts_service_name   = module.alerts-service.service_name
+  gdpr_service_name   = module.gdpr-service.service_name
+  mail_service_name   = module.mail-service.service_name
   frontend_service_name = module.frontend.service_name
 }
 
