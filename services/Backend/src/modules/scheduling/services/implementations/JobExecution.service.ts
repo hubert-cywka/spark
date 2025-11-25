@@ -1,12 +1,12 @@
-import {Inject, Injectable, Logger} from "@nestjs/common";
-import {Interval} from "@nestjs/schedule";
+import { Inject, Injectable, Logger } from "@nestjs/common";
+import { Interval } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
-import {Repository} from "typeorm";
-import {Transactional} from "typeorm-transactional";
+import { Repository } from "typeorm";
+import { Transactional } from "typeorm-transactional";
 
-import {type IEventPublisher,EventPublisherToken} from "@/common/events";
-import {JobTriggeredEvent} from "@/common/events/types/scheduling/JobTriggeredEvent";
-import {seconds} from "@/common/utils/timeUtils";
+import { type IEventPublisher, EventPublisherToken } from "@/common/events";
+import { JobTriggeredEvent } from "@/common/events/types/scheduling/JobTriggeredEvent";
+import { seconds } from "@/common/utils/timeUtils";
 import { JobExecutionEntity } from "@/modules/scheduling/entities/JobExecution.entity";
 import { JobScheduleEntity } from "@/modules/scheduling/entities/JobScheduleEntity";
 import { SCHEDULING_MODULE_DATA_SOURCE } from "@/modules/scheduling/infrastructure/database/constants";
@@ -29,25 +29,25 @@ export class JobExecutionService implements IJobExecutionService {
     @Interval(seconds(5))
     public async executePending(): Promise<void> {
         this.logger.log("Checking for pending jobs.");
-       
+
         const jobs = await this.getPendingJobs();
-        
+
         if (jobs.length <= 0) {
             this.logger.log("No jobs to execute.");
         }
-        
+
         const events = jobs.map(this.mapJobToEvent);
 
         await this.publisher.publishMany(events);
-        await this.recordExecutions(jobs.map(job => job.id));
-        
+        await this.recordExecutions(jobs.map((job) => job.id));
+
         this.logger.log({ jobs }, "Jobs executed.");
     }
 
     private async recordExecutions(jobIds: string[]): Promise<void> {
         const repository = this.getExecutionRepository();
         const executedAt = new Date();
-        const executions = jobIds.map(jobId => ({ jobId, executedAt }));
+        const executions = jobIds.map((jobId) => ({ jobId, executedAt }));
         await repository.save(executions);
     }
 
@@ -59,7 +59,8 @@ export class JobExecutionService implements IJobExecutionService {
             .setLock("pessimistic_write")
             .setOnLocked("skip_locked")
             .where((qb) => {
-                const subQuery = qb.subQuery()
+                const subQuery = qb
+                    .subQuery()
                     .select("s.id")
                     .from(JobScheduleEntity, "s")
                     .leftJoin(JobExecutionEntity, "execution", "execution.jobId = s.id")
@@ -80,9 +81,9 @@ export class JobExecutionService implements IJobExecutionService {
                 id: job.id,
                 callback: {
                     subject: job.callbackSubject,
-                    topic: job.callbackTopic
-                }
-            }
+                    topic: job.callbackTopic,
+                },
+            },
         });
     }
 

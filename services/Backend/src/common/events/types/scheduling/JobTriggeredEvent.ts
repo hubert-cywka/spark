@@ -1,5 +1,5 @@
 import { IntegrationEvent } from "@/common/events";
-import {IntegrationEventSubject, IntegrationEventTopic} from "@/common/events/types";
+import { IntegrationEventSubject, IntegrationEventTopic } from "@/common/events/types";
 
 export type JobTriggeredEventPayload = {
     job: {
@@ -7,9 +7,9 @@ export type JobTriggeredEventPayload = {
         callback: {
             topic: string;
             subject: string;
-        }
-    }
-}
+        };
+    };
+};
 
 export class JobTriggeredEvent extends IntegrationEvent<JobTriggeredEventPayload> {
     public constructor(payload: JobTriggeredEventPayload) {

@@ -76,33 +76,33 @@ resource "kubernetes_deployment" "envoy" {
             name  = "USERS_SERVICE_PORT"
             value = var.backend_port
           }
-          
-            env {
-              name  = "GDPR_SERVICE_ADDRESS"
-              value = "${var.gdpr_service_name}.${var.namespace_name}.svc.cluster.local"
-            }
-            env {
-              name  = "GDPR_SERVICE_PORT"
-              value = var.backend_port
-            }
-            
-            env {
-              name  = "SCHEDULING_SERVICE_ADDRESS"
-              value = "${var.scheduling_service_name}.${var.namespace_name}.svc.cluster.local"
-            }
-            env {
-              name  = "SCHEDULING_SERVICE_PORT"
-              value = var.backend_port
-            }
-        
-            env {
-              name  = "MAIL_SERVICE_ADDRESS"
-              value = "${var.mail_service_name}.${var.namespace_name}.svc.cluster.local"
-            }
-            env {
-              name  = "MAIL_SERVICE_PORT"
-              value = var.backend_port
-            }
+
+          env {
+            name  = "GDPR_SERVICE_ADDRESS"
+            value = "${var.gdpr_service_name}.${var.namespace_name}.svc.cluster.local"
+          }
+          env {
+            name  = "GDPR_SERVICE_PORT"
+            value = var.backend_port
+          }
+
+          env {
+            name  = "SCHEDULING_SERVICE_ADDRESS"
+            value = "${var.scheduling_service_name}.${var.namespace_name}.svc.cluster.local"
+          }
+          env {
+            name  = "SCHEDULING_SERVICE_PORT"
+            value = var.backend_port
+          }
+
+          env {
+            name  = "MAIL_SERVICE_ADDRESS"
+            value = "${var.mail_service_name}.${var.namespace_name}.svc.cluster.local"
+          }
+          env {
+            name  = "MAIL_SERVICE_PORT"
+            value = var.backend_port
+          }
 
           env {
             name  = "ALERTS_SERVICE_ADDRESS"

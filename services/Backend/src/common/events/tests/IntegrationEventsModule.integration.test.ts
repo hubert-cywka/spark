@@ -6,7 +6,14 @@ import { LoggerModule } from "nestjs-pino";
 import { initializeTransactionalContext, runInTransaction } from "typeorm-transactional";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { EventInboxToken, EventPublisherToken, IEventInbox, IEventPublisher, IntegrationEvent, IntegrationEventsModule } from "@/common/events";
+import {
+    EventInboxToken,
+    EventPublisherToken,
+    IEventInbox,
+    IEventPublisher,
+    IntegrationEvent,
+    IntegrationEventsModule,
+} from "@/common/events";
 import { EventAdminToken, IEventAdmin } from "@/common/events/drivers/interfaces/IEventAdmin";
 import { EventProducerToken, IEventProducer } from "@/common/events/drivers/interfaces/IEventProducer";
 import { IInboxEventRepository, InboxEventRepositoryToken } from "@/common/events/repositories/interfaces/IInboxEvent.repository";
@@ -20,7 +27,7 @@ import {
     OutboxPartitionRepositoryToken,
 } from "@/common/events/repositories/interfaces/IOutboxPartition.repository";
 import { EventInboxProcessorToken, IEventInboxProcessor } from "@/common/events/services/interfaces/IEventInboxProcessor";
-import {EventOutboxToken, IEventOutbox} from "@/common/events/services/interfaces/IEventOutbox";
+import { EventOutboxToken, IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
 import { EventOutboxProcessorToken, IEventOutboxProcessor } from "@/common/events/services/interfaces/IEventOutboxProcessor";
 import { generateEvents } from "@/common/events/tests/utils/generateEvents";
 import { groupEventsByPartitionKey } from "@/common/events/tests/utils/groupEventsByPartitionKey";

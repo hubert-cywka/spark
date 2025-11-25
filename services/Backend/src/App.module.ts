@@ -17,7 +17,7 @@ import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
 import { IdentityModule } from "@/modules/identity/Identity.module";
 import { JournalModule } from "@/modules/journal/Journal.module";
 import { MailModule } from "@/modules/mail/Mail.module";
-import {SchedulingModule} from "@/modules/scheduling/Scheduling.module";
+import { SchedulingModule } from "@/modules/scheduling/Scheduling.module";
 import { UsersModule } from "@/modules/users/Users.module";
 import { ModuleImport } from "@/types/Module";
 

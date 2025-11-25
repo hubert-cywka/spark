@@ -1,11 +1,11 @@
-import {Injectable, Logger} from "@nestjs/common";
-import {runInTransaction, runOnTransactionCommit} from "typeorm-transactional";
+import { Injectable, Logger } from "@nestjs/common";
+import { runInTransaction, runOnTransactionCommit } from "typeorm-transactional";
 
-import {type IOutboxEventRepository} from "@/common/events/repositories/interfaces/IOutboxEvent.repository";
-import {type IEventOutbox} from "@/common/events/services/interfaces/IEventOutbox";
-import {type IEventsQueueSubscriber} from "@/common/events/services/interfaces/IEventsQueueSubscriber";
-import {type IPartitionAssigner} from "@/common/events/services/interfaces/IPartitionAssigner";
-import {IntegrationEvent} from "@/common/events/types/IntegrationEvent";
+import { type IOutboxEventRepository } from "@/common/events/repositories/interfaces/IOutboxEvent.repository";
+import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
+import { type IEventsQueueSubscriber } from "@/common/events/services/interfaces/IEventsQueueSubscriber";
+import { type IPartitionAssigner } from "@/common/events/services/interfaces/IPartitionAssigner";
+import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 
 interface EventOutboxOptions {
     connectionName: string;
@@ -21,7 +21,7 @@ export class EventOutbox implements IEventOutbox {
     public constructor(
         options: EventOutboxOptions,
         private readonly repository: IOutboxEventRepository,
-        private readonly partitionAssigner: IPartitionAssigner,
+        private readonly partitionAssigner: IPartitionAssigner
     ) {
         this.logger = new Logger(options.context);
         this.connectionName = options.connectionName;

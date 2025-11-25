@@ -6,8 +6,8 @@ import { InboxEventPartitionEntity } from "@/common/events/entities/InboxEventPa
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { OutboxEventPartitionEntity } from "@/common/events/entities/OutboxEventPartition.entity";
 import { AppConfig } from "@/config/configuration";
-import {JobExecutionEntity} from "@/modules/scheduling/entities/JobExecution.entity";
-import {JobScheduleEntity} from "@/modules/scheduling/entities/JobScheduleEntity";
+import { JobExecutionEntity } from "@/modules/scheduling/entities/JobExecution.entity";
+import { JobScheduleEntity } from "@/modules/scheduling/entities/JobScheduleEntity";
 
 configDotenv();
 
@@ -23,6 +23,13 @@ export const dataSource = new DataSource({
     synchronize: false,
     dropSchema: false,
     migrationsRun: false,
-    entities: [OutboxEventEntity, InboxEventEntity, OutboxEventPartitionEntity, InboxEventPartitionEntity, JobScheduleEntity, JobExecutionEntity],
+    entities: [
+        OutboxEventEntity,
+        InboxEventEntity,
+        OutboxEventPartitionEntity,
+        InboxEventPartitionEntity,
+        JobScheduleEntity,
+        JobExecutionEntity,
+    ],
     migrations: [],
 });

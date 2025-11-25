@@ -12,4 +12,4 @@ export interface IEventPublisher {
 
 export type EventPublishOptions = {
     encrypt: boolean;
-}
+};

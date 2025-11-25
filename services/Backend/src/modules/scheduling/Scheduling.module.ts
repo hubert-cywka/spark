@@ -16,22 +16,14 @@ import {
     type IIntegrationEventsSubscriber,
     IntegrationEventsSubscriberToken,
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
-import {JobExecutionEntity} from "@/modules/scheduling/entities/JobExecution.entity";
-import {JobScheduleEntity} from "@/modules/scheduling/entities/JobScheduleEntity";
-import {
-    IntervalJobScheduleUpdatedEventHandler
-} from "@/modules/scheduling/events/IntervalJobScheduleUpdatedEvent.handler";
-import {
-    InitSchedulingModule1764101420518
-} from "@/modules/scheduling/infrastructure/database/migrations/1764101420518-init-scheduling-module";
-import {JobExecutionService} from "@/modules/scheduling/services/implementations/JobExecution.service";
-import {
-    JobScheduleConfigurationService
-} from "@/modules/scheduling/services/implementations/JobScheduleConfiguration.service";
-import {JobExecutionServiceToken} from "@/modules/scheduling/services/interfaces/IJobExecution.service";
-import {
-    JobScheduleConfigurationServiceToken
-} from "@/modules/scheduling/services/interfaces/IJobScheduleConfiguration.service";
+import { JobExecutionEntity } from "@/modules/scheduling/entities/JobExecution.entity";
+import { JobScheduleEntity } from "@/modules/scheduling/entities/JobScheduleEntity";
+import { IntervalJobScheduleUpdatedEventHandler } from "@/modules/scheduling/events/IntervalJobScheduleUpdatedEvent.handler";
+import { InitSchedulingModule1764101420518 } from "@/modules/scheduling/infrastructure/database/migrations/1764101420518-init-scheduling-module";
+import { JobExecutionService } from "@/modules/scheduling/services/implementations/JobExecution.service";
+import { JobScheduleConfigurationService } from "@/modules/scheduling/services/implementations/JobScheduleConfiguration.service";
+import { JobExecutionServiceToken } from "@/modules/scheduling/services/interfaces/IJobExecution.service";
+import { JobScheduleConfigurationServiceToken } from "@/modules/scheduling/services/interfaces/IJobScheduleConfiguration.service";
 
 @Module({
     providers: [
@@ -50,9 +42,7 @@ import {
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
-            inject: [
-                IntervalJobScheduleUpdatedEventHandler
-            ],
+            inject: [IntervalJobScheduleUpdatedEventHandler],
         },
     ],
     imports: [
@@ -68,7 +58,7 @@ import {
                     InboxAndOutbox1749299050551,
                     InboxAndOutboxSequenceNumber1753291628862,
                     InboxAndOutboxSplitTopicAndSubject1753291628863,
-                    InitSchedulingModule1764101420518
+                    InitSchedulingModule1764101420518,
                 ],
             }),
             inject: [ConfigService],
@@ -107,8 +97,6 @@ export class SchedulingModule implements OnModuleInit {
         this.orchestrator.startProcessingInbox(this.handlers);
         this.orchestrator.startClearingInbox();
 
-        void this.subscriber.listen([
-            IntegrationEvents.scheduling.intervalJob.updated,
-        ]);
+        void this.subscriber.listen([IntegrationEvents.scheduling.intervalJob.updated]);
     }
 }

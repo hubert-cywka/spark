@@ -27,11 +27,11 @@ export class IntegrationEvent<T = DefaultEventPayload> {
     private readonly id: string;
     private readonly partitionKey: string;
     private readonly tenantId: string;
-    
+
     private readonly topic: IntegrationEventTopic;
     private readonly subject: IntegrationEventSubject;
     private readonly payload: T;
-    
+
     private readonly createdAt: Date;
 
     public constructor({

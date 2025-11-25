@@ -1,8 +1,6 @@
-import {
-    type Relation, Column, Entity,
-ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import { type Relation, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
-import {JobScheduleEntity} from "@/modules/scheduling/entities/JobScheduleEntity";
+import { JobScheduleEntity } from "@/modules/scheduling/entities/JobScheduleEntity";
 
 @Entity("job_execution")
 export class JobExecutionEntity {
@@ -16,7 +14,7 @@ export class JobExecutionEntity {
 
     @Column({ type: "varchar" })
     jobId!: string;
-    
+
     @Column({ type: "timestamptz" })
     executedAt!: Date;
 }

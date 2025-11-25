@@ -1,11 +1,4 @@
-import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    OneToMany, PrimaryColumn,
-    Relation,
-    UpdateDateColumn
-} from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryColumn, Relation, UpdateDateColumn } from "typeorm";
 
 import { JobExecutionEntity } from "@/modules/scheduling/entities/JobExecution.entity";
 
@@ -21,13 +14,13 @@ export class JobScheduleEntity {
 
     @Column({ type: "int" })
     interval!: number;
-    
+
     @Column("varchar")
     callbackTopic!: string;
 
     @Column("varchar")
     callbackSubject!: string;
-    
+
     @CreateDateColumn({ type: "timestamptz" })
     createdAt!: Date;
 

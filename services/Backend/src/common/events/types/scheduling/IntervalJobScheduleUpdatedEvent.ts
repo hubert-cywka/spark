@@ -1,5 +1,5 @@
-import {IntegrationEvent, IntegrationEvents} from "@/common/events";
-import {JobScheduleUpdatedEventPayload} from "@/common/events/types/scheduling/JobScheduleUpdatedEventPayload";
+import { IntegrationEvent, IntegrationEvents } from "@/common/events";
+import { JobScheduleUpdatedEventPayload } from "@/common/events/types/scheduling/JobScheduleUpdatedEventPayload";
 
 export type IntervalJobScheduleUpdatedEventPayload = JobScheduleUpdatedEventPayload<{
     interval: number;

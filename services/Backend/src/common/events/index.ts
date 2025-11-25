@@ -6,7 +6,7 @@ import { IntegrationEvent } from "./types/IntegrationEvent";
 import { IntegrationEvents } from "./types/IntegrationEvents";
 import { IntegrationEventsModule } from "./IntegrationEvents.module";
 
-import {EventPublisher} from "@/common/events/services/implementations/EventPublisher";
+import { EventPublisher } from "@/common/events/services/implementations/EventPublisher";
 
 export { IntegrationEventsModule };
 export {

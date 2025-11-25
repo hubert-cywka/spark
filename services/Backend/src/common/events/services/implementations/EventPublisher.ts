@@ -1,20 +1,17 @@
-import {Injectable} from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 
-import {type IEventPublisher, IntegrationEvent} from "@/common/events";
-import {type IEventProducer} from "@/common/events/drivers/interfaces/IEventProducer";
-import {type IEventOutbox} from "@/common/events/services/interfaces/IEventOutbox";
-import {EventPublishOptions} from "@/common/events/services/interfaces/IEventPublisher";
-import  {
-    type IIntegrationEventsEncryptionService
-} from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
+import { type IEventPublisher, IntegrationEvent } from "@/common/events";
+import { type IEventProducer } from "@/common/events/drivers/interfaces/IEventProducer";
+import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
+import { EventPublishOptions } from "@/common/events/services/interfaces/IEventPublisher";
+import { type IIntegrationEventsEncryptionService } from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
 
-@Injectable() 
+@Injectable()
 export class EventPublisher implements IEventPublisher {
-
     public constructor(
         private readonly encryptionService: IIntegrationEventsEncryptionService,
         private readonly eventProducer: IEventProducer,
-        private readonly outbox: IEventOutbox,
+        private readonly outbox: IEventOutbox
     ) {}
 
     public async publish(event: IntegrationEvent, options?: EventPublishOptions): Promise<void> {
@@ -36,7 +33,7 @@ export class EventPublisher implements IEventPublisher {
         const preparedEvents = await this.prepareEventsToStore(events, options);
         await this.outbox.enqueueMany(preparedEvents);
     }
-    
+
     private async prepareEventsToStore(events: IntegrationEvent[], options?: EventPublishOptions): Promise<IntegrationEvent[]> {
         const promises: Promise<IntegrationEvent>[] = [];
 

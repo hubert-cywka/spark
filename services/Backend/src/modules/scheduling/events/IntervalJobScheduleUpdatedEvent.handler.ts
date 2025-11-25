@@ -1,11 +1,11 @@
-import {Inject, Injectable} from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
-import { IInboxEventHandler, IntegrationEvent, IntegrationEvents} from "@/common/events";
+import { IInboxEventHandler, IntegrationEvent, IntegrationEvents } from "@/common/events";
 import { IntegrationEventSubject } from "@/common/events/types";
-import {IntervalJobScheduleUpdatedEventPayload} from "@/common/events/types/scheduling/IntervalJobScheduleUpdatedEvent";
+import { IntervalJobScheduleUpdatedEventPayload } from "@/common/events/types/scheduling/IntervalJobScheduleUpdatedEvent";
 import {
     type IJobScheduleConfigurationService,
-    JobScheduleConfigurationServiceToken
+    JobScheduleConfigurationServiceToken,
 } from "@/modules/scheduling/services/interfaces/IJobScheduleConfiguration.service";
 
 @Injectable()
