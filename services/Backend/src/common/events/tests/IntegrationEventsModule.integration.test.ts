@@ -6,7 +6,7 @@ import { LoggerModule } from "nestjs-pino";
 import { initializeTransactionalContext, runInTransaction } from "typeorm-transactional";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { EventInboxToken, EventOutboxToken, IEventInbox, IEventOutbox, IntegrationEvent, IntegrationEventsModule } from "@/common/events";
+import { EventInboxToken, EventPublisherToken, IEventInbox, IEventPublisher, IntegrationEvent, IntegrationEventsModule } from "@/common/events";
 import { EventAdminToken, IEventAdmin } from "@/common/events/drivers/interfaces/IEventAdmin";
 import { EventProducerToken, IEventProducer } from "@/common/events/drivers/interfaces/IEventProducer";
 import { IInboxEventRepository, InboxEventRepositoryToken } from "@/common/events/repositories/interfaces/IInboxEvent.repository";
@@ -20,6 +20,7 @@ import {
     OutboxPartitionRepositoryToken,
 } from "@/common/events/repositories/interfaces/IOutboxPartition.repository";
 import { EventInboxProcessorToken, IEventInboxProcessor } from "@/common/events/services/interfaces/IEventInboxProcessor";
+import {EventOutboxToken, IEventOutbox} from "@/common/events/services/interfaces/IEventOutbox";
 import { EventOutboxProcessorToken, IEventOutboxProcessor } from "@/common/events/services/interfaces/IEventOutboxProcessor";
 import { generateEvents } from "@/common/events/tests/utils/generateEvents";
 import { groupEventsByPartitionKey } from "@/common/events/tests/utils/groupEventsByPartitionKey";
@@ -118,15 +119,16 @@ describe("IntegrationEventsModule", () => {
         await app.close();
     });
 
-    describe("Outbox", () => {
+    describe("Publisher", () => {
         const tenantId = crypto.randomUUID();
 
         const setup = () => {
             const admin = app.get<IEventAdmin>(EventAdminToken);
+            const publisher = app.get<IEventPublisher>(EventPublisherToken);
             const outbox = app.get<IEventOutbox>(EventOutboxToken);
             const repository = app.get<IOutboxEventRepository>(OutboxEventRepositoryToken);
             const subscriber = new TestEventEnqueueSubscriber();
-            return { outbox, repository, subscriber, admin };
+            return { outbox, repository, subscriber, admin, publisher };
         };
 
         beforeEach(async () => {
@@ -173,9 +175,9 @@ describe("IntegrationEventsModule", () => {
 
         it("should encrypt event payload if requested", async () => {
             const eventToEnqueue = new TestEvent(EVENT_TOPIC, EVENT_SUBJECT, tenantId);
-            const { outbox, repository } = setup();
+            const { publisher, repository } = setup();
 
-            await outbox.enqueue(eventToEnqueue, { encrypt: true });
+            await publisher.enqueue(eventToEnqueue, { encrypt: true });
             const eventFromRepository = await repository.getById(eventToEnqueue.getId());
 
             expect(eventFromRepository?.id).toBe(eventToEnqueue.getId());
@@ -282,7 +284,7 @@ describe("IntegrationEventsModule", () => {
         const setup = () => {
             const admin = app.get<IEventAdmin>(EventAdminToken);
             const producer = app.get<IEventProducer>(EventProducerToken);
-            const outbox = app.get<IEventOutbox>(EventOutboxToken);
+            const outbox = app.get<IEventPublisher>(EventPublisherToken);
             const processor = app.get<IEventOutboxProcessor>(EventOutboxProcessorToken);
             const eventRepository = app.get<IOutboxEventRepository>(OutboxEventRepositoryToken);
             const partitionRepository = app.get<IOutboxPartitionRepository>(OutboxPartitionRepositoryToken);

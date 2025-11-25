@@ -39,6 +39,8 @@ JOURNAL_DATABASE_NAME="db_journal"
 
 ALERTS_DATABASE_NAME="db_alerts"
 
+SCHEDULING_DATABASE_NAME="db_scheduling"
+
 GDPR_DATABASE_NAME="db_gdpr"
 
 MAIL_DATABASE_NAME="db_mail"

@@ -85,6 +85,15 @@ resource "kubernetes_deployment" "envoy" {
               name  = "GDPR_SERVICE_PORT"
               value = var.backend_port
             }
+            
+            env {
+              name  = "SCHEDULING_SERVICE_ADDRESS"
+              value = "${var.scheduling_service_name}.${var.namespace_name}.svc.cluster.local"
+            }
+            env {
+              name  = "SCHEDULING_SERVICE_PORT"
+              value = var.backend_port
+            }
         
             env {
               name  = "MAIL_SERVICE_ADDRESS"

@@ -17,10 +17,12 @@ import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
 import { IdentityModule } from "@/modules/identity/Identity.module";
 import { JournalModule } from "@/modules/journal/Journal.module";
 import { MailModule } from "@/modules/mail/Mail.module";
+import {SchedulingModule} from "@/modules/scheduling/Scheduling.module";
 import { UsersModule } from "@/modules/users/Users.module";
 import { ModuleImport } from "@/types/Module";
 
 const PLUGGABLE_MODULES_MAP = {
+    SCHEDULING_MODULE_ENABLED: SchedulingModule,
     IDENTITY_MODULE_ENABLED: IdentityModule,
     JOURNAL_MODULE_ENABLED: JournalModule,
     ALERTS_MODULE_ENABLED: AlertsModule,

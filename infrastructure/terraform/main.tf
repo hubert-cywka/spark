@@ -78,6 +78,7 @@ module "gateway" {
   gdpr_service_name   = module.gdpr-service.service_name
   mail_service_name   = module.mail-service.service_name
   frontend_service_name = module.frontend.service_name
+  scheduling_service_name   = module.scheduling-service.service_name
 }
 
 module "database" {
@@ -294,6 +295,51 @@ module "gdpr-service" {
     "PUBSUB_OUTBOX_PROCESSOR_MAX_ATTEMPTS"      = var.PUBSUB_OUTBOX_PROCESSOR_MAX_ATTEMPTS
     "JWT_SIGNING_SECRET"                        = var.JWT_SIGNING_SECRET
     "GDPR_DATABASE_NAME"                        = var.GDPR_DATABASE_NAME
+    "COOKIES_SECRET"                            = var.COOKIES_SECRET
+    "RATE_LIMITING_BASE_LIMIT"                  = var.RATE_LIMITING_BASE_LIMIT
+    "RATE_LIMITING_BASE_TTL"                    = var.RATE_LIMITING_BASE_TTL
+  }
+
+  secret_name = kubernetes_secret.app_secrets.metadata[0].name
+}
+
+module "scheduling-service" {
+  source = "./modules/microservice"
+
+  service_name   = "scheduling-service"
+  namespace      = kubernetes_namespace.codename.metadata[0].name
+  image          = "hejs22/codename-backend:latest"
+  replicas       = 1
+  service_port   = var.BACKEND_PORT
+  container_port = var.BACKEND_PORT
+
+  env_vars = {
+    "SCHEDULING_MODULE_ENABLED"                 = "true"
+    "PORT"                                      = var.BACKEND_PORT
+    "APP_NAME"                                  = var.APP_NAME
+    "DATABASE_LOGGING_ENABLED"                  = var.DATABASE_LOGGING_ENABLED
+    "EVENTS_ENCRYPTION_SECRET_64_BYTES"         = var.EVENTS_ENCRYPTION_SECRET_64_BYTES
+    "CLIENT_URL_BASE"                           = var.CLIENT_URL_BASE
+    "DATABASE_PORT"                             = var.DATABASE_PORT
+    "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
+    "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
+    "DATABASE_HOST"                             = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
+    "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
+    "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
+    "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
+    "PUBSUB_CONSUMER_MAX_WAIT_FOR_BATCH_MS"     = var.PUBSUB_CONSUMER_MAX_WAIT_FOR_BATCH_MS
+    "PUBSUB_PARTITIONS_NUM_OF_PARTITIONS"       = var.PUBSUB_PARTITIONS_NUM_OF_PARTITIONS
+    "PUBSUB_PARTITIONS_STALE_THRESHOLD_IN_MS"   = var.PUBSUB_PARTITIONS_STALE_THRESHOLD_IN_MS
+    "PUBSUB_INBOX_PROCESSOR_POLLING_INTERVAL"   = var.PUBSUB_INBOX_PROCESSOR_POLLING_INTERVAL
+    "PUBSUB_INBOX_PROCESSOR_MAX_BATCH_SIZE"     = var.PUBSUB_INBOX_PROCESSOR_MAX_BATCH_SIZE
+    "PUBSUB_INBOX_PROCESSOR_CLEARING_INTERVAL"  = var.PUBSUB_INBOX_PROCESSOR_CLEARING_INTERVAL
+    "PUBSUB_INBOX_PROCESSOR_MAX_ATTEMPTS"       = var.PUBSUB_INBOX_PROCESSOR_MAX_ATTEMPTS
+    "PUBSUB_OUTBOX_PROCESSOR_POLLING_INTERVAL"  = var.PUBSUB_OUTBOX_PROCESSOR_POLLING_INTERVAL
+    "PUBSUB_OUTBOX_PROCESSOR_MAX_BATCH_SIZE"    = var.PUBSUB_OUTBOX_PROCESSOR_MAX_BATCH_SIZE
+    "PUBSUB_OUTBOX_PROCESSOR_CLEARING_INTERVAL" = var.PUBSUB_OUTBOX_PROCESSOR_CLEARING_INTERVAL
+    "PUBSUB_OUTBOX_PROCESSOR_MAX_ATTEMPTS"      = var.PUBSUB_OUTBOX_PROCESSOR_MAX_ATTEMPTS
+    "JWT_SIGNING_SECRET"                        = var.JWT_SIGNING_SECRET
+    "SCHEDULING_DATABASE_NAME"                  = var.SCHEDULING_DATABASE_NAME
     "COOKIES_SECRET"                            = var.COOKIES_SECRET
     "RATE_LIMITING_BASE_LIMIT"                  = var.RATE_LIMITING_BASE_LIMIT
     "RATE_LIMITING_BASE_TTL"                    = var.RATE_LIMITING_BASE_TTL

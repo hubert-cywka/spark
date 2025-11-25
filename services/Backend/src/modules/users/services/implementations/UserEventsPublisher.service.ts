@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
-import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
+import { EventPublisherToken } from "@/common/events/services/interfaces/IEventPublisher";
+import { type IEventPublisher } from "@/common/events/services/interfaces/IEventPublisher";
 import {
     type AccountRemovalRequestedEventPayload,
     AccountRemovalRequestedEvent,
@@ -11,11 +11,11 @@ import { type IUserEventsPublisher } from "@/modules/users/services/interfaces/I
 @Injectable()
 export class UserEventsPublisher implements IUserEventsPublisher {
     public constructor(
-        @Inject(EventOutboxToken)
-        private readonly outbox: IEventOutbox
+        @Inject(EventPublisherToken)
+        private readonly publisher: IEventPublisher
     ) {}
 
     public async onDataRemovalRequested(tenantId: string, payload: AccountRemovalRequestedEventPayload): Promise<void> {
-        await this.outbox.enqueue(new AccountRemovalRequestedEvent(tenantId, payload));
+        await this.publisher.enqueue(new AccountRemovalRequestedEvent(tenantId, payload));
     }
 }

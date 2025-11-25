@@ -1,5 +1,5 @@
 export type JobScheduleUpdatedEventPayload<T extends object> = {
-    jobId: string;
+    id: string;
     callback: {
         topic: string;
         subject: string;
