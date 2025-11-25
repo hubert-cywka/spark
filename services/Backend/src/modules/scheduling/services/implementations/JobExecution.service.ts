@@ -28,12 +28,12 @@ export class JobExecutionService implements IJobExecutionService {
     @Transactional({ connectionName: SCHEDULING_MODULE_DATA_SOURCE })
     @Interval(seconds(5))
     public async executePending(): Promise<void> {
-        this.logger.log("Checking for pending jobs.");
+        this.logger.debug("Checking for pending jobs.");
 
         const jobs = await this.getPendingJobs();
 
         if (jobs.length <= 0) {
-            this.logger.log("No jobs to execute.");
+            this.logger.debug("No jobs to execute.");
         }
 
         const events = jobs.map(this.mapJobToEvent);
