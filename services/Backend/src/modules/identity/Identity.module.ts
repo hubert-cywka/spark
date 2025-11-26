@@ -14,7 +14,7 @@ import {
     type IIntegrationEventsSubscriber,
     IntegrationEventsSubscriberToken,
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
-import {hours} from "@/common/utils/timeUtils";
+import {fromHours} from "@/common/utils/timeUtils";
 import { AccountActivatedEventHandler } from "@/modules/identity/2fa/events/AccountActivatedEvent.handler";
 import { TwoFactorAuthenticationModule } from "@/modules/identity/2fa/TwoFactorAuthentication.module";
 import { AccountModule } from "@/modules/identity/account/Account.module";
@@ -78,7 +78,7 @@ export class IdentityModule implements OnModuleInit {
         void this.eventPublisher.enqueueMany([
            new IntervalJobScheduleUpdatedEvent({
                id: "refresh_token_invalidation",
-               interval: hours(1),
+               interval: fromHours(1),
                callback: IntegrationEvents.refreshToken.invalidation.triggered
            }) 
         ]);

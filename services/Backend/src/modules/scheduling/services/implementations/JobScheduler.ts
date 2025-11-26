@@ -6,7 +6,7 @@ import {Transactional} from "typeorm-transactional";
 
 import {type IEventPublisher,EventPublisherToken} from "@/common/events";
 import {JobTriggeredEvent} from "@/common/events/types/scheduling/JobTriggeredEvent";
-import {seconds} from "@/common/utils/timeUtils";
+import {fromSeconds} from "@/common/utils/timeUtils";
 import {JobExecutionEntity} from "@/modules/scheduling/entities/JobExecution.entity";
 import {JobScheduleEntity} from "@/modules/scheduling/entities/JobScheduleEntity";
 import {SCHEDULING_MODULE_DATA_SOURCE} from "@/modules/scheduling/infrastructure/database/constants";
@@ -26,7 +26,7 @@ export class JobScheduler implements IJobScheduler {
     ) {}
 
     @Transactional({ connectionName: SCHEDULING_MODULE_DATA_SOURCE })
-    @Interval(seconds(5))
+    @Interval(fromSeconds(5))
     public async schedulePending(): Promise<void> {
         this.logger.debug("Checking for pending jobs.");
 

@@ -21,7 +21,7 @@ import {
     type IIntegrationEventsSubscriber,
     IntegrationEventsSubscriberToken,
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
-import { seconds} from "@/common/utils/timeUtils";
+import { fromSeconds} from "@/common/utils/timeUtils";
 import { AlertsController } from "@/modules/alerts/controllers/Alerts.controller";
 import { AlertEntity } from "@/modules/alerts/entities/Alert.entity";
 import { RecipientEntity } from "@/modules/alerts/entities/Recipient.entity";
@@ -145,7 +145,7 @@ export class AlertsModule implements OnModuleInit {
         void this.eventPublisher.enqueueMany([
             new IntervalJobScheduleUpdatedEvent({
                 id: "alerts_check",
-                interval: seconds(15),
+                interval: fromSeconds(15),
                 callback: IntegrationEvents.alert.check.triggered
             })
         ]);

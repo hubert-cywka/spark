@@ -21,7 +21,7 @@ import {
     type IIntegrationEventsSubscriber,
     IntegrationEventsSubscriberToken,
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
-import {hours} from "@/common/utils/timeUtils";
+import {fromHours} from "@/common/utils/timeUtils";
 import { DataPurgePlanEntity } from "@/modules/gdpr/entities/DataPurgePlan.entity";
 import { TenantEntity } from "@/modules/gdpr/entities/Tenant.entity";
 import {PurgeJobTriggeredEventHandler} from "@/modules/gdpr/events/PurgeJobTriggeredEvent.handler";
@@ -142,7 +142,7 @@ export class GdprModule implements OnModuleInit {
         void this.eventPublisher.enqueueMany([
             new IntervalJobScheduleUpdatedEvent({
                 id: "data_purge",
-                interval: hours(1),
+                interval: fromHours(1),
                 callback: IntegrationEvents.gdpr.purge.triggered
             })
         ]);
