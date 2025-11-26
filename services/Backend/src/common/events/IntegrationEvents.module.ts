@@ -236,7 +236,6 @@ export class IntegrationEventsModule {
                     inject: [PartitionAssignerToken, OutboxEventRepositoryToken],
                 },
 
-                // TODO: Probably can be resolved on it's own
                 {
                     provide: EventPublisherToken,
                     useFactory: (encryptionService: IIntegrationEventsEncryptionService, producer: IEventProducer, outbox: IEventOutbox) =>

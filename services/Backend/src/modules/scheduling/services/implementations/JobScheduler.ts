@@ -1,20 +1,20 @@
-import { Inject, Injectable, Logger } from "@nestjs/common";
-import { Interval } from "@nestjs/schedule";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Transactional } from "typeorm-transactional";
+import {Inject, Injectable, Logger} from "@nestjs/common";
+import {Interval} from "@nestjs/schedule";
+import {InjectRepository} from "@nestjs/typeorm";
+import {Repository} from "typeorm";
+import {Transactional} from "typeorm-transactional";
 
-import { type IEventPublisher, EventPublisherToken } from "@/common/events";
-import { JobTriggeredEvent } from "@/common/events/types/scheduling/JobTriggeredEvent";
-import { seconds } from "@/common/utils/timeUtils";
-import { JobExecutionEntity } from "@/modules/scheduling/entities/JobExecution.entity";
-import { JobScheduleEntity } from "@/modules/scheduling/entities/JobScheduleEntity";
-import { SCHEDULING_MODULE_DATA_SOURCE } from "@/modules/scheduling/infrastructure/database/constants";
-import { type IJobExecutionService } from "@/modules/scheduling/services/interfaces/IJobExecution.service";
+import {type IEventPublisher,EventPublisherToken} from "@/common/events";
+import {JobTriggeredEvent} from "@/common/events/types/scheduling/JobTriggeredEvent";
+import {seconds} from "@/common/utils/timeUtils";
+import {JobExecutionEntity} from "@/modules/scheduling/entities/JobExecution.entity";
+import {JobScheduleEntity} from "@/modules/scheduling/entities/JobScheduleEntity";
+import {SCHEDULING_MODULE_DATA_SOURCE} from "@/modules/scheduling/infrastructure/database/constants";
+import {type IJobScheduler} from "@/modules/scheduling/services/interfaces/IJobScheduler";
 
 @Injectable()
-export class JobExecutionService implements IJobExecutionService {
-    private readonly logger = new Logger(JobExecutionService.name);
+export class JobScheduler implements IJobScheduler {
+    private readonly logger = new Logger(JobScheduler.name);
 
     public constructor(
         @InjectRepository(JobExecutionEntity, SCHEDULING_MODULE_DATA_SOURCE)
@@ -27,13 +27,14 @@ export class JobExecutionService implements IJobExecutionService {
 
     @Transactional({ connectionName: SCHEDULING_MODULE_DATA_SOURCE })
     @Interval(seconds(5))
-    public async executePending(): Promise<void> {
+    public async schedulePending(): Promise<void> {
         this.logger.debug("Checking for pending jobs.");
 
         const jobs = await this.getPendingJobs();
 
         if (jobs.length <= 0) {
             this.logger.debug("No jobs to execute.");
+            return;
         }
 
         const events = jobs.map(this.mapJobToEvent);
@@ -41,7 +42,7 @@ export class JobExecutionService implements IJobExecutionService {
         await this.publisher.publishMany(events);
         await this.recordExecutions(jobs.map((job) => job.id));
 
-        this.logger.log({ jobs }, "Jobs executed.");
+        this.logger.log({ jobs }, "Jobs scheduled.");
     }
 
     private async recordExecutions(jobIds: string[]): Promise<void> {
@@ -66,7 +67,7 @@ export class JobExecutionService implements IJobExecutionService {
                     .leftJoin(JobExecutionEntity, "execution", "execution.jobId = s.id")
                     .groupBy("s.id")
                     .having("MAX(execution.executedAt) IS NULL")
-                    .orHaving("MAX(execution.executedAt) + (s.interval * INTERVAL '1 second') <= :now")
+                    .orHaving("MAX(execution.executedAt) + (s.interval * INTERVAL '1 millisecond') <= :now")
                     .getQuery();
 
                 return "jobSchedule.id IN " + subQuery;

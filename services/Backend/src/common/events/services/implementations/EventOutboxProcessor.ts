@@ -134,9 +134,8 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
             const event = IntegrationEvent.fromEntity(eventEntity);
 
             try {
-                await this.client.publish(event);
+                await this.client.publishBatch([event]);
                 successfulEvents.push(eventEntity);
-                this.logger.log({ eventId: event.getId() }, "Published event");
             } catch (error) {
                 this.logger.error(error, "Failed to publish event. ACK not received.");
                 failedEvent = eventEntity;

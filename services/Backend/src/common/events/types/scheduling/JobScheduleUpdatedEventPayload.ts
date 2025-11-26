@@ -1,7 +1,9 @@
+import { IntegrationEventSubject, IntegrationEventTopic } from "@/common/events/types";
+
 export type JobScheduleUpdatedEventPayload<T extends object> = {
     id: string;
     callback: {
-        topic: string;
-        subject: string;
+        topic: IntegrationEventTopic;
+        subject: IntegrationEventSubject;
     };
 } & T;

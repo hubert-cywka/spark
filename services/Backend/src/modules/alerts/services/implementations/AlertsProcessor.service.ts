@@ -1,5 +1,4 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { Cron } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import dayjs from "dayjs";
 import { Repository } from "typeorm";
@@ -22,7 +21,6 @@ export class AlertsProcessor implements IAlertsProcessor {
         private readonly alertScheduler: IAlertScheduler
     ) {}
 
-    @Cron("*/30 * * * * *")
     public async triggerPendingAlerts() {
         const now = dayjs().utc();
 
@@ -39,6 +37,7 @@ export class AlertsProcessor implements IAlertsProcessor {
         }
     }
 
+    // TODO: Batching
     @Transactional({ connectionName: ALERTS_MODULE_DATA_SOURCE })
     private async triggerAlert(alert: AlertEntity) {
         await this.alertPublisher.onReminderTriggered(alert.recipient.id);

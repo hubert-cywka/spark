@@ -55,12 +55,13 @@ export class EventInbox implements IEventInbox {
         await runInTransaction(
             async () => {
                 const result = await this.repository.saveManyAndSkipDuplicates(inputs);
-                this.logger.log({ received: events.length, saved: result.length }, "Events added to inbox.");
-
+                this.logger.log({ received: events.length, saved: result?.length ?? 0 }, "Events added to inbox.");
+                
                 runOnTransactionCommit(async () => {
                     for (const event of events) {
                         this.onEventEnqueued(event);
                     }
+                    
                 });
             },
             { connectionName: this.connectionName }

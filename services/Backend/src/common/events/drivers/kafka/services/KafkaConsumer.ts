@@ -25,6 +25,7 @@ export class KafkaConsumer implements IEventConsumer {
             partitionsConsumedConcurrently: this.partitionsConsumedConcurrently,
             eachBatch: async ({ resolveOffset, heartbeat, batch }) => {
                 const incomingEvents = this.getEventsFromBatch(batch);
+                
                 const emptyEventsCount = incomingEvents.length - batch.messages.length;
 
                 if (emptyEventsCount) {

@@ -1,4 +1,6 @@
+import { IntegrationEventSubject, IntegrationEventTopic } from "@/common/events/types";
+
 export type JobCallback = {
-    topic: string;
-    subject: string;
+    topic: IntegrationEventTopic;
+    subject: IntegrationEventSubject;
 };

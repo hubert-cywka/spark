@@ -11,7 +11,7 @@ export class IntervalJobScheduleUpdatedEvent extends IntegrationEvent<IntervalJo
         const subject = IntegrationEvents.scheduling.intervalJob.updated.subject;
 
         super({
-            tenantId: "", // TODO
+            tenantId: crypto.randomUUID(), // TODO: Make tenantId optional?
             topic,
             subject,
             partitionKey: payload.id,

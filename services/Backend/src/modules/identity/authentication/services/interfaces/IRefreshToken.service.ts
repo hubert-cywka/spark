@@ -8,4 +8,5 @@ export interface IRefreshTokenService {
     findOwner(token: string): Promise<string>;
     invalidate(token: string): Promise<void>;
     invalidateAllByOwnerId(ownerId: string): Promise<void>;
+    deleteAllExpired(): Promise<void>;
 }

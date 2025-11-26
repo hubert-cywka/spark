@@ -9,6 +9,9 @@ import { AuthenticationController } from "@/modules/identity/authentication/cont
 import { OpenIDConnectController } from "@/modules/identity/authentication/controllers/OpenIDConnect.controller";
 import { AccountPasswordUpdatedEventHandler } from "@/modules/identity/authentication/events/AccountPasswordUpdatedEvent.handler";
 import { AccountSuspendedEventHandler } from "@/modules/identity/authentication/events/AccountSuspendedEvent.handler";
+import {
+    RefreshTokenInvalidationJobTriggeredEventHandler
+} from "@/modules/identity/authentication/events/RefreshTokenInvalidationJobTriggeredEvent.handler";
 import { AuthenticationMapper } from "@/modules/identity/authentication/mappers/Authentication.mapper";
 import { AuthenticationMapperToken } from "@/modules/identity/authentication/mappers/IAuthentication.mapper";
 import { AccessScopesService } from "@/modules/identity/authentication/services/implementations/AccessScopes.service";
@@ -49,8 +52,9 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
         { provide: AccessScopesServiceToken, useClass: AccessScopesService },
         AccountPasswordUpdatedEventHandler,
         AccountSuspendedEventHandler,
+        RefreshTokenInvalidationJobTriggeredEventHandler
     ],
     controllers: [AuthenticationController, OpenIDConnectController, AccessScopesController],
-    exports: [AccountPasswordUpdatedEventHandler, AccountSuspendedEventHandler],
+    exports: [AccountPasswordUpdatedEventHandler, AccountSuspendedEventHandler, RefreshTokenInvalidationJobTriggeredEventHandler],
 })
 export class AuthenticationModule {}

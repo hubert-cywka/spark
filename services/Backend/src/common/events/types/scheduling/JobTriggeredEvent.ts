@@ -1,12 +1,12 @@
 import { IntegrationEvent } from "@/common/events";
-import { IntegrationEventSubject, IntegrationEventTopic } from "@/common/events/types";
+import {IntegrationEventSubject, IntegrationEventTopic} from "@/common/events/types";
 
 export type JobTriggeredEventPayload = {
     job: {
         id: string;
         callback: {
-            topic: string;
-            subject: string;
+            topic: IntegrationEventTopic;
+            subject: IntegrationEventSubject;
         };
     };
 };
@@ -14,9 +14,9 @@ export type JobTriggeredEventPayload = {
 export class JobTriggeredEvent extends IntegrationEvent<JobTriggeredEventPayload> {
     public constructor(payload: JobTriggeredEventPayload) {
         super({
-            tenantId: "", // TODO
-            topic: payload.job.callback.topic as unknown as IntegrationEventTopic,
-            subject: payload.job.callback.subject as unknown as IntegrationEventSubject,
+            tenantId: crypto.randomUUID(), // TODO
+            topic: payload.job.callback.topic,
+            subject: payload.job.callback.subject,
             partitionKey: payload.job.id,
             payload,
         });

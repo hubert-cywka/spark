@@ -20,10 +20,10 @@ import { JobExecutionEntity } from "@/modules/scheduling/entities/JobExecution.e
 import { JobScheduleEntity } from "@/modules/scheduling/entities/JobScheduleEntity";
 import { IntervalJobScheduleUpdatedEventHandler } from "@/modules/scheduling/events/IntervalJobScheduleUpdatedEvent.handler";
 import { InitSchedulingModule1764101420518 } from "@/modules/scheduling/infrastructure/database/migrations/1764101420518-init-scheduling-module";
-import { JobExecutionService } from "@/modules/scheduling/services/implementations/JobExecution.service";
 import { JobScheduleConfigurationService } from "@/modules/scheduling/services/implementations/JobScheduleConfiguration.service";
-import { JobExecutionServiceToken } from "@/modules/scheduling/services/interfaces/IJobExecution.service";
+import {JobScheduler} from "@/modules/scheduling/services/implementations/JobScheduler";
 import { JobScheduleConfigurationServiceToken } from "@/modules/scheduling/services/interfaces/IJobScheduleConfiguration.service";
+import {JobSchedulerToken} from "@/modules/scheduling/services/interfaces/IJobScheduler";
 
 @Module({
     providers: [
@@ -32,8 +32,8 @@ import { JobScheduleConfigurationServiceToken } from "@/modules/scheduling/servi
             useClass: JobScheduleConfigurationService,
         },
         {
-            provide: JobExecutionServiceToken,
-            useClass: JobExecutionService,
+            provide: JobSchedulerToken,
+            useClass: JobScheduler,
         },
         {
             provide: IntervalJobScheduleUpdatedEventHandler,
@@ -96,6 +96,8 @@ export class SchedulingModule implements OnModuleInit {
     public onModuleInit() {
         this.orchestrator.startProcessingInbox(this.handlers);
         this.orchestrator.startClearingInbox();
+        this.orchestrator.startProcessingOutbox();
+        this.orchestrator.startClearingOutbox();
 
         void this.subscriber.listen([IntegrationEvents.scheduling.intervalJob.updated]);
     }
