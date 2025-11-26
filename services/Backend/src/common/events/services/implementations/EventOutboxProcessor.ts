@@ -125,7 +125,7 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
         );
     }
 
-    // TODO: Switch to client.publishBatch()
+    // TODO: Utilize client.publishBatch() properly
     private async publishEvents(events: OutboxEventEntity[]) {
         const successfulEvents: OutboxEventEntity[] = [];
         let failedEvent: OutboxEventEntity | null = null;

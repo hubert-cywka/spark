@@ -291,7 +291,7 @@ describe("IntegrationEventsModule", () => {
         const setup = () => {
             const admin = app.get<IEventAdmin>(EventAdminToken);
             const producer = app.get<IEventProducer>(EventProducerToken);
-            const outbox = app.get<IEventPublisher>(EventPublisherToken);
+            const outbox = app.get<IEventOutbox>(EventOutboxToken);
             const processor = app.get<IEventOutboxProcessor>(EventOutboxProcessorToken);
             const eventRepository = app.get<IOutboxEventRepository>(OutboxEventRepositoryToken);
             const partitionRepository = app.get<IOutboxPartitionRepository>(OutboxPartitionRepositoryToken);
@@ -362,8 +362,8 @@ describe("IntegrationEventsModule", () => {
             const { processor, producer } = setup();
 
             const eventsInProcessingOrder: IntegrationEvent[] = [];
-            jest.spyOn(producer, "publish").mockImplementation(async (event) => {
-                eventsInProcessingOrder.push(event);
+            jest.spyOn(producer, "publishBatch").mockImplementation(async (events) => {
+                eventsInProcessingOrder.push(...events);
                 return { ack: true };
             });
 
@@ -406,7 +406,7 @@ describe("IntegrationEventsModule", () => {
 
             let processedMessagesCounter = 0;
             const consecutiveAttemptToFail = 13;
-            jest.spyOn(producer, "publish").mockImplementation(async () => {
+            jest.spyOn(producer, "publishBatch").mockImplementation(async () => {
                 if (processedMessagesCounter === consecutiveAttemptToFail) {
                     throw new Error();
                 }
@@ -432,7 +432,7 @@ describe("IntegrationEventsModule", () => {
 
             let processedMessagesCounter = 0;
             const consecutiveAttemptToFail = 16;
-            jest.spyOn(producer, "publish").mockImplementation(async () => {
+            jest.spyOn(producer, "publishBatch").mockImplementation(async () => {
                 if (processedMessagesCounter === consecutiveAttemptToFail) {
                     throw new Error();
                 }
