@@ -40,7 +40,7 @@ export class DataPurgeProcessor implements IDataPurgeProcessor {
             await this.processPlan(planToProcess);
         }
     }
-    
+
     @Transactional({ connectionName: GDPR_MODULE_DATA_SOURCE })
     private async processPlan(plan: DataPurgePlanEntity): Promise<void> {
         const now = dayjs();

@@ -2,8 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 
 import { type IInboxEventHandler, IntegrationEvent, IntegrationEvents } from "@/common/events";
 import { IntegrationEventSubject } from "@/common/events/types";
-import {type IAlertsProcessor,AlertsProcessorToken} from "@/modules/alerts/services/interfaces/IAlertsProcessor.service";
-
+import { type IAlertsProcessor, AlertsProcessorToken } from "@/modules/alerts/services/interfaces/IAlertsProcessor.service";
 
 @Injectable()
 export class AlertCheckJobTriggeredEventHandler implements IInboxEventHandler {

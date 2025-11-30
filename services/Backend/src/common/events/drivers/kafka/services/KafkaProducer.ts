@@ -1,4 +1,4 @@
-import {Injectable, Logger} from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { type Producer, CompressionTypes, TopicMessages } from "kafkajs";
 
 import { IntegrationEvent } from "@/common/events";
@@ -39,7 +39,7 @@ export class KafkaProducer implements IEventProducer {
             const message = {
                 key: event.getPartitionKey(),
                 value: event.toBuffer(),
-            }
+            };
 
             if (!topicMessages) {
                 messagesByTopic.set(topic, { topic, messages: [message] });

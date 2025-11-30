@@ -21,9 +21,9 @@ import { JobScheduleEntity } from "@/modules/scheduling/entities/JobScheduleEnti
 import { IntervalJobScheduleUpdatedEventHandler } from "@/modules/scheduling/events/IntervalJobScheduleUpdatedEvent.handler";
 import { InitSchedulingModule1764101420518 } from "@/modules/scheduling/infrastructure/database/migrations/1764101420518-init-scheduling-module";
 import { JobScheduleConfigurationService } from "@/modules/scheduling/services/implementations/JobScheduleConfiguration.service";
-import {JobScheduler} from "@/modules/scheduling/services/implementations/JobScheduler";
+import { JobScheduler } from "@/modules/scheduling/services/implementations/JobScheduler";
 import { JobScheduleConfigurationServiceToken } from "@/modules/scheduling/services/interfaces/IJobScheduleConfiguration.service";
-import {JobSchedulerToken} from "@/modules/scheduling/services/interfaces/IJobScheduler";
+import { JobSchedulerToken } from "@/modules/scheduling/services/interfaces/IJobScheduler";
 
 @Module({
     providers: [

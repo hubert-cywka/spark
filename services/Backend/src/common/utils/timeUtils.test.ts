@@ -1,4 +1,4 @@
-import {fromHours, fromMinutes, fromSeconds} from "@/common/utils/timeUtils";
+import { fromHours, fromMinutes, fromSeconds } from "@/common/utils/timeUtils";
 
 describe("timeUtils", () => {
     describe("seconds", () => {

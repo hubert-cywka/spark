@@ -3,12 +3,13 @@ import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import {
-type  IEventPublisher,
+    type IEventPublisher,
     type IInboxEventHandler,
-    EventPublisherToken,     InboxEventHandlersToken,
+    EventPublisherToken,
+    InboxEventHandlersToken,
     IntegrationEvents,
     IntegrationEventsModule,
-    IntervalJobScheduleUpdatedEvent
+    IntervalJobScheduleUpdatedEvent,
 } from "@/common/events";
 import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
 import { InboxAndOutboxSequenceNumber1753291628862 } from "@/common/events/migrations/1753291628862-inbox-and-outbox-sequence-number";
@@ -17,14 +18,14 @@ import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
 } from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
-import { 
+import {
     type IIntegrationEventsSubscriber,
     IntegrationEventsSubscriberToken,
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
-import {fromHours} from "@/common/utils/timeUtils";
+import { fromHours } from "@/common/utils/timeUtils";
 import { DataPurgePlanEntity } from "@/modules/gdpr/entities/DataPurgePlan.entity";
 import { TenantEntity } from "@/modules/gdpr/entities/Tenant.entity";
-import {PurgeJobTriggeredEventHandler} from "@/modules/gdpr/events/PurgeJobTriggeredEvent.handler";
+import { PurgeJobTriggeredEventHandler } from "@/modules/gdpr/events/PurgeJobTriggeredEvent.handler";
 import { TenantCreatedEventHandler } from "@/modules/gdpr/events/TenantCreatedEvent.handler";
 import { TenantRemovalRequestedEventHandler } from "@/modules/gdpr/events/TenantRemovalRequestedEvent.handler";
 import { TenantRemovedEventHandler } from "@/modules/gdpr/events/TenantRemovedEvent.handler";
@@ -53,8 +54,8 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
             useClass: DataPurgeEventsPublisher,
         },
         {
-          provide: PurgeJobTriggeredEventHandler,
-          useClass: PurgeJobTriggeredEventHandler  
+            provide: PurgeJobTriggeredEventHandler,
+            useClass: PurgeJobTriggeredEventHandler,
         },
         {
             provide: TenantCreatedEventHandler,
@@ -71,7 +72,12 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
-            inject: [TenantCreatedEventHandler, TenantRemovedEventHandler, TenantRemovalRequestedEventHandler, PurgeJobTriggeredEventHandler],
+            inject: [
+                TenantCreatedEventHandler,
+                TenantRemovedEventHandler,
+                TenantRemovalRequestedEventHandler,
+                PurgeJobTriggeredEventHandler,
+            ],
         },
     ],
     imports: [
@@ -138,13 +144,12 @@ export class GdprModule implements OnModuleInit {
             IntegrationEvents.gdpr.purge.triggered,
         ]);
 
-        // TODO: Publish jobs configuration
         void this.eventPublisher.enqueueMany([
             new IntervalJobScheduleUpdatedEvent({
                 id: "data_purge",
                 interval: fromHours(1),
-                callback: IntegrationEvents.gdpr.purge.triggered
-            })
+                callback: IntegrationEvents.gdpr.purge.triggered,
+            }),
         ]);
     }
 }

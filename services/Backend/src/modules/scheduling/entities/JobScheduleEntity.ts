@@ -15,7 +15,7 @@ export class JobScheduleEntity {
     executions!: Relation<JobExecutionEntity>[];
 
     @Column({ type: "int" })
-    interval!: number; 
+    interval!: number;
 
     @Column("varchar")
     callbackTopic!: IntegrationEventTopic;

@@ -1,5 +1,5 @@
 import { IntegrationEvent } from "@/common/events";
-import {IntegrationEventSubject, IntegrationEventTopic} from "@/common/events/types";
+import { IntegrationEventSubject, IntegrationEventTopic } from "@/common/events/types";
 
 export type JobTriggeredEventPayload = {
     job: {
@@ -14,7 +14,7 @@ export type JobTriggeredEventPayload = {
 export class JobTriggeredEvent extends IntegrationEvent<JobTriggeredEventPayload> {
     public constructor(payload: JobTriggeredEventPayload) {
         super({
-            tenantId: crypto.randomUUID(), // TODO
+            tenantId: null,
             topic: payload.job.callback.topic,
             subject: payload.job.callback.subject,
             partitionKey: payload.job.id,

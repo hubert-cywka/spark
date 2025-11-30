@@ -1,4 +1,4 @@
-import { fromSeconds } from "@nestjs/throttler";
+import { fromSeconds } from "@/common/utils/timeUtils";
 
 export const MIN_PASSWORD_LENGTH = 8;
 export const MAX_PASSWORD_LENGTH = 1024;

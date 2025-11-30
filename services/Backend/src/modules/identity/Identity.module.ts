@@ -1,10 +1,12 @@
 import { Inject, Module, OnModuleInit } from "@nestjs/common";
 
 import {
-type IEventPublisher,
+    type IEventPublisher,
     type IInboxEventHandler,
-    EventPublisherToken,     InboxEventHandlersToken,
-    IntegrationEvents, IntervalJobScheduleUpdatedEvent
+    EventPublisherToken,
+    InboxEventHandlersToken,
+    IntegrationEvents,
+    IntervalJobScheduleUpdatedEvent,
 } from "@/common/events";
 import {
     type IIntegrationEventsJobsOrchestrator,
@@ -14,7 +16,7 @@ import {
     type IIntegrationEventsSubscriber,
     IntegrationEventsSubscriberToken,
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
-import {fromHours} from "@/common/utils/timeUtils";
+import { fromHours } from "@/common/utils/timeUtils";
 import { AccountActivatedEventHandler } from "@/modules/identity/2fa/events/AccountActivatedEvent.handler";
 import { TwoFactorAuthenticationModule } from "@/modules/identity/2fa/TwoFactorAuthentication.module";
 import { AccountModule } from "@/modules/identity/account/Account.module";
@@ -23,9 +25,7 @@ import { AccountRemovedEventHandler } from "@/modules/identity/account/events/Ac
 import { AuthenticationModule } from "@/modules/identity/authentication/Authentication.module";
 import { AccountPasswordUpdatedEventHandler } from "@/modules/identity/authentication/events/AccountPasswordUpdatedEvent.handler";
 import { AccountSuspendedEventHandler } from "@/modules/identity/authentication/events/AccountSuspendedEvent.handler";
-import {
-    RefreshTokenInvalidationJobTriggeredEventHandler
-} from "@/modules/identity/authentication/events/RefreshTokenInvalidationJobTriggeredEvent.handler";
+import { RefreshTokenInvalidationJobTriggeredEventHandler } from "@/modules/identity/authentication/events/RefreshTokenInvalidationJobTriggeredEvent.handler";
 import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.module";
 
 @Module({
@@ -74,13 +74,12 @@ export class IdentityModule implements OnModuleInit {
             IntegrationEvents.refreshToken.invalidation.triggered,
         ]);
 
-        // TODO: Publish jobs configuration
         void this.eventPublisher.enqueueMany([
-           new IntervalJobScheduleUpdatedEvent({
-               id: "refresh_token_invalidation",
-               interval: fromHours(1),
-               callback: IntegrationEvents.refreshToken.invalidation.triggered
-           }) 
+            new IntervalJobScheduleUpdatedEvent({
+                id: "refresh_token_invalidation",
+                interval: fromHours(1),
+                callback: IntegrationEvents.refreshToken.invalidation.triggered,
+            }),
         ]);
     }
 }

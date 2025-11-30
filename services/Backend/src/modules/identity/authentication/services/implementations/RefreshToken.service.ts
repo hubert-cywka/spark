@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import dayjs from "dayjs";
-import {IsNull, LessThanOrEqual, Repository} from "typeorm";
+import { IsNull, LessThanOrEqual, Repository } from "typeorm";
 
 import { toSHA256 } from "@/common/utils/hashUtils";
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";

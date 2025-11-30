@@ -6,8 +6,8 @@ export class IntegrationEventEntity<T = string | object> {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
-    @Column({ type: "uuid" })
-    tenantId!: string;
+    @Column({ type: "uuid", nullable: true })
+    tenantId!: string | null;
 
     @Column({ type: "varchar" })
     partitionKey!: string;
