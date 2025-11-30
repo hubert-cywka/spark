@@ -2,7 +2,15 @@ import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEvents, IntegrationEventsModule } from "@/common/events";
+import {
+    type IEventPublisher,
+    type IInboxEventHandler,
+    EventPublisherToken,
+    InboxEventHandlersToken,
+    IntegrationEvents,
+    IntegrationEventsModule,
+    IntervalJobScheduleUpdatedEvent,
+} from "@/common/events";
 import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
 import { InboxAndOutboxSequenceNumber1753291628862 } from "@/common/events/migrations/1753291628862-inbox-and-outbox-sequence-number";
 import { InboxAndOutboxSplitTopicAndSubject1753291628863 } from "@/common/events/migrations/1753291628863-inbox-and-outbox-split-topic-and-subject";
@@ -14,9 +22,11 @@ import {
     type IIntegrationEventsSubscriber,
     IntegrationEventsSubscriberToken,
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
+import { fromSeconds } from "@/common/utils/timeUtils";
 import { AlertsController } from "@/modules/alerts/controllers/Alerts.controller";
 import { AlertEntity } from "@/modules/alerts/entities/Alert.entity";
 import { RecipientEntity } from "@/modules/alerts/entities/Recipient.entity";
+import { AlertCheckJobTriggeredEventHandler } from "@/modules/alerts/events/AlertCheckJobTriggeredEvent.handler";
 import { RecipientCreatedEventHandler } from "@/modules/alerts/events/RecipientCreatedEvent.handler";
 import { RecipientRemovedEventHandler } from "@/modules/alerts/events/RecipientRemovedEvent.handler";
 import { ALERTS_MODULE_DATA_SOURCE } from "@/modules/alerts/infrastructure/database/constants";
@@ -64,9 +74,13 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
             useClass: RecipientRemovedEventHandler,
         },
         {
+            provide: AlertCheckJobTriggeredEventHandler,
+            useClass: AlertCheckJobTriggeredEventHandler,
+        },
+        {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
-            inject: [RecipientCreatedEventHandler, RecipientRemovedEventHandler],
+            inject: [RecipientCreatedEventHandler, RecipientRemovedEventHandler, AlertCheckJobTriggeredEventHandler],
         },
     ],
     imports: [
@@ -115,7 +129,9 @@ export class AlertsModule implements OnModuleInit {
         @Inject(IntegrationEventsJobsOrchestratorToken)
         private readonly orchestrator: IIntegrationEventsJobsOrchestrator,
         @Inject(InboxEventHandlersToken)
-        private readonly handlers: IInboxEventHandler[]
+        private readonly handlers: IInboxEventHandler[],
+        @Inject(EventPublisherToken)
+        private readonly eventPublisher: IEventPublisher
     ) {}
 
     public onModuleInit() {
@@ -124,6 +140,18 @@ export class AlertsModule implements OnModuleInit {
         this.orchestrator.startClearingInbox();
         this.orchestrator.startClearingOutbox();
 
-        void this.subscriber.listen([IntegrationEvents.account.created, IntegrationEvents.account.removal.completed]);
+        void this.subscriber.listen([
+            IntegrationEvents.account.created,
+            IntegrationEvents.account.removal.completed,
+            IntegrationEvents.alert.check.triggered,
+        ]);
+
+        void this.eventPublisher.enqueueMany([
+            new IntervalJobScheduleUpdatedEvent({
+                id: "alerts_check",
+                interval: fromSeconds(15),
+                callback: IntegrationEvents.alert.check.triggered,
+            }),
+        ]);
     }
 }

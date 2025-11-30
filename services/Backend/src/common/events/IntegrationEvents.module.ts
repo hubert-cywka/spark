@@ -28,6 +28,7 @@ import { EventInbox } from "@/common/events/services/implementations/EventInbox"
 import { EventInboxProcessor, EventInboxProcessorOptions } from "@/common/events/services/implementations/EventInboxProcessor";
 import { EventOutbox } from "@/common/events/services/implementations/EventOutbox";
 import { EventOutboxProcessor, EventOutboxProcessorOptions } from "@/common/events/services/implementations/EventOutboxProcessor";
+import { EventPublisher } from "@/common/events/services/implementations/EventPublisher";
 import { EventsRemovalService } from "@/common/events/services/implementations/EventsRemoval.service";
 import { IntegrationEventsEncryptionService } from "@/common/events/services/implementations/IntegrationEventsEncryption.service";
 import { IntegrationEventsJobsOrchestrator } from "@/common/events/services/implementations/IntegrationEventsJobsOrchestrator";
@@ -35,8 +36,9 @@ import { IntegrationEventsSubscriber } from "@/common/events/services/implementa
 import { PartitionAssigner } from "@/common/events/services/implementations/PartitionAssigner";
 import { EventInboxToken } from "@/common/events/services/interfaces/IEventInbox";
 import { EventInboxProcessorToken } from "@/common/events/services/interfaces/IEventInboxProcessor";
-import { EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
+import { EventOutboxToken, IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
 import { EventOutboxProcessorToken } from "@/common/events/services/interfaces/IEventOutboxProcessor";
+import { EventPublisherToken } from "@/common/events/services/interfaces/IEventPublisher";
 import {
     InboxEventsRemovalServiceToken,
     OutboxEventsRemovalServiceToken,
@@ -222,21 +224,23 @@ export class IntegrationEventsModule {
 
                 {
                     provide: EventOutboxToken,
-                    useFactory: (
-                        encryptionService: IIntegrationEventsEncryptionService,
-                        assigner: IPartitionAssigner,
-                        repository: IOutboxEventRepository
-                    ) =>
+                    useFactory: (assigner: IPartitionAssigner, repository: IOutboxEventRepository) =>
                         new EventOutbox(
                             {
                                 context: options.context,
                                 connectionName: options.connectionName,
                             },
                             repository,
-                            assigner,
-                            encryptionService
+                            assigner
                         ),
-                    inject: [IntegrationEventsEncryptionServiceToken, PartitionAssignerToken, OutboxEventRepositoryToken],
+                    inject: [PartitionAssignerToken, OutboxEventRepositoryToken],
+                },
+
+                {
+                    provide: EventPublisherToken,
+                    useFactory: (encryptionService: IIntegrationEventsEncryptionService, producer: IEventProducer, outbox: IEventOutbox) =>
+                        new EventPublisher(encryptionService, producer, outbox),
+                    inject: [IntegrationEventsEncryptionServiceToken, EventProducerToken, EventOutboxToken],
                 },
 
                 {
@@ -275,6 +279,7 @@ export class IntegrationEventsModule {
             ],
 
             exports: [
+                EventPublisherToken,
                 EventOutboxToken,
                 EventInboxToken,
                 IntegrationEventsSubscriberToken,

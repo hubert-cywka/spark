@@ -1,7 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
-import { Cron, CronExpression } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import dayjs from "dayjs";
 import { IsNull, LessThanOrEqual, Repository } from "typeorm";
@@ -107,22 +106,7 @@ export class RefreshTokenService implements IRefreshTokenService {
         );
     }
 
-    private async findOneByHash(token: string): Promise<RefreshTokenEntity | null> {
-        const hashedValue = await this.hashToken(token);
-        return this.getRepository().findOne({ where: { hashedValue } });
-    }
-
-    private async hashToken(value: string): Promise<string> {
-        return toSHA256(value);
-    }
-
-    private isValid(token: RefreshTokenEntity): boolean {
-        const now = dayjs().toDate();
-        return dayjs(token.expiresAt).isAfter(now) && !token.invalidatedAt;
-    }
-
-    @Cron(CronExpression.EVERY_DAY_AT_2AM)
-    private async deleteAllExpired(): Promise<void> {
+    public async deleteAllExpired(): Promise<void> {
         const now = dayjs().toDate();
         const result = await this.getRepository().delete({
             expiresAt: LessThanOrEqual(now),
@@ -135,6 +119,20 @@ export class RefreshTokenService implements IRefreshTokenService {
             },
             "Deleted expired tokens."
         );
+    }
+
+    private async findOneByHash(token: string): Promise<RefreshTokenEntity | null> {
+        const hashedValue = await this.hashToken(token);
+        return this.getRepository().findOne({ where: { hashedValue } });
+    }
+
+    private async hashToken(value: string): Promise<string> {
+        return toSHA256(value);
+    }
+
+    private isValid(token: RefreshTokenEntity): boolean {
+        const now = dayjs().toDate();
+        return dayjs(token.expiresAt).isAfter(now) && !token.invalidatedAt;
     }
 
     private getRepository(): Repository<RefreshTokenEntity> {

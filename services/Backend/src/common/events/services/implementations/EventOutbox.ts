@@ -4,7 +4,6 @@ import { runInTransaction, runOnTransactionCommit } from "typeorm-transactional"
 import { type IOutboxEventRepository } from "@/common/events/repositories/interfaces/IOutboxEvent.repository";
 import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
 import { type IEventsQueueSubscriber } from "@/common/events/services/interfaces/IEventsQueueSubscriber";
-import { type IIntegrationEventsEncryptionService } from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
 import { type IPartitionAssigner } from "@/common/events/services/interfaces/IPartitionAssigner";
 import { IntegrationEvent } from "@/common/events/types/IntegrationEvent";
 
@@ -22,21 +21,18 @@ export class EventOutbox implements IEventOutbox {
     public constructor(
         options: EventOutboxOptions,
         private readonly repository: IOutboxEventRepository,
-        private readonly partitionAssigner: IPartitionAssigner,
-        private readonly encryptionService: IIntegrationEventsEncryptionService
+        private readonly partitionAssigner: IPartitionAssigner
     ) {
         this.logger = new Logger(options.context);
         this.connectionName = options.connectionName;
         this.subscribers = [];
     }
 
-    public async enqueue(event: IntegrationEvent, options?: { encrypt: boolean }): Promise<void> {
-        const preparedEvent = await this.prepareEventToStore(event, options);
-
+    public async enqueue(event: IntegrationEvent): Promise<void> {
         await runInTransaction(
             async () => {
-                await this.repository.save(this.mapEventToInput(preparedEvent));
-                this.logger.log(preparedEvent, "Event added to outbox.");
+                await this.repository.save(this.mapEventToInput(event));
+                this.logger.log(event, "Event added to outbox.");
 
                 runOnTransactionCommit(async () => {
                     this.onEventEnqueued(event);
@@ -46,15 +42,8 @@ export class EventOutbox implements IEventOutbox {
         );
     }
 
-    public async enqueueMany(events: IntegrationEvent[], options?: { encrypt: boolean }): Promise<void> {
-        const promises: Promise<IntegrationEvent>[] = [];
-
-        for (const event of events) {
-            promises.push(this.prepareEventToStore(event, options));
-        }
-
-        const preparedEvents = await Promise.all(promises);
-        const inputs = preparedEvents.map((event) => this.mapEventToInput(event));
+    public async enqueueMany(events: IntegrationEvent[]): Promise<void> {
+        const inputs = events.map((event) => this.mapEventToInput(event));
 
         await runInTransaction(
             async () => {
@@ -62,7 +51,7 @@ export class EventOutbox implements IEventOutbox {
                 this.logger.log({ received: events.length, saved: result.length }, "Events added to outbox.");
 
                 runOnTransactionCommit(async () => {
-                    for (const event of preparedEvents) {
+                    for (const event of events) {
                         this.onEventEnqueued(event);
                     }
                 });
@@ -79,14 +68,6 @@ export class EventOutbox implements IEventOutbox {
 
     private onEventEnqueued(event: IntegrationEvent) {
         this.subscribers.forEach((subscriber) => subscriber.notifyOnEnqueued(event));
-    }
-
-    private async prepareEventToStore(event: IntegrationEvent, options?: { encrypt: boolean }): Promise<IntegrationEvent> {
-        if (options?.encrypt) {
-            return await this.encryptionService.encrypt(event.copy());
-        }
-
-        return event.copy();
     }
 
     private mapEventToInput(event: IntegrationEvent) {

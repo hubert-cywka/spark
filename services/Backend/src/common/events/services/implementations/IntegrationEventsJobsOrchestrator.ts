@@ -3,8 +3,9 @@ import { ConfigService } from "@nestjs/config";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import dayjs from "dayjs";
 
-import { type IEventInbox, type IEventOutbox, type IInboxEventHandler, EventInboxToken, EventOutboxToken } from "@/common/events";
+import { type IEventInbox, type IInboxEventHandler, EventInboxToken } from "@/common/events";
 import { type IEventInboxProcessor, EventInboxProcessorToken } from "@/common/events/services/interfaces/IEventInboxProcessor";
+import { type IEventOutbox, EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
 import { type IEventOutboxProcessor, EventOutboxProcessorToken } from "@/common/events/services/interfaces/IEventOutboxProcessor";
 import {
     type IEventsRemovalService,

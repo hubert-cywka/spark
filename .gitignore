@@ -13,6 +13,8 @@ dist-ssr
 *.local
 .vite
 
+obj
+
 # Secrets
 **/.env  
 **/.npmrc

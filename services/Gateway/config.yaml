@@ -6,7 +6,7 @@ admin:
 static_resources:
     listeners:
         - address:
-              socket_address:
+            socket_address:
                   address: 0.0.0.0
                   port_value: 80
           filter_chains:
@@ -22,7 +22,7 @@ static_resources:
                           use_remote_address: true
                           codec_type: AUTO
                           route_config:
-                              name: local_route
+                              name: public_api
 
                               response_headers_to_remove:
                                   - X-Powered-By
@@ -50,7 +50,7 @@ static_resources:
                                           value: "true"
 
                               virtual_hosts:
-                                  - name: virtual_host
+                                  - name: external_virtual_host
                                     domains:
                                         - '*'
 
@@ -215,3 +215,34 @@ static_resources:
                                   socket_address:
                                       address: '${USERS_SERVICE_ADDRESS}'
                                       port_value: '${USERS_SERVICE_PORT}'
+
+        - name: mail
+          connect_timeout: 5s
+          type: STRICT_DNS
+          dns_lookup_family: V4_ONLY
+          lb_policy: ROUND_ROBIN
+          load_assignment:
+            cluster_name: mail
+            endpoints:
+              - lb_endpoints:
+                  - endpoint:
+                      address:
+                        socket_address:
+                          address: '${MAIL_SERVICE_ADDRESS}'
+                          port_value: '${MAIL_SERVICE_PORT}'
+                          
+        - name: gdpr
+          connect_timeout: 5s
+          type: STRICT_DNS
+          dns_lookup_family: V4_ONLY
+          lb_policy: ROUND_ROBIN
+          load_assignment:
+            cluster_name: gdpr
+            endpoints:
+              - lb_endpoints:
+                  - endpoint:
+                      address:
+                        socket_address:
+                          address: '${GDPR_SERVICE_ADDRESS}'
+                          port_value: '${GDPR_SERVICE_PORT}'
+                          

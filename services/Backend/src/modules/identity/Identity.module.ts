@@ -1,6 +1,13 @@
 import { Inject, Module, OnModuleInit } from "@nestjs/common";
 
-import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEvents } from "@/common/events";
+import {
+    type IEventPublisher,
+    type IInboxEventHandler,
+    EventPublisherToken,
+    InboxEventHandlersToken,
+    IntegrationEvents,
+    IntervalJobScheduleUpdatedEvent,
+} from "@/common/events";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -9,6 +16,7 @@ import {
     type IIntegrationEventsSubscriber,
     IntegrationEventsSubscriberToken,
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
+import { fromHours } from "@/common/utils/timeUtils";
 import { AccountActivatedEventHandler } from "@/modules/identity/2fa/events/AccountActivatedEvent.handler";
 import { TwoFactorAuthenticationModule } from "@/modules/identity/2fa/TwoFactorAuthentication.module";
 import { AccountModule } from "@/modules/identity/account/Account.module";
@@ -17,6 +25,7 @@ import { AccountRemovedEventHandler } from "@/modules/identity/account/events/Ac
 import { AuthenticationModule } from "@/modules/identity/authentication/Authentication.module";
 import { AccountPasswordUpdatedEventHandler } from "@/modules/identity/authentication/events/AccountPasswordUpdatedEvent.handler";
 import { AccountSuspendedEventHandler } from "@/modules/identity/authentication/events/AccountSuspendedEvent.handler";
+import { RefreshTokenInvalidationJobTriggeredEventHandler } from "@/modules/identity/authentication/events/RefreshTokenInvalidationJobTriggeredEvent.handler";
 import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.module";
 
 @Module({
@@ -27,6 +36,7 @@ import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.m
             inject: [
                 AccountPasswordUpdatedEventHandler,
                 AccountRemovedEventHandler,
+                RefreshTokenInvalidationJobTriggeredEventHandler,
                 AccountSuspendedEventHandler,
                 AccountRemovalRequestedEventHandler,
                 AccountActivatedEventHandler,
@@ -44,7 +54,9 @@ export class IdentityModule implements OnModuleInit {
         @Inject(IntegrationEventsJobsOrchestratorToken)
         private readonly orchestrator: IIntegrationEventsJobsOrchestrator,
         @Inject(InboxEventHandlersToken)
-        private readonly handlers: IInboxEventHandler[]
+        private readonly handlers: IInboxEventHandler[],
+        @Inject(EventPublisherToken)
+        private readonly eventPublisher: IEventPublisher
     ) {}
 
     public onModuleInit() {
@@ -59,6 +71,15 @@ export class IdentityModule implements OnModuleInit {
             IntegrationEvents.account.removal.completed,
             IntegrationEvents.account.removal.requested,
             IntegrationEvents.account.suspended,
+            IntegrationEvents.refreshToken.invalidation.triggered,
+        ]);
+
+        void this.eventPublisher.enqueueMany([
+            new IntervalJobScheduleUpdatedEvent({
+                id: "refresh_token_invalidation",
+                interval: fromHours(1),
+                callback: IntegrationEvents.refreshToken.invalidation.triggered,
+            }),
         ]);
     }
 }

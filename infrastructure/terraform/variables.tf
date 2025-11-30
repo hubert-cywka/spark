@@ -101,6 +101,10 @@ variable "ALERTS_DATABASE_NAME" {
   type = string
 }
 
+variable "SCHEDULING_DATABASE_NAME" {
+  type = string
+}
+
 variable "GDPR_DATABASE_NAME" {
   type = string
 }

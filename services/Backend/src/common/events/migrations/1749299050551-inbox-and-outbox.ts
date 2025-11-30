@@ -8,7 +8,7 @@ export class InboxAndOutbox1749299050551 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
-            'CREATE TABLE "inbox_event" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "tenantId" uuid NOT NULL, "partitionKey" character varying NOT NULL, "partition" integer NOT NULL, "topic" character varying NOT NULL, "isEncrypted" boolean NOT NULL DEFAULT false, "payload" jsonb NOT NULL, "attempts" integer NOT NULL DEFAULT \'0\', "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL, "processedAt" TIMESTAMP WITH TIME ZONE, "receivedAt" TIMESTAMP WITH TIME ZONE NOT NULL, "processAfter" TIMESTAMP WITH TIME ZONE NOT NULL, CONSTRAINT "PK_9b85eb4cab41c7c6023b1e579d0" PRIMARY KEY ("id"))'
+            'CREATE TABLE "inbox_event" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "tenantId" uuid, "partitionKey" character varying NOT NULL, "partition" integer NOT NULL, "topic" character varying NOT NULL, "isEncrypted" boolean NOT NULL DEFAULT false, "payload" jsonb NOT NULL, "attempts" integer NOT NULL DEFAULT \'0\', "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL, "processedAt" TIMESTAMP WITH TIME ZONE, "receivedAt" TIMESTAMP WITH TIME ZONE NOT NULL, "processAfter" TIMESTAMP WITH TIME ZONE NOT NULL, CONSTRAINT "PK_9b85eb4cab41c7c6023b1e579d0" PRIMARY KEY ("id"))'
         );
         await queryRunner.query(
             'CREATE INDEX "idx_inbox_events_blocked" ON "inbox_event" ("partition", "processedAt", "processAfter", "attempts") '
@@ -23,7 +23,7 @@ export class InboxAndOutbox1749299050551 implements MigrationInterface {
             'CREATE INDEX "idx_inbox_partitions_to_process" ON "inbox_event_partition" ("lastProcessedAt", "staleAt") '
         );
         await queryRunner.query(
-            'CREATE TABLE "outbox_event" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "tenantId" uuid NOT NULL, "partitionKey" character varying NOT NULL, "partition" integer NOT NULL, "topic" character varying NOT NULL, "isEncrypted" boolean NOT NULL DEFAULT false, "payload" jsonb NOT NULL, "attempts" integer NOT NULL DEFAULT \'0\', "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL, "processedAt" TIMESTAMP WITH TIME ZONE, CONSTRAINT "PK_cc0c9e40998e45ecfc5e313429d" PRIMARY KEY ("id"))'
+            'CREATE TABLE "outbox_event" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "tenantId" uuid, "partitionKey" character varying NOT NULL, "partition" integer NOT NULL, "topic" character varying NOT NULL, "isEncrypted" boolean NOT NULL DEFAULT false, "payload" jsonb NOT NULL, "attempts" integer NOT NULL DEFAULT \'0\', "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL, "processedAt" TIMESTAMP WITH TIME ZONE, CONSTRAINT "PK_cc0c9e40998e45ecfc5e313429d" PRIMARY KEY ("id"))'
         );
         await queryRunner.query(
             'CREATE INDEX "idx_outbox_events_for_processing" ON "outbox_event" ("partition", "processedAt", "attempts", "createdAt") '

@@ -1,21 +1,22 @@
 import { EventInbox } from "./services/implementations/EventInbox";
-import { EventOutbox } from "./services/implementations/EventOutbox";
 import { EventInboxToken, IEventInbox } from "./services/interfaces/IEventInbox";
-import { EventOutboxToken, IEventOutbox } from "./services/interfaces/IEventOutbox";
+import { EventPublisherToken, IEventPublisher } from "./services/interfaces/IEventPublisher";
 import { type IInboxEventHandler, InboxEventHandlersToken } from "./services/interfaces/IInboxEventHandler";
 import { IntegrationEvent } from "./types/IntegrationEvent";
 import { IntegrationEvents } from "./types/IntegrationEvents";
 import { IntegrationEventsModule } from "./IntegrationEvents.module";
 
+import { EventPublisher } from "@/common/events/services/implementations/EventPublisher";
+
 export { IntegrationEventsModule };
 export {
     type IEventInbox,
-    type IEventOutbox,
+    type IEventPublisher,
     type IInboxEventHandler,
     EventInbox,
     EventInboxToken,
-    EventOutbox,
-    EventOutboxToken,
+    EventPublisher,
+    EventPublisherToken,
     InboxEventHandlersToken,
     IntegrationEvent,
 };
@@ -30,3 +31,4 @@ export * from "./types/account/AccountRemovalRequestedEvent";
 export * from "./types/account/AccountRequestedPasswordResetEvent";
 export * from "./types/account/AccountSuspendedEvent";
 export * from "./types/alert/DailyReminderTriggeredEvent";
+export * from "./types/scheduling/IntervalJobScheduleUpdatedEvent";

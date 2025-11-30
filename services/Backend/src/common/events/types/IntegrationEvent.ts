@@ -11,12 +11,12 @@ export type DefaultEventPayload = object | string;
 type IntegrationEventMetadata = {
     id?: string;
     createdAt?: Date;
+    tenantId: string | null;
 };
 
 type RequiredIntegrationEventFields<T = DefaultEventPayload> = {
     topic: IntegrationEventTopic;
     subject: IntegrationEventSubject;
-    tenantId: string;
     partitionKey: string;
     payload: T;
 };
@@ -26,10 +26,12 @@ type IntegrationEventFields<T = DefaultEventPayload> = IntegrationEventMetadata 
 export class IntegrationEvent<T = DefaultEventPayload> {
     private readonly id: string;
     private readonly partitionKey: string;
-    private readonly tenantId: string;
+    private readonly tenantId: string | null;
+
     private readonly topic: IntegrationEventTopic;
     private readonly subject: IntegrationEventSubject;
     private readonly payload: T;
+
     private readonly createdAt: Date;
 
     public constructor({
@@ -127,7 +129,7 @@ export class IntegrationEvent<T = DefaultEventPayload> {
         return this.id;
     }
 
-    public getTenantId(): string {
+    public getTenantId(): string | null {
         return this.tenantId;
     }
 

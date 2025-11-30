@@ -38,6 +38,18 @@ variable "alerts_service_name" {
   type = string
 }
 
+variable "mail_service_name" {
+  type = string
+}
+
+variable "gdpr_service_name" {
+  type = string
+}
+
+variable "scheduling_service_name" {
+  type = string
+}
+
 variable "envoy_image" {
   type    = string
   default = "hejs22/codename-gateway:latest"

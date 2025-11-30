@@ -6,7 +6,7 @@ import { LoggerModule } from "nestjs-pino";
 import { initializeTransactionalContext } from "typeorm-transactional";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { EventInboxToken, EventOutboxToken, IEventInbox, IEventOutbox, IntegrationEventsModule } from "@/common/events";
+import { EventInboxToken, EventPublisherToken, IEventInbox, IEventPublisher, IntegrationEventsModule } from "@/common/events";
 import { EventAdminToken, IEventAdmin } from "@/common/events/drivers/interfaces/IEventAdmin";
 import { IInboxEventRepository, InboxEventRepositoryToken } from "@/common/events/repositories/interfaces/IInboxEvent.repository";
 import {
@@ -118,7 +118,7 @@ describe("IntegrationEventsModule", () => {
         const setup = () => {
             const admin = app.get<IEventAdmin>(EventAdminToken);
             const inbox = app.get<IEventInbox>(EventInboxToken);
-            const outbox = app.get<IEventOutbox>(EventOutboxToken);
+            const publisher = app.get<IEventPublisher>(EventPublisherToken);
 
             const outboxProcessor = app.get<IEventOutboxProcessor>(EventOutboxProcessorToken);
             const inboxProcessor = app.get<IEventInboxProcessor>(EventInboxProcessorToken);
@@ -133,7 +133,7 @@ describe("IntegrationEventsModule", () => {
             const eventHandler = new TestEventHandler();
             return {
                 inbox,
-                outbox,
+                publisher,
                 outboxProcessor,
                 inboxProcessor,
                 outboxEventRepository,
@@ -148,8 +148,8 @@ describe("IntegrationEventsModule", () => {
 
         const seedOutbox = async ({ numOfTenants, eventsPerTenant }: { numOfTenants: number; eventsPerTenant: number }) => {
             const events = generateEvents(numOfTenants, eventsPerTenant, EVENT_TOPIC);
-            const { outbox } = setup();
-            await outbox.enqueueMany(events);
+            const { publisher } = setup();
+            await publisher.enqueueMany(events);
             return {
                 numOfTenants,
                 eventsPerTenant,
