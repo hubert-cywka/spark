@@ -37,16 +37,13 @@ RUN adduser --system --uid 1001 nextjs
 RUN mkdir .next
 RUN chown nextjs:nodejs .next
 
-COPY --from=build /app/package.json ./package.json
-COPY --from=build /app/next.config.mjs ./next.config.mjs
-COPY --from=build /app/public ./public
-COPY --from=build --chown=nextjs:nodejs /app/.next/standalone/app ./
-COPY --from=build --chown=nextjs:nodejs /app/.next/standalone/node_modules ./node_modules
-COPY --from=build --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=build /app/public ./app/public
+COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=build --chown=nextjs:nodejs /app/.next/static ./app/.next/static
 
 USER nextjs
 
 ENV PORT=80
 
 EXPOSE 80
-CMD ["node", "./server.js"]
+CMD ["node", "./app/server.js"]
