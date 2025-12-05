@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ChangeEventHandler, forwardRef, ReactNode, useCallback, useEffect } from "react";
+import { ChangeEventHandler, forwardRef, ReactNode, useCallback, useEffect } from "react";
 import { DateField, DateFieldProps as RacDateFieldProps, DateValue, FieldError, Label } from "react-aria-components";
 import { fromDate } from "@internationalized/date";
 

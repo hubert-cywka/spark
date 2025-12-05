@@ -14,7 +14,7 @@ export const config = {
     ],
 };
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
     const requestHeaders = new Headers(request.headers);
 
     // Hubert: Add nonce for dynamic routes. Static routes work fine, due to workaround with build-time replacement
