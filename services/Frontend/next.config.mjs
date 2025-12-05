@@ -6,7 +6,11 @@ const withNextIntl = createNextIntlPlugin("./src/lib/i18n/request.ts");
 const nextConfig = {
     output: "standalone",
     distDir: "./.next",
-    basePath: ""
+    basePath: "",
+    serverExternalPackages: ["pino", "pino-pretty", "thread-stream"],
+    turbopack: {
+        root: "/"
+    }
 };
 
 export default withNextIntl(nextConfig);

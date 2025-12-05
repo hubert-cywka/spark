@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import QRCode from "react-qr-code";
 
 import styles from "./styles/TwoFactorAuthenticationEnableModal.module.scss";
