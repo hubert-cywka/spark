@@ -114,4 +114,4 @@ export const useEntriesDataGrid = ({ allGroups, activeGroups, onColumnGrouped, o
     return { columns, rowKeyGetter };
 };
 
-const rowKeyGetter = (row: EntryDetail) => `${row.id}_${row.goals.concat("-")}`;
+const rowKeyGetter = (row: EntryDetail) => `${row.id}_${row.goals?.concat("-")}`;
