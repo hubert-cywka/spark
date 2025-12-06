@@ -188,6 +188,19 @@ services:
             - kafka-broker-3
             - pooler
     
+    configuration-service:
+        build:
+            context: ../../services/Backend
+            dockerfile: Dockerfile
+        restart: always
+        networks:
+            - services_network
+        depends_on:
+            - kafka-broker-1
+            - kafka-broker-2
+            - kafka-broker-3
+            - pooler
+    
     users-service:
         build:
             context: ../../services/Backend

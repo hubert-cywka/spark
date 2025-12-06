@@ -41,6 +41,8 @@ ALERTS_DATABASE_NAME="db_alerts"
 
 SCHEDULING_DATABASE_NAME="db_scheduling"
 
+CONFIGURATION_DATABASE_NAME = "db_configuration"
+
 GDPR_DATABASE_NAME="db_gdpr"
 
 MAIL_DATABASE_NAME="db_mail"

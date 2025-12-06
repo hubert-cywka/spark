@@ -33,6 +33,7 @@ export const TestConfig = () => ({
                 maxBatchSize: process.env.PUBSUB_INBOX_PROCESSOR_MAX_BATCH_SIZE,
                 maxAttempts: process.env.PUBSUB_INBOX_PROCESSOR_MAX_ATTEMPTS,
             },
+            retentionPeriod: 1,
         },
         outbox: {
             processing: {
@@ -41,6 +42,7 @@ export const TestConfig = () => ({
                 maxBatchSize: process.env.PUBSUB_OUTBOX_PROCESSOR_MAX_BATCH_SIZE,
                 maxAttempts: process.env.PUBSUB_OUTBOX_PROCESSOR_MAX_ATTEMPTS,
             },
+            retentionPeriod: 1,
         },
     },
 
@@ -70,6 +72,17 @@ export const TestConfig = () => ({
                 password: process.env.DATABASE_PASSWORD,
                 host: process.env.DATABASE_HOST,
                 name: process.env.GDPR_DATABASE_NAME,
+            },
+        },
+
+        configuration: {
+            database: {
+                logging: process.env.DATABASE_LOGGING_ENABLED === "true",
+                port: process.env.DATABASE_PORT,
+                username: process.env.DATABASE_USERNAME,
+                password: process.env.DATABASE_PASSWORD,
+                host: process.env.DATABASE_HOST,
+                name: process.env.CONFIGURATION_DATABASE_NAME,
             },
         },
 

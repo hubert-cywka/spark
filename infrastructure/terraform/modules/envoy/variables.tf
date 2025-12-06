@@ -50,6 +50,10 @@ variable "scheduling_service_name" {
   type = string
 }
 
+variable "configuration_service_name" {
+  type = string
+}
+
 variable "envoy_image" {
   type    = string
   default = "hejs22/codename-gateway:latest"

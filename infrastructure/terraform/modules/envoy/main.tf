@@ -96,6 +96,15 @@ resource "kubernetes_deployment" "envoy" {
           }
 
           env {
+            name  = "CONFIGURATION_SERVICE_ADDRESS"
+            value = "${var.configuration_service_name}.${var.namespace_name}.svc.cluster.local"
+          }
+          env {
+            name  = "CONFIGURATION_SERVICE_PORT"
+            value = var.backend_port
+          }
+
+          env {
             name  = "MAIL_SERVICE_ADDRESS"
             value = "${var.mail_service_name}.${var.namespace_name}.svc.cluster.local"
           }
