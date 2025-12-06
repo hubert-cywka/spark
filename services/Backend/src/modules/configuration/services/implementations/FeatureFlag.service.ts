@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { IsolationLevel, Transactional } from "typeorm-transactional";
 
 import { FeatureFlagEntity } from "@/modules/configuration/entities/FeatureFlag.entity";
 import { CONFIGURATION_MODULE_DATA_SOURCE } from "@/modules/configuration/infrastructure/database/constants";
@@ -8,6 +9,7 @@ import { type IFeatureFlagMapper, FeatureFlagMapperToken } from "@/modules/confi
 import { type FeatureFlag } from "@/modules/configuration/models/FeatureFlag.model";
 import { type FeatureFlagsFilter } from "@/modules/configuration/models/FeatureFlagFilters.model";
 import { type IFeatureFlagService } from "@/modules/configuration/services/interfaces/IFeatureFlag.service";
+import { type IFeatureFlagsStore, FeatureFlagsStoreToken } from "@/modules/configuration/services/interfaces/IFeatureFlagsStore";
 
 @Injectable()
 export class FeatureFlagService implements IFeatureFlagService {
@@ -17,10 +19,12 @@ export class FeatureFlagService implements IFeatureFlagService {
         @InjectRepository(FeatureFlagEntity, CONFIGURATION_MODULE_DATA_SOURCE)
         private readonly repository: Repository<FeatureFlagEntity>,
         @Inject(FeatureFlagMapperToken)
-        private readonly featureFlagMapper: IFeatureFlagMapper
+        private readonly featureFlagMapper: IFeatureFlagMapper,
+        @Inject(FeatureFlagsStoreToken)
+        private readonly store: IFeatureFlagsStore
     ) {}
 
-    async get(flagsFilter: FeatureFlagsFilter): Promise<FeatureFlag[]> {
+    public async get(flagsFilter: FeatureFlagsFilter): Promise<FeatureFlag[]> {
         const repository = this.getRepository();
 
         const flags = await repository.find({
@@ -30,7 +34,8 @@ export class FeatureFlagService implements IFeatureFlagService {
         return this.featureFlagMapper.fromEntityToModelBulk(flags);
     }
 
-    async set(tenantIds: string[], key: string, value: boolean): Promise<void> {
+    @Transactional({ connectionName: CONFIGURATION_MODULE_DATA_SOURCE, isolationLevel: IsolationLevel.SERIALIZABLE })
+    public async set(tenantIds: string[], key: string, value: boolean): Promise<void> {
         const repository = this.getRepository();
         const conflictKeys = ["key", "tenantId"] as const satisfies (keyof FeatureFlagEntity)[];
 
@@ -41,19 +46,28 @@ export class FeatureFlagService implements IFeatureFlagService {
         }));
 
         await repository.upsert(flags, conflictKeys);
+        await this.invalidateCache(key);
 
         this.logger.debug({ tenantIds, key, value }, "Feature flag set.");
     }
 
-    async remove(id: string): Promise<void> {
+    @Transactional({ connectionName: CONFIGURATION_MODULE_DATA_SOURCE, isolationLevel: IsolationLevel.SERIALIZABLE })
+    public async remove(id: string): Promise<void> {
         const repository = this.getRepository();
-        const result = await repository.delete({ id });
+        const flag = await repository.findOneBy({ id });
 
-        if (result.affected === 0) {
+        if (!flag) {
             this.logger.warn({ id }, "Couldn't find feature flag.");
-        } else {
-            this.logger.debug({ id }, "Feature flag removed.");
+            return;
         }
+
+        await repository.remove([flag]);
+        await this.invalidateCache(flag.key);
+        this.logger.debug({ id }, "Feature flag removed.");
+    }
+
+    private async invalidateCache(key: string): Promise<void> {
+        await this.store.clear(key);
     }
 
     private getRepository(): Repository<FeatureFlagEntity> {
