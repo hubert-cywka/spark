@@ -1,6 +1,7 @@
 import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
+import { CacheModule } from "@/common/cache/Cache.module";
 import { DatabaseModule } from "@/common/database/Database.module";
 import {
     type IEventPublisher,
@@ -81,6 +82,12 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
         },
     ],
     imports: [
+        CacheModule.forRootAsync({
+            useFactory: (configService: ConfigService) => ({
+                connectionString: configService.getOrThrow<string>("modules.gdpr.cache.connectionString"),
+            }),
+            inject: [ConfigService],
+        }),
         DatabaseModule.forRootAsync(GDPR_MODULE_DATA_SOURCE, {
             useFactory: (configService: ConfigService) => ({
                 logging: configService.getOrThrow<boolean>("modules.gdpr.database.logging"),

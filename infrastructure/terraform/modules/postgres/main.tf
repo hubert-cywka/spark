@@ -1,28 +1,28 @@
-resource "kubernetes_deployment" "db" {
+resource "kubernetes_deployment" "postgres" {
   metadata {
-    name      = "db"
+    name      = "postgres"
     namespace = var.namespace
-    labels    = { app = "db" }
+    labels    = { app = "postgres" }
   }
 
   spec {
     replicas = 1
     selector {
       match_labels = {
-        app = "db"
+        app = "postgres"
       }
     }
 
     template {
       metadata {
         labels = {
-          app = "db"
+          app = "postgres"
         }
       }
 
       spec {
         container {
-          name  = "db"
+          name  = "postgres"
           image = "postgres:${var.postgresql_image_tag}"
 
           liveness_probe {
@@ -79,13 +79,13 @@ resource "kubernetes_deployment" "db" {
           }
           volume_mount {
             mount_path = "/var/lib/postgresql/data"
-            name       = "db-storage"
+            name       = "postgres-storage"
           }
         }
         volume {
-          name = "db-storage"
+          name = "postgres-storage"
           persistent_volume_claim {
-            claim_name = kubernetes_persistent_volume_claim.db_pvc.metadata[0].name
+            claim_name = kubernetes_persistent_volume_claim.postgres_pvc.metadata[0].name
           }
         }
       }
@@ -93,9 +93,9 @@ resource "kubernetes_deployment" "db" {
   }
 }
 
-resource "kubernetes_persistent_volume_claim" "db_pvc" {
+resource "kubernetes_persistent_volume_claim" "postgres_pvc" {
   metadata {
-    name      = "db-pvc"
+    name      = "postgres-pvc"
     namespace = var.namespace
   }
 
@@ -110,16 +110,16 @@ resource "kubernetes_persistent_volume_claim" "db_pvc" {
   }
 }
 
-resource "kubernetes_service" "db" {
+resource "kubernetes_service" "postgres" {
   metadata {
-    name      = "db"
+    name      = "postgres"
     namespace = var.namespace
-    labels    = { app = "db" }
+    labels    = { app = "postgres" }
   }
 
   spec {
     selector = {
-      app = kubernetes_deployment.db.spec[0].template[0].metadata[0].labels.app
+      app = kubernetes_deployment.postgres.spec[0].template[0].metadata[0].labels.app
     }
 
     port {
@@ -220,7 +220,7 @@ resource "kubernetes_deployment" "pooler" {
           }
           env {
             name  = "POSTGRESQL_HOST"
-            value = kubernetes_service.db.metadata[0].name
+            value = kubernetes_service.postgres.metadata[0].name
           }
           env {
             name  = "POSTGRESQL_PORT"

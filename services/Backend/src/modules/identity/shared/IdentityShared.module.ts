@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
+import { CacheModule } from "@/common/cache/Cache.module";
 import { DatabaseModule } from "@/common/database/Database.module";
 import { IntegrationEventsModule } from "@/common/events";
 import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
@@ -17,6 +18,12 @@ import { RegenerateMigrations1749289911264 } from "@/modules/identity/infrastruc
 
 @Module({
     imports: [
+        CacheModule.forRootAsync({
+            useFactory: (configService: ConfigService) => ({
+                connectionString: configService.getOrThrow<string>("modules.identity.cache.connectionString"),
+            }),
+            inject: [ConfigService],
+        }),
         DatabaseModule.forRootAsync(IDENTITY_MODULE_DATA_SOURCE, {
             useFactory: (configService: ConfigService) => ({
                 logging: configService.getOrThrow<boolean>("modules.identity.database.logging"),

@@ -95,6 +95,15 @@ module "database" {
   pgbouncer_pool_mode  = "transaction"
 }
 
+module "cache" {
+  source = "./modules/redis"
+
+  namespace           = kubernetes_namespace.codename.metadata[0].name
+  redis_port          = var.CACHE_PORT
+  redis_image_tag     = "8.4.0"
+  volume_size_request = "1Gi"
+}
+
 module "kafka_cluster" {
   source = "./modules/kafka"
 
@@ -132,6 +141,7 @@ module "journal-service" {
     "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
     "DATABASE_HOST"                             = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
+    "CACHE_CONNECTION_STRING"                   = "${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
@@ -177,6 +187,7 @@ module "mail-service" {
     "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
     "DATABASE_HOST"                             = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
+    "CACHE_CONNECTION_STRING"                   = "${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
@@ -226,6 +237,7 @@ module "identity-service" {
     "DATABASE_USERNAME"                          = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                          = var.DATABASE_PASSWORD
     "DATABASE_HOST"                              = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
+    "CACHE_CONNECTION_STRING"                    = "${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
     "PUBSUB_BROKERS"                             = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"      = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"        = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
@@ -280,6 +292,7 @@ module "gdpr-service" {
     "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
     "DATABASE_HOST"                             = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
+    "CACHE_CONNECTION_STRING"                   = "${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
@@ -325,6 +338,7 @@ module "scheduling-service" {
     "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
     "DATABASE_HOST"                             = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
+    "CACHE_CONNECTION_STRING"                   = "${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
@@ -370,6 +384,7 @@ module "configuration-service" {
     "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
     "DATABASE_HOST"                             = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
+    "CACHE_CONNECTION_STRING"                   = "${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
@@ -415,6 +430,7 @@ module "users-service" {
     "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
     "DATABASE_HOST"                             = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
+    "CACHE_CONNECTION_STRING"                   = "${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
@@ -460,6 +476,7 @@ module "alerts-service" {
     "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
     "DATABASE_HOST"                             = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
+    "CACHE_CONNECTION_STRING"                   = "${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH

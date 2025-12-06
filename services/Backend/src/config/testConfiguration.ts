@@ -73,6 +73,9 @@ export const TestConfig = () => ({
                 host: process.env.DATABASE_HOST,
                 name: process.env.GDPR_DATABASE_NAME,
             },
+            cache: {
+                connectionString: process.env.CACHE_CONNECTION_STRING,
+            },
         },
 
         configuration: {
@@ -83,6 +86,9 @@ export const TestConfig = () => ({
                 password: process.env.DATABASE_PASSWORD,
                 host: process.env.DATABASE_HOST,
                 name: process.env.CONFIGURATION_DATABASE_NAME,
+            },
+            cache: {
+                connectionString: process.env.CACHE_CONNECTION_STRING,
             },
         },
 
@@ -95,6 +101,9 @@ export const TestConfig = () => ({
                 host: process.env.DATABASE_HOST,
                 name: process.env.SCHEDULING_DATABASE_NAME,
             },
+            cache: {
+                connectionString: process.env.CACHE_CONNECTION_STRING,
+            },
         },
 
         alerts: {
@@ -105,6 +114,9 @@ export const TestConfig = () => ({
                 password: process.env.DATABASE_PASSWORD,
                 host: process.env.DATABASE_HOST,
                 name: process.env.ALERTS_DATABASE_NAME,
+            },
+            cache: {
+                connectionString: process.env.CACHE_CONNECTION_STRING,
             },
         },
 
@@ -122,6 +134,9 @@ export const TestConfig = () => ({
                 host: process.env.DATABASE_HOST,
                 name: process.env.MAIL_DATABASE_NAME,
             },
+            cache: {
+                connectionString: process.env.CACHE_CONNECTION_STRING,
+            },
         },
 
         users: {
@@ -133,6 +148,9 @@ export const TestConfig = () => ({
                 host: process.env.DATABASE_HOST,
                 name: process.env.USERS_DATABASE_NAME,
             },
+            cache: {
+                connectionString: process.env.CACHE_CONNECTION_STRING,
+            },
         },
 
         journal: {
@@ -143,6 +161,9 @@ export const TestConfig = () => ({
                 password: process.env.DATABASE_PASSWORD,
                 host: process.env.DATABASE_HOST,
                 name: process.env.JOURNAL_DATABASE_NAME,
+            },
+            cache: {
+                connectionString: process.env.CACHE_CONNECTION_STRING,
             },
         },
 
@@ -158,6 +179,9 @@ export const TestConfig = () => ({
                 password: process.env.DATABASE_PASSWORD,
                 host: process.env.DATABASE_HOST,
                 name: process.env.AUTH_DATABASE_NAME,
+            },
+            cache: {
+                connectionString: process.env.CACHE_CONNECTION_STRING,
             },
             throttle: {
                 ttl: parseInt(process.env.AUTH_THROTTLE_TTL_IN_MS ?? ""),
