@@ -77,7 +77,7 @@ export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobs
 
     public startClearingInbox() {
         const retentionPeriod = this.configService.getOrThrow<number>("events.inbox.retentionPeriod");
-        
+
         const job = setInterval(async () => {
             const processedBefore = dayjs().subtract(retentionPeriod, "days").toDate();
             await this.inboxRemovalService.removeProcessedBefore(processedBefore);
@@ -89,7 +89,7 @@ export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobs
 
     public startClearingOutbox() {
         const retentionPeriod = this.configService.getOrThrow<number>("events.outbox.retentionPeriod");
-        
+
         const job = setInterval(async () => {
             const processedBefore = dayjs().subtract(retentionPeriod, "days").toDate();
             await this.outboxRemovalService.removeProcessedBefore(processedBefore);

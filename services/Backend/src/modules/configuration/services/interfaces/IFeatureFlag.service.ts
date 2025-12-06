@@ -1,5 +1,5 @@
-import type {FeatureFlag} from "@/modules/configuration/models/FeatureFlag.model";
-import {type FeatureFlagsFilter} from "@/modules/configuration/models/FeatureFlagFilters.model";
+import type { FeatureFlag } from "@/modules/configuration/models/FeatureFlag.model";
+import { type FeatureFlagsFilter } from "@/modules/configuration/models/FeatureFlagFilters.model";
 
 export const FeatureFlagServiceToken = Symbol("FeatureFlagServiceToken");
 

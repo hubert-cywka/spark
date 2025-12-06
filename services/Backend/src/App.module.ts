@@ -11,7 +11,7 @@ import { ThrottlingGuard } from "@/common/guards/Throttling.guard";
 import { AppConfig } from "@/config/configuration";
 import { logger, loggerOptions } from "@/lib/logger";
 import { AlertsModule } from "@/modules/alerts/Alerts.module";
-import {ConfigurationModule} from "@/modules/configuration/Configuration.module";
+import { ConfigurationModule } from "@/modules/configuration/Configuration.module";
 import { GdprModule } from "@/modules/gdpr/Gdpr.module";
 import { GlobalModule } from "@/modules/global/Global.module";
 import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";

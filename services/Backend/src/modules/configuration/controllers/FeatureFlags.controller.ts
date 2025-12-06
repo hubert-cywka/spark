@@ -1,11 +1,9 @@
-import {Body, Controller, Delete, Get, Inject, Param, ParseUUIDPipe, Post, Query} from "@nestjs/common";
+import { Body, Controller, Delete, Get, Inject, Param, ParseUUIDPipe, Post, Query } from "@nestjs/common";
 
-import {FeatureFlagDto} from "@/modules/configuration/dto/FeatureFlag.dto";
-import {GetFeatureFlagsDto} from "@/modules/configuration/dto/GetFeatureFlags.dto";
-import {type IFeatureFlagMapper,FeatureFlagMapperToken} from "@/modules/configuration/mappers/IFeatureFlag.mapper";
-import {
-type IFeatureFlagService,    FeatureFlagServiceToken} from "@/modules/configuration/services/interfaces/IFeatureFlag.service";
-
+import { FeatureFlagDto } from "@/modules/configuration/dto/FeatureFlag.dto";
+import { GetFeatureFlagsDto } from "@/modules/configuration/dto/GetFeatureFlags.dto";
+import { type IFeatureFlagMapper, FeatureFlagMapperToken } from "@/modules/configuration/mappers/IFeatureFlag.mapper";
+import { type IFeatureFlagService, FeatureFlagServiceToken } from "@/modules/configuration/services/interfaces/IFeatureFlag.service";
 
 @Controller("internal/configuration/feature-flag")
 export class FeatureFlagsController {
@@ -18,7 +16,7 @@ export class FeatureFlagsController {
 
     @Get()
     public async getFeatureFlags(@Query() { key, tenantId }: GetFeatureFlagsDto) {
-        const flags = await this.featureFlagService.get({ key, tenantId});
+        const flags = await this.featureFlagService.get({ key, tenantId });
         return this.featureFlagMapper.fromModelToDtoBulk(flags);
     }
 

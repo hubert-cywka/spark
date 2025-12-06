@@ -1,13 +1,13 @@
-import {Inject, Injectable, Logger} from "@nestjs/common";
-import {InjectRepository} from "@nestjs/typeorm";
-import {Repository} from "typeorm";
+import { Inject, Injectable, Logger } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 
-import {FeatureFlagEntity} from "@/modules/configuration/entities/FeatureFlag.entity";
-import {CONFIGURATION_MODULE_DATA_SOURCE} from "@/modules/configuration/infrastructure/database/constants";
-import {type IFeatureFlagMapper,FeatureFlagMapperToken} from "@/modules/configuration/mappers/IFeatureFlag.mapper";
-import {type FeatureFlag} from "@/modules/configuration/models/FeatureFlag.model";
-import { type FeatureFlagsFilter} from "@/modules/configuration/models/FeatureFlagFilters.model";
-import {type IFeatureFlagService} from "@/modules/configuration/services/interfaces/IFeatureFlag.service";
+import { FeatureFlagEntity } from "@/modules/configuration/entities/FeatureFlag.entity";
+import { CONFIGURATION_MODULE_DATA_SOURCE } from "@/modules/configuration/infrastructure/database/constants";
+import { type IFeatureFlagMapper, FeatureFlagMapperToken } from "@/modules/configuration/mappers/IFeatureFlag.mapper";
+import { type FeatureFlag } from "@/modules/configuration/models/FeatureFlag.model";
+import { type FeatureFlagsFilter } from "@/modules/configuration/models/FeatureFlagFilters.model";
+import { type IFeatureFlagService } from "@/modules/configuration/services/interfaces/IFeatureFlag.service";
 
 @Injectable()
 export class FeatureFlagService implements IFeatureFlagService {
@@ -34,13 +34,16 @@ export class FeatureFlagService implements IFeatureFlagService {
         const repository = this.getRepository();
         const conflictKeys = ["key", "tenantId"] as const satisfies (keyof FeatureFlagEntity)[];
 
-        await repository.upsert({
-            tenantId: tenantId,
-            key: key,
-            value: value,
-        }, conflictKeys);
+        await repository.upsert(
+            {
+                tenantId: tenantId,
+                key: key,
+                value: value,
+            },
+            conflictKeys
+        );
 
-        this.logger.debug({tenantId, key, value}, "Feature flag set.");
+        this.logger.debug({ tenantId, key, value }, "Feature flag set.");
     }
 
     async remove(id: string): Promise<void> {

@@ -1,7 +1,6 @@
-import {type Relation, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
+import { type Relation, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
-import {FeatureFlagEntity} from "@/modules/configuration/entities/FeatureFlag.entity";
-
+import { FeatureFlagEntity } from "@/modules/configuration/entities/FeatureFlag.entity";
 
 @Entity("tenant")
 export class TenantEntity {

@@ -32,7 +32,7 @@ export const AppConfig = () => ({
                 maxBatchSize: process.env.PUBSUB_INBOX_PROCESSOR_MAX_BATCH_SIZE,
                 maxAttempts: process.env.PUBSUB_INBOX_PROCESSOR_MAX_ATTEMPTS,
             },
-            retentionPeriod: process.env.PUBSUB_INBOX_RETENTION_PERIOD_IN_DAYS ?? 210
+            retentionPeriod: process.env.PUBSUB_INBOX_RETENTION_PERIOD_IN_DAYS ?? 210,
         },
         outbox: {
             processing: {
@@ -41,7 +41,7 @@ export const AppConfig = () => ({
                 maxBatchSize: process.env.PUBSUB_OUTBOX_PROCESSOR_MAX_BATCH_SIZE,
                 maxAttempts: process.env.PUBSUB_OUTBOX_PROCESSOR_MAX_ATTEMPTS,
             },
-            retentionPeriod: process.env.PUBSUB_OUTBOX_RETENTION_PERIOD_IN_DAYS ?? 180
+            retentionPeriod: process.env.PUBSUB_OUTBOX_RETENTION_PERIOD_IN_DAYS ?? 180,
         },
     },
 
@@ -84,7 +84,7 @@ export const AppConfig = () => ({
                 name: process.env.CONFIGURATION_DATABASE_NAME,
             },
         },
-        
+
         scheduling: {
             database: {
                 logging: process.env.DATABASE_LOGGING_ENABLED === "true",

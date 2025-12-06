@@ -71,15 +71,15 @@ module "gateway" {
   frontend_port   = var.FRONTEND_PORT
   allowed_origins = var.ALLOWED_ORIGINS
 
-  identity_service_name         = module.identity-service.service_name
-  journal_service_name          = module.journal-service.service_name
-  users_service_name            = module.users-service.service_name
-  alerts_service_name           = module.alerts-service.service_name
-  gdpr_service_name             = module.gdpr-service.service_name
-  mail_service_name             = module.mail-service.service_name
-  frontend_service_name         = module.frontend.service_name
-  scheduling_service_name       = module.scheduling-service.service_name
-  configuration_service_name    = module.configuration-service.service_name
+  identity_service_name      = module.identity-service.service_name
+  journal_service_name       = module.journal-service.service_name
+  users_service_name         = module.users-service.service_name
+  alerts_service_name        = module.alerts-service.service_name
+  gdpr_service_name          = module.gdpr-service.service_name
+  mail_service_name          = module.mail-service.service_name
+  frontend_service_name      = module.frontend.service_name
+  scheduling_service_name    = module.scheduling-service.service_name
+  configuration_service_name = module.configuration-service.service_name
 }
 
 module "database" {

@@ -4,12 +4,7 @@ import { ConfigService } from "@nestjs/config";
 import { CONFIGURATION_MODULE_DATA_SOURCE } from "./infrastructure/database/constants";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import {
-    type IInboxEventHandler,
-    InboxEventHandlersToken,
-    IntegrationEvents,
-    IntegrationEventsModule
-} from "@/common/events";
+import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEvents, IntegrationEventsModule } from "@/common/events";
 import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
 import { InboxAndOutboxSequenceNumber1753291628862 } from "@/common/events/migrations/1753291628862-inbox-and-outbox-sequence-number";
 import { InboxAndOutboxSplitTopicAndSubject1753291628863 } from "@/common/events/migrations/1753291628863-inbox-and-outbox-split-topic-and-subject";
@@ -21,28 +16,22 @@ import {
     type IIntegrationEventsSubscriber,
     IntegrationEventsSubscriberToken,
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
-import {FeatureFlagsController} from "@/modules/configuration/controllers/FeatureFlags.controller";
-import {FeatureFlagEntity} from "@/modules/configuration/entities/FeatureFlag.entity";
-import {TenantEntity} from "@/modules/configuration/entities/Tenant.entity";
-import {TenantCreatedEventHandler} from "@/modules/configuration/events/TenantCreatedEvent.handler";
-import {TenantRemovedEventHandler} from "@/modules/configuration/events/TenantRemovedEvent.handler";
-import {
-    InitConfigurationModule1765016363086
-} from "@/modules/configuration/infrastructure/database/migrations/1765016363086-init-configuration-module";
-import {
-    AddFeatureFlagsTable1765020949930
-} from "@/modules/configuration/infrastructure/database/migrations/1765020949930-add-feature-flags-table";
-import {
-    AddIndicesToFfTable1765022076178
-} from "@/modules/configuration/infrastructure/database/migrations/1765022076178-add-indices-to-ff-table";
-import {FeatureFlagMapper} from "@/modules/configuration/mappers/FeatureFlag.mapper";
-import {FeatureFlagMapperToken} from "@/modules/configuration/mappers/IFeatureFlag.mapper";
-import {TenantMapperToken} from "@/modules/configuration/mappers/ITenant.mapper";
-import {TenantMapper} from "@/modules/configuration/mappers/Tenant.mapper";
-import {FeatureFlagService} from "@/modules/configuration/services/implementations/FeatureFlag.service";
-import {TenantService} from "@/modules/configuration/services/implementations/Tenant.service";
-import {FeatureFlagServiceToken} from "@/modules/configuration/services/interfaces/IFeatureFlag.service";
-import {TenantServiceToken} from "@/modules/configuration/services/interfaces/ITenant.service";
+import { FeatureFlagsController } from "@/modules/configuration/controllers/FeatureFlags.controller";
+import { FeatureFlagEntity } from "@/modules/configuration/entities/FeatureFlag.entity";
+import { TenantEntity } from "@/modules/configuration/entities/Tenant.entity";
+import { TenantCreatedEventHandler } from "@/modules/configuration/events/TenantCreatedEvent.handler";
+import { TenantRemovedEventHandler } from "@/modules/configuration/events/TenantRemovedEvent.handler";
+import { InitConfigurationModule1765016363086 } from "@/modules/configuration/infrastructure/database/migrations/1765016363086-init-configuration-module";
+import { AddFeatureFlagsTable1765020949930 } from "@/modules/configuration/infrastructure/database/migrations/1765020949930-add-feature-flags-table";
+import { AddIndicesToFfTable1765022076178 } from "@/modules/configuration/infrastructure/database/migrations/1765022076178-add-indices-to-ff-table";
+import { FeatureFlagMapper } from "@/modules/configuration/mappers/FeatureFlag.mapper";
+import { FeatureFlagMapperToken } from "@/modules/configuration/mappers/IFeatureFlag.mapper";
+import { TenantMapperToken } from "@/modules/configuration/mappers/ITenant.mapper";
+import { TenantMapper } from "@/modules/configuration/mappers/Tenant.mapper";
+import { FeatureFlagService } from "@/modules/configuration/services/implementations/FeatureFlag.service";
+import { TenantService } from "@/modules/configuration/services/implementations/Tenant.service";
+import { FeatureFlagServiceToken } from "@/modules/configuration/services/interfaces/IFeatureFlag.service";
+import { TenantServiceToken } from "@/modules/configuration/services/interfaces/ITenant.service";
 
 @Module({
     providers: [
@@ -61,10 +50,7 @@ import {TenantServiceToken} from "@/modules/configuration/services/interfaces/IT
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
-            inject: [
-                TenantCreatedEventHandler,
-                TenantRemovedEventHandler,
-            ],
+            inject: [TenantCreatedEventHandler, TenantRemovedEventHandler],
         },
     ],
     imports: [
@@ -82,7 +68,7 @@ import {TenantServiceToken} from "@/modules/configuration/services/interfaces/IT
                     InboxAndOutboxSplitTopicAndSubject1753291628863,
                     InitConfigurationModule1765016363086,
                     AddFeatureFlagsTable1765020949930,
-                    AddIndicesToFfTable1765022076178
+                    AddIndicesToFfTable1765022076178,
                 ],
             }),
             inject: [ConfigService],
@@ -123,9 +109,6 @@ export class ConfigurationModule implements OnModuleInit {
         this.orchestrator.startProcessingOutbox();
         this.orchestrator.startClearingOutbox();
 
-        void this.subscriber.listen([
-            IntegrationEvents.account.created,
-            IntegrationEvents.account.removal.completed,
-        ]);
+        void this.subscriber.listen([IntegrationEvents.account.created, IntegrationEvents.account.removal.completed]);
     }
 }

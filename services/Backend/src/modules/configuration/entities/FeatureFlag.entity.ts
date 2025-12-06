@@ -3,14 +3,14 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-Index,
+    Index,
     ManyToOne,
     PrimaryGeneratedColumn,
     Unique,
-    UpdateDateColumn} from "typeorm";
+    UpdateDateColumn,
+} from "typeorm";
 
-import {TenantEntity} from "@/modules/configuration/entities/Tenant.entity";
-
+import { TenantEntity } from "@/modules/configuration/entities/Tenant.entity";
 
 @Entity("feature_flag")
 @Unique(["key", "tenantId"])
