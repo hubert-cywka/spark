@@ -73,8 +73,7 @@ const getAppBaseImports = (): ModuleImport[] => {
             useFactory: (config: ConfigService) => {
                 return {
                     proxy: {
-                        host: config.getOrThrow<string>("gateway.host"),
-                        port: config.getOrThrow<number>("gateway.port"),
+                        url: config.getOrThrow<string>("gateway.internalUrl"),
                     },
                 };
             },

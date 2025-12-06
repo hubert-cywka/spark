@@ -10,7 +10,7 @@ export class ServiceToServiceClient implements IServiceToServiceClient {
 
     public async get<T>(service: string, endpoint: string): Promise<T> {
         const sanitizedEndpoint = this.stripLeadingSlash(endpoint);
-        const url = `${this.options.host}:${this.options.port}/${service}/${sanitizedEndpoint}`;
+        const url = `${this.options.url}/${service}/${sanitizedEndpoint}`;
 
         const headers = {
             "Content-Type": "application/json",
@@ -20,7 +20,7 @@ export class ServiceToServiceClient implements IServiceToServiceClient {
 
         if (!response.ok) {
             const errorBody = await response.text();
-            throw new ServiceRequestFailedError(`Request ${service}/${sanitizedEndpoint} has failed. Reason: ${errorBody}`);
+            throw new ServiceRequestFailedError(`Request ${url} has failed. Reason: ${errorBody}`);
         }
 
         return (await response.json()) as T;

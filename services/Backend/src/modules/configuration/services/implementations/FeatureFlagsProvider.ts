@@ -31,6 +31,6 @@ export class FeatureFlagsProvider implements IFeatureFlagsProvider {
     }
 
     private async fetchAllByKey(key: string): Promise<FeatureFlag[]> {
-        return await this.client.get<FeatureFlag[]>("configuration", `internal/configuration/feature-flag?key=${key}`);
+        return await this.client.get<FeatureFlag[]>("configuration", `/api/internal/configuration/feature-flag?key=${key}`);
     }
 }
