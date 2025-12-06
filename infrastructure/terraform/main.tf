@@ -269,7 +269,7 @@ module "identity-service" {
     "GOOGLE_OIDC_REDIRECT_URL"                   = var.GOOGLE_OIDC_REDIRECT_URL
     "RATE_LIMITING_BASE_LIMIT"                   = var.RATE_LIMITING_BASE_LIMIT
     "RATE_LIMITING_BASE_TTL"                     = var.RATE_LIMITING_BASE_TTL
-    "GATEWAY_INTERNAL_URL"                      = "${module.database.service_name}.${module.gateway.namespace}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
+    "GATEWAY_INTERNAL_URL"                       = "${module.database.service_name}.${module.gateway.namespace}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
   }
 
   secret_name = kubernetes_secret.app_secrets.metadata[0].name

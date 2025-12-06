@@ -63,7 +63,7 @@ export const AppConfig = () => ({
     },
 
     gateway: {
-        internalUrl: process.env.GATEWAY_INTERNAL_URL
+        internalUrl: process.env.GATEWAY_INTERNAL_URL,
     },
 
     cache: {
