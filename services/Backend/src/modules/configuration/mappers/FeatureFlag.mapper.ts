@@ -4,7 +4,7 @@ import { BaseModelDTOEntityMapper } from "@/common/mappers/BaseModelDTOEntity.ma
 import { FeatureFlagDto } from "@/modules/configuration/dto/FeatureFlag.dto";
 import { FeatureFlagEntity } from "@/modules/configuration/entities/FeatureFlag.entity";
 import { type IFeatureFlagMapper } from "@/modules/configuration/mappers/IFeatureFlag.mapper";
-import { FeatureFlag } from "@/modules/configuration/models/FeatureFlag.model";
+import { type FeatureFlag } from "@/modules/configuration/models/FeatureFlag.model";
 
 export class FeatureFlagMapper
     extends BaseModelDTOEntityMapper<FeatureFlag, FeatureFlagDto, FeatureFlagEntity>

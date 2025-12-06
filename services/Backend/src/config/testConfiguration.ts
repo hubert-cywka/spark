@@ -63,6 +63,11 @@ export const TestConfig = () => ({
         },
     },
 
+    gateway: {
+        host: process.env.GATEWAY_HOST,
+        port: process.env.GATEWAY_INTERNAL_PORT,
+    },
+
     modules: {
         gdpr: {
             database: {

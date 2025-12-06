@@ -4,7 +4,6 @@ import { type IDistributedCache, DistributedCacheToken } from "@/common/cache/se
 import { type FeatureFlag } from "@/modules/configuration/models/FeatureFlag.model";
 import { type IFeatureFlagsStore } from "@/modules/configuration/services/interfaces/IFeatureFlagsStore";
 
-// TODO: Register in a shared module
 export class FeatureFlagsStore implements IFeatureFlagsStore {
     private readonly cacheKeyPrefix = "__featureFlags:";
 

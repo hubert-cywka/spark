@@ -5,9 +5,11 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { ThrottlerModule } from "@nestjs/throttler";
 import { LoggerModule } from "nestjs-pino";
 
+import { CacheModule } from "@/common/cache/Cache.module";
 import { IntegrationEventsModule } from "@/common/events";
 import { AccessTokenStrategy } from "@/common/guards/AccessToken.strategy";
 import { ThrottlingGuard } from "@/common/guards/Throttling.guard";
+import { ServiceToServiceModule } from "@/common/s2s/ServiceToService.module";
 import { AppConfig } from "@/config/configuration";
 import { logger, loggerOptions } from "@/lib/logger";
 import { AlertsModule } from "@/modules/alerts/Alerts.module";
@@ -50,6 +52,13 @@ const getAppBaseImports = (): ModuleImport[] => {
             ],
             inject: [ConfigService],
         }),
+        CacheModule.forRootAsync({
+            useFactory: (configService: ConfigService) => ({
+                connectionString: configService.getOrThrow<string>("cache.connectionString"),
+            }),
+            inject: [ConfigService],
+            global: true,
+        }),
         IntegrationEventsModule.forRootAsync({
             useFactory: (config: ConfigService) => {
                 return {
@@ -60,6 +69,19 @@ const getAppBaseImports = (): ModuleImport[] => {
             inject: [ConfigService],
             global: true,
         }),
+        ServiceToServiceModule.forRootAsync({
+            useFactory: (config: ConfigService) => {
+                return {
+                    proxy: {
+                        host: config.getOrThrow<string>("gateway.host"),
+                        port: config.getOrThrow<number>("gateway.port"),
+                    },
+                };
+            },
+            inject: [ConfigService],
+            global: true,
+        }),
+        ConfigurationModule.forRoot({ global: true }),
         GlobalModule,
         HealthCheckModule,
     ];
