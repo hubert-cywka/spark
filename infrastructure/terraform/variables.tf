@@ -35,6 +35,10 @@ variable "DATABASE_PASSWORD" {
   type      = string
 }
 
+variable "CACHE_PORT" {
+  type = number
+}
+
 variable "CLIENT_URL_BASE" {
   type = string
 }

@@ -1,6 +1,7 @@
 import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
+import { CacheModule } from "@/common/cache/Cache.module";
 import { DatabaseModule } from "@/common/database/Database.module";
 import {
     type IEventPublisher,
@@ -84,6 +85,12 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
         },
     ],
     imports: [
+        CacheModule.forRootAsync({
+            useFactory: (configService: ConfigService) => ({
+                connectionString: configService.getOrThrow<string>("modules.alerts.cache.connectionString"),
+            }),
+            inject: [ConfigService],
+        }),
         DatabaseModule.forRootAsync(ALERTS_MODULE_DATA_SOURCE, {
             useFactory: (configService: ConfigService) => ({
                 logging: configService.getOrThrow<boolean>("modules.alerts.database.logging"),

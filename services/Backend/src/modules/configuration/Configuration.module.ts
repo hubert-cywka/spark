@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 
 import { CONFIGURATION_MODULE_DATA_SOURCE } from "./infrastructure/database/constants";
 
+import { CacheModule } from "@/common/cache/Cache.module";
 import { DatabaseModule } from "@/common/database/Database.module";
 import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEvents, IntegrationEventsModule } from "@/common/events";
 import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
@@ -54,6 +55,12 @@ import { TenantServiceToken } from "@/modules/configuration/services/interfaces/
         },
     ],
     imports: [
+        CacheModule.forRootAsync({
+            useFactory: (configService: ConfigService) => ({
+                connectionString: configService.getOrThrow<string>("modules.configuration.cache.connectionString"),
+            }),
+            inject: [ConfigService],
+        }),
         DatabaseModule.forRootAsync(CONFIGURATION_MODULE_DATA_SOURCE, {
             useFactory: (configService: ConfigService) => ({
                 logging: configService.getOrThrow<boolean>("modules.configuration.database.logging"),

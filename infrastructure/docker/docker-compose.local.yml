@@ -35,6 +35,12 @@ services:
         ports:
             - "${DATABASE_PORT}:6432"
     
+    cache:
+        ports:
+            - "${CACHE_PORT}:6379"
+        volumes:
+            - redis:/data      
+    
     kafka-controller-1:
         environment:
             CLUSTER_ID: ${KAFKA_CLUSTER_ID}

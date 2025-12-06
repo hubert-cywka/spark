@@ -18,6 +18,8 @@
     "dependencies": {
         "@fastify/cookie": "11.0.2",
         "@fastify/static": "8.2.0",
+        "@keyv/redis": "5.1.4",
+        "@nestjs/cache-manager": "3.0.1",
         "@nestjs/common": "11.1.3",
         "@nestjs/config": "4.0.2",
         "@nestjs/core": "11.1.3",
@@ -32,6 +34,7 @@
         "arctic": "2.2.2",
         "argon2": "0.41.1",
         "bottleneck": "2.19.5",
+        "cache-manager": "7.2.5",
         "class-transformer": "0.4.1",
         "class-validator": "npm:@nestjs/class-validator@0.13.4",
         "cron": "3.2.1",
