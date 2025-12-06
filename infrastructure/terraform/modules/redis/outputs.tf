@@ -3,7 +3,7 @@ output "redis_name" {
 }
 
 output "redis_port" {
-    value = kubernetes_service.redis.spec[0].port[0].port
+  value = kubernetes_service.redis.spec[0].port[0].port
 }
 
 output "redis_cluster_ip" {
