@@ -55,6 +55,10 @@ variable "GATEWAY_PORT" {
   type = number
 }
 
+variable "GATEWAY_INTERNAL_PORT" {
+  type = number
+}
+
 variable "GATEWAY_URL" {
   type = string
 }

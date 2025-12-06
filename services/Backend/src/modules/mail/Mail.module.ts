@@ -1,7 +1,6 @@
 import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
-import { CacheModule } from "@/common/cache/Cache.module";
 import { DatabaseModule } from "@/common/database/Database.module";
 import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEvents, IntegrationEventsModule } from "@/common/events";
 import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
@@ -108,12 +107,6 @@ import { EmailTemplateFactoryToken } from "@/modules/mail/templates/IEmailTempla
         },
     ],
     imports: [
-        CacheModule.forRootAsync({
-            useFactory: (configService: ConfigService) => ({
-                connectionString: configService.getOrThrow<string>("modules.mail.cache.connectionString"),
-            }),
-            inject: [ConfigService],
-        }),
         DatabaseModule.forRootAsync(MAIL_MODULE_DATA_SOURCE, {
             useFactory: (configService: ConfigService) => ({
                 logging: configService.getOrThrow<boolean>("modules.mail.database.logging"),

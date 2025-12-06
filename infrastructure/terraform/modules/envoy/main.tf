@@ -25,7 +25,13 @@ resource "kubernetes_deployment" "envoy" {
           image = var.envoy_image
 
           port {
+            name           = "public_port"
             container_port = var.envoy_port
+          }
+
+          port {
+            name           = "internal_port"
+            container_port = var.envoy_internal_port
           }
 
           liveness_probe {
@@ -152,7 +158,13 @@ resource "kubernetes_service" "envoy" {
     }
 
     port {
+      name = "public_port"
       port = var.envoy_port
+    }
+
+    port {
+      name = "internal_port"
+      port = var.envoy_internal_port
     }
 
     type = "ClusterIP"

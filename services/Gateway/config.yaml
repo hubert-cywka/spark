@@ -7,6 +7,39 @@ static_resources:
     listeners:
         - address:
             socket_address:
+              address: 0.0.0.0
+              port_value: 8080
+          filter_chains:
+              - filters:
+                    - name: envoy.filters.network.http_connection_manager
+                      typed_config:
+                          '@type': type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                          generate_request_id: true
+                          stat_prefix: internal_http
+                          use_remote_address: false
+                          codec_type: AUTO
+                          
+                          http_filters:
+                            - name: envoy.filters.http.router
+                              typed_config:
+                                '@type': type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+                          
+                          route_config:
+                              name: internal_api
+                            
+                              virtual_hosts:
+                                - name: internal_virtual_host
+                                  domains:
+                                    - '*'
+                                  routes:
+                                    - match:
+                                        prefix: /configuration/api
+                                      route:
+                                        prefix_rewrite: /api
+                                        cluster: configuration
+                                
+        - address:
+            socket_address:
                   address: 0.0.0.0
                   port_value: 80
           filter_chains:
@@ -246,3 +279,17 @@ static_resources:
                           address: '${GDPR_SERVICE_ADDRESS}'
                           port_value: '${GDPR_SERVICE_PORT}'
                           
+        - name: configuration
+          connect_timeout: 5s
+          type: STRICT_DNS
+          dns_lookup_family: V4_ONLY
+          lb_policy: ROUND_ROBIN
+          load_assignment:
+            cluster_name: configuration
+            endpoints:
+              - lb_endpoints:
+                  - endpoint:
+                      address:
+                        socket_address:
+                          address: '${CONFIGURATION_SERVICE_ADDRESS}'
+                          port_value: '${CONFIGURATION_SERVICE_PORT}'

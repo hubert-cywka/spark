@@ -12,9 +12,10 @@ type CacheModuleOptions = {
 
 @Module({})
 export class CacheModule {
-    static forRootAsync(options: { useFactory: UseFactory<CacheModuleOptions>; inject?: UseFactoryArgs }): DynamicModule {
+    static forRootAsync(options: { useFactory: UseFactory<CacheModuleOptions>; inject?: UseFactoryArgs; global?: boolean }): DynamicModule {
         return {
             module: CacheModule,
+            global: options.global,
             providers: [
                 {
                     provide: DistributedCacheToken,
@@ -31,6 +32,7 @@ export class CacheModule {
                         };
                     },
                     inject: options.inject || [],
+                    isGlobal: options.global,
                 }),
             ],
             exports: [CacheModule, DistributedCacheToken],
