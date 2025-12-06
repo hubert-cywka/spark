@@ -34,7 +34,7 @@ export class FeatureFlagService implements IFeatureFlagService {
         const repository = this.getRepository();
         const conflictKeys = ["key", "tenantId"] as const satisfies (keyof FeatureFlagEntity)[];
 
-        const flags = tenantIds.map(tenantId => ({
+        const flags = tenantIds.map((tenantId) => ({
             tenantId: tenantId,
             key: key,
             value: value,

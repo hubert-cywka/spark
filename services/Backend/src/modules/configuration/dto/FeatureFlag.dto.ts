@@ -1,4 +1,4 @@
-import {IsBoolean, IsString} from "class-validator";
+import { IsBoolean, IsString } from "class-validator";
 
 export class FeatureFlagDto {
     @IsString()
@@ -13,5 +13,3 @@ export class FeatureFlagDto {
     @IsString()
     readonly tenantId!: string;
 }
-
-
