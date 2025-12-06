@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Inject, Param, ParseUUIDPipe, Post, Query } from "@nestjs/common";
 
-import { FeatureFlagDto } from "@/modules/configuration/dto/FeatureFlag.dto";
 import { GetFeatureFlagsDto } from "@/modules/configuration/dto/GetFeatureFlags.dto";
+import { SetFeatureFlagDto } from "@/modules/configuration/dto/SetFeatureFlag.dto";
 import { type IFeatureFlagMapper, FeatureFlagMapperToken } from "@/modules/configuration/mappers/IFeatureFlag.mapper";
 import { type IFeatureFlagService, FeatureFlagServiceToken } from "@/modules/configuration/services/interfaces/IFeatureFlag.service";
 
@@ -21,8 +21,8 @@ export class FeatureFlagsController {
     }
 
     @Post()
-    public async setFeatureFlag(@Body() dto: FeatureFlagDto) {
-        await this.featureFlagService.set(dto.tenantId, dto.key, dto.value);
+    public async setFeatureFlag(@Body() dto: SetFeatureFlagDto) {
+        await this.featureFlagService.set(dto.tenantIds, dto.key, dto.value);
     }
 
     @Delete(":id")

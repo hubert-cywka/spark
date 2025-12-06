@@ -5,6 +5,6 @@ export const FeatureFlagServiceToken = Symbol("FeatureFlagServiceToken");
 
 export interface IFeatureFlagService {
     get(filters: FeatureFlagsFilter): Promise<FeatureFlag[]>;
-    set(tenantId: string, key: string, value: boolean): Promise<void>;
+    set(tenantIds: string[], key: string, value: boolean): Promise<void>;
     remove(id: string): Promise<void>;
 }

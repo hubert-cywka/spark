@@ -30,20 +30,19 @@ export class FeatureFlagService implements IFeatureFlagService {
         return this.featureFlagMapper.fromEntityToModelBulk(flags);
     }
 
-    async set(tenantId: string, key: string, value: boolean): Promise<void> {
+    async set(tenantIds: string[], key: string, value: boolean): Promise<void> {
         const repository = this.getRepository();
         const conflictKeys = ["key", "tenantId"] as const satisfies (keyof FeatureFlagEntity)[];
 
-        await repository.upsert(
-            {
-                tenantId: tenantId,
-                key: key,
-                value: value,
-            },
-            conflictKeys
-        );
+        const flags = tenantIds.map(tenantId => ({
+            tenantId: tenantId,
+            key: key,
+            value: value,
+        }));
 
-        this.logger.debug({ tenantId, key, value }, "Feature flag set.");
+        await repository.upsert(flags, conflictKeys);
+
+        this.logger.debug({ tenantIds, key, value }, "Feature flag set.");
     }
 
     async remove(id: string): Promise<void> {
