@@ -6,6 +6,10 @@ variable "envoy_port" {
   type = number
 }
 
+variable "internal_port" {
+  type = number
+}
+
 variable "backend_port" {
   type = number
 }
