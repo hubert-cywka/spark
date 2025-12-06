@@ -33,6 +33,7 @@ export const TestConfig = () => ({
                 maxBatchSize: process.env.PUBSUB_INBOX_PROCESSOR_MAX_BATCH_SIZE,
                 maxAttempts: process.env.PUBSUB_INBOX_PROCESSOR_MAX_ATTEMPTS,
             },
+            retentionPeriod: 1
         },
         outbox: {
             processing: {
@@ -41,6 +42,7 @@ export const TestConfig = () => ({
                 maxBatchSize: process.env.PUBSUB_OUTBOX_PROCESSOR_MAX_BATCH_SIZE,
                 maxAttempts: process.env.PUBSUB_OUTBOX_PROCESSOR_MAX_ATTEMPTS,
             },
+            retentionPeriod: 1
         },
     },
 

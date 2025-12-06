@@ -21,19 +21,33 @@ import {
     type IIntegrationEventsSubscriber,
     IntegrationEventsSubscriberToken,
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
+import {FeatureFlagsController} from "@/modules/configuration/controllers/FeatureFlags.controller";
+import {FeatureFlagEntity} from "@/modules/configuration/entities/FeatureFlag.entity";
 import {TenantEntity} from "@/modules/configuration/entities/Tenant.entity";
 import {TenantCreatedEventHandler} from "@/modules/configuration/events/TenantCreatedEvent.handler";
 import {TenantRemovedEventHandler} from "@/modules/configuration/events/TenantRemovedEvent.handler";
 import {
     InitConfigurationModule1765016363086
 } from "@/modules/configuration/infrastructure/database/migrations/1765016363086-init-configuration-module";
+import {
+    AddFeatureFlagsTable1765020949930
+} from "@/modules/configuration/infrastructure/database/migrations/1765020949930-add-feature-flags-table";
+import {
+    AddIndicesToFfTable1765022076178
+} from "@/modules/configuration/infrastructure/database/migrations/1765022076178-add-indices-to-ff-table";
+import {FeatureFlagMapper} from "@/modules/configuration/mappers/FeatureFlag.mapper";
+import {FeatureFlagMapperToken} from "@/modules/configuration/mappers/IFeatureFlag.mapper";
 import {TenantMapperToken} from "@/modules/configuration/mappers/ITenant.mapper";
 import {TenantMapper} from "@/modules/configuration/mappers/Tenant.mapper";
+import {FeatureFlagService} from "@/modules/configuration/services/implementations/FeatureFlag.service";
 import {TenantService} from "@/modules/configuration/services/implementations/Tenant.service";
+import {FeatureFlagServiceToken} from "@/modules/configuration/services/interfaces/IFeatureFlag.service";
 import {TenantServiceToken} from "@/modules/configuration/services/interfaces/ITenant.service";
 
 @Module({
     providers: [
+        { provide: FeatureFlagMapperToken, useClass: FeatureFlagMapper },
+        { provide: FeatureFlagServiceToken, useClass: FeatureFlagService },
         { provide: TenantMapperToken, useClass: TenantMapper },
         { provide: TenantServiceToken, useClass: TenantService },
         {
@@ -66,12 +80,14 @@ import {TenantServiceToken} from "@/modules/configuration/services/interfaces/IT
                     InboxAndOutbox1749299050551,
                     InboxAndOutboxSequenceNumber1753291628862,
                     InboxAndOutboxSplitTopicAndSubject1753291628863,
-                    InitConfigurationModule1765016363086
+                    InitConfigurationModule1765016363086,
+                    AddFeatureFlagsTable1765020949930,
+                    AddIndicesToFfTable1765022076178
                 ],
             }),
             inject: [ConfigService],
         }),
-        DatabaseModule.forFeature(CONFIGURATION_MODULE_DATA_SOURCE, [TenantEntity]),
+        DatabaseModule.forFeature(CONFIGURATION_MODULE_DATA_SOURCE, [TenantEntity, FeatureFlagEntity]),
         IntegrationEventsModule.forFeatureAsync({
             context: ConfigurationModule.name,
             consumerGroupId: "configuration",
@@ -89,7 +105,7 @@ import {TenantServiceToken} from "@/modules/configuration/services/interfaces/IT
             inject: [ConfigService],
         }),
     ],
-    controllers: [],
+    controllers: [FeatureFlagsController],
 })
 export class ConfigurationModule implements OnModuleInit {
     public constructor(

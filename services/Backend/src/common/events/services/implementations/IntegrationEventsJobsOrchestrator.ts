@@ -14,8 +14,6 @@ import {
 } from "@/common/events/services/interfaces/IEventsRemoval.service";
 import { type IIntegrationEventsJobsOrchestrator } from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
 
-const EVENTS_RETENTION_PERIOD_IN_DAYS = 7;
-
 export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobsOrchestrator {
     private readonly logger: Logger;
 
@@ -78,8 +76,10 @@ export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobs
     }
 
     public startClearingInbox() {
+        const retentionPeriod = this.configService.getOrThrow<number>("events.inbox.retentionPeriod");
+        
         const job = setInterval(async () => {
-            const processedBefore = dayjs().subtract(EVENTS_RETENTION_PERIOD_IN_DAYS, "days").toDate();
+            const processedBefore = dayjs().subtract(retentionPeriod, "days").toDate();
             await this.inboxRemovalService.removeProcessedBefore(processedBefore);
         }, this.configService.getOrThrow<number>("events.inbox.processing.clearingInterval"));
 
@@ -88,8 +88,10 @@ export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobs
     }
 
     public startClearingOutbox() {
+        const retentionPeriod = this.configService.getOrThrow<number>("events.outbox.retentionPeriod");
+        
         const job = setInterval(async () => {
-            const processedBefore = dayjs().subtract(EVENTS_RETENTION_PERIOD_IN_DAYS, "days").toDate();
+            const processedBefore = dayjs().subtract(retentionPeriod, "days").toDate();
             await this.outboxRemovalService.removeProcessedBefore(processedBefore);
         }, this.configService.getOrThrow<number>("events.outbox.processing.clearingInterval"));
 

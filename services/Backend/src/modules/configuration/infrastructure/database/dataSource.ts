@@ -6,6 +6,7 @@ import { InboxEventPartitionEntity } from "@/common/events/entities/InboxEventPa
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { OutboxEventPartitionEntity } from "@/common/events/entities/OutboxEventPartition.entity";
 import { AppConfig } from "@/config/configuration";
+import {FeatureFlagEntity} from "@/modules/configuration/entities/FeatureFlag.entity";
 import {TenantEntity} from "@/modules/configuration/entities/Tenant.entity";
 
 configDotenv();
@@ -27,7 +28,8 @@ export const dataSource = new DataSource({
         InboxEventEntity,
         OutboxEventPartitionEntity,
         InboxEventPartitionEntity,
-        TenantEntity
+        TenantEntity,
+        FeatureFlagEntity
     ],
     migrations: [],
 });
