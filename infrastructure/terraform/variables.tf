@@ -105,6 +105,10 @@ variable "SCHEDULING_DATABASE_NAME" {
   type = string
 }
 
+variable "CONFIGURATION_DATABASE_NAME" {
+  type = string
+}
+
 variable "GDPR_DATABASE_NAME" {
   type = string
 }
