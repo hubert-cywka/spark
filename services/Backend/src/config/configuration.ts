@@ -62,6 +62,14 @@ export const AppConfig = () => ({
         },
     },
 
+    gateway: {
+        internalUrl: process.env.GATEWAY_INTERNAL_URL,
+    },
+
+    cache: {
+        connectionString: process.env.CACHE_CONNECTION_STRING,
+    },
+
     modules: {
         gdpr: {
             database: {
@@ -71,9 +79,6 @@ export const AppConfig = () => ({
                 password: process.env.DATABASE_PASSWORD,
                 host: process.env.DATABASE_HOST,
                 name: process.env.GDPR_DATABASE_NAME,
-            },
-            cache: {
-                connectionString: process.env.CACHE_CONNECTION_STRING,
             },
         },
 
@@ -86,9 +91,6 @@ export const AppConfig = () => ({
                 host: process.env.DATABASE_HOST,
                 name: process.env.CONFIGURATION_DATABASE_NAME,
             },
-            cache: {
-                connectionString: process.env.CACHE_CONNECTION_STRING,
-            },
         },
 
         scheduling: {
@@ -100,9 +102,6 @@ export const AppConfig = () => ({
                 host: process.env.DATABASE_HOST,
                 name: process.env.SCHEDULING_DATABASE_NAME,
             },
-            cache: {
-                connectionString: process.env.CACHE_CONNECTION_STRING,
-            },
         },
 
         alerts: {
@@ -113,9 +112,6 @@ export const AppConfig = () => ({
                 password: process.env.DATABASE_PASSWORD,
                 host: process.env.DATABASE_HOST,
                 name: process.env.ALERTS_DATABASE_NAME,
-            },
-            cache: {
-                connectionString: process.env.CACHE_CONNECTION_STRING,
             },
         },
 
@@ -133,9 +129,6 @@ export const AppConfig = () => ({
                 host: process.env.DATABASE_HOST,
                 name: process.env.MAIL_DATABASE_NAME,
             },
-            cache: {
-                connectionString: process.env.CACHE_CONNECTION_STRING,
-            },
         },
 
         users: {
@@ -147,9 +140,6 @@ export const AppConfig = () => ({
                 host: process.env.DATABASE_HOST,
                 name: process.env.USERS_DATABASE_NAME,
             },
-            cache: {
-                connectionString: process.env.CACHE_CONNECTION_STRING,
-            },
         },
 
         journal: {
@@ -160,9 +150,6 @@ export const AppConfig = () => ({
                 password: process.env.DATABASE_PASSWORD,
                 host: process.env.DATABASE_HOST,
                 name: process.env.JOURNAL_DATABASE_NAME,
-            },
-            cache: {
-                connectionString: process.env.CACHE_CONNECTION_STRING,
             },
         },
 
@@ -181,9 +168,6 @@ export const AppConfig = () => ({
                 password: process.env.DATABASE_PASSWORD,
                 host: process.env.DATABASE_HOST,
                 name: process.env.AUTH_DATABASE_NAME,
-            },
-            cache: {
-                connectionString: process.env.CACHE_CONNECTION_STRING,
             },
             throttle: {
                 ttl: parseInt(process.env.AUTH_THROTTLE_TTL_IN_MS ?? ""),

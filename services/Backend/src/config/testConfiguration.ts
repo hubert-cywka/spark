@@ -63,6 +63,10 @@ export const TestConfig = () => ({
         },
     },
 
+    gateway: {
+        internalUrl: process.env.GATEWAY_INTERNAL_URL,
+    },
+
     modules: {
         gdpr: {
             database: {

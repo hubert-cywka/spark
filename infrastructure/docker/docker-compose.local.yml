@@ -140,6 +140,7 @@ services:
     gateway:
         ports:
             - "${GATEWAY_PORT}:80"
+            - "${GATEWAY_INTERNAL_PORT}:8080"
             - "5010:9901"
         env_file:
             - "./.env"

@@ -21,9 +21,21 @@ resource "kubernetes_deployment" "redis" {
       }
 
       spec {
+        security_context {
+          fs_group = 1000
+        }
+
         container {
           name  = "redis"
           image = "redis:${var.redis_image_tag}"
+
+          args = [
+            "redis-server",
+            "--appendonly",
+            "yes",
+            "--dir",
+            "/data"
+          ]
 
           liveness_probe {
             tcp_socket {

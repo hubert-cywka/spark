@@ -44,6 +44,10 @@
         "port": 5200,
         "detachable": true
     },
+    "configuration-service": {
+        "port": 5200,
+        "detachable": true
+    },
     "kafka-broker-1": {
         "detachable": false
     },

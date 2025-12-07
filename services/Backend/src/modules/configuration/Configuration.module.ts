@@ -1,9 +1,8 @@
-import { Inject, Module, OnModuleInit } from "@nestjs/common";
+import { DynamicModule, Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { CONFIGURATION_MODULE_DATA_SOURCE } from "./infrastructure/database/constants";
 
-import { CacheModule } from "@/common/cache/Cache.module";
 import { DatabaseModule } from "@/common/database/Database.module";
 import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEvents, IntegrationEventsModule } from "@/common/events";
 import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
@@ -30,14 +29,20 @@ import { FeatureFlagMapperToken } from "@/modules/configuration/mappers/IFeature
 import { TenantMapperToken } from "@/modules/configuration/mappers/ITenant.mapper";
 import { TenantMapper } from "@/modules/configuration/mappers/Tenant.mapper";
 import { FeatureFlagService } from "@/modules/configuration/services/implementations/FeatureFlag.service";
+import { FeatureFlagsProvider } from "@/modules/configuration/services/implementations/FeatureFlagsProvider";
+import { FeatureFlagsStore } from "@/modules/configuration/services/implementations/FeatureFlagsStore";
 import { TenantService } from "@/modules/configuration/services/implementations/Tenant.service";
 import { FeatureFlagServiceToken } from "@/modules/configuration/services/interfaces/IFeatureFlag.service";
+import { FeatureFlagsProviderToken } from "@/modules/configuration/services/interfaces/IFeatureFlagsProvider";
+import { FeatureFlagsStoreToken } from "@/modules/configuration/services/interfaces/IFeatureFlagsStore";
 import { TenantServiceToken } from "@/modules/configuration/services/interfaces/ITenant.service";
 
 @Module({
     providers: [
         { provide: FeatureFlagMapperToken, useClass: FeatureFlagMapper },
         { provide: FeatureFlagServiceToken, useClass: FeatureFlagService },
+        { provide: FeatureFlagsStoreToken, useClass: FeatureFlagsStore },
+        { provide: FeatureFlagsProviderToken, useClass: FeatureFlagsProvider },
         { provide: TenantMapperToken, useClass: TenantMapper },
         { provide: TenantServiceToken, useClass: TenantService },
         {
@@ -55,12 +60,6 @@ import { TenantServiceToken } from "@/modules/configuration/services/interfaces/
         },
     ],
     imports: [
-        CacheModule.forRootAsync({
-            useFactory: (configService: ConfigService) => ({
-                connectionString: configService.getOrThrow<string>("modules.configuration.cache.connectionString"),
-            }),
-            inject: [ConfigService],
-        }),
         DatabaseModule.forRootAsync(CONFIGURATION_MODULE_DATA_SOURCE, {
             useFactory: (configService: ConfigService) => ({
                 logging: configService.getOrThrow<boolean>("modules.configuration.database.logging"),
@@ -110,6 +109,19 @@ export class ConfigurationModule implements OnModuleInit {
         private readonly handlers: IInboxEventHandler[]
     ) {}
 
+    static forRoot(options?: { global?: boolean }): DynamicModule {
+        return {
+            module: PublicConfigurationModule,
+            global: options?.global,
+            imports: [],
+            providers: [
+                { provide: FeatureFlagsStoreToken, useClass: FeatureFlagsStore },
+                { provide: FeatureFlagsProviderToken, useClass: FeatureFlagsProvider },
+            ],
+            exports: [FeatureFlagsStoreToken, FeatureFlagsProviderToken],
+        };
+    }
+
     public onModuleInit() {
         this.orchestrator.startProcessingInbox(this.handlers);
         this.orchestrator.startClearingInbox();
@@ -119,3 +131,5 @@ export class ConfigurationModule implements OnModuleInit {
         void this.subscriber.listen([IntegrationEvents.account.created, IntegrationEvents.account.removal.completed]);
     }
 }
+
+export class PublicConfigurationModule {}
