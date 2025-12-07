@@ -142,7 +142,7 @@ module "journal-service" {
     "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
     "DATABASE_HOST"                             = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
-    "CACHE_CONNECTION_STRING"                   = "${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
+    "CACHE_CONNECTION_STRING" = "redis://${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
@@ -162,7 +162,7 @@ module "journal-service" {
     "COOKIES_SECRET"                            = var.COOKIES_SECRET
     "RATE_LIMITING_BASE_LIMIT"                  = var.RATE_LIMITING_BASE_LIMIT
     "RATE_LIMITING_BASE_TTL"                    = var.RATE_LIMITING_BASE_TTL
-    "GATEWAY_INTERNAL_URL"                      = "${module.database.service_name}.${module.gateway.namespace}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
+    "GATEWAY_INTERNAL_URL"                      = "gateway.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
   }
 
   secret_name = kubernetes_secret.app_secrets.metadata[0].name
@@ -189,7 +189,7 @@ module "mail-service" {
     "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
     "DATABASE_HOST"                             = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
-    "CACHE_CONNECTION_STRING"                   = "${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
+    "CACHE_CONNECTION_STRING" = "redis://${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
@@ -212,7 +212,7 @@ module "mail-service" {
     "COOKIES_SECRET"                            = var.COOKIES_SECRET
     "RATE_LIMITING_BASE_LIMIT"                  = var.RATE_LIMITING_BASE_LIMIT
     "RATE_LIMITING_BASE_TTL"                    = var.RATE_LIMITING_BASE_TTL
-    "GATEWAY_INTERNAL_URL"                      = "${module.database.service_name}.${module.gateway.namespace}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
+    "GATEWAY_INTERNAL_URL"                      = "gateway.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
   }
 
   secret_name = kubernetes_secret.app_secrets.metadata[0].name
@@ -240,7 +240,7 @@ module "identity-service" {
     "DATABASE_USERNAME"                          = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                          = var.DATABASE_PASSWORD
     "DATABASE_HOST"                              = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
-    "CACHE_CONNECTION_STRING"                    = "${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
+    "CACHE_CONNECTION_STRING"                    = "redis://${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
     "PUBSUB_BROKERS"                             = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"      = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"        = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
@@ -269,7 +269,7 @@ module "identity-service" {
     "GOOGLE_OIDC_REDIRECT_URL"                   = var.GOOGLE_OIDC_REDIRECT_URL
     "RATE_LIMITING_BASE_LIMIT"                   = var.RATE_LIMITING_BASE_LIMIT
     "RATE_LIMITING_BASE_TTL"                     = var.RATE_LIMITING_BASE_TTL
-    "GATEWAY_INTERNAL_URL"                       = "${module.database.service_name}.${module.gateway.namespace}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
+    "GATEWAY_INTERNAL_URL"                      = "gateway.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
   }
 
   secret_name = kubernetes_secret.app_secrets.metadata[0].name
@@ -296,7 +296,7 @@ module "gdpr-service" {
     "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
     "DATABASE_HOST"                             = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
-    "CACHE_CONNECTION_STRING"                   = "${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
+    "CACHE_CONNECTION_STRING" = "redis://${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
@@ -316,7 +316,7 @@ module "gdpr-service" {
     "COOKIES_SECRET"                            = var.COOKIES_SECRET
     "RATE_LIMITING_BASE_LIMIT"                  = var.RATE_LIMITING_BASE_LIMIT
     "RATE_LIMITING_BASE_TTL"                    = var.RATE_LIMITING_BASE_TTL
-    "GATEWAY_INTERNAL_URL"                      = "${module.database.service_name}.${module.gateway.namespace}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
+    "GATEWAY_INTERNAL_URL"                      = "gateway.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
   }
 
   secret_name = kubernetes_secret.app_secrets.metadata[0].name
@@ -343,7 +343,7 @@ module "scheduling-service" {
     "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
     "DATABASE_HOST"                             = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
-    "CACHE_CONNECTION_STRING"                   = "${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
+    "CACHE_CONNECTION_STRING" = "redis://${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
@@ -363,7 +363,7 @@ module "scheduling-service" {
     "COOKIES_SECRET"                            = var.COOKIES_SECRET
     "RATE_LIMITING_BASE_LIMIT"                  = var.RATE_LIMITING_BASE_LIMIT
     "RATE_LIMITING_BASE_TTL"                    = var.RATE_LIMITING_BASE_TTL
-    "GATEWAY_INTERNAL_URL"                      = "${module.database.service_name}.${module.gateway.namespace}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
+    "GATEWAY_INTERNAL_URL"                      = "gateway.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
   }
 
   secret_name = kubernetes_secret.app_secrets.metadata[0].name
@@ -390,7 +390,7 @@ module "configuration-service" {
     "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
     "DATABASE_HOST"                             = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
-    "CACHE_CONNECTION_STRING"                   = "${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
+    "CACHE_CONNECTION_STRING" = "redis://${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
@@ -410,7 +410,7 @@ module "configuration-service" {
     "COOKIES_SECRET"                            = var.COOKIES_SECRET
     "RATE_LIMITING_BASE_LIMIT"                  = var.RATE_LIMITING_BASE_LIMIT
     "RATE_LIMITING_BASE_TTL"                    = var.RATE_LIMITING_BASE_TTL
-    "GATEWAY_INTERNAL_URL"                      = "${module.database.service_name}.${module.gateway.namespace}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
+    "GATEWAY_INTERNAL_URL"                      = "gateway.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
   }
 
   secret_name = kubernetes_secret.app_secrets.metadata[0].name
@@ -437,7 +437,7 @@ module "users-service" {
     "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
     "DATABASE_HOST"                             = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
-    "CACHE_CONNECTION_STRING"                   = "${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
+    "CACHE_CONNECTION_STRING" = "redis://${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
@@ -457,7 +457,7 @@ module "users-service" {
     "COOKIES_SECRET"                            = var.COOKIES_SECRET
     "RATE_LIMITING_BASE_LIMIT"                  = var.RATE_LIMITING_BASE_LIMIT
     "RATE_LIMITING_BASE_TTL"                    = var.RATE_LIMITING_BASE_TTL
-    "GATEWAY_INTERNAL_URL"                      = "${module.database.service_name}.${module.gateway.namespace}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
+    "GATEWAY_INTERNAL_URL"                      = "gateway.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
   }
 
   secret_name = kubernetes_secret.app_secrets.metadata[0].name
@@ -484,7 +484,7 @@ module "alerts-service" {
     "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
     "DATABASE_HOST"                             = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
-    "CACHE_CONNECTION_STRING"                   = "${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
+    "CACHE_CONNECTION_STRING" = "redis://${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
@@ -504,7 +504,7 @@ module "alerts-service" {
     "COOKIES_SECRET"                            = var.COOKIES_SECRET
     "RATE_LIMITING_BASE_LIMIT"                  = var.RATE_LIMITING_BASE_LIMIT
     "RATE_LIMITING_BASE_TTL"                    = var.RATE_LIMITING_BASE_TTL
-    "GATEWAY_INTERNAL_URL"                      = "${module.database.service_name}.${module.gateway.namespace}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
+    "GATEWAY_INTERNAL_URL"                      = "gateway.${kubernetes_namespace.codename.metadata[0].name}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
   }
 
   secret_name = kubernetes_secret.app_secrets.metadata[0].name

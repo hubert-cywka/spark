@@ -6,7 +6,7 @@ variable "envoy_port" {
   type = number
 }
 
-variable "internal_port" {
+variable "envoy_internal_port" {
   type = number
 }
 
