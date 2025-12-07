@@ -1,12 +1,8 @@
 ARG ENV=dev
 # Pass any client-side env variables as arguments as they are required during build-time
 
-FROM node:22.9-alpine AS base
-
-COPY package.json package-lock.json ./
-RUN npm ci
-
-FROM base AS preparation
+FROM node:22.9-alpine AS deps
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 COPY src src
@@ -18,6 +14,13 @@ COPY package.json package.json
 COPY package-lock.json package-lock.json
 COPY tsconfig.json tsconfig.json
 
+RUN npm ci
+
+FROM node:22.9-alpine AS preparation
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
 FROM preparation AS pre-build-dev
 RUN echo "Stage 'pre-build-dev' is empty. Skipping..."
 
@@ -25,26 +28,23 @@ FROM preparation AS pre-build-ci
 RUN echo "Stage 'pre-build-ci' is empty. Skipping..."
 
 FROM pre-build-${ENV} AS build
+
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
-FROM base AS runner
+FROM gcr.io/distroless/nodejs22-debian12 AS runner
 WORKDIR /app
 
-ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
+COPY --from=build /app/next.config.mjs ./
+COPY --from=build /app/public ./public
+COPY --from=build /app/package.json ./package.json
 
-COPY --from=build /app/public ./app/public
-COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=build --chown=nextjs:nodejs /app/.next/static ./app/.next/static
-
-USER nextjs
-
-ENV PORT=80
+COPY --from=build /app/.next/standalone ./
+COPY --from=build /app/.next/static ./.next/static
 
 EXPOSE 80
-CMD ["node", "./app/server.js"]
+ENV PORT=80
+
+CMD ["server.js"]
