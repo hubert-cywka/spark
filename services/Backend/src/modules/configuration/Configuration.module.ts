@@ -118,7 +118,7 @@ export class ConfigurationModule implements OnModuleInit {
                 { provide: FeatureFlagsStoreToken, useClass: FeatureFlagsStore },
                 { provide: FeatureFlagsProviderToken, useClass: FeatureFlagsProvider },
             ],
-            exports: [FeatureFlagsStoreToken, FeatureFlagsProviderToken],
+            exports: [FeatureFlagsProviderToken],
         };
     }
 

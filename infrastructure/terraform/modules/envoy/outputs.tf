@@ -7,5 +7,5 @@ output "service_name" {
 }
 
 output "namespace" {
-  value = var.namespace
+  value = var.namespace_name
 }

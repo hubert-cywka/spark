@@ -25,12 +25,12 @@ resource "kubernetes_deployment" "envoy" {
           image = var.envoy_image
 
           port {
-            name           = "public_port"
+            name           = "public-port"
             container_port = var.envoy_port
           }
 
           port {
-            name           = "internal_port"
+            name           = "internal-port"
             container_port = var.envoy_internal_port
           }
 
@@ -158,12 +158,12 @@ resource "kubernetes_service" "envoy" {
     }
 
     port {
-      name = "public_port"
+      name = "public-port"
       port = var.envoy_port
     }
 
     port {
-      name = "internal_port"
+      name = "internal-port"
       port = var.envoy_internal_port
     }
 
