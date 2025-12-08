@@ -3,11 +3,8 @@ import { Checkbox as BaseCheckbox } from "react-aria-components";
 
 import styles from "./styles/DailyEntryStatusCheckbox.module.scss";
 
-import {DailyEntryComponentProps} from "@/features/entries/components/DailyEntry/components/shared/DailyEntryComponent";
-import {
-    handleDailyEntryComponentsNavigation
-} from "@/features/entries/components/DailyEntry/components/shared/handleDailyEntryComponentsNavigation.ts";
-
+import { DailyEntryComponentProps } from "@/features/entries/components/DailyEntry/components/shared/DailyEntryComponent";
+import { handleDailyEntryComponentsNavigation } from "@/features/entries/components/DailyEntry/components/shared/handleDailyEntryComponentsNavigation.ts";
 
 type DailyEntryStatusCheckboxProps = {
     onChange: (value: boolean) => void;
@@ -24,7 +21,7 @@ export const DailyEntryStatusCheckbox = ({
     column,
 }: DailyEntryStatusCheckboxProps) => {
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-        handleDailyEntryComponentsNavigation(e, { onNavigateUp, onNavigateRight, onNavigateLeft, onNavigateDown })
+        handleDailyEntryComponentsNavigation(e, { onNavigateUp, onNavigateRight, onNavigateLeft, onNavigateDown });
     };
 
     return (

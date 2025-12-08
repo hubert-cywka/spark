@@ -4,7 +4,7 @@ import classNames from "clsx";
 
 import styles from "./styles/DailyEntryInput.module.scss";
 
-import {DailyEntryComponentProps} from "@/features/entries/components/DailyEntry/components/shared/DailyEntryComponent";
+import { DailyEntryComponentProps } from "@/features/entries/components/DailyEntry/components/shared/DailyEntryComponent";
 import { FormattedEntryContent } from "@/features/entries/components/FormattedEntryContent/FormattedEntryContent.tsx";
 
 const CONTENT_UPDATE_DEBOUNCE = 2000;

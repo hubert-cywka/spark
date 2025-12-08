@@ -1,4 +1,4 @@
-import {DailyEntryColumn} from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries.ts";
+import { DailyEntryColumn } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries.ts";
 
 export type DailyEntryComponentProps = {
     column: DailyEntryColumn;
@@ -9,4 +9,4 @@ export type DailyEntryNavigationOptions = {
     onNavigateLeft?: () => void;
     onNavigateDown?: () => void;
     onNavigateUp?: () => void;
-}
+};

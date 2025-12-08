@@ -4,11 +4,8 @@ import { Star } from "lucide-react";
 
 import styles from "./styles/DailyEntryFeaturedCheckbox.module.scss";
 
-import {DailyEntryComponentProps} from "@/features/entries/components/DailyEntry/components/shared/DailyEntryComponent";
-import {
-    handleDailyEntryComponentsNavigation
-} from "@/features/entries/components/DailyEntry/components/shared/handleDailyEntryComponentsNavigation.ts";
-
+import { DailyEntryComponentProps } from "@/features/entries/components/DailyEntry/components/shared/DailyEntryComponent";
+import { handleDailyEntryComponentsNavigation } from "@/features/entries/components/DailyEntry/components/shared/handleDailyEntryComponentsNavigation.ts";
 
 type DailyEntryFeaturedCheckboxProps = {
     onChange: (value: boolean) => void;
@@ -25,7 +22,7 @@ export const DailyEntryFeaturedCheckbox = ({
     column,
 }: DailyEntryFeaturedCheckboxProps) => {
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-        handleDailyEntryComponentsNavigation(e, { onNavigateUp, onNavigateRight, onNavigateLeft, onNavigateDown })
+        handleDailyEntryComponentsNavigation(e, { onNavigateUp, onNavigateRight, onNavigateLeft, onNavigateDown });
     };
 
     return (

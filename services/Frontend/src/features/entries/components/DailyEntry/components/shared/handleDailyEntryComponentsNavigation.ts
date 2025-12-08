@@ -1,11 +1,11 @@
-import {KeyboardEvent} from "react";
+import { KeyboardEvent } from "react";
 
-import {
-    DailyEntryNavigationOptions
-} from "@/features/entries/components/DailyEntry/components/shared/DailyEntryComponent";
+import { DailyEntryNavigationOptions } from "@/features/entries/components/DailyEntry/components/shared/DailyEntryComponent";
 
-
-export function handleDailyEntryComponentsNavigation<T extends HTMLElement>(e: KeyboardEvent<T>, { onNavigateUp, onNavigateRight, onNavigateLeft, onNavigateDown}: DailyEntryNavigationOptions) {
+export function handleDailyEntryComponentsNavigation<T extends HTMLElement>(
+    e: KeyboardEvent<T>,
+    { onNavigateUp, onNavigateRight, onNavigateLeft, onNavigateDown }: DailyEntryNavigationOptions
+) {
     if (e.key === "ArrowUp") {
         e.preventDefault();
         onNavigateUp?.();

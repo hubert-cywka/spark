@@ -9,9 +9,7 @@ import {
     DailyEntryStatusCheckbox,
     DailyEntryWrapper,
 } from "@/features/entries/components/DailyEntry/components";
-import {
-    DailyEntryContextMenuTrigger
-} from "@/features/entries/components/DailyEntry/components/DailyEntryContextMenuTrigger/DailyEntryContextMenuTrigger.tsx";
+import { DailyEntryContextMenuTrigger } from "@/features/entries/components/DailyEntry/components/DailyEntryContextMenuTrigger/DailyEntryContextMenuTrigger.tsx";
 import { DailyEntryFeaturedCheckbox } from "@/features/entries/components/DailyEntry/components/DailyEntryFeaturedCheckbox/DailyEntryFeaturedCheckbox.tsx";
 import { LinkGoalsPopover } from "@/features/entries/components/LinkGoalsPopover/LinkGoalsPopover.tsx";
 import { Entry } from "@/features/entries/types/Entry";
@@ -53,7 +51,7 @@ export const DailyEntry = ({
                         onNavigateDown={() => onNavigateDown("actions")}
                     />
                 </DailyEntryContextMenu>
-                
+
                 <DailyEntryStatusCheckbox
                     column="checkbox"
                     onNavigateLeft={() => onFocusColumn("actions")}
