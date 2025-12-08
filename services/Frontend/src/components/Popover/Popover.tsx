@@ -3,7 +3,7 @@ import { Dialog, DialogTrigger, OverlayArrow, Popover as BasePopover, PopoverPro
 
 import styles from "./styles/Popover.module.scss";
 
-type PopoverProps = Omit<BasePopoverProps, "trigger"> & PropsWithChildren<{ trigger: ReactNode }>;
+type PopoverProps = Omit<BasePopoverProps, "trigger"> & PropsWithChildren<{ trigger?: ReactNode }>;
 
 export const Popover = ({ children, trigger, ...rest }: PopoverProps) => {
     return (

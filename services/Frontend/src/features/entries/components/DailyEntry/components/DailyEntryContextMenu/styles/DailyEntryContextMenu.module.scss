@@ -1,0 +1,17 @@
+@use "src/styles/tokens";
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.$spacing-300;
+  
+  &.danger {
+    color: tokens.$color-danger-text-300;
+    
+    &[data-focused] {
+      color: tokens.$color-neutral-text-100;
+      background: tokens.$color-danger-solid-200;
+    }
+  }
+}

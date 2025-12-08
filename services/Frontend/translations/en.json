@@ -280,11 +280,19 @@
         }
     },
     "entries": {
-        "expandButton": {
-            "label": "Expand entry details"
+        "actionsMenu": {
+            "trigger": {
+                "label": "Entry actions menu"
+            },
+            "actions": {
+                "delete": "Delete"
+            }
         },
-        "collapseButton": {
-            "label": "Collapse entry details"
+        "statusCheckbox": {
+            "label": "Entry completion status"
+        },
+        "featuredCheckbox": {
+            "label": "Entry featured status"
         },
         "values": {
             "completed": "Completed",
@@ -332,9 +340,6 @@
                 "noResultsCaption": "No results.",
                 "showLinksButton": {
                     "label": "Show linked goals"
-                },
-                "showActionsButton": {
-                    "label": "Show more entry actions"
                 },
                 "linked": {
                     "header": "Linked goals"

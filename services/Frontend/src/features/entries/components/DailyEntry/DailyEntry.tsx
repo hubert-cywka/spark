@@ -43,7 +43,7 @@ export const DailyEntry = ({
     return (
         <DailyEntryWrapper id={id}>
             <div className={styles.row}>
-                <DailyEntryContextMenu>
+                <DailyEntryContextMenu onDelete={() => onDelete(entry.dailyId, entry.id)}>
                     <DailyEntryContextMenuTrigger
                         column="actions"
                         onNavigateRight={() => onFocusColumn("checkbox")}

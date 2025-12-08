@@ -1,0 +1,13 @@
+@use "src/styles/tokens";
+
+.menuItem {
+  padding: tokens.$spacing-200 tokens.$spacing-300;
+  border-radius: tokens.$radius-100;
+  font: tokens.$typography-body-100;
+  
+  cursor: pointer;
+
+  &[data-focused] {
+    background: tokens.$color-accent-solid-300;
+  }
+}

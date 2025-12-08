@@ -5,6 +5,7 @@ import styles from "./styles/DailyEntryStatusCheckbox.module.scss";
 
 import { DailyEntryComponentProps } from "@/features/entries/components/DailyEntry/components/shared/DailyEntryComponent";
 import { handleDailyEntryComponentsNavigation } from "@/features/entries/components/DailyEntry/components/shared/handleDailyEntryComponentsNavigation.ts";
+import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
 type DailyEntryStatusCheckboxProps = {
     onChange: (value: boolean) => void;
@@ -23,10 +24,12 @@ export const DailyEntryStatusCheckbox = ({
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
         handleDailyEntryComponentsNavigation(e, { onNavigateUp, onNavigateRight, onNavigateLeft, onNavigateDown });
     };
+    const t = useTranslate();
 
     return (
         <BaseCheckbox
             data-entry-column={column}
+            aria-label={t("entries.statusCheckbox.label")}
             onKeyDown={handleKeyDown}
             className={styles.checkbox}
             onChange={onChange}
