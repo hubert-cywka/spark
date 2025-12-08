@@ -3,17 +3,16 @@ import { Checkbox as BaseCheckbox } from "react-aria-components";
 
 import styles from "./styles/DailyEntryStatusCheckbox.module.scss";
 
-import { DailyEntryColumn } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
+import {DailyEntryComponentProps} from "@/features/entries/components/DailyEntry/components/shared/DailyEntryComponent";
+import {
+    handleDailyEntryComponentsNavigation
+} from "@/features/entries/components/DailyEntry/components/shared/handleDailyEntryComponentsNavigation.ts";
+
 
 type DailyEntryStatusCheckboxProps = {
     onChange: (value: boolean) => void;
     value: boolean;
-    onNavigateRight?: () => void;
-    onNavigateLeft?: () => void;
-    onNavigateDown?: () => void;
-    onNavigateUp?: () => void;
-    column: DailyEntryColumn;
-};
+} & DailyEntryComponentProps;
 
 export const DailyEntryStatusCheckbox = ({
     onChange,
@@ -25,28 +24,7 @@ export const DailyEntryStatusCheckbox = ({
     column,
 }: DailyEntryStatusCheckboxProps) => {
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === "ArrowUp") {
-            e.preventDefault();
-            onNavigateUp?.();
-            return;
-        }
-
-        if (e.key === "ArrowRight") {
-            e.preventDefault();
-            onNavigateRight?.();
-            return;
-        }
-
-        if (e.key === "ArrowLeft") {
-            e.preventDefault();
-            onNavigateLeft?.();
-            return;
-        }
-
-        if (e.key === "ArrowDown") {
-            e.preventDefault();
-            onNavigateDown?.();
-        }
+        handleDailyEntryComponentsNavigation(e, { onNavigateUp, onNavigateRight, onNavigateLeft, onNavigateDown })
     };
 
     return (

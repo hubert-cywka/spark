@@ -4,21 +4,17 @@ import classNames from "clsx";
 
 import styles from "./styles/DailyEntryInput.module.scss";
 
-import { DailyEntryColumn } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
+import {DailyEntryComponentProps} from "@/features/entries/components/DailyEntry/components/shared/DailyEntryComponent";
 import { FormattedEntryContent } from "@/features/entries/components/FormattedEntryContent/FormattedEntryContent.tsx";
 
 const CONTENT_UPDATE_DEBOUNCE = 2000;
 
 type DailyEntryInputProps = {
     initialContent: string;
-    onNavigateUp?: () => void;
-    onNavigateDown?: () => void;
-    onNavigateLeft?: () => void;
     onSaveContent: (content: string) => void;
     onDelete: () => void;
     placeholder: string;
-    column: DailyEntryColumn;
-};
+} & DailyEntryComponentProps;
 
 export const DailyEntryInput = ({
     initialContent,

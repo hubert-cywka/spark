@@ -333,6 +333,9 @@
                 "showLinksButton": {
                     "label": "Show linked goals"
                 },
+                "showActionsButton": {
+                    "label": "Show more entry actions"
+                },
                 "linked": {
                     "header": "Linked goals"
                 },

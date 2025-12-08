@@ -4,17 +4,16 @@ import { Star } from "lucide-react";
 
 import styles from "./styles/DailyEntryFeaturedCheckbox.module.scss";
 
-import { DailyEntryColumn } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
+import {DailyEntryComponentProps} from "@/features/entries/components/DailyEntry/components/shared/DailyEntryComponent";
+import {
+    handleDailyEntryComponentsNavigation
+} from "@/features/entries/components/DailyEntry/components/shared/handleDailyEntryComponentsNavigation.ts";
+
 
 type DailyEntryFeaturedCheckboxProps = {
     onChange: (value: boolean) => void;
     value: boolean;
-    onNavigateRight: () => void;
-    onNavigateLeft: () => void;
-    onNavigateDown: () => void;
-    onNavigateUp: () => void;
-    column: DailyEntryColumn;
-};
+} & DailyEntryComponentProps;
 
 export const DailyEntryFeaturedCheckbox = ({
     onChange,
@@ -26,28 +25,7 @@ export const DailyEntryFeaturedCheckbox = ({
     column,
 }: DailyEntryFeaturedCheckboxProps) => {
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === "ArrowUp") {
-            e.preventDefault();
-            onNavigateUp();
-            return;
-        }
-
-        if (e.key === "ArrowRight") {
-            e.preventDefault();
-            onNavigateRight();
-            return;
-        }
-
-        if (e.key === "ArrowLeft") {
-            e.preventDefault();
-            onNavigateLeft();
-            return;
-        }
-
-        if (e.key === "ArrowDown") {
-            e.preventDefault();
-            onNavigateDown();
-        }
+        handleDailyEntryComponentsNavigation(e, { onNavigateUp, onNavigateRight, onNavigateLeft, onNavigateDown })
     };
 
     return (
