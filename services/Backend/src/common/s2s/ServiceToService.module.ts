@@ -29,9 +29,6 @@ export class ServiceToServiceModule {
                     inject: options.inject || [],
                 },
             ],
-            
-            
-            
             exports: [ServiceToServiceClientToken],
         };
     }
