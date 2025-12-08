@@ -1,3 +1,5 @@
+import { DailyEntryContextMenu } from "./components/DailyEntryContextMenu/DailyEntryContextMenu.tsx";
+
 import styles from "./styles/DailyEntry.module.scss";
 
 import { DailyEntryColumn } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
@@ -7,6 +9,7 @@ import {
     DailyEntryStatusCheckbox,
     DailyEntryWrapper,
 } from "@/features/entries/components/DailyEntry/components";
+import { DailyEntryContextMenuTrigger } from "@/features/entries/components/DailyEntry/components/DailyEntryContextMenuTrigger/DailyEntryContextMenuTrigger.tsx";
 import { DailyEntryFeaturedCheckbox } from "@/features/entries/components/DailyEntry/components/DailyEntryFeaturedCheckbox/DailyEntryFeaturedCheckbox.tsx";
 import { LinkGoalsPopover } from "@/features/entries/components/LinkGoalsPopover/LinkGoalsPopover.tsx";
 import { Entry } from "@/features/entries/types/Entry";
@@ -40,8 +43,18 @@ export const DailyEntry = ({
     return (
         <DailyEntryWrapper id={id}>
             <div className={styles.row}>
+                <DailyEntryContextMenu onDelete={() => onDelete(entry.dailyId, entry.id)}>
+                    <DailyEntryContextMenuTrigger
+                        column="actions"
+                        onNavigateRight={() => onFocusColumn("checkbox")}
+                        onNavigateUp={() => onNavigateUp("actions")}
+                        onNavigateDown={() => onNavigateDown("actions")}
+                    />
+                </DailyEntryContextMenu>
+
                 <DailyEntryStatusCheckbox
                     column="checkbox"
+                    onNavigateLeft={() => onFocusColumn("actions")}
                     onNavigateRight={() => onFocusColumn("featured")}
                     onNavigateUp={() => onNavigateUp("checkbox")}
                     onNavigateDown={() => onNavigateDown("checkbox")}

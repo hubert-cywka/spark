@@ -1,22 +1,21 @@
 import { KeyboardEvent } from "react";
-import { TargetIcon } from "lucide-react";
+import { MenuIcon } from "lucide-react";
 
-import styles from "./styles/DailyEntryGoalsPopupTrigger.module.scss";
+import styles from "./styles/DailyEntryContextMenuTrigger.module.scss";
 
 import { IconButton } from "@/components/IconButton";
 import { DailyEntryComponentProps } from "@/features/entries/components/DailyEntry/components/shared/DailyEntryComponent";
 import { handleDailyEntryComponentsNavigation } from "@/features/entries/components/DailyEntry/components/shared/handleDailyEntryComponentsNavigation.ts";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
-type DailyEntryGoalsPopupTriggerProps = DailyEntryComponentProps;
-
-export const DailyEntryGoalsPopupTrigger = ({
+type DailyEntryContextMenuTriggerProps = DailyEntryComponentProps;
+export const DailyEntryContextMenuTrigger = ({
     column,
     onNavigateLeft,
     onNavigateDown,
     onNavigateUp,
     onNavigateRight,
-}: DailyEntryGoalsPopupTriggerProps) => {
+}: DailyEntryContextMenuTriggerProps) => {
     const t = useTranslate();
 
     const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
@@ -27,9 +26,9 @@ export const DailyEntryGoalsPopupTrigger = ({
         <IconButton
             size="1"
             variant="subtle"
-            iconSlot={TargetIcon}
-            tooltip={t("entries.goals.list.showLinksButton.label")}
-            aria-label={t("entries.goals.list.showLinksButton.label")}
+            iconSlot={MenuIcon}
+            tooltip={t("entries.actionsMenu.trigger.label")}
+            aria-label={t("entries.actionsMenu.trigger.label")}
             data-entry-column={column}
             onKeyDown={handleKeyDown}
             className={styles.trigger}

@@ -1,0 +1,15 @@
+@use "src/styles/tokens";
+
+.dialog {
+    padding: tokens.$spacing-200;
+    border-radius: tokens.$radius-200;
+
+    color: tokens.$color-neutral-text-100;
+    border: 1px solid tokens.$color-neutral-surface-100;
+    background: tokens.$color-neutral-background-alpha-100;
+    backdrop-filter: blur(10px);    
+    
+    &:focus-visible {
+        outline: 2px solid tokens.$color-accent-solid-300;
+    }
+}
