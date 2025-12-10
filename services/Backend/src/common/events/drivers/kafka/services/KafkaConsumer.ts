@@ -16,7 +16,6 @@ export class KafkaConsumer implements IEventConsumer {
 
     public async listen(labels: IntegrationEventLabel[], onEventsReceived: OnEventsReceivedHandler): Promise<void> {
         const topics = [...new Set(labels.map((event) => event.topic))];
-        const subjects = [...new Set(labels.map((event) => event.subject))];
 
         await this.consumer.subscribe({ topics, fromBeginning: true });
         this.logger.log({ topics }, "Subscribed to topics.");
@@ -32,8 +31,13 @@ export class KafkaConsumer implements IEventConsumer {
                 }
 
                 await heartbeat();
-                const eventsTheConsumerIsInterestedIn = incomingEvents.filter((event) => subjects.includes(event.getSubject()));
-                await onEventsReceived(eventsTheConsumerIsInterestedIn);
+                const eventsTheConsumerIsInterestedIn = incomingEvents.filter(
+                    (event) => !!labels.find((label) => label.subject === event.getSubject() && label.topic === event.getTopic())
+                );
+
+                if (eventsTheConsumerIsInterestedIn.length > 0) {
+                    await onEventsReceived(eventsTheConsumerIsInterestedIn);
+                }
 
                 for (const message of batch.messages) {
                     resolveOffset(message.offset);
