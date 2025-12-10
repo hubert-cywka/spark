@@ -3,7 +3,6 @@ import { Column, CreateDateColumn, Entity, OneToMany, PrimaryColumn, Relation, U
 import { type IntegrationEventSubject, type IntegrationEventTopic } from "@/common/events/types";
 import { JobExecutionEntity } from "@/modules/scheduling/entities/JobExecution.entity";
 
-// TODO: Add a job that will remove old executions
 @Entity("job_schedule")
 export class JobScheduleEntity {
     @PrimaryColumn("varchar")
