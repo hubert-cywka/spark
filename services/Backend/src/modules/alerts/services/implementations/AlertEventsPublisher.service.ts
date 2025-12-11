@@ -17,4 +17,10 @@ export class AlertEventsPublisher implements IAlertEventsPublisher {
             })
         );
     }
+
+    public async onRemindersTriggered(tenantIds: string[]) {
+        const events = tenantIds.map((tenantId) => new DailyReminderTriggeredEvent(tenantId, { account: { id: tenantId } }));
+
+        await this.publisher.enqueueMany(events);
+    }
 }
