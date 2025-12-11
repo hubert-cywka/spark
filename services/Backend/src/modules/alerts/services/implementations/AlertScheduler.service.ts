@@ -24,7 +24,7 @@ export class AlertScheduler implements IAlertScheduler {
             candidateDate = candidateDate.set("hour", timeHour).set("minute", timeMinute).set("second", timeSecond).set("millisecond", 0);
 
             const currentDay = candidateDate.day();
-            if (daysOfWeek.includes(currentDay as UTCDay)) {
+            if (daysOfWeek.includes(currentDay)) {
                 if (day === 0) {
                     if (candidateDate.isAfter(now)) {
                         return candidateDate.toDate();
