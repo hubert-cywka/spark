@@ -11,23 +11,31 @@ export class AlertScheduler implements IAlertScheduler {
             return null;
         }
 
-        const now = dayjs().utc();
-        let nextAlertTime = dayjs().utc();
-
         const [hour, minute, second] = time.split(":");
-        nextAlertTime = nextAlertTime.set("hour", parseInt(hour)).set("minute", parseInt(minute)).set("second", parseInt(second));
+        const timeHour = parseInt(hour, 10);
+        const timeMinute = parseInt(minute, 10);
+        const timeSecond = parseInt(second, 10);
 
-        const currentDayOfWeek = now.day();
-        const daysLeftInCurrentWeek = daysOfWeek.filter((day) => day >= currentDayOfWeek);
+        const now = dayjs().utc();
 
-        if (!!daysLeftInCurrentWeek.length && nextAlertTime.isAfter(now)) {
-            const daysOffset = Math.min(...daysLeftInCurrentWeek.map(Number)) - currentDayOfWeek;
-            nextAlertTime = nextAlertTime.add(daysOffset, "days");
-        } else {
-            const daysOffset = 7 - (currentDayOfWeek - Math.min(...daysOfWeek.map(Number)));
-            nextAlertTime = nextAlertTime.add(daysOffset, "days");
+        for (let day = 0; day <= 7; day++) {
+            let candidateDate = now.add(day, "day");
+
+            candidateDate = candidateDate.set("hour", timeHour).set("minute", timeMinute).set("second", timeSecond).set("millisecond", 0);
+
+            const currentDay = candidateDate.day();
+            if (daysOfWeek.includes(currentDay)) {
+                if (day === 0) {
+                    if (candidateDate.isAfter(now)) {
+                        return candidateDate.toDate();
+                    }
+                    continue;
+                }
+
+                return candidateDate.toDate();
+            }
         }
 
-        return nextAlertTime.toDate();
+        return null;
     }
 }

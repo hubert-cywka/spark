@@ -68,6 +68,7 @@ export class AlertService implements IAlertService {
         }
     }
 
+    @Transactional({ connectionName: ALERTS_MODULE_DATA_SOURCE })
     public async restore(recipientId: string, alertId: string): Promise<void> {
         const result = await this.getRepository().restore({
             id: alertId,
@@ -78,24 +79,34 @@ export class AlertService implements IAlertService {
             this.logger.warn({ recipientId, alertId }, "Alert not found, cannot restore.");
             throw new AlertNotFoundError();
         }
+
+        await this.refreshNextTriggerAt(result.raw[0] as AlertEntity);
     }
 
+    @Transactional({ connectionName: ALERTS_MODULE_DATA_SOURCE })
     public async changeStatus(recipientId: string, alertId: string, enabled: boolean): Promise<Alert> {
-        return this.updatePartially(recipientId, alertId, {
+        const alert = await this.updatePartially(recipientId, alertId, {
             enabled,
             nextTriggerAt: null,
         });
+
+        if (enabled) {
+            await this.refreshNextTriggerAt(alert);
+        }
+
+        return this.alertMapper.fromEntityToModel(alert);
     }
 
     public async changeTime(recipientId: string, alertId: string, time: string, daysOfWeek: UTCDay[]): Promise<Alert> {
-        return this.updatePartially(recipientId, alertId, {
+        const alert = await this.updatePartially(recipientId, alertId, {
             time,
             daysOfWeek,
             nextTriggerAt: this.alertScheduler.scheduleNextTrigger(time, daysOfWeek),
         });
+        return this.alertMapper.fromEntityToModel(alert);
     }
 
-    private async updatePartially(recipientId: string, alertId: string, partialAlert: Partial<AlertEntity>): Promise<Alert> {
+    private async updatePartially(recipientId: string, alertId: string, partialAlert: Partial<AlertEntity>): Promise<AlertEntity> {
         const queryBuilder = this.getRepository().createQueryBuilder("alert");
 
         const result = await queryBuilder
@@ -111,7 +122,12 @@ export class AlertService implements IAlertService {
             throw new AlertNotFoundError();
         }
 
-        return this.alertMapper.fromEntityToModel(result.raw[0] as AlertEntity);
+        return result.raw[0] as AlertEntity;
+    }
+
+    private async refreshNextTriggerAt(alert: AlertEntity): Promise<AlertEntity> {
+        alert.nextTriggerAt = this.alertScheduler.scheduleNextTrigger(alert.time, alert.daysOfWeek);
+        return this.getRepository().save(alert);
     }
 
     private async assertEligibilityToCreate(recipientId: string): Promise<void> {

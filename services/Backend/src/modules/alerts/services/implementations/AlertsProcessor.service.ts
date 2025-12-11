@@ -10,6 +10,8 @@ import { type IAlertEventsPublisher, AlertEventsPublisherToken } from "@/modules
 import { type IAlertScheduler, AlertSchedulerToken } from "@/modules/alerts/services/interfaces/IAlertScheduler.service";
 import { type IAlertsProcessor } from "@/modules/alerts/services/interfaces/IAlertsProcessor.service";
 
+const BATCH_SIZE = 100;
+
 @Injectable()
 export class AlertsProcessor implements IAlertsProcessor {
     public constructor(
@@ -24,26 +26,38 @@ export class AlertsProcessor implements IAlertsProcessor {
     public async triggerPendingAlerts() {
         const now = dayjs().utc();
 
-        const alertsToProcess = await this.repository
-            .createQueryBuilder("alert")
-            .leftJoinAndSelect("alert.recipient", "recipient")
-            .where(":now >= alert.nextTriggerAt", { now })
-            .andWhere("alert.nextTriggerAt IS NOT NULL")
-            .andWhere("alert.enabled IS true")
-            .getMany();
+        let hasMoreAlerts = true;
 
-        for (const alert of alertsToProcess) {
-            await this.triggerAlert(alert);
+        while (hasMoreAlerts) {
+            const alertsToProcess = await this.repository
+                .createQueryBuilder("alert")
+                .leftJoinAndSelect("alert.recipient", "recipient")
+                .where(":now >= alert.nextTriggerAt", { now })
+                .andWhere("alert.nextTriggerAt IS NOT NULL")
+                .andWhere("alert.enabled IS true")
+                .orderBy("alert.nextTriggerAt", "ASC")
+                .limit(BATCH_SIZE)
+                .getMany();
+
+            hasMoreAlerts = alertsToProcess.length === BATCH_SIZE;
+
+            if (alertsToProcess.length === 0) {
+                break;
+            }
+
+            await this.triggerAlerts(alertsToProcess);
         }
     }
 
-    // TODO: Batching
     @Transactional({ connectionName: ALERTS_MODULE_DATA_SOURCE })
-    private async triggerAlert(alert: AlertEntity) {
-        await this.alertPublisher.onReminderTriggered(alert.recipient.id);
-        await this.repository.save({
-            ...alert,
-            nextTriggerAt: this.alertScheduler.scheduleNextTrigger(alert.time, alert.daysOfWeek),
+    private async triggerAlerts(alerts: AlertEntity[]) {
+        const recipientIds = alerts.map((alert) => alert.recipient.id);
+        await this.alertPublisher.onRemindersTriggered(recipientIds);
+
+        const publishedAlerts = alerts.map((alert) => {
+            return { ...alert, nextTriggerAt: this.alertScheduler.scheduleNextTrigger(alert.time, alert.daysOfWeek) };
         });
+
+        await this.repository.save(publishedAlerts);
     }
 }
