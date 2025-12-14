@@ -3,6 +3,8 @@ import Bottleneck from "bottleneck";
 import dayjs from "dayjs";
 import { runInTransaction } from "typeorm-transactional";
 
+import { inboxMetrics } from "../../observability/metrics";
+
 import { type IInboxEventHandler, IntegrationEvent } from "@/common/events";
 import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { EventHandlersNotFoundError } from "@/common/events/errors/EventHandlersNotFound.error";
@@ -93,6 +95,7 @@ export class EventInboxProcessor implements IEventInboxProcessor {
         try {
             const { hasMore } = await runInTransaction(
                 async () => {
+                    const startTime = process.hrtime.bigint();
                     const partitionToProcess = await this.partitionsRepository.getAndLockOldestStalePartition();
 
                     if (!partitionToProcess) {
@@ -102,6 +105,9 @@ export class EventInboxProcessor implements IEventInboxProcessor {
 
                     this.logger.debug({ partitionId: partitionToProcess.id }, "Found stale partition. Processing...");
                     await this.processPartition(partitionToProcess.id);
+
+                    const endTime = process.hrtime.bigint();
+                    inboxMetrics.processDuration.record(Number(endTime - startTime) / 1_000_000, { partitionId: partitionToProcess.id });
 
                     return { hasMore: true };
                 },
@@ -137,11 +143,19 @@ export class EventInboxProcessor implements IEventInboxProcessor {
                         blockedPartitionKeys: blocked,
                     });
 
+                    inboxMetrics.transactionBatchSize.record(events.length, { partitionId });
+
                     const { successfulEvents, failedEvents, blockedPartitionKeys } = await this.bulkHandle(events);
                     blocked.push(...blockedPartitionKeys);
 
                     if (successfulEvents.length > 0 || failedEvents.length > 0) {
                         await this.eventsRepository.update([...successfulEvents, ...failedEvents]);
+                    }
+
+                    inboxMetrics.processedEvents.add(successfulEvents.length, { partitionId });
+
+                    if (failedEvents.length > 0) {
+                        inboxMetrics.processingFailure.add(failedEvents.length, { partitionId });
                     }
 
                     if (events.length < this.maxBatchSize) {
@@ -180,6 +194,9 @@ export class EventInboxProcessor implements IEventInboxProcessor {
 
                 try {
                     await this.handleEvent(event, handler);
+                    const processingLag = dayjs().diff(entity.receivedAt, "milliseconds");
+                    inboxMetrics.processingLag.record(processingLag, { topic: event.getTopic(), subject: event.getSubject() });
+
                     successfulEvents.push({
                         ...entity,
                         processedAt: new Date(),
