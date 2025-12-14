@@ -1,13 +1,12 @@
-import {diag, DiagConsoleLogger, DiagLogLevel} from "@opentelemetry/api";
-import {getNodeAutoInstrumentations} from "@opentelemetry/auto-instrumentations-node";
+import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
 import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-grpc";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-grpc";
 import { resourceFromAttributes } from "@opentelemetry/resources";
-import { PeriodicExportingMetricReader} from "@opentelemetry/sdk-metrics";
+import { PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics";
 import { NodeSDK } from "@opentelemetry/sdk-node";
 import { ATTR_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
 
-diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
+import { OTEL_APP_NAME } from "@/common/observability/constants";
 
 const metricExporter = new OTLPMetricExporter();
 const traceExporter = new OTLPTraceExporter();
@@ -19,15 +18,15 @@ const metricReader = new PeriodicExportingMetricReader({
 
 export const openTelemetrySDK = new NodeSDK({
     resource: resourceFromAttributes({
-        [ATTR_SERVICE_NAME]: process.env.OTEL_SERVICE_NAME,
+        [ATTR_SERVICE_NAME]: OTEL_APP_NAME,
     }),
     traceExporter,
     metricReaders: [metricReader],
-    instrumentations: [
-       getNodeAutoInstrumentations(),
-    ],
+    instrumentations: [getNodeAutoInstrumentations()],
 });
 
-console.log("Initializing...");
 openTelemetrySDK.start();
-console.log("Initialized.")
+
+process.on("SIGTERM", async () => {
+    await openTelemetrySDK.shutdown();
+});
