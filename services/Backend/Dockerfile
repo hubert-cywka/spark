@@ -33,4 +33,4 @@ COPY --from=build /app/node_modules ./node_modules
 
 EXPOSE 80
 
-CMD ["dist/main"]
+CMD ["--import", "./dist/common/observability/tracing.js", "dist/main"]

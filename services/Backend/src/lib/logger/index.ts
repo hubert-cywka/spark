@@ -1,6 +1,7 @@
 import { type Params, Logger, PinoLogger } from "nestjs-pino";
 
 export const loggerOptions: Params["pinoHttp"] = {
+    level: "silent",
     transport: {
         target: "pino-pretty",
         options: {

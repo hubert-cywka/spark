@@ -1,30 +1,33 @@
-import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
-import { PrometheusExporter } from "@opentelemetry/exporter-prometheus";
-import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-proto";
+import {diag, DiagConsoleLogger, DiagLogLevel} from "@opentelemetry/api";
+import {getNodeAutoInstrumentations} from "@opentelemetry/auto-instrumentations-node";
+import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-grpc";
+import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-grpc";
 import { resourceFromAttributes } from "@opentelemetry/resources";
+import { PeriodicExportingMetricReader} from "@opentelemetry/sdk-metrics";
 import { NodeSDK } from "@opentelemetry/sdk-node";
 import { ATTR_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
 
+diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
+
+const metricExporter = new OTLPMetricExporter();
 const traceExporter = new OTLPTraceExporter();
 
-const prometheusExporter = new PrometheusExporter({
-    port: parseInt(process.env.PROMETHEUS_EXPORTER_PORT ?? ""),
-    endpoint: process.env.PROMETHEUS_EXPORTER_ENDPOINT,
+const metricReader = new PeriodicExportingMetricReader({
+    exporter: metricExporter,
+    exportIntervalMillis: 10000,
 });
 
-const sdk = new NodeSDK({
+export const openTelemetrySDK = new NodeSDK({
     resource: resourceFromAttributes({
         [ATTR_SERVICE_NAME]: process.env.OTEL_SERVICE_NAME,
     }),
     traceExporter,
-    metricReaders: [prometheusExporter],
-    instrumentations: [getNodeAutoInstrumentations()],
+    metricReaders: [metricReader],
+    instrumentations: [
+       getNodeAutoInstrumentations(),
+    ],
 });
 
-export const initializeTracing = () => {
-    sdk.start();
-
-    process.on("SIGTERM", async () => {
-        await sdk.shutdown();
-    });
-};
+console.log("Initializing...");
+openTelemetrySDK.start();
+console.log("Initialized.")
