@@ -11,6 +11,7 @@ import { Logger } from "nestjs-pino";
 import { initializeTransactionalContext } from "typeorm-transactional";
 
 import { AppModule } from "@/App.module";
+import { initializeTracing } from "@/common/observability/tracing";
 import { AppConfig } from "@/config/configuration";
 import { logger } from "@/lib/logger";
 
@@ -29,6 +30,8 @@ class Application {
     }
 
     public async start() {
+        initializeTracing();
+
         this.app = await NestFactory.create<NestFastifyApplication>(
             AppModule,
             new FastifyAdapter({

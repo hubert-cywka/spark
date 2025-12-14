@@ -10,6 +10,14 @@ services:
         ports:
             - "${NGROK_PORT}:4040"
 
+    prometheus:
+        ports:
+            - "9090:9090"
+        volumes:
+            - ./prometheus.yml:/etc/prometheus/prometheus.yml
+        command:
+            - '--config.file=/etc/prometheus/prometheus.yml'
+
     db:
         environment:
             - POSTGRES_USER=${DATABASE_USERNAME}
@@ -19,7 +27,7 @@ services:
             - "5432:5432"
         volumes:
             - postgres:/var/lib/postgresql/data
-                
+
     pooler:
         environment:
             - PGBOUNCER_POOL_MODE=transaction
@@ -34,13 +42,13 @@ services:
             - POSTGRESQL_PORT=5432
         ports:
             - "${DATABASE_PORT}:6432"
-    
+
     cache:
         ports:
             - "${CACHE_PORT}:6379"
         volumes:
-            - redis:/data      
-    
+            - redis:/data
+
     kafka-controller-1:
         environment:
             CLUSTER_ID: ${KAFKA_CLUSTER_ID}
@@ -185,6 +193,7 @@ services:
         environment:
             - PORT=80
             - IDENTITY_MODULE_ENABLED=true
+            - OTEL_SERVICE_NAME=spark-identity-service
 
     journal-service:
         ports:
@@ -200,7 +209,8 @@ services:
         environment:
             - PORT=80
             - JOURNAL_MODULE_ENABLED=true
-                
+            - OTEL_SERVICE_NAME=spark-journal-service
+
     alerts-service:
         ports:
             - "${ALERTS_SERVICE_PORT}:80"
@@ -215,6 +225,7 @@ services:
         environment:
             - PORT=80
             - ALERTS_MODULE_ENABLED=true
+            - OTEL_SERVICE_NAME=spark-alerts-service
 
     users-service:
         ports:
@@ -230,7 +241,8 @@ services:
         environment:
             - PORT=80
             - USERS_MODULE_ENABLED=true
-                
+            - OTEL_SERVICE_NAME=spark-users-service
+
     gdpr-service:
         ports:
             - "${GDPR_SERVICE_PORT}:80"
@@ -245,7 +257,8 @@ services:
         environment:
             - PORT=80
             - GDPR_MODULE_ENABLED=true
-            
+            - OTEL_SERVICE_NAME=spark-gdpr-service
+
     scheduling-service:
         ports:
             - "${SCHEDULING_SERVICE_PORT}:80"
@@ -260,7 +273,8 @@ services:
         environment:
             - PORT=80
             - SCHEDULING_MODULE_ENABLED=true
-            
+            - OTEL_SERVICE_NAME=spark-scheduling-service
+
     configuration-service:
         ports:
             - "${CONFIGURATION_SERVICE_PORT}:80"
@@ -275,7 +289,8 @@ services:
         environment:
             - PORT=80
             - CONFIGURATION_MODULE_ENABLED=true
-                
+            - OTEL_SERVICE_NAME=spark-configuration-service
+
     mail-service:
         ports:
             - "${MAIL_SERVICE_PORT}:80"
@@ -290,3 +305,4 @@ services:
         environment:
             - PORT=80
             - MAIL_MODULE_ENABLED=true
+            - OTEL_SERVICE_NAME=spark-mail-service
