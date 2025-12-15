@@ -3,6 +3,7 @@ import { type Producer, CompressionTypes, TopicMessages } from "kafkajs";
 
 import { IntegrationEvent } from "@/common/events";
 import { type IEventProducer } from "@/common/events/drivers/interfaces/IEventProducer";
+import { kafkaMetrics } from "@/common/events/drivers/kafka/observability/metrics";
 import { PublishAck } from "@/common/events/types";
 
 @Injectable()
@@ -25,6 +26,8 @@ export class KafkaProducer implements IEventProducer {
             topic: event.getTopic(),
             messages: [message],
         });
+
+        kafkaMetrics.publishedMessages.add(1, { topic: event.getTopic() });
 
         this.logger.log({ eventId: event.getId() }, "Published event");
         return { ack: true };
@@ -52,6 +55,10 @@ export class KafkaProducer implements IEventProducer {
             topicMessages: Array.from(messagesByTopic.values()),
             compression: this.compression,
         });
+
+        for (const { messages, topic } of messagesByTopic.values()) {
+            kafkaMetrics.publishedMessages.add(messages.length, { topic });
+        }
 
         this.logger.log({ eventIds: events.map((e) => e.getId()) }, "Published events");
         return { ack: true };

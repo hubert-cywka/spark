@@ -2,6 +2,8 @@ import { Logger } from "@nestjs/common";
 import dayjs from "dayjs";
 import { runInTransaction } from "typeorm-transactional";
 
+import { outboxMetrics } from "../../observability/metrics";
+
 import { IntegrationEvent } from "@/common/events";
 import { type IEventProducer } from "@/common/events/drivers/interfaces/IEventProducer";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
@@ -72,6 +74,8 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
         try {
             const { processed } = await runInTransaction(
                 async () => {
+                    const startTime = process.hrtime.bigint();
+
                     const partitionToProcess = await this.partitionsRepository.getAndLockOldestStalePartition();
 
                     if (!partitionToProcess) {
@@ -81,6 +85,12 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
 
                     this.logger.debug({ partitionId: partitionToProcess.id }, "Found stale partition. Processing...");
                     const { ok } = await this.processPartition(partitionToProcess.id);
+
+                    const endTime = process.hrtime.bigint();
+                    outboxMetrics.partitionProcessDuration.record(Number(endTime - startTime) / 1_000_000, {
+                        partitionId: partitionToProcess.id,
+                    });
+
                     return { processed: ok };
                 },
                 { connectionName: this.connectionName }
@@ -104,6 +114,8 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
                         maxAttempts: this.maxAttempts,
                         take: this.maxBatchSize,
                     });
+
+                    outboxMetrics.batchSize.record(events.length, { partitionId });
 
                     const { successfulEvents, failedEvent } = await this.publishEvents(events);
                     await this.updateEventsAndPartition(partitionId, successfulEvents, events);
@@ -132,12 +144,18 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
 
         for (const eventEntity of events) {
             const event = IntegrationEvent.fromEntity(eventEntity);
+            const labels = { topic: event.getTopic(), subject: event.getSubject() };
 
             try {
                 await this.client.publishBatch([event]);
                 successfulEvents.push(eventEntity);
+
+                const lagMs = dayjs().diff(eventEntity.createdAt, "milliseconds");
+                outboxMetrics.publishLag.record(lagMs, labels);
             } catch (error) {
                 this.logger.error(error, "Failed to publish event. ACK not received.");
+                outboxMetrics.publishFailure.add(1, labels);
+
                 failedEvent = eventEntity;
                 break;
             }

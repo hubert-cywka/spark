@@ -2,6 +2,21 @@
     "tunnel": {
         "detachable": false
     },
+    "otel-collector": {
+        "detachable": false
+    },
+    "prometheus": {
+        "detachable": false
+    },
+    "grafana": {
+        "detachable": false
+    },
+    "tempo": {
+        "detachable": false
+    },
+    "cache": {
+        "detachable": false
+    },
     "db": {
         "detachable": false
     },

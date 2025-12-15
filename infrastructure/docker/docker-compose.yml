@@ -1,7 +1,46 @@
 version: "3.4"
 services:
+    init:
+        image: busybox:latest
+        user: root
+        entrypoint:
+            - "chown"
+            - "10001:10001"
+            - "/var/tempo"
+        volumes:
+            - ./tempo:/var/tempo
+    
     tunnel:
         image: ngrok/ngrok:latest
+        restart: always
+        networks:
+            - services_network
+
+    tempo:
+        image: grafana/tempo:latest
+        restart: always
+        networks:
+            - services_network
+        depends_on:
+            - init
+
+    prometheus:
+        image: prom/prometheus:latest
+        restart: always
+        networks:
+            - services_network
+
+    otel-collector:
+        image: otel/opentelemetry-collector-contrib:latest
+        restart: always
+        networks:
+            - services_network
+        depends_on:
+            - tempo
+            - prometheus
+
+    grafana:
+        image: grafana/grafana:latest
         restart: always
         networks:
             - services_network
@@ -11,7 +50,7 @@ services:
         restart: always
         networks:
             - services_network
-    
+
     pooler:
         image: bitnami/pgbouncer:1.24.1
         restart: always
@@ -19,7 +58,7 @@ services:
             - services_network
         depends_on:
             - db
-    
+
     cache:
         image: redis:8.4.0
         command: redis-server --appendonly yes
@@ -37,7 +76,7 @@ services:
         depends_on:
             volume-permissions-job:
                 condition: service_completed_successfully
-    
+
     kafka-controller-2:
         image: apache/kafka:3.9.1
         restart: always
@@ -48,7 +87,7 @@ services:
         depends_on:
             volume-permissions-job:
                 condition: service_completed_successfully
-    
+
     kafka-controller-3:
         image: apache/kafka:3.9.1
         restart: always
@@ -59,7 +98,7 @@ services:
         depends_on:
             volume-permissions-job:
                 condition: service_completed_successfully
-                
+
     kafka-broker-1:
         image: apache/kafka:3.9.1
         restart: always
@@ -76,7 +115,7 @@ services:
                 condition: service_started
         volumes:
             - kafka-kafka-broker-1-data:/kafka/data
-                
+
     kafka-broker-2:
         image: apache/kafka:3.9.1
         restart: always
@@ -93,7 +132,7 @@ services:
                 condition: service_started
         volumes:
             - kafka-kafka-broker-2-data:/kafka/data
-            
+
     kafka-broker-3:
         image: apache/kafka:3.9.1
         restart: always
@@ -110,7 +149,7 @@ services:
                 condition: service_started
         volumes:
             - kafka-kafka-broker-3-data:/kafka/data
-                
+
     volume-permissions-job:
         image: alpine
         command: >
@@ -129,7 +168,7 @@ services:
             - kafka-kafka-broker-1-data:/kafka-data/kafka-broker-1
             - kafka-kafka-broker-2-data:/kafka-data/kafka-broker-2
             - kafka-kafka-broker-3-data:/kafka-data/kafka-broker-3
-                
+
     identity-service:
         build:
             context: ../../services/Backend
@@ -157,7 +196,7 @@ services:
             - kafka-broker-3
             - cache
             - pooler
-    
+
     alerts-service:
         build:
             context: ../../services/Backend
@@ -171,7 +210,7 @@ services:
             - kafka-broker-3
             - cache
             - pooler
-    
+
     gdpr-service:
         build:
             context: ../../services/Backend
@@ -185,7 +224,7 @@ services:
             - kafka-broker-3
             - cache
             - pooler
-              
+
     scheduling-service:
         build:
             context: ../../services/Backend
@@ -199,7 +238,7 @@ services:
             - kafka-broker-3
             - cache
             - pooler
-    
+
     configuration-service:
         build:
             context: ../../services/Backend
@@ -213,7 +252,7 @@ services:
             - kafka-broker-3
             - cache
             - pooler
-    
+
     users-service:
         build:
             context: ../../services/Backend
@@ -227,7 +266,7 @@ services:
             - kafka-broker-3
             - cache
             - pooler
-                
+
     mail-service:
         build:
             context: ../../services/Backend
@@ -263,6 +302,9 @@ networks:
         external: true
 
 volumes:
+    tempo:
+    grafana:
+    prometheus:
     redis:
     postgres:
     kafka-kafka-broker-1-data:
