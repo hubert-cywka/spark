@@ -28,7 +28,6 @@ export class Application {
     }
 
     public async start() {
-
         this.app = await NestFactory.create<NestFastifyApplication>(
             AppModule,
             new FastifyAdapter({
