@@ -1,7 +1,7 @@
 resource "kubernetes_deployment" "envoy" {
   metadata {
     name      = "envoy"
-    namespace = var.namespace_name
+    namespace = var.namespace
   }
 
   spec {
@@ -58,7 +58,7 @@ resource "kubernetes_deployment" "envoy" {
 
           env {
             name  = "IDENTITY_SERVICE_ADDRESS"
-            value = "${var.identity_service_name}.${var.namespace_name}.svc.cluster.local"
+            value = "${var.identity_service_name}.${var.namespace}.svc.cluster.local"
           }
           env {
             name  = "IDENTITY_SERVICE_PORT"
@@ -67,7 +67,7 @@ resource "kubernetes_deployment" "envoy" {
 
           env {
             name  = "JOURNAL_SERVICE_ADDRESS"
-            value = "${var.journal_service_name}.${var.namespace_name}.svc.cluster.local"
+            value = "${var.journal_service_name}.${var.namespace}.svc.cluster.local"
           }
           env {
             name  = "JOURNAL_SERVICE_PORT"
@@ -76,7 +76,7 @@ resource "kubernetes_deployment" "envoy" {
 
           env {
             name  = "USERS_SERVICE_ADDRESS"
-            value = "${var.users_service_name}.${var.namespace_name}.svc.cluster.local"
+            value = "${var.users_service_name}.${var.namespace}.svc.cluster.local"
           }
           env {
             name  = "USERS_SERVICE_PORT"
@@ -85,7 +85,7 @@ resource "kubernetes_deployment" "envoy" {
 
           env {
             name  = "GDPR_SERVICE_ADDRESS"
-            value = "${var.gdpr_service_name}.${var.namespace_name}.svc.cluster.local"
+            value = "${var.gdpr_service_name}.${var.namespace}.svc.cluster.local"
           }
           env {
             name  = "GDPR_SERVICE_PORT"
@@ -94,7 +94,7 @@ resource "kubernetes_deployment" "envoy" {
 
           env {
             name  = "SCHEDULING_SERVICE_ADDRESS"
-            value = "${var.scheduling_service_name}.${var.namespace_name}.svc.cluster.local"
+            value = "${var.scheduling_service_name}.${var.namespace}.svc.cluster.local"
           }
           env {
             name  = "SCHEDULING_SERVICE_PORT"
@@ -103,7 +103,7 @@ resource "kubernetes_deployment" "envoy" {
 
           env {
             name  = "CONFIGURATION_SERVICE_ADDRESS"
-            value = "${var.configuration_service_name}.${var.namespace_name}.svc.cluster.local"
+            value = "${var.configuration_service_name}.${var.namespace}.svc.cluster.local"
           }
           env {
             name  = "CONFIGURATION_SERVICE_PORT"
@@ -112,7 +112,7 @@ resource "kubernetes_deployment" "envoy" {
 
           env {
             name  = "MAIL_SERVICE_ADDRESS"
-            value = "${var.mail_service_name}.${var.namespace_name}.svc.cluster.local"
+            value = "${var.mail_service_name}.${var.namespace}.svc.cluster.local"
           }
           env {
             name  = "MAIL_SERVICE_PORT"
@@ -121,7 +121,7 @@ resource "kubernetes_deployment" "envoy" {
 
           env {
             name  = "ALERTS_SERVICE_ADDRESS"
-            value = "${var.alerts_service_name}.${var.namespace_name}.svc.cluster.local"
+            value = "${var.alerts_service_name}.${var.namespace}.svc.cluster.local"
           }
           env {
             name  = "ALERTS_SERVICE_PORT"
@@ -130,7 +130,7 @@ resource "kubernetes_deployment" "envoy" {
 
           env {
             name  = "FRONTEND_ADDRESS"
-            value = "${var.frontend_service_name}.${var.namespace_name}.svc.cluster.local"
+            value = "${var.frontend_service_name}.${var.namespace}.svc.cluster.local"
           }
           env {
             name  = "FRONTEND_PORT"
@@ -149,7 +149,7 @@ resource "kubernetes_deployment" "envoy" {
 resource "kubernetes_service" "envoy" {
   metadata {
     name      = "envoy"
-    namespace = var.namespace_name
+    namespace = var.namespace
   }
 
   spec {

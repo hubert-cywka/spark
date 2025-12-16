@@ -15,6 +15,16 @@ variable "replicas" {
   default = 1
 }
 
+variable "min_replicas" {
+  type    = number
+  default = 1
+}
+
+variable "max_replicas" {
+  type    = number
+  default = 1
+}
+
 variable "service_port" {
   type = number
 }
@@ -135,4 +145,14 @@ variable "startup_success_threshold" {
 variable "startup_failure_threshold" {
   type    = number
   default = 15
+}
+
+variable "keda_prometheus_trigger" {
+  type = list(object({
+    server_address = string
+    metric_name    = string
+    query          = string
+    threshold      = string
+  }))
+  default = []
 }

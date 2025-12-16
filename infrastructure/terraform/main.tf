@@ -71,7 +71,7 @@ resource "kubernetes_ingress_v1" "ingress" {
 module "gateway" {
   source = "./modules/envoy"
 
-  namespace_name      = kubernetes_namespace.codename.metadata[0].name
+  namespace           = kubernetes_namespace.codename.metadata[0].name
   envoy_port          = var.GATEWAY_PORT
   envoy_internal_port = var.GATEWAY_INTERNAL_PORT
   backend_port        = var.BACKEND_PORT
@@ -156,7 +156,7 @@ module "journal-service" {
     "PORT"                                      = var.BACKEND_PORT
     "APP_NAME"                                  = var.APP_NAME
     "OTEL_APP_NAME"                             = "${var.APP_NAME}-journal-service"
-    "OTEL_EXPORTER_OTLP_ENDPOINT"               = "http://otel-collector.${module.observability.namespace}.svc.cluster.local:${module.observability.otel_collector_grpc_port}"
+    "OTEL_EXPORTER_OTLP_ENDPOINT"               = "${module.observability.otel_collector_address}"
     "OTEL_EXPORTER_OTLP_PROTOCOL"               = "grpc"
     "DATABASE_LOGGING_ENABLED"                  = var.DATABASE_LOGGING_ENABLED
     "EVENTS_ENCRYPTION_SECRET_64_BYTES"         = var.EVENTS_ENCRYPTION_SECRET_64_BYTES
@@ -164,8 +164,8 @@ module "journal-service" {
     "DATABASE_PORT"                             = var.DATABASE_PORT
     "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
-    "DATABASE_HOST"                             = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
-    "CACHE_CONNECTION_STRING"                   = "redis://${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
+    "DATABASE_HOST"                             = "${module.database.host}"
+    "CACHE_CONNECTION_STRING"                   = "${module.cache.connection_string}"
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
@@ -206,7 +206,7 @@ module "mail-service" {
     "PORT"                                      = var.BACKEND_PORT
     "APP_NAME"                                  = var.APP_NAME
     "OTEL_APP_NAME"                             = "${var.APP_NAME}-mail-service"
-    "OTEL_EXPORTER_OTLP_ENDPOINT"               = "http://otel-collector.${module.observability.namespace}.svc.cluster.local:${module.observability.otel_collector_grpc_port}"
+    "OTEL_EXPORTER_OTLP_ENDPOINT"               = "${module.observability.otel_collector_address}"
     "OTEL_EXPORTER_OTLP_PROTOCOL"               = "grpc"
     "DATABASE_LOGGING_ENABLED"                  = var.DATABASE_LOGGING_ENABLED
     "EVENTS_ENCRYPTION_SECRET_64_BYTES"         = var.EVENTS_ENCRYPTION_SECRET_64_BYTES
@@ -214,8 +214,8 @@ module "mail-service" {
     "DATABASE_PORT"                             = var.DATABASE_PORT
     "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
-    "DATABASE_HOST"                             = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
-    "CACHE_CONNECTION_STRING"                   = "redis://${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
+    "DATABASE_HOST"                             = "${module.database.host}"
+    "CACHE_CONNECTION_STRING"                   = "${module.cache.connection_string}"
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
@@ -259,7 +259,7 @@ module "identity-service" {
     "PORT"                                       = var.BACKEND_PORT
     "APP_NAME"                                   = var.APP_NAME
     "OTEL_APP_NAME"                              = "${var.APP_NAME}-identity-service"
-    "OTEL_EXPORTER_OTLP_ENDPOINT"                = "http://otel-collector.${module.observability.namespace}.svc.cluster.local:${module.observability.otel_collector_grpc_port}"
+    "OTEL_EXPORTER_OTLP_ENDPOINT"                = "${module.observability.otel_collector_address}"
     "OTEL_EXPORTER_OTLP_PROTOCOL"                = "grpc"
     "DATABASE_LOGGING_ENABLED"                   = var.DATABASE_LOGGING_ENABLED
     "EVENTS_ENCRYPTION_SECRET_64_BYTES"          = var.EVENTS_ENCRYPTION_SECRET_64_BYTES
@@ -268,8 +268,8 @@ module "identity-service" {
     "DATABASE_PORT"                              = var.DATABASE_PORT
     "DATABASE_USERNAME"                          = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                          = var.DATABASE_PASSWORD
-    "DATABASE_HOST"                              = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
-    "CACHE_CONNECTION_STRING"                    = "redis://${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
+    "DATABASE_HOST"                              = "${module.database.host}"
+    "CACHE_CONNECTION_STRING"                    = "${module.cache.connection_string}"
     "PUBSUB_BROKERS"                             = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"      = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"        = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
@@ -319,7 +319,7 @@ module "gdpr-service" {
     "PORT"                                      = var.BACKEND_PORT
     "APP_NAME"                                  = var.APP_NAME
     "OTEL_APP_NAME"                             = "${var.APP_NAME}-gdpr-service"
-    "OTEL_EXPORTER_OTLP_ENDPOINT"               = "http://otel-collector.${module.observability.namespace}.svc.cluster.local:${module.observability.otel_collector_grpc_port}"
+    "OTEL_EXPORTER_OTLP_ENDPOINT"               = "${module.observability.otel_collector_address}"
     "OTEL_EXPORTER_OTLP_PROTOCOL"               = "grpc"
     "DATABASE_LOGGING_ENABLED"                  = var.DATABASE_LOGGING_ENABLED
     "EVENTS_ENCRYPTION_SECRET_64_BYTES"         = var.EVENTS_ENCRYPTION_SECRET_64_BYTES
@@ -327,8 +327,8 @@ module "gdpr-service" {
     "DATABASE_PORT"                             = var.DATABASE_PORT
     "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
-    "DATABASE_HOST"                             = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
-    "CACHE_CONNECTION_STRING"                   = "redis://${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
+    "DATABASE_HOST"                             = "${module.database.host}"
+    "CACHE_CONNECTION_STRING"                   = "${module.cache.connection_string}"
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
@@ -369,7 +369,7 @@ module "scheduling-service" {
     "PORT"                                      = var.BACKEND_PORT
     "APP_NAME"                                  = var.APP_NAME
     "OTEL_APP_NAME"                             = "${var.APP_NAME}-scheduling-service"
-    "OTEL_EXPORTER_OTLP_ENDPOINT"               = "http://otel-collector.${module.observability.namespace}.svc.cluster.local:${module.observability.otel_collector_grpc_port}"
+    "OTEL_EXPORTER_OTLP_ENDPOINT"               = "${module.observability.otel_collector_address}"
     "OTEL_EXPORTER_OTLP_PROTOCOL"               = "grpc"
     "DATABASE_LOGGING_ENABLED"                  = var.DATABASE_LOGGING_ENABLED
     "EVENTS_ENCRYPTION_SECRET_64_BYTES"         = var.EVENTS_ENCRYPTION_SECRET_64_BYTES
@@ -377,8 +377,8 @@ module "scheduling-service" {
     "DATABASE_PORT"                             = var.DATABASE_PORT
     "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
-    "DATABASE_HOST"                             = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
-    "CACHE_CONNECTION_STRING"                   = "redis://${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
+    "DATABASE_HOST"                             = "${module.database.host}"
+    "CACHE_CONNECTION_STRING"                   = "${module.cache.connection_string}"
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
@@ -419,7 +419,7 @@ module "configuration-service" {
     "PORT"                                      = var.BACKEND_PORT
     "APP_NAME"                                  = var.APP_NAME
     "OTEL_APP_NAME"                             = "${var.APP_NAME}-configuration-service"
-    "OTEL_EXPORTER_OTLP_ENDPOINT"               = "http://otel-collector.${module.observability.namespace}.svc.cluster.local:${module.observability.otel_collector_grpc_port}"
+    "OTEL_EXPORTER_OTLP_ENDPOINT"               = "${module.observability.otel_collector_address}"
     "OTEL_EXPORTER_OTLP_PROTOCOL"               = "grpc"
     "DATABASE_LOGGING_ENABLED"                  = var.DATABASE_LOGGING_ENABLED
     "EVENTS_ENCRYPTION_SECRET_64_BYTES"         = var.EVENTS_ENCRYPTION_SECRET_64_BYTES
@@ -427,8 +427,8 @@ module "configuration-service" {
     "DATABASE_PORT"                             = var.DATABASE_PORT
     "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
-    "DATABASE_HOST"                             = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
-    "CACHE_CONNECTION_STRING"                   = "redis://${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
+    "DATABASE_HOST"                             = "${module.database.host}"
+    "CACHE_CONNECTION_STRING"                   = "${module.cache.connection_string}"
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
@@ -469,7 +469,7 @@ module "users-service" {
     "PORT"                                      = var.BACKEND_PORT
     "APP_NAME"                                  = var.APP_NAME
     "OTEL_APP_NAME"                             = "${var.APP_NAME}-users-service"
-    "OTEL_EXPORTER_OTLP_ENDPOINT"               = "http://otel-collector.${module.observability.namespace}.svc.cluster.local:${module.observability.otel_collector_grpc_port}"
+    "OTEL_EXPORTER_OTLP_ENDPOINT"               = "${module.observability.otel_collector_address}"
     "OTEL_EXPORTER_OTLP_PROTOCOL"               = "grpc"
     "DATABASE_LOGGING_ENABLED"                  = var.DATABASE_LOGGING_ENABLED
     "EVENTS_ENCRYPTION_SECRET_64_BYTES"         = var.EVENTS_ENCRYPTION_SECRET_64_BYTES
@@ -477,8 +477,8 @@ module "users-service" {
     "DATABASE_PORT"                             = var.DATABASE_PORT
     "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
-    "DATABASE_HOST"                             = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
-    "CACHE_CONNECTION_STRING"                   = "redis://${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
+    "DATABASE_HOST"                             = "${module.database.host}"
+    "CACHE_CONNECTION_STRING"                   = "${module.cache.connection_string}"
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
@@ -519,7 +519,7 @@ module "alerts-service" {
     "PORT"                                      = var.BACKEND_PORT
     "APP_NAME"                                  = var.APP_NAME
     "OTEL_APP_NAME"                             = "${var.APP_NAME}-alerts-service"
-    "OTEL_EXPORTER_OTLP_ENDPOINT"               = "http://otel-collector.${module.observability.namespace}.svc.cluster.local:${module.observability.otel_collector_grpc_port}"
+    "OTEL_EXPORTER_OTLP_ENDPOINT"               = "${module.observability.otel_collector_address}"
     "OTEL_EXPORTER_OTLP_PROTOCOL"               = "grpc"
     "DATABASE_LOGGING_ENABLED"                  = var.DATABASE_LOGGING_ENABLED
     "EVENTS_ENCRYPTION_SECRET_64_BYTES"         = var.EVENTS_ENCRYPTION_SECRET_64_BYTES
@@ -527,8 +527,8 @@ module "alerts-service" {
     "DATABASE_PORT"                             = var.DATABASE_PORT
     "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
     "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
-    "DATABASE_HOST"                             = "${module.database.pooler_service_name}.${module.database.namespace}.svc.cluster.local"
-    "CACHE_CONNECTION_STRING"                   = "redis://${module.cache.redis_name}.${module.database.namespace}.svc.cluster.local:${module.cache.redis_port}"
+    "DATABASE_HOST"                             = "${module.database.host}"
+    "CACHE_CONNECTION_STRING"                   = "${module.cache.connection_string}"
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
     "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
