@@ -96,16 +96,9 @@ resource "kubernetes_config_map" "prometheus_config" {
   }
 
   data = {
-    "prometheus.yml" = <<EOF
-global:
-  scrape_interval: 5s
-
-scrape_configs:
-  - job_name: "otel-collector"
-    static_configs:
-      - targets:
-          - "otel-collector:${var.otel_metrics_port}"
-EOF
+    "prometheus.yml" = templatefile("${path.module}/config/prometheus/prometheus.yml.tpl", {
+      otel_metrics_port = var.otel_metrics_port
+    })
   }
 }
 

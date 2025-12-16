@@ -119,31 +119,13 @@ resource "kubernetes_config_map" "tempo_config" {
   }
 
   data = {
-    "tempo.yaml" = <<EOF
-server:
-  http_listen_port: ${var.tempo_http_port}
-
-distributor:
-  receivers:
-    otlp:
-      protocols:
-        grpc:
-          endpoint: "0.0.0.0:${var.tempo_grpc_port}"
-        http:
-          endpoint: "0.0.0.0:${var.tempo_http_port_otlp}"
-
-storage:
-  trace:
-    backend: local
-    wal:
-      path: /var/tempo/wal
-    local:
-      path: /var/tempo/blocks
-
-overrides:
-  metrics_generator_processors: [service-graphs, span-metrics]
-EOF
+    "tempo.yaml" = templatefile("${path.module}/config/tempo/tempo.yml.tpl", {
+      tempo_http_port      = var.tempo_http_port
+      tempo_grpc_port      = var.tempo_grpc_port
+      tempo_http_port_otlp = var.tempo_http_port_otlp
+    })
   }
+
 }
 
 resource "kubernetes_persistent_volume_claim" "tempo_pvc" {
