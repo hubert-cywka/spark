@@ -8,6 +8,12 @@ resource "kubernetes_namespace" "codename" {
   }
 }
 
+resource "kubernetes_namespace" "observability" {
+  metadata {
+    name = "observability"
+  }
+}
+
 resource "kubernetes_secret" "app_secrets" {
   metadata {
     name      = "app-secrets"
@@ -121,6 +127,20 @@ module "kafka_cluster" {
   log_segment_bytes        = var.KAFKA_LOG_SEGMENT_BYTES
 }
 
+module "observability" {
+  source = "./modules/observability"
+
+  namespace                      = kubernetes_namespace.observability.metadata[0].name
+  grafana_volume_size_request    = "1Gi"
+  tempo_volume_size_request      = "2Gi"
+  prometheus_volume_size_request = "2Gi"
+
+  otel_collector_image_tag = "latest"
+  prometheus_image_tag     = "latest"
+  tempo_image_tag          = "latest"
+  grafana_image_tag        = "latest"
+}
+
 module "journal-service" {
   source = "./modules/microservice"
 
@@ -135,6 +155,9 @@ module "journal-service" {
     "JOURNAL_MODULE_ENABLED"                    = "true"
     "PORT"                                      = var.BACKEND_PORT
     "APP_NAME"                                  = var.APP_NAME
+    "OTEL_APP_NAME"                             = "${var.APP_NAME}-journal-service"
+    "OTEL_EXPORTER_OTLP_ENDPOINT"               = "http://otel-collector.${module.observability.namespace}.svc.cluster.local:${module.observability.otel_collector_grpc_port}"
+    "OTEL_EXPORTER_OTLP_PROTOCOL"               = "grpc"
     "DATABASE_LOGGING_ENABLED"                  = var.DATABASE_LOGGING_ENABLED
     "EVENTS_ENCRYPTION_SECRET_64_BYTES"         = var.EVENTS_ENCRYPTION_SECRET_64_BYTES
     "CLIENT_URL_BASE"                           = var.CLIENT_URL_BASE
@@ -182,6 +205,9 @@ module "mail-service" {
     "MAIL_MODULE_ENABLED"                       = "true"
     "PORT"                                      = var.BACKEND_PORT
     "APP_NAME"                                  = var.APP_NAME
+    "OTEL_APP_NAME"                             = "${var.APP_NAME}-mail-service"
+    "OTEL_EXPORTER_OTLP_ENDPOINT"               = "http://otel-collector.${module.observability.namespace}.svc.cluster.local:${module.observability.otel_collector_grpc_port}"
+    "OTEL_EXPORTER_OTLP_PROTOCOL"               = "grpc"
     "DATABASE_LOGGING_ENABLED"                  = var.DATABASE_LOGGING_ENABLED
     "EVENTS_ENCRYPTION_SECRET_64_BYTES"         = var.EVENTS_ENCRYPTION_SECRET_64_BYTES
     "CLIENT_URL_BASE"                           = var.CLIENT_URL_BASE
@@ -232,6 +258,9 @@ module "identity-service" {
     "IDENTITY_MODULE_ENABLED"                    = "true"
     "PORT"                                       = var.BACKEND_PORT
     "APP_NAME"                                   = var.APP_NAME
+    "OTEL_APP_NAME"                              = "${var.APP_NAME}-identity-service"
+    "OTEL_EXPORTER_OTLP_ENDPOINT"                = "http://otel-collector.${module.observability.namespace}.svc.cluster.local:${module.observability.otel_collector_grpc_port}"
+    "OTEL_EXPORTER_OTLP_PROTOCOL"                = "grpc"
     "DATABASE_LOGGING_ENABLED"                   = var.DATABASE_LOGGING_ENABLED
     "EVENTS_ENCRYPTION_SECRET_64_BYTES"          = var.EVENTS_ENCRYPTION_SECRET_64_BYTES
     "TWO_FACTOR_AUTH_ENCRYPTION_SECRET_64_BYTES" = var.TWO_FACTOR_AUTH_ENCRYPTION_SECRET_64_BYTES
@@ -289,6 +318,9 @@ module "gdpr-service" {
     "GDPR_MODULE_ENABLED"                       = "true"
     "PORT"                                      = var.BACKEND_PORT
     "APP_NAME"                                  = var.APP_NAME
+    "OTEL_APP_NAME"                             = "${var.APP_NAME}-gdpr-service"
+    "OTEL_EXPORTER_OTLP_ENDPOINT"               = "http://otel-collector.${module.observability.namespace}.svc.cluster.local:${module.observability.otel_collector_grpc_port}"
+    "OTEL_EXPORTER_OTLP_PROTOCOL"               = "grpc"
     "DATABASE_LOGGING_ENABLED"                  = var.DATABASE_LOGGING_ENABLED
     "EVENTS_ENCRYPTION_SECRET_64_BYTES"         = var.EVENTS_ENCRYPTION_SECRET_64_BYTES
     "CLIENT_URL_BASE"                           = var.CLIENT_URL_BASE
@@ -336,6 +368,9 @@ module "scheduling-service" {
     "SCHEDULING_MODULE_ENABLED"                 = "true"
     "PORT"                                      = var.BACKEND_PORT
     "APP_NAME"                                  = var.APP_NAME
+    "OTEL_APP_NAME"                             = "${var.APP_NAME}-scheduling-service"
+    "OTEL_EXPORTER_OTLP_ENDPOINT"               = "http://otel-collector.${module.observability.namespace}.svc.cluster.local:${module.observability.otel_collector_grpc_port}"
+    "OTEL_EXPORTER_OTLP_PROTOCOL"               = "grpc"
     "DATABASE_LOGGING_ENABLED"                  = var.DATABASE_LOGGING_ENABLED
     "EVENTS_ENCRYPTION_SECRET_64_BYTES"         = var.EVENTS_ENCRYPTION_SECRET_64_BYTES
     "CLIENT_URL_BASE"                           = var.CLIENT_URL_BASE
@@ -383,6 +418,9 @@ module "configuration-service" {
     "CONFIGURATION_MODULE_ENABLED"              = "true"
     "PORT"                                      = var.BACKEND_PORT
     "APP_NAME"                                  = var.APP_NAME
+    "OTEL_APP_NAME"                             = "${var.APP_NAME}-configuration-service"
+    "OTEL_EXPORTER_OTLP_ENDPOINT"               = "http://otel-collector.${module.observability.namespace}.svc.cluster.local:${module.observability.otel_collector_grpc_port}"
+    "OTEL_EXPORTER_OTLP_PROTOCOL"               = "grpc"
     "DATABASE_LOGGING_ENABLED"                  = var.DATABASE_LOGGING_ENABLED
     "EVENTS_ENCRYPTION_SECRET_64_BYTES"         = var.EVENTS_ENCRYPTION_SECRET_64_BYTES
     "CLIENT_URL_BASE"                           = var.CLIENT_URL_BASE
@@ -430,6 +468,9 @@ module "users-service" {
     "USERS_MODULE_ENABLED"                      = "true"
     "PORT"                                      = var.BACKEND_PORT
     "APP_NAME"                                  = var.APP_NAME
+    "OTEL_APP_NAME"                             = "${var.APP_NAME}-users-service"
+    "OTEL_EXPORTER_OTLP_ENDPOINT"               = "http://otel-collector.${module.observability.namespace}.svc.cluster.local:${module.observability.otel_collector_grpc_port}"
+    "OTEL_EXPORTER_OTLP_PROTOCOL"               = "grpc"
     "DATABASE_LOGGING_ENABLED"                  = var.DATABASE_LOGGING_ENABLED
     "EVENTS_ENCRYPTION_SECRET_64_BYTES"         = var.EVENTS_ENCRYPTION_SECRET_64_BYTES
     "CLIENT_URL_BASE"                           = var.CLIENT_URL_BASE
@@ -477,6 +518,9 @@ module "alerts-service" {
     "ALERTS_MODULE_ENABLED"                     = "true"
     "PORT"                                      = var.BACKEND_PORT
     "APP_NAME"                                  = var.APP_NAME
+    "OTEL_APP_NAME"                             = "${var.APP_NAME}-alerts-service"
+    "OTEL_EXPORTER_OTLP_ENDPOINT"               = "http://otel-collector.${module.observability.namespace}.svc.cluster.local:${module.observability.otel_collector_grpc_port}"
+    "OTEL_EXPORTER_OTLP_PROTOCOL"               = "grpc"
     "DATABASE_LOGGING_ENABLED"                  = var.DATABASE_LOGGING_ENABLED
     "EVENTS_ENCRYPTION_SECRET_64_BYTES"         = var.EVENTS_ENCRYPTION_SECRET_64_BYTES
     "CLIENT_URL_BASE"                           = var.CLIENT_URL_BASE
