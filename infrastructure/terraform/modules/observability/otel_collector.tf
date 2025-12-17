@@ -1,4 +1,4 @@
-resource "kubernetes_deployment" "otel_collector" {
+resource "kubernetes_deployment_v1" "otel_collector" {
   metadata {
     name      = "otel-collector"
     namespace = var.namespace
@@ -54,7 +54,7 @@ resource "kubernetes_deployment" "otel_collector" {
         volume {
           name = "config-volume"
           config_map {
-            name = kubernetes_config_map.otel_collector_config.metadata[0].name
+            name = kubernetes_config_map_v1.otel_collector_config.metadata[0].name
           }
         }
       }
@@ -62,7 +62,7 @@ resource "kubernetes_deployment" "otel_collector" {
   }
 }
 
-resource "kubernetes_service" "otel_collector" {
+resource "kubernetes_service_v1" "otel_collector" {
   metadata {
     name      = "otel-collector"
     namespace = var.namespace
@@ -71,7 +71,7 @@ resource "kubernetes_service" "otel_collector" {
 
   spec {
     selector = {
-      app = kubernetes_deployment.otel_collector.metadata[0].labels.app
+      app = kubernetes_deployment_v1.otel_collector.metadata[0].labels.app
     }
 
     port {
@@ -97,7 +97,7 @@ resource "kubernetes_service" "otel_collector" {
   }
 }
 
-resource "kubernetes_config_map" "otel_collector_config" {
+resource "kubernetes_config_map_v1" "otel_collector_config" {
   metadata {
     name      = "otel-collector-config"
     namespace = var.namespace

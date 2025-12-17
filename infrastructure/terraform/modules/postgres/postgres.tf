@@ -1,4 +1,4 @@
-resource "kubernetes_deployment" "postgres" {
+resource "kubernetes_deployment_v1" "postgres" {
   metadata {
     name      = "postgres"
     namespace = var.namespace
@@ -85,7 +85,7 @@ resource "kubernetes_deployment" "postgres" {
         volume {
           name = "postgres-storage"
           persistent_volume_claim {
-            claim_name = kubernetes_persistent_volume_claim.postgres_pvc.metadata[0].name
+            claim_name = kubernetes_persistent_volume_claim_v1.postgres_pvc.metadata[0].name
           }
         }
       }
@@ -93,7 +93,7 @@ resource "kubernetes_deployment" "postgres" {
   }
 }
 
-resource "kubernetes_persistent_volume_claim" "postgres_pvc" {
+resource "kubernetes_persistent_volume_claim_v1" "postgres_pvc" {
   metadata {
     name      = "postgres-pvc"
     namespace = var.namespace
@@ -110,7 +110,7 @@ resource "kubernetes_persistent_volume_claim" "postgres_pvc" {
   }
 }
 
-resource "kubernetes_service" "postgres" {
+resource "kubernetes_service_v1" "postgres" {
   metadata {
     name      = "postgres"
     namespace = var.namespace
@@ -119,7 +119,7 @@ resource "kubernetes_service" "postgres" {
 
   spec {
     selector = {
-      app = kubernetes_deployment.postgres.spec[0].template[0].metadata[0].labels.app
+      app = kubernetes_deployment_v1.postgres.spec[0].template[0].metadata[0].labels.app
     }
 
     port {

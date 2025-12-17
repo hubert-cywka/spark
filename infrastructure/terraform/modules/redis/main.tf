@@ -1,4 +1,4 @@
-resource "kubernetes_deployment" "redis" {
+resource "kubernetes_deployment_v1" "redis" {
   metadata {
     name      = "redis"
     namespace = var.namespace
@@ -71,7 +71,7 @@ resource "kubernetes_deployment" "redis" {
         volume {
           name = "redis-storage"
           persistent_volume_claim {
-            claim_name = kubernetes_persistent_volume_claim.redis_pvc.metadata[0].name
+            claim_name = kubernetes_persistent_volume_claim_v1.redis_pvc.metadata[0].name
           }
         }
       }
@@ -79,7 +79,7 @@ resource "kubernetes_deployment" "redis" {
   }
 }
 
-resource "kubernetes_persistent_volume_claim" "redis_pvc" {
+resource "kubernetes_persistent_volume_claim_v1" "redis_pvc" {
   metadata {
     name      = "redis-pvc"
     namespace = var.namespace
@@ -96,7 +96,7 @@ resource "kubernetes_persistent_volume_claim" "redis_pvc" {
   }
 }
 
-resource "kubernetes_service" "redis" {
+resource "kubernetes_service_v1" "redis" {
   metadata {
     name      = "redis"
     namespace = var.namespace
@@ -105,7 +105,7 @@ resource "kubernetes_service" "redis" {
 
   spec {
     selector = {
-      app = kubernetes_deployment.redis.spec[0].template[0].metadata[0].labels.app
+      app = kubernetes_deployment_v1.redis.spec[0].template[0].metadata[0].labels.app
     }
 
     port {

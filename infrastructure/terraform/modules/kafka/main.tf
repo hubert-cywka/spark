@@ -14,7 +14,7 @@ locals {
   ])
 }
 
-resource "kubernetes_stateful_set" "kafka_controller" {
+resource "kubernetes_stateful_set_v1" "kafka_controller" {
   metadata {
     name      = "kafka-controller"
     namespace = var.namespace
@@ -122,7 +122,7 @@ resource "kubernetes_stateful_set" "kafka_controller" {
   }
 }
 
-resource "kubernetes_service" "kafka_controller_headless" {
+resource "kubernetes_service_v1" "kafka_controller_headless" {
   metadata {
     name      = "kafka-controller-headless"
     namespace = var.namespace
@@ -140,7 +140,7 @@ resource "kubernetes_service" "kafka_controller_headless" {
   }
 }
 
-resource "kubernetes_stateful_set" "kafka_broker" {
+resource "kubernetes_stateful_set_v1" "kafka_broker" {
   metadata {
     name      = "kafka-broker"
     namespace = var.namespace
@@ -264,7 +264,7 @@ resource "kubernetes_stateful_set" "kafka_broker" {
   }
 }
 
-resource "kubernetes_service" "kafka_broker_headless_service" {
+resource "kubernetes_service_v1" "kafka_broker_headless_service" {
   metadata {
     name      = "kafka-broker-headless"
     namespace = var.namespace

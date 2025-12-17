@@ -1,4 +1,4 @@
-resource "kubernetes_deployment" "envoy" {
+resource "kubernetes_deployment_v1" "envoy" {
   metadata {
     name      = "envoy"
     namespace = var.namespace
@@ -146,7 +146,7 @@ resource "kubernetes_deployment" "envoy" {
   }
 }
 
-resource "kubernetes_service" "envoy" {
+resource "kubernetes_service_v1" "envoy" {
   metadata {
     name      = "envoy"
     namespace = var.namespace
@@ -154,7 +154,7 @@ resource "kubernetes_service" "envoy" {
 
   spec {
     selector = {
-      app = kubernetes_deployment.envoy.spec[0].template[0].metadata[0].labels.app
+      app = kubernetes_deployment_v1.envoy.spec[0].template[0].metadata[0].labels.app
     }
 
     port {

@@ -1,3 +1,3 @@
 output "host" {
-  value = "${kubernetes_service.pooler.metadata[0].name}.${var.namespace}.svc.cluster.local"
+  value = "${kubernetes_service_v1.pooler.metadata[0].name}.${var.namespace}.svc.cluster.local"
 }
