@@ -7,6 +7,7 @@ terraform {
   }
 }
 
+# TODO: Use KEDA to scale services
 resource "kubectl_manifest" "keda_scaled_object" {
   count = length(var.keda_prometheus_trigger) > 0 ? 1 : 0
 
