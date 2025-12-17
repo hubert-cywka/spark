@@ -1,4 +1,4 @@
-resource "kubernetes_deployment" "this" {
+resource "kubernetes_deployment_v1" "this" {
   metadata {
     name      = var.service_name
     namespace = var.namespace
@@ -108,7 +108,7 @@ resource "kubernetes_deployment" "this" {
   }
 }
 
-resource "kubernetes_service" "this" {
+resource "kubernetes_service_v1" "this" {
   metadata {
     name      = var.service_name
     namespace = var.namespace
@@ -120,7 +120,7 @@ resource "kubernetes_service" "this" {
 
   spec {
     selector = {
-      app = kubernetes_deployment.this.spec[0].template[0].metadata[0].labels.app
+      app = kubernetes_deployment_v1.this.spec[0].template[0].metadata[0].labels.app
     }
 
     port {

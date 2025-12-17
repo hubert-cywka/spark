@@ -1,4 +1,4 @@
-variable "namespace_name" {
+variable "namespace" {
   type = string
 }
 

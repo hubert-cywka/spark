@@ -1,4 +1,4 @@
-resource "kubernetes_config_map" "grafana_datasources" {
+resource "kubernetes_config_map_v1" "grafana_datasources" {
   metadata {
     name      = "grafana-datasources"
     namespace = var.namespace
@@ -13,7 +13,7 @@ resource "kubernetes_config_map" "grafana_datasources" {
   }
 }
 
-resource "kubernetes_config_map" "grafana_dashboard_provisioning" {
+resource "kubernetes_config_map_v1" "grafana_dashboard_provisioning" {
   metadata {
     name      = "grafana-dashboard-provisioning"
     namespace = var.namespace
@@ -23,7 +23,7 @@ resource "kubernetes_config_map" "grafana_dashboard_provisioning" {
   }
 }
 
-resource "kubernetes_config_map" "tempo_dashboard" {
+resource "kubernetes_config_map_v1" "tempo_dashboard" {
   metadata {
     name      = "grafana-tempo-dashboard-json"
     namespace = var.namespace
@@ -37,7 +37,7 @@ resource "kubernetes_config_map" "tempo_dashboard" {
   }
 }
 
-resource "kubernetes_persistent_volume_claim" "grafana_pvc" {
+resource "kubernetes_persistent_volume_claim_v1" "grafana_pvc" {
   metadata {
     name      = "grafana-pvc"
     namespace = var.namespace
@@ -55,7 +55,7 @@ resource "kubernetes_persistent_volume_claim" "grafana_pvc" {
 }
 
 
-resource "kubernetes_deployment" "grafana" {
+resource "kubernetes_deployment_v1" "grafana" {
   metadata {
     name      = "grafana"
     namespace = var.namespace
@@ -120,25 +120,25 @@ resource "kubernetes_deployment" "grafana" {
         volume {
           name = "grafana-datasources"
           config_map {
-            name = kubernetes_config_map.grafana_datasources.metadata[0].name
+            name = kubernetes_config_map_v1.grafana_datasources.metadata[0].name
           }
         }
         volume {
           name = "grafana-dashboard-provisioning"
           config_map {
-            name = kubernetes_config_map.grafana_dashboard_provisioning.metadata[0].name
+            name = kubernetes_config_map_v1.grafana_dashboard_provisioning.metadata[0].name
           }
         }
         volume {
           name = "tempo-dashboard-json"
           config_map {
-            name = kubernetes_config_map.tempo_dashboard.metadata[0].name
+            name = kubernetes_config_map_v1.tempo_dashboard.metadata[0].name
           }
         }
         volume {
           name = "grafana-storage"
           persistent_volume_claim {
-            claim_name = kubernetes_persistent_volume_claim.grafana_pvc.metadata[0].name
+            claim_name = kubernetes_persistent_volume_claim_v1.grafana_pvc.metadata[0].name
           }
         }
       }
@@ -146,7 +146,7 @@ resource "kubernetes_deployment" "grafana" {
   }
 }
 
-resource "kubernetes_service" "grafana" {
+resource "kubernetes_service_v1" "grafana" {
   metadata {
     name      = "grafana"
     namespace = var.namespace
@@ -155,7 +155,7 @@ resource "kubernetes_service" "grafana" {
 
   spec {
     selector = {
-      app = kubernetes_deployment.grafana.metadata[0].labels.app
+      app = kubernetes_deployment_v1.grafana.metadata[0].labels.app
     }
 
     port {

@@ -1,4 +1,4 @@
-resource "kubernetes_deployment" "pooler" {
+resource "kubernetes_deployment_v1" "pooler" {
   metadata {
     name      = "pooler"
     namespace = var.namespace
@@ -23,7 +23,7 @@ resource "kubernetes_deployment" "pooler" {
       spec {
         container {
           name  = "pooler"
-          image = "bitnami/pgbouncer:${var.pgbouncer_image_tag}"
+          image = "bitnamilegacy/pgbouncer:${var.pgbouncer_image_tag}"
 
           liveness_probe {
             tcp_socket {
@@ -85,7 +85,7 @@ resource "kubernetes_deployment" "pooler" {
           }
           env {
             name  = "POSTGRESQL_HOST"
-            value = kubernetes_service.postgres.metadata[0].name
+            value = kubernetes_service_v1.postgres.metadata[0].name
           }
           env {
             name  = "POSTGRESQL_PORT"
@@ -97,7 +97,7 @@ resource "kubernetes_deployment" "pooler" {
   }
 }
 
-resource "kubernetes_service" "pooler" {
+resource "kubernetes_service_v1" "pooler" {
   metadata {
     name      = "pooler"
     namespace = var.namespace
@@ -106,7 +106,7 @@ resource "kubernetes_service" "pooler" {
 
   spec {
     selector = {
-      app = kubernetes_deployment.pooler.spec[0].template[0].metadata[0].labels.app
+      app = kubernetes_deployment_v1.pooler.spec[0].template[0].metadata[0].labels.app
     }
 
     port {

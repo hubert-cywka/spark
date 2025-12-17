@@ -1,4 +1,4 @@
-resource "kubernetes_deployment" "prometheus" {
+resource "kubernetes_deployment_v1" "prometheus" {
   metadata {
     name      = "prometheus"
     namespace = var.namespace
@@ -52,13 +52,13 @@ resource "kubernetes_deployment" "prometheus" {
         volume {
           name = "config-volume"
           config_map {
-            name = kubernetes_config_map.prometheus_config.metadata[0].name
+            name = kubernetes_config_map_v1.prometheus_config.metadata[0].name
           }
         }
         volume {
           name = "prometheus-storage"
           persistent_volume_claim {
-            claim_name = kubernetes_persistent_volume_claim.prometheus_pvc.metadata[0].name
+            claim_name = kubernetes_persistent_volume_claim_v1.prometheus_pvc.metadata[0].name
           }
         }
       }
@@ -66,7 +66,7 @@ resource "kubernetes_deployment" "prometheus" {
   }
 }
 
-resource "kubernetes_service" "prometheus" {
+resource "kubernetes_service_v1" "prometheus" {
   metadata {
     name      = "prometheus"
     namespace = var.namespace
@@ -75,7 +75,7 @@ resource "kubernetes_service" "prometheus" {
 
   spec {
     selector = {
-      app = kubernetes_deployment.prometheus.metadata[0].labels.app
+      app = kubernetes_deployment_v1.prometheus.metadata[0].labels.app
     }
 
     port {
@@ -89,7 +89,7 @@ resource "kubernetes_service" "prometheus" {
   }
 }
 
-resource "kubernetes_config_map" "prometheus_config" {
+resource "kubernetes_config_map_v1" "prometheus_config" {
   metadata {
     name      = "prometheus-config"
     namespace = var.namespace
@@ -102,7 +102,7 @@ resource "kubernetes_config_map" "prometheus_config" {
   }
 }
 
-resource "kubernetes_persistent_volume_claim" "prometheus_pvc" {
+resource "kubernetes_persistent_volume_claim_v1" "prometheus_pvc" {
   metadata {
     name      = "prometheus-pvc"
     namespace = var.namespace

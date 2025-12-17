@@ -1,4 +1,4 @@
-resource "kubernetes_deployment" "tempo" {
+resource "kubernetes_deployment_v1" "tempo" {
   metadata {
     name      = "tempo"
     namespace = var.namespace
@@ -63,13 +63,13 @@ resource "kubernetes_deployment" "tempo" {
         volume {
           name = "config-volume"
           config_map {
-            name = kubernetes_config_map.tempo_config.metadata[0].name
+            name = kubernetes_config_map_v1.tempo_config.metadata[0].name
           }
         }
         volume {
           name = "tempo-storage"
           persistent_volume_claim {
-            claim_name = kubernetes_persistent_volume_claim.tempo_pvc.metadata[0].name
+            claim_name = kubernetes_persistent_volume_claim_v1.tempo_pvc.metadata[0].name
           }
         }
       }
@@ -77,7 +77,7 @@ resource "kubernetes_deployment" "tempo" {
   }
 }
 
-resource "kubernetes_service" "tempo" {
+resource "kubernetes_service_v1" "tempo" {
   metadata {
     name      = "tempo"
     namespace = var.namespace
@@ -86,7 +86,7 @@ resource "kubernetes_service" "tempo" {
 
   spec {
     selector = {
-      app = kubernetes_deployment.tempo.metadata[0].labels.app
+      app = kubernetes_deployment_v1.tempo.metadata[0].labels.app
     }
 
     port {
@@ -112,7 +112,7 @@ resource "kubernetes_service" "tempo" {
   }
 }
 
-resource "kubernetes_config_map" "tempo_config" {
+resource "kubernetes_config_map_v1" "tempo_config" {
   metadata {
     name      = "tempo-config"
     namespace = var.namespace
@@ -128,7 +128,7 @@ resource "kubernetes_config_map" "tempo_config" {
 
 }
 
-resource "kubernetes_persistent_volume_claim" "tempo_pvc" {
+resource "kubernetes_persistent_volume_claim_v1" "tempo_pvc" {
   metadata {
     name      = "tempo-pvc"
     namespace = var.namespace

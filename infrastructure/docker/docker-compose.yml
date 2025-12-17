@@ -52,7 +52,7 @@ services:
             - services_network
 
     pooler:
-        image: bitnami/pgbouncer:1.24.1
+        image: bitnamilegacy/pgbouncer:1.24.1
         restart: always
         networks:
             - services_network
