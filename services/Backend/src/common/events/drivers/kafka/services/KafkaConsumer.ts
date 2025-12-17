@@ -27,32 +27,48 @@ export class KafkaConsumer implements IEventConsumer {
                 const startTime = process.hrtime.bigint();
                 kafkaMetrics.batchSize.record(batch.messages.length, { topic: batch.topic });
 
-                const incomingEvents = this.getEventsFromBatch(batch);
-                const emptyEventsCount = incomingEvents.length - batch.messages.length;
+                try {
+                    const incomingEvents = this.getEventsFromBatch(batch);
+                    const emptyEventsCount = incomingEvents.length - batch.messages.length;
 
-                if (emptyEventsCount) {
-                    this.logger.warn({ topic: batch.topic, count: emptyEventsCount }, "Received empty messages.");
+                    if (emptyEventsCount) {
+                        this.logger.warn({ topic: batch.topic, count: emptyEventsCount }, "Received empty messages.");
+                    }
+
+                    kafkaMetrics.receivedMessages.add(incomingEvents.length, { topic: batch.topic });
+
+                    await heartbeat();
+                    const eventsTheConsumerIsInterestedIn = incomingEvents.filter(
+                        (event) => !!labels.find((label) => label.subject === event.getSubject() && label.topic === event.getTopic())
+                    );
+
+                    if (eventsTheConsumerIsInterestedIn.length > 0) {
+                        await onEventsReceived(eventsTheConsumerIsInterestedIn);
+                        kafkaMetrics.consumedMessages.add(eventsTheConsumerIsInterestedIn.length, {
+                            topic: batch.topic,
+                            status: "success",
+                        });
+                    }
+
+                    for (const message of batch.messages) {
+                        resolveOffset(message.offset);
+                    }
+                } catch (error) {
+                    this.logger.error(
+                        {
+                            err: error,
+                            topic: batch.topic,
+                            partition: batch.partition,
+                        },
+                        "Error processing batch. Skipping offset resolution to trigger retry."
+                    );
+
+                    throw error;
+                } finally {
+                    const endTime = process.hrtime.bigint();
+                    const durationMilliseconds = Number(endTime - startTime) / 1_000_000;
+                    kafkaMetrics.batchConsumingDuration.record(durationMilliseconds, { topic: batch.topic, status: "error" });
                 }
-
-                kafkaMetrics.receivedMessages.add(incomingEvents.length, { topic: batch.topic });
-
-                await heartbeat();
-                const eventsTheConsumerIsInterestedIn = incomingEvents.filter(
-                    (event) => !!labels.find((label) => label.subject === event.getSubject() && label.topic === event.getTopic())
-                );
-
-                if (eventsTheConsumerIsInterestedIn.length > 0) {
-                    await onEventsReceived(eventsTheConsumerIsInterestedIn);
-                    kafkaMetrics.consumedMessages.add(eventsTheConsumerIsInterestedIn.length, { topic: batch.topic });
-                }
-
-                for (const message of batch.messages) {
-                    resolveOffset(message.offset);
-                }
-
-                const endTime = process.hrtime.bigint();
-                const durationMilliseconds = Number(endTime - startTime) / 1_000_000;
-                kafkaMetrics.batchConsumingDuration.record(durationMilliseconds, { topic: batch.topic });
             },
         });
     }
