@@ -44,10 +44,7 @@ export class KafkaConsumer implements IEventConsumer {
 
                     if (eventsTheConsumerIsInterestedIn.length > 0) {
                         await onEventsReceived(eventsTheConsumerIsInterestedIn);
-                        kafkaMetrics.consumedMessages.add(eventsTheConsumerIsInterestedIn.length, {
-                            topic: batch.topic,
-                            status: "success",
-                        });
+                        kafkaMetrics.consumedMessages.add(eventsTheConsumerIsInterestedIn.length, { topic: batch.topic });
                     }
 
                     for (const message of batch.messages) {
@@ -67,7 +64,7 @@ export class KafkaConsumer implements IEventConsumer {
                 } finally {
                     const endTime = process.hrtime.bigint();
                     const durationMilliseconds = Number(endTime - startTime) / 1_000_000;
-                    kafkaMetrics.batchConsumingDuration.record(durationMilliseconds, { topic: batch.topic, status: "error" });
+                    kafkaMetrics.batchConsumingDuration.record(durationMilliseconds, { topic: batch.topic });
                 }
             },
         });
