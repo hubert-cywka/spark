@@ -50,7 +50,7 @@ export const GoalPageDashboard = ({ goalId }: EntriesProps) => {
                     entries={entries}
                     goalId={goalId}
                     isLoading={areEntriesLoading}
-                    headerActions={<EntryFiltersGroup size="1" onFiltersChange={setFilters} />}
+                    headerActions={<EntryFiltersGroup withReset size="1" onFiltersChange={setFilters} />}
                 />
             </div>
         </main>
