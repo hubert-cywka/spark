@@ -2,5 +2,6 @@
 
 .entriesFilters {
     display: flex;
+    align-items: center;
     gap: tokens.$spacing-300;
 }

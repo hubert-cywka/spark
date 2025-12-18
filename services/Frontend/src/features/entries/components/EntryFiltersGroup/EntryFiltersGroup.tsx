@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import classNames from "clsx";
-import { SquareCheckBigIcon, SquareIcon, StarIcon, StarOffIcon } from "lucide-react";
+import { RotateCcwIcon, SquareCheckBigIcon, SquareIcon, StarIcon, StarOffIcon } from "lucide-react";
 
 import styles from "./styles/EntryFiltersGroup.module.scss";
 
+import { IconButton } from "@/components/IconButton";
 import { IconToggleButton } from "@/components/IconToggleButton/IconToggleButton.tsx";
 import { ToggleButtonGroup } from "@/components/ToggleButtonGroup";
 import { EntryFilters } from "@/features/entries/types/Entry";
@@ -23,45 +24,49 @@ enum EntryCompletedFilter {
 
 type EntryFiltersGroupProps = {
     onFiltersChange: (value: EntryFilters) => void;
+    withReset?: boolean;
     size?: "1" | "2" | "3";
     className?: string;
 };
 
-export const EntryFiltersGroup = ({ onFiltersChange, className, size = "2" }: EntryFiltersGroupProps) => {
+export const EntryFiltersGroup = ({ onFiltersChange, withReset, className, size = "2" }: EntryFiltersGroupProps) => {
     const t = useTranslate();
+    const [filters, setFilters] = useState<EntryFilters>({});
 
-    const [featured, setFeatured] = useState<boolean | undefined>();
-    const [completed, setCompleted] = useState<boolean | undefined>();
+    const completedKeys = new Set(
+        getActiveKeys(filters.completed, EntryCompletedFilter.ONLY_COMPLETED, EntryCompletedFilter.WITHOUT_COMPLETED)
+    );
+
+    const featuredKeys = new Set(getActiveKeys(filters.featured, EntryFeaturedFilter.ONLY_FEATURED, EntryFeaturedFilter.WITHOUT_FEATURED));
+
+    const isAnyFilterSelected = filters.completed !== undefined || filters.featured !== undefined;
+
+    const updateFilters = (patch: EntryFilters) => {
+        const nextFilters = { ...filters, ...patch };
+        setFilters(nextFilters);
+        onFiltersChange(nextFilters);
+    };
 
     const onCompletedFiltersChange = (keys: Set<string | number>) => {
-        if (keys.has(EntryCompletedFilter.ONLY_COMPLETED)) {
-            setCompleted(true);
-            onFiltersChange({ completed: true, featured });
-        } else if (keys.has(EntryCompletedFilter.WITHOUT_COMPLETED)) {
-            setCompleted(false);
-            onFiltersChange({ completed: false, featured });
-        } else {
-            setCompleted(undefined);
-            onFiltersChange({ featured });
-        }
+        updateFilters({
+            completed: getFilterValue(keys, EntryCompletedFilter.ONLY_COMPLETED, EntryCompletedFilter.WITHOUT_COMPLETED),
+        });
     };
 
     const onFeaturedFiltersChange = (keys: Set<string | number>) => {
-        if (keys.has(EntryFeaturedFilter.ONLY_FEATURED)) {
-            setFeatured(true);
-            onFiltersChange({ featured: true, completed });
-        } else if (keys.has(EntryFeaturedFilter.WITHOUT_FEATURED)) {
-            setFeatured(false);
-            onFiltersChange({ featured: false, completed });
-        } else {
-            setFeatured(undefined);
-            onFiltersChange({ completed });
-        }
+        updateFilters({
+            featured: getFilterValue(keys, EntryFeaturedFilter.ONLY_FEATURED, EntryFeaturedFilter.WITHOUT_FEATURED),
+        });
+    };
+
+    const onReset = () => {
+        setFilters({});
+        onFiltersChange({});
     };
 
     return (
         <div className={classNames(styles.entriesFilters, className)}>
-            <ToggleButtonGroup onSelectionChange={onCompletedFiltersChange}>
+            <ToggleButtonGroup onSelectionChange={onCompletedFiltersChange} selectedKeys={completedKeys}>
                 <IconToggleButton
                     size={size}
                     id={EntryCompletedFilter.WITHOUT_COMPLETED}
@@ -78,7 +83,7 @@ export const EntryFiltersGroup = ({ onFiltersChange, className, size = "2" }: En
                 />
             </ToggleButtonGroup>
 
-            <ToggleButtonGroup onSelectionChange={onFeaturedFiltersChange}>
+            <ToggleButtonGroup onSelectionChange={onFeaturedFiltersChange} selectedKeys={featuredKeys}>
                 <IconToggleButton
                     size={size}
                     id={EntryFeaturedFilter.WITHOUT_FEATURED}
@@ -94,6 +99,42 @@ export const EntryFiltersGroup = ({ onFiltersChange, className, size = "2" }: En
                     aria-label={t("entries.filters.featured")}
                 />
             </ToggleButtonGroup>
+
+            {withReset && (
+                <IconButton
+                    aria-label={t("entries.filters.reset")}
+                    tooltip={t("entries.filters.reset")}
+                    iconSlot={RotateCcwIcon}
+                    size={size}
+                    onClick={onReset}
+                    isDisabled={!isAnyFilterSelected}
+                    variant="primary"
+                />
+            )}
         </div>
     );
+};
+
+const getActiveKeys = (value: boolean | undefined, onlyKey: string, withoutKey: string): string[] => {
+    if (value === true) {
+        return [onlyKey];
+    }
+
+    if (value === false) {
+        return [withoutKey];
+    }
+
+    return [];
+};
+
+const getFilterValue = (keys: Set<string | number>, onlyKey: string, withoutKey: string): boolean | undefined => {
+    if (keys.has(onlyKey)) {
+        return true;
+    }
+
+    if (keys.has(withoutKey)) {
+        return false;
+    }
+
+    return undefined;
 };

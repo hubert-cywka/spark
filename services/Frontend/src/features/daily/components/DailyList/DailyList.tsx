@@ -150,7 +150,7 @@ export const DailyList = () => {
                 onReset={reset}
                 timeframeStart={startDate}
             >
-                <EntryFiltersGroup onFiltersChange={setFilters} />
+                <EntryFiltersGroup withReset onFiltersChange={setFilters} />
             </DailyListHeader>
 
             <DailyActivityChart
