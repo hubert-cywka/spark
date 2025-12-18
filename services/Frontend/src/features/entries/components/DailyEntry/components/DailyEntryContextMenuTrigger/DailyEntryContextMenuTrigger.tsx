@@ -1,5 +1,5 @@
 import { KeyboardEvent } from "react";
-import { MenuIcon } from "lucide-react";
+import { EllipsisIcon } from "lucide-react";
 
 import styles from "./styles/DailyEntryContextMenuTrigger.module.scss";
 
@@ -26,7 +26,7 @@ export const DailyEntryContextMenuTrigger = ({
         <IconButton
             size="1"
             variant="subtle"
-            iconSlot={MenuIcon}
+            iconSlot={EllipsisIcon}
             tooltip={t("entries.actionsMenu.trigger.label")}
             aria-label={t("entries.actionsMenu.trigger.label")}
             data-entry-column={column}
