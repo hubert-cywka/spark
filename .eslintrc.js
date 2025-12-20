@@ -5,6 +5,7 @@ module.exports = {
         node: true,
         amd: true,
     },
+    ignorePatterns: ["node_modules/", "dist/", "coverage/", "build/", "services/Backend/documentation/"],
     parser: "@typescript-eslint/parser",
     parserOptions: {
         sourceType: "module",
