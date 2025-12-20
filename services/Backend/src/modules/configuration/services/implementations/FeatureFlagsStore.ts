@@ -1,6 +1,6 @@
 import { Inject } from "@nestjs/common";
 
-import { type IDistributedCache, DistributedCacheToken } from "@/common/cache/services/interfaces/ICache";
+import { type IDistributedCache, DistributedCacheToken } from "@/common/cache/services/interfaces/IDistributedCache";
 import { type FeatureFlag } from "@/modules/configuration/models/FeatureFlag.model";
 import { type IFeatureFlagsStore } from "@/modules/configuration/services/interfaces/IFeatureFlagsStore";
 

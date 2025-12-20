@@ -109,7 +109,7 @@ variable "readiness_success_threshold" {
 
 variable "readiness_failure_threshold" {
   type    = number
-  default = 3
+  default = 6
 }
 
 variable "enable_startup_probe" {

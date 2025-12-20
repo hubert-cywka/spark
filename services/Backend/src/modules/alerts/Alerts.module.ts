@@ -1,5 +1,7 @@
 import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { InjectDataSource } from "@nestjs/typeorm";
+import { DataSource } from "typeorm";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import {
@@ -46,6 +48,11 @@ import { AlertEventsPublisherToken } from "@/modules/alerts/services/interfaces/
 import { AlertSchedulerToken } from "@/modules/alerts/services/interfaces/IAlertScheduler.service";
 import { AlertsProcessorToken } from "@/modules/alerts/services/interfaces/IAlertsProcessor.service";
 import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRecipient.service";
+import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
+import {
+    type IHealthCheckProbesRegistry,
+    HealthCheckProbesRegistryToken,
+} from "@/modules/healthcheck/services/interfaces/IHealthCheckProbesRegistry";
 
 @Module({
     providers: [
@@ -84,6 +91,7 @@ import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRec
         },
     ],
     imports: [
+        HealthCheckModule,
         DatabaseModule.forRootAsync(ALERTS_MODULE_DATA_SOURCE, {
             useFactory: (configService: ConfigService) => ({
                 logging: configService.getOrThrow<boolean>("modules.alerts.database.logging"),
@@ -131,10 +139,16 @@ export class AlertsModule implements OnModuleInit {
         @Inject(InboxEventHandlersToken)
         private readonly handlers: IInboxEventHandler[],
         @Inject(EventPublisherToken)
-        private readonly eventPublisher: IEventPublisher
+        private readonly eventPublisher: IEventPublisher,
+        @InjectDataSource(ALERTS_MODULE_DATA_SOURCE)
+        private readonly dataSource: DataSource,
+        @Inject(HealthCheckProbesRegistryToken)
+        private readonly healthCheckProbesService: IHealthCheckProbesRegistry
     ) {}
 
     public onModuleInit() {
+        this.healthCheckProbesService.registerDatabaseConnectionProbe(`database_${ALERTS_MODULE_DATA_SOURCE}`, this.dataSource);
+
         this.orchestrator.startProcessingInbox(this.handlers);
         this.orchestrator.startProcessingOutbox();
         this.orchestrator.startClearingInbox();

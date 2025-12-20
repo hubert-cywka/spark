@@ -1,5 +1,7 @@
 import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { InjectDataSource } from "@nestjs/typeorm";
+import { DataSource } from "typeorm";
 
 import { SCHEDULING_MODULE_DATA_SOURCE } from "./infrastructure/database/constants";
 
@@ -16,6 +18,11 @@ import {
     type IIntegrationEventsSubscriber,
     IntegrationEventsSubscriberToken,
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
+import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
+import {
+    type IHealthCheckProbesRegistry,
+    HealthCheckProbesRegistryToken,
+} from "@/modules/healthcheck/services/interfaces/IHealthCheckProbesRegistry";
 import { JobExecutionEntity } from "@/modules/scheduling/entities/JobExecution.entity";
 import { JobScheduleEntity } from "@/modules/scheduling/entities/JobScheduleEntity";
 import { IntervalJobScheduleUpdatedEventHandler } from "@/modules/scheduling/events/IntervalJobScheduleUpdatedEvent.handler";
@@ -52,6 +59,7 @@ import { JobSchedulerToken } from "@/modules/scheduling/services/interfaces/IJob
         },
     ],
     imports: [
+        HealthCheckModule,
         DatabaseModule.forRootAsync(SCHEDULING_MODULE_DATA_SOURCE, {
             useFactory: (configService: ConfigService) => ({
                 logging: configService.getOrThrow<boolean>("modules.scheduling.database.logging"),
@@ -96,10 +104,16 @@ export class SchedulingModule implements OnModuleInit {
         @Inject(IntegrationEventsJobsOrchestratorToken)
         private readonly orchestrator: IIntegrationEventsJobsOrchestrator,
         @Inject(InboxEventHandlersToken)
-        private readonly handlers: IInboxEventHandler[]
+        private readonly handlers: IInboxEventHandler[],
+        @InjectDataSource(SCHEDULING_MODULE_DATA_SOURCE)
+        private readonly dataSource: DataSource,
+        @Inject(HealthCheckProbesRegistryToken)
+        private readonly healthCheckProbesService: IHealthCheckProbesRegistry
     ) {}
 
     public onModuleInit() {
+        this.healthCheckProbesService.registerDatabaseConnectionProbe(`database_${SCHEDULING_MODULE_DATA_SOURCE}`, this.dataSource);
+
         this.orchestrator.startProcessingInbox(this.handlers);
         this.orchestrator.startClearingInbox();
         this.orchestrator.startProcessingOutbox();

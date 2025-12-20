@@ -1,11 +1,18 @@
-import { Module } from "@nestjs/common";
+import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { InjectDataSource } from "@nestjs/typeorm";
+import { DataSource } from "typeorm";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import { IntegrationEventsModule } from "@/common/events";
 import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
 import { InboxAndOutboxSequenceNumber1753291628862 } from "@/common/events/migrations/1753291628862-inbox-and-outbox-sequence-number";
 import { InboxAndOutboxSplitTopicAndSubject1753291628863 } from "@/common/events/migrations/1753291628863-inbox-and-outbox-split-topic-and-subject";
+import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
+import {
+    type IHealthCheckProbesRegistry,
+    HealthCheckProbesRegistryToken,
+} from "@/modules/healthcheck/services/interfaces/IHealthCheckProbesRegistry";
 import { TwoFactorAuthenticationIntegrationEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationIntegration.entity";
 import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccountEntity";
 import { FederatedAccountEntity } from "@/modules/identity/account/entities/FederatedAccountEntity";
@@ -17,6 +24,7 @@ import { RegenerateMigrations1749289911264 } from "@/modules/identity/infrastruc
 
 @Module({
     imports: [
+        HealthCheckModule,
         DatabaseModule.forRootAsync(IDENTITY_MODULE_DATA_SOURCE, {
             useFactory: (configService: ConfigService) => ({
                 logging: configService.getOrThrow<boolean>("modules.identity.database.logging"),
@@ -61,4 +69,15 @@ import { RegenerateMigrations1749289911264 } from "@/modules/identity/infrastruc
     ],
     exports: [IntegrationEventsModule, DatabaseModule],
 })
-export class IdentitySharedModule {}
+export class IdentitySharedModule implements OnModuleInit {
+    constructor(
+        @InjectDataSource(IDENTITY_MODULE_DATA_SOURCE)
+        private readonly dataSource: DataSource,
+        @Inject(HealthCheckProbesRegistryToken)
+        private readonly healthCheckProbesService: IHealthCheckProbesRegistry
+    ) {}
+
+    onModuleInit() {
+        this.healthCheckProbesService.registerDatabaseConnectionProbe(`database_${IDENTITY_MODULE_DATA_SOURCE}`, this.dataSource);
+    }
+}

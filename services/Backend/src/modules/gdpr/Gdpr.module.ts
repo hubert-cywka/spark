@@ -1,5 +1,7 @@
 import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { InjectDataSource } from "@nestjs/typeorm";
+import { DataSource } from "typeorm";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import {
@@ -42,6 +44,11 @@ import { DataPurgeEventsPublisherToken } from "@/modules/gdpr/services/interface
 import { DataPurgeProcessorToken } from "@/modules/gdpr/services/interfaces/IDataPurgeProcessor.service";
 import { DataPurgeSchedulerToken } from "@/modules/gdpr/services/interfaces/IDataPurgeScheduler.service";
 import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.service";
+import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
+import {
+    type IHealthCheckProbesRegistry,
+    HealthCheckProbesRegistryToken,
+} from "@/modules/healthcheck/services/interfaces/IHealthCheckProbesRegistry";
 
 @Module({
     providers: [
@@ -81,6 +88,7 @@ import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.s
         },
     ],
     imports: [
+        HealthCheckModule,
         DatabaseModule.forRootAsync(GDPR_MODULE_DATA_SOURCE, {
             useFactory: (configService: ConfigService) => ({
                 logging: configService.getOrThrow<boolean>("modules.gdpr.database.logging"),
@@ -128,10 +136,16 @@ export class GdprModule implements OnModuleInit {
         @Inject(InboxEventHandlersToken)
         private readonly handlers: IInboxEventHandler[],
         @Inject(EventPublisherToken)
-        private readonly eventPublisher: IEventPublisher
+        private readonly eventPublisher: IEventPublisher,
+        @InjectDataSource(GDPR_MODULE_DATA_SOURCE)
+        private readonly dataSource: DataSource,
+        @Inject(HealthCheckProbesRegistryToken)
+        private readonly healthCheckProbesService: IHealthCheckProbesRegistry
     ) {}
 
     public onModuleInit() {
+        this.healthCheckProbesService.registerDatabaseConnectionProbe(`database_${GDPR_MODULE_DATA_SOURCE}`, this.dataSource);
+
         this.orchestrator.startProcessingInbox(this.handlers);
         this.orchestrator.startProcessingOutbox();
         this.orchestrator.startClearingInbox();
