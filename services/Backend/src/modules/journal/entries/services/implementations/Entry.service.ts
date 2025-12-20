@@ -4,7 +4,9 @@ import { Repository } from "typeorm";
 
 import { type PageOptions } from "@/common/pagination/types/PageOptions";
 import { type Paginated } from "@/common/pagination/types/Paginated";
+import { type IDailyProviderService, DailyProviderServiceToken } from "@/modules/journal/daily/services/interfaces/IDailyProvider.service";
 import { EntryEntity } from "@/modules/journal/entries/entities/Entry.entity";
+import { EntryDailyNotFoundError } from "@/modules/journal/entries/errors/EntryDailyNotFoundError";
 import { EntryNotFoundError } from "@/modules/journal/entries/errors/EntryNotFound.error";
 import { type IEntryMapper, EntryMapperToken } from "@/modules/journal/entries/mappers/IEntry.mapper";
 import { type IEntryDetailMapper, EntryDetailMapperToken } from "@/modules/journal/entries/mappers/IEntryDetail.mapper";
@@ -22,8 +24,8 @@ export class EntryService implements IEntryService {
         @InjectRepository(EntryEntity, JOURNAL_MODULE_DATA_SOURCE)
         private readonly repository: Repository<EntryEntity>,
         @Inject(EntryMapperToken) private readonly entryMapper: IEntryMapper,
-        @Inject(EntryDetailMapperToken)
-        private readonly entryDetailMapper: IEntryDetailMapper
+        @Inject(EntryDetailMapperToken) private readonly entryDetailMapper: IEntryDetailMapper,
+        @Inject(DailyProviderServiceToken) private readonly dailyProvider: IDailyProviderService
     ) {}
 
     public async findAll(
@@ -126,12 +128,13 @@ export class EntryService implements IEntryService {
         };
     }
 
-    // TODO: Don't save/update/delete entry if daily is soft-removed
     public async create(
         authorId: string,
         dailyId: string,
         { isCompleted, content, isFeatured }: Pick<Entry, "content" | "isFeatured" | "isCompleted">
     ): Promise<Entry> {
+        await this.assertDailyExists(authorId, dailyId);
+
         const result = await this.getRepository()
             .createQueryBuilder()
             .insert()
@@ -151,6 +154,8 @@ export class EntryService implements IEntryService {
     }
 
     public async deleteById(authorId: string, dailyId: string, entryId: string): Promise<void> {
+        await this.assertDailyExists(authorId, dailyId);
+
         const result = await this.getRepository().softDelete({
             id: entryId,
             author: { id: authorId },
@@ -164,6 +169,8 @@ export class EntryService implements IEntryService {
     }
 
     public async restoreById(authorId: string, dailyId: string, entryId: string): Promise<void> {
+        await this.assertDailyExists(authorId, dailyId);
+
         const result = await this.getRepository().restore({
             id: entryId,
             author: { id: authorId },
@@ -177,6 +184,8 @@ export class EntryService implements IEntryService {
     }
 
     public async update(authorId: string, dailyId: string, entryId: string, partialEntry: Partial<Entry>): Promise<Entry> {
+        await this.assertDailyExists(authorId, dailyId);
+
         const result = await this.getRepository()
             .createQueryBuilder()
             .update(EntryEntity)
@@ -195,6 +204,14 @@ export class EntryService implements IEntryService {
         }
 
         return this.entryMapper.fromEntityToModel(updatedEntity);
+    }
+
+    private async assertDailyExists(authorId: string, dailyId: string): Promise<void> {
+        const exists = await this.dailyProvider.existsById(authorId, dailyId);
+
+        if (!exists) {
+            throw new EntryDailyNotFoundError(dailyId);
+        }
     }
 
     private getRepository(): Repository<EntryEntity> {

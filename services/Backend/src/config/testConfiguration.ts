@@ -1,4 +1,3 @@
-// TODO: Strip this config from important values
 export const TestConfig = () => ({
     appName: process.env.APP_NAME,
     port: parseInt(process.env.PORT ?? ""),
@@ -15,7 +14,7 @@ export const TestConfig = () => ({
     },
 
     cookies: {
-        secret: process.env.COOKIES_SECRET,
+        secret: "cookies-secret-for-tests",
     },
 
     events: {
@@ -24,7 +23,7 @@ export const TestConfig = () => ({
             staleThresholdInMs: 30_000,
         },
         encryption: {
-            secret: process.env.EVENTS_ENCRYPTION_SECRET_64_BYTES,
+            secret: "aaabbbaaabbdaacaaceaaaaeaaabeaaaaaaaaacaafaaaaaaaaaddaaacbbbdaaa",
         },
         inbox: {
             processing: {
@@ -58,7 +57,7 @@ export const TestConfig = () => ({
 
     auth: {
         jwt: {
-            signingSecret: process.env.JWT_SIGNING_SECRET,
+            signingSecret: "jwt-signing-secret",
             expirationTimeInSeconds: parseInt(process.env.JWT_EXPIRATION_TIME_IN_SECONDS ?? ""),
         },
     },
@@ -173,7 +172,7 @@ export const TestConfig = () => ({
 
         identity: {
             refreshToken: {
-                signingSecret: process.env.REFRESH_TOKEN_SIGNING_SECRET,
+                signingSecret: "refresh-token-signing-secret",
                 expirationTimeInSeconds: parseInt(process.env.REFRESH_TOKEN_EXPIRATION_TIME_IN_SECONDS ?? ""),
             },
             database: {
@@ -190,16 +189,6 @@ export const TestConfig = () => ({
             throttle: {
                 ttl: parseInt(process.env.AUTH_THROTTLE_TTL_IN_MS ?? ""),
                 limit: parseInt(process.env.AUTH_THROTTLE_LIMIT ?? ""),
-            },
-            oidc: {
-                cookie: {
-                    expirationTimeInSeconds: parseInt(process.env.OIDC_COOKIE_EXPIRATION_TIME_IN_SECONDS ?? ""),
-                },
-                google: {
-                    clientId: process.env.GOOGLE_CLIENT_ID,
-                    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-                    redirectUrl: process.env.GOOGLE_OIDC_REDIRECT_URL,
-                },
             },
         },
     },
