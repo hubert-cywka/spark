@@ -6,7 +6,7 @@ import { PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics";
 import { NodeSDK } from "@opentelemetry/sdk-node";
 import { ATTR_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
 
-import { OTEL_APP_NAME } from "@/common/observability/constants";
+const OTEL_APP_NAME = process.env.OTEL_SERVICE_NAME ?? "spark";
 
 const metricExporter = new OTLPMetricExporter();
 const traceExporter = new OTLPTraceExporter();

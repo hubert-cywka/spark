@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 
+import { DailyModule } from "@/modules/journal/daily/Daily.module";
 import { DailyEntryController } from "@/modules/journal/entries/controllers/DailyEntry.controller";
 import { EntryController } from "@/modules/journal/entries/controllers/Entry.controller";
 import { EntryMapper } from "@/modules/journal/entries/mappers/Entry.mapper";
@@ -13,7 +14,7 @@ import { EntryServiceToken } from "@/modules/journal/entries/services/interfaces
 import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.module";
 
 @Module({
-    imports: [JournalSharedModule],
+    imports: [JournalSharedModule, DailyModule],
     providers: [
         { provide: EntryMapperToken, useClass: EntryMapper },
         { provide: EntryDetailMapperToken, useClass: EntryDetailMapper },

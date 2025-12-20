@@ -32,12 +32,14 @@ import {
     type IDailyInsightsProvider,
     DailyInsightsProviderToken,
 } from "@/modules/journal/daily/services/interfaces/IDailyInsightsProvider.service";
+import { type IDailyProviderService, DailyProviderServiceToken } from "@/modules/journal/daily/services/interfaces/IDailyProvider.service";
 import { type User } from "@/types/User";
 
 @Controller("daily")
 export class DailyController {
     public constructor(
         @Inject(DailyServiceToken) private readonly dailyService: IDailyService,
+        @Inject(DailyProviderServiceToken) private readonly dailyProvider: IDailyProviderService,
         @Inject(DailyInsightsProviderToken)
         private readonly insightsService: IDailyInsightsProvider,
         @Inject(DailyMapperToken) private readonly dailyMapper: IDailyMapper
@@ -51,7 +53,7 @@ export class DailyController {
         @Query() pageOptions: PageOptionsDto,
         @AuthenticatedUserContext() author: User
     ) {
-        const result = await this.dailyService.findAllByDateRange(author.id, from, to, pageOptions);
+        const result = await this.dailyProvider.findAllByDateRange(author.id, from, to, pageOptions);
         return this.dailyMapper.fromModelToDtoPage(result);
     }
 
@@ -72,7 +74,7 @@ export class DailyController {
     @AccessScopes("read:daily")
     public async getDailyById(@Param("id", new ParseUUIDPipe()) dailyId: string, @AuthenticatedUserContext() author: User) {
         try {
-            const result = await this.dailyService.findOneById(author.id, dailyId);
+            const result = await this.dailyProvider.findOneById(author.id, dailyId);
             return this.dailyMapper.fromModelToDto(result);
         } catch (err) {
             whenError(err).is(EntityNotFoundError).throw(new NotFoundException()).elseRethrow();
