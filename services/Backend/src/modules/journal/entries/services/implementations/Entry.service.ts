@@ -154,8 +154,6 @@ export class EntryService implements IEntryService {
     }
 
     public async deleteById(authorId: string, dailyId: string, entryId: string): Promise<void> {
-        await this.assertDailyExists(authorId, dailyId);
-
         const result = await this.getRepository().softDelete({
             id: entryId,
             author: { id: authorId },
@@ -169,8 +167,6 @@ export class EntryService implements IEntryService {
     }
 
     public async restoreById(authorId: string, dailyId: string, entryId: string): Promise<void> {
-        await this.assertDailyExists(authorId, dailyId);
-
         const result = await this.getRepository().restore({
             id: entryId,
             author: { id: authorId },
@@ -184,8 +180,6 @@ export class EntryService implements IEntryService {
     }
 
     public async update(authorId: string, dailyId: string, entryId: string, partialEntry: Partial<Entry>): Promise<Entry> {
-        await this.assertDailyExists(authorId, dailyId);
-
         const result = await this.getRepository()
             .createQueryBuilder()
             .update(EntryEntity)
