@@ -6,20 +6,21 @@ const THRESHOLD_MS = 50;
 
 let monitor: blockedAt.Return;
 
+// 'blocked-at' uses async_hooks under the hood, and it may negatively impact performance. We shouldn't run it on
+// production, but using it in a dev environment is fine.
 const createEventLoopMonitor = () => {
-    return blockedAt((time, stack) => {
-        if (time > THRESHOLD_MS) {
-            createSpan(time, stack);
+    return blockedAt(
+        (time, stack, { type }) => {
+            const span = otelTracer.startSpan("event-loop-blocked", {
+                attributes: { duration_ms: time, stack, type },
+            });
+
+            span.end();
+        },
+        {
+            threshold: THRESHOLD_MS,
         }
-    });
-};
-
-const createSpan = (time: number, stack: string[]) => {
-    const span = otelTracer.startSpan("event-loop-blocked", {
-        attributes: { duration_ms: time, stack: stack },
-    });
-
-    span.end();
+    );
 };
 
 export const enableEventLoopMonitor = () => {
