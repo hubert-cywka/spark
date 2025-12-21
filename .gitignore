@@ -32,7 +32,7 @@ obj
 *.sw
 
 # Auto-generated files
-services/Backend/documentation
+services/Backend/documentation/**
 docker-compose.local.override.yml
 
 # AI
