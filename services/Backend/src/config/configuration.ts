@@ -2,6 +2,10 @@ export const AppConfig = () => ({
     appName: process.env.APP_NAME,
     port: parseInt(process.env.PORT ?? ""),
 
+    observability: {
+        enableEventLoopMonitoring: process.env.ENABLE_EVENT_LOOP_MONITORING === "true",
+    },
+
     throttle: {
         ttl: process.env.RATE_LIMITING_BASE_TTL,
         limit: process.env.RATE_LIMITING_BASE_LIMIT,
