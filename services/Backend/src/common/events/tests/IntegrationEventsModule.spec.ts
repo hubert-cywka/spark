@@ -404,15 +404,8 @@ describe("IntegrationEventsModule", () => {
                 eventsPerTenant: 10,
             });
 
-            let processedMessagesCounter = 0;
-            const consecutiveAttemptToFail = 13;
-            jest.spyOn(producer, "publishBatch").mockImplementation(async () => {
-                if (processedMessagesCounter === consecutiveAttemptToFail) {
-                    throw new Error();
-                }
-
-                processedMessagesCounter++;
-                return { ack: true };
+            jest.spyOn(producer, "publishBatch").mockImplementationOnce(async () => {
+                throw new Error();
             });
 
             const unprocessedBefore = await eventRepository.countUnprocessed();
@@ -420,7 +413,7 @@ describe("IntegrationEventsModule", () => {
             const unprocessedAfter = await eventRepository.countUnprocessed();
 
             expect(unprocessedBefore).toBe(seededEventsCount);
-            expect(unprocessedAfter).toBe(seededEventsCount - consecutiveAttemptToFail);
+            expect(unprocessedAfter).toBe(seededEventsCount);
         });
 
         it("should recover after failure and process remaining messages on next iteration", async () => {

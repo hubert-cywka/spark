@@ -18,7 +18,7 @@ export class IntegrationEventRepository<T extends IntegrationEventEntity = Integ
     }
 
     public async removeAll() {
-        await this.repository.delete({});
+        await this.repository.deleteAll();
     }
 
     public async countUnprocessed(): Promise<number> {

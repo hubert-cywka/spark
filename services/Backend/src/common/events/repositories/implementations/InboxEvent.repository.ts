@@ -79,6 +79,6 @@ export class InboxEventRepository extends IntegrationEventRepository<InboxEventE
     }
 
     public async removeAll() {
-        await this.repository.delete({});
+        await this.repository.deleteAll();
     }
 }
