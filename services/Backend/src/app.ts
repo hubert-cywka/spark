@@ -22,6 +22,8 @@ export class Application {
     private logger: Logger;
     private app: NestFastifyApplication | null = null;
 
+    private isShuttingDown: boolean = false;
+
     public constructor(configurationMap: object) {
         initializeTransactionalContext();
         this.config = new ConfigService(configurationMap);
@@ -85,7 +87,15 @@ export class Application {
     }
 
     private enableGracefulShutdown() {
-        this.getApp().enableShutdownHooks();
+        // We could call app.enableShutdownHooks(), we get more control over the shutdown process if we just handle
+        // it manually (while still calling app.close() to properly handle lifecycle events).
+        const signals = ["SIGTERM", "SIGINT"];
+
+        signals.forEach((signal) => {
+            process.on(signal, async () => {
+                await this.terminate(signal);
+            });
+        });
 
         process.on("uncaughtException", async (error) => {
             await this.terminate("uncaughtException", error);
@@ -98,17 +108,25 @@ export class Application {
     }
 
     private async terminate(signal: string, error?: Error | string) {
+        if (this.isShuttingDown) {
+            this.logger.warn(error, `Process received ${signal}. Already shutting down.`);
+            return;
+        }
+
+        this.isShuttingDown = true;
         this.logger.error(error, `Process received ${signal}. Initiating graceful shutdown.`);
 
         try {
             await this.getApp().close();
             this.disableMonitoring();
             this.logger.log("NestJS application closed gracefully.");
+            process.exitCode = 0;
         } catch (cleanupError) {
             this.logger.error(cleanupError, "Error during NestJS application closure.");
-        } finally {
             process.exitCode = 1;
         }
+
+        // Do not call process.exit(), there is no need to -> https://nodejs.org/api/process.html#processexitcode
     }
 
     private enableMonitoring() {
