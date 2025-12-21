@@ -55,8 +55,8 @@ export class Application {
 
         this.addSwagger();
         this.enableGracefulShutdown();
+        this.enableMonitoring();
 
-        enableEventLoopMonitor();
         await this.app.startAllMicroservices();
         await this.app.listen(this.config.getOrThrow<number>("port"), "0.0.0.0", (err, address) => {
             if (err) {
@@ -102,12 +102,23 @@ export class Application {
 
         try {
             await this.getApp().close();
-            disableEventLoopMonitor();
+            this.disableMonitoring();
             this.logger.log("NestJS application closed gracefully.");
         } catch (cleanupError) {
             this.logger.error(cleanupError, "Error during NestJS application closure.");
         } finally {
             process.exitCode = 1;
         }
+    }
+
+    private enableMonitoring() {
+        if (this.config.get<boolean>("observability.enableEventLoopMonitoring")) {
+            enableEventLoopMonitor();
+            this.logger.log("Event loop monitoring enabled.");
+        }
+    }
+
+    private disableMonitoring() {
+        disableEventLoopMonitor();
     }
 }
