@@ -105,7 +105,7 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
     }
 
     private async processPartition(partitionId: number) {
-        return await runInTransaction(
+        return runInTransaction(
             async () => {
                 // eslint-disable-next-line no-constant-condition
                 while (true) {
@@ -137,28 +137,28 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
         );
     }
 
-    // TODO: Utilize client.publishBatch() properly
     private async publishEvents(events: OutboxEventEntity[]) {
         const successfulEvents: OutboxEventEntity[] = [];
         let failedEvent: OutboxEventEntity | null = null;
+        const integrationEvents = events.map((e) => IntegrationEvent.fromEntity(e));
 
-        for (const eventEntity of events) {
-            const event = IntegrationEvent.fromEntity(eventEntity);
-            const labels = { topic: event.getTopic(), subject: event.getSubject() };
+        try {
+            await this.client.publishBatch(integrationEvents);
+            successfulEvents.push(...events);
 
-            try {
-                await this.client.publishBatch([event]);
-                successfulEvents.push(eventEntity);
-
-                const lagMs = dayjs().diff(eventEntity.createdAt, "milliseconds");
+            integrationEvents.forEach((event) => {
+                const labels = { topic: event.getTopic(), subject: event.getSubject() };
+                const lagMs = dayjs().diff(event.getCreatedAt(), "milliseconds");
                 outboxMetrics.publishLag.record(lagMs, labels);
-            } catch (error) {
-                this.logger.error(error, "Failed to publish event. ACK not received.");
+            });
+        } catch (error) {
+            integrationEvents.forEach((event) => {
+                const labels = { topic: event.getTopic(), subject: event.getSubject() };
                 outboxMetrics.publishFailure.add(1, labels);
+            });
 
-                failedEvent = eventEntity;
-                break;
-            }
+            this.logger.error({ error, batchSize: events.length }, "Failed to publish events batch.");
+            failedEvent = events[0];
         }
 
         return { successfulEvents, failedEvent };
