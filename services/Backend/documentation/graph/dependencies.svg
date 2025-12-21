@@ -38,11 +38,11 @@
 </g>
 <g id="clust7" class="cluster">
 <title>cluster_AlertsModule</title>
-<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="2403,-70 2403,-198 2723,-198 2723,-70 2403,-70"/>
+<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="2252,-70 2252,-198 2723,-198 2723,-70 2252,-70"/>
 </g>
 <g id="clust9" class="cluster">
 <title>cluster_AlertsModule_imports</title>
-<polygon fill="none" stroke="black" points="2411,-78 2411,-130 2715,-130 2715,-78 2411,-78"/>
+<polygon fill="none" stroke="black" points="2260,-78 2260,-130 2715,-130 2715,-78 2260,-78"/>
 </g>
 <g id="clust13" class="cluster">
 <title>cluster_AppModule</title>
@@ -163,64 +163,64 @@
 <polygon fill="black" stroke="black" points="698.75,-211.73 702.25,-221.73 705.75,-211.73 698.75,-211.73"/>
 </g>
 <!-- TwoFactorAuthenticationModule -->
-<g id="node12" class="node">
+<g id="node13" class="node">
 <title>TwoFactorAuthenticationModule</title>
 <polygon fill="#8dd3c7" stroke="black" points="2173.18,-258 2170.18,-262 2149.18,-262 2146.18,-258 1968.82,-258 1968.82,-222 2173.18,-222 2173.18,-258"/>
 <text text-anchor="middle" x="2071" y="-235.8" font-family="Times,serif" font-size="14.00">TwoFactorAuthenticationModule</text>
 </g>
 <!-- IdentitySharedModule&#45;&gt;TwoFactorAuthenticationModule -->
-<g id="edge59" class="edge">
+<g id="edge66" class="edge">
 <title>IdentitySharedModule&#45;&gt;TwoFactorAuthenticationModule</title>
-<path fill="none" stroke="black" d="M821.02,-186C1095.41,-186 2071,-186 2071,-186 2071,-186 2071,-211.72 2071,-211.72"/>
-<polygon fill="black" stroke="black" points="2067.5,-211.72 2071,-221.72 2074.5,-211.72 2067.5,-211.72"/>
+<path fill="none" stroke="black" d="M821.02,-185C1095.41,-185 2071,-185 2071,-185 2071,-185 2071,-211.99 2071,-211.99"/>
+<polygon fill="black" stroke="black" points="2067.5,-211.99 2071,-221.99 2074.5,-211.99 2067.5,-211.99"/>
 </g>
 <!-- AuthenticationModule -->
-<g id="node13" class="node">
+<g id="node14" class="node">
 <title>AuthenticationModule</title>
 <polygon fill="#8dd3c7" stroke="black" points="1175.25,-334 1172.25,-338 1151.25,-338 1148.25,-334 1032.75,-334 1032.75,-298 1175.25,-298 1175.25,-334"/>
 <text text-anchor="middle" x="1104" y="-311.8" font-family="Times,serif" font-size="14.00">AuthenticationModule</text>
 </g>
 <!-- IdentitySharedModule&#45;&gt;AuthenticationModule -->
-<g id="edge11" class="edge">
+<g id="edge12" class="edge">
 <title>IdentitySharedModule&#45;&gt;AuthenticationModule</title>
 <path fill="none" stroke="black" d="M815.43,-190.24C815.43,-228.99 815.43,-316 815.43,-316 815.43,-316 1022.67,-316 1022.67,-316"/>
 <polygon fill="black" stroke="black" points="1022.67,-319.5 1032.67,-316 1022.67,-312.5 1022.67,-319.5"/>
 </g>
 <!-- IdentityModule -->
-<g id="node31" class="node">
+<g id="node32" class="node">
 <title>IdentityModule</title>
 <polygon fill="#8dd3c7" stroke="black" points="828.6,-402 825.6,-406 804.6,-406 801.6,-402 725.4,-402 725.4,-366 828.6,-366 828.6,-402"/>
 <text text-anchor="middle" x="777" y="-379.8" font-family="Times,serif" font-size="14.00">IdentityModule</text>
 </g>
 <!-- IdentitySharedModule&#45;&gt;IdentityModule -->
-<g id="edge36" class="edge">
+<g id="edge39" class="edge">
 <title>IdentitySharedModule&#45;&gt;IdentityModule</title>
 <path fill="none" stroke="black" d="M809.88,-190.08C809.88,-190.08 809.88,-355.97 809.88,-355.97"/>
 <polygon fill="black" stroke="black" points="806.38,-355.97 809.88,-365.97 813.38,-355.97 806.38,-355.97"/>
 </g>
 <!-- DatabaseModule  -->
-<g id="node32" class="node">
+<g id="node33" class="node">
 <title>DatabaseModule </title>
 <polygon fill="#fb8072" stroke="black" points="2607.35,-258 2492.65,-258 2492.65,-222 2607.35,-222 2607.35,-258"/>
 <text text-anchor="middle" x="2550" y="-235.8" font-family="Times,serif" font-size="14.00">DatabaseModule </text>
 </g>
 <!-- IdentitySharedModule&#45;&gt;DatabaseModule  -->
-<g id="edge41" class="edge">
+<g id="edge45" class="edge">
 <title>IdentitySharedModule&#45;&gt;DatabaseModule </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M821.14,-177C1149.45,-177 2502.35,-177 2502.35,-177 2502.35,-177 2502.35,-211.78 2502.35,-211.78"/>
-<polygon fill="black" stroke="black" points="2498.85,-211.78 2502.35,-221.78 2505.85,-211.78 2498.85,-211.78"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M821.06,-175C1150.59,-175 2513.97,-175 2513.97,-175 2513.97,-175 2513.97,-211.89 2513.97,-211.89"/>
+<polygon fill="black" stroke="black" points="2510.47,-211.89 2513.97,-221.89 2517.47,-211.89 2510.47,-211.89"/>
 </g>
 <!-- IntegrationEventsModule  -->
-<g id="node33" class="node">
+<g id="node34" class="node">
 <title>IntegrationEventsModule </title>
 <polygon fill="#fb8072" stroke="black" points="2475.07,-258 2312.93,-258 2312.93,-222 2475.07,-222 2475.07,-258"/>
 <text text-anchor="middle" x="2394" y="-235.8" font-family="Times,serif" font-size="14.00">IntegrationEventsModule </text>
 </g>
 <!-- IdentitySharedModule&#45;&gt;IntegrationEventsModule  -->
-<g id="edge42" class="edge">
+<g id="edge46" class="edge">
 <title>IdentitySharedModule&#45;&gt;IntegrationEventsModule </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M821,-181C1132.91,-181 2366.09,-181 2366.09,-181 2366.09,-181 2366.09,-211.98 2366.09,-211.98"/>
-<polygon fill="black" stroke="black" points="2362.59,-211.98 2366.09,-221.98 2369.59,-211.98 2362.59,-211.98"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M821.01,-180C1127.99,-180 2325.47,-180 2325.47,-180 2325.47,-180 2325.47,-212 2325.47,-212"/>
+<polygon fill="black" stroke="black" points="2321.97,-212 2325.47,-222 2328.97,-212 2321.97,-212"/>
 </g>
 <!-- AccountRemovalRequestedEventHandler  -->
 <g id="node3" class="node">
@@ -247,13 +247,13 @@
 <polygon fill="black" stroke="black" points="424.5,-287.97 428,-297.97 431.5,-287.97 424.5,-287.97"/>
 </g>
 <!-- AccountModule&#45;&gt;AuthenticationModule -->
-<g id="edge10" class="edge">
+<g id="edge11" class="edge">
 <title>AccountModule&#45;&gt;AuthenticationModule</title>
 <path fill="none" stroke="black" d="M725.86,-234C769.84,-234 824.77,-234 824.77,-234 824.77,-234 824.77,-307 824.77,-307 824.77,-307 1022.45,-307 1022.45,-307"/>
 <polygon fill="black" stroke="black" points="1022.45,-310.5 1032.45,-307 1022.45,-303.5 1022.45,-310.5"/>
 </g>
 <!-- AccountModule&#45;&gt;IdentityModule -->
-<g id="edge34" class="edge">
+<g id="edge37" class="edge">
 <title>AccountModule&#45;&gt;IdentityModule</title>
 <path fill="none" stroke="black" d="M725.82,-246C762.45,-246 804.32,-246 804.32,-246 804.32,-246 804.32,-355.96 804.32,-355.96"/>
 <polygon fill="black" stroke="black" points="800.82,-355.96 804.32,-365.96 807.82,-355.96 800.82,-355.96"/>
@@ -289,478 +289,532 @@
 <text text-anchor="middle" x="2652" y="-99.8" font-family="Times,serif" font-size="14.00">DatabaseModule</text>
 </g>
 <!-- DatabaseModule&#45;&gt;IdentitySharedModule -->
-<g id="edge38" class="edge">
+<g id="edge41" class="edge">
 <title>DatabaseModule&#45;&gt;IdentitySharedModule</title>
-<path fill="none" stroke="black" d="M2598.71,-122.17C2598.71,-141.09 2598.71,-168 2598.71,-168 2598.71,-168 831.06,-168 831.06,-168"/>
-<polygon fill="black" stroke="black" points="831.06,-164.5 821.06,-168 831.06,-171.5 831.06,-164.5"/>
+<path fill="none" stroke="black" d="M2604.65,-122.08C2604.65,-123.85 2604.65,-125 2604.65,-125 2604.65,-125 726.34,-125 726.34,-125 726.34,-125 726.34,-143.96 726.34,-143.96"/>
+<polygon fill="black" stroke="black" points="722.84,-143.96 726.34,-153.96 729.84,-143.96 722.84,-143.96"/>
 </g>
 <!-- DatabaseModule&#45;&gt;IdentitySharedModule -->
-<g id="edge39" class="edge">
+<g id="edge42" class="edge">
 <title>DatabaseModule&#45;&gt;IdentitySharedModule</title>
-<path fill="none" stroke="black" d="M2600.85,-122.22C2600.85,-142.37 2600.85,-172 2600.85,-172 2600.85,-172 831.14,-172 831.14,-172"/>
-<polygon fill="black" stroke="black" points="831.14,-168.5 821.14,-172 831.14,-175.5 831.14,-168.5"/>
+<path fill="none" stroke="black" d="M2667.71,-122.12C2667.71,-124.97 2667.71,-127 2667.71,-127 2667.71,-127 773.66,-127 773.66,-127 773.66,-127 773.66,-143.96 773.66,-143.96"/>
+<polygon fill="black" stroke="black" points="770.16,-143.96 773.66,-153.96 777.16,-143.96 770.16,-143.96"/>
 </g>
 <!-- AlertsModule -->
-<g id="node9" class="node">
+<g id="node10" class="node">
 <title>AlertsModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="2698.76,-190 2695.76,-194 2674.76,-194 2671.76,-190 2605.24,-190 2605.24,-154 2698.76,-154 2698.76,-190"/>
-<text text-anchor="middle" x="2652" y="-167.8" font-family="Times,serif" font-size="14.00">AlertsModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="2628.76,-190 2625.76,-194 2604.76,-194 2601.76,-190 2535.24,-190 2535.24,-154 2628.76,-154 2628.76,-190"/>
+<text text-anchor="middle" x="2582" y="-167.8" font-family="Times,serif" font-size="14.00">AlertsModule</text>
 </g>
 <!-- DatabaseModule&#45;&gt;AlertsModule -->
 <g id="edge6" class="edge">
 <title>DatabaseModule&#45;&gt;AlertsModule</title>
-<path fill="none" stroke="black" d="M2667.63,-122.22C2667.63,-122.22 2667.63,-143.73 2667.63,-143.73"/>
-<polygon fill="black" stroke="black" points="2664.13,-143.73 2667.63,-153.73 2671.13,-143.73 2664.13,-143.73"/>
+<path fill="none" stroke="black" d="M2620.8,-122.22C2620.8,-122.22 2620.8,-143.73 2620.8,-143.73"/>
+<polygon fill="black" stroke="black" points="2617.3,-143.73 2620.8,-153.73 2624.3,-143.73 2617.3,-143.73"/>
 </g>
 <!-- DatabaseModule&#45;&gt;AlertsModule -->
 <g id="edge7" class="edge">
 <title>DatabaseModule&#45;&gt;AlertsModule</title>
-<path fill="none" stroke="black" d="M2636.37,-122.22C2636.37,-122.22 2636.37,-143.73 2636.37,-143.73"/>
-<polygon fill="black" stroke="black" points="2632.87,-143.73 2636.37,-153.73 2639.87,-143.73 2632.87,-143.73"/>
+<path fill="none" stroke="black" d="M2612.73,-122.22C2612.73,-122.22 2612.73,-143.73 2612.73,-143.73"/>
+<polygon fill="black" stroke="black" points="2609.23,-143.73 2612.73,-153.73 2616.23,-143.73 2609.23,-143.73"/>
 </g>
 <!-- JournalSharedModule -->
-<g id="node20" class="node">
+<g id="node21" class="node">
 <title>JournalSharedModule</title>
 <polygon fill="#8dd3c7" stroke="black" points="3440.63,-190 3437.63,-194 3416.63,-194 3413.63,-190 3301.37,-190 3301.37,-154 3440.63,-154 3440.63,-190"/>
 <text text-anchor="middle" x="3371" y="-167.8" font-family="Times,serif" font-size="14.00">JournalSharedModule</text>
 </g>
 <!-- DatabaseModule&#45;&gt;JournalSharedModule -->
-<g id="edge48" class="edge">
+<g id="edge52" class="edge">
 <title>DatabaseModule&#45;&gt;JournalSharedModule</title>
-<path fill="none" stroke="black" d="M2707.44,-117C2881.54,-117 3405.91,-117 3405.91,-117 3405.91,-117 3405.91,-143.99 3405.91,-143.99"/>
-<polygon fill="black" stroke="black" points="3402.41,-143.99 3405.91,-153.99 3409.41,-143.99 3402.41,-143.99"/>
+<path fill="none" stroke="black" d="M2707.64,-117C2883.05,-117 3412.89,-117 3412.89,-117 3412.89,-117 3412.89,-143.99 3412.89,-143.99"/>
+<polygon fill="black" stroke="black" points="3409.39,-143.99 3412.89,-153.99 3416.39,-143.99 3409.39,-143.99"/>
 </g>
 <!-- DatabaseModule&#45;&gt;JournalSharedModule -->
-<g id="edge49" class="edge">
+<g id="edge53" class="edge">
 <title>DatabaseModule&#45;&gt;JournalSharedModule</title>
-<path fill="none" stroke="black" d="M2707.52,-120C2876.17,-120 3371,-120 3371,-120 3371,-120 3371,-143.81 3371,-143.81"/>
-<polygon fill="black" stroke="black" points="3367.5,-143.81 3371,-153.81 3374.5,-143.81 3367.5,-143.81"/>
+<path fill="none" stroke="black" d="M2707.39,-120C2878.15,-120 3384.96,-120 3384.96,-120 3384.96,-120 3384.96,-143.81 3384.96,-143.81"/>
+<polygon fill="black" stroke="black" points="3381.46,-143.81 3384.96,-153.81 3388.46,-143.81 3381.46,-143.81"/>
 </g>
 <!-- ConfigurationModule -->
-<g id="node26" class="node">
+<g id="node27" class="node">
 <title>ConfigurationModule</title>
 <polygon fill="#8dd3c7" stroke="black" points="3611.09,-190 3608.09,-194 3587.09,-194 3584.09,-190 3472.91,-190 3472.91,-154 3611.09,-154 3611.09,-190"/>
 <text text-anchor="middle" x="3542" y="-167.8" font-family="Times,serif" font-size="14.00">ConfigurationModule</text>
 </g>
 <!-- DatabaseModule&#45;&gt;ConfigurationModule -->
-<g id="edge24" class="edge">
-<title>DatabaseModule&#45;&gt;ConfigurationModule</title>
-<path fill="none" stroke="black" d="M2707.41,-111C2906.87,-111 3576.52,-111 3576.52,-111 3576.52,-111 3576.52,-143.7 3576.52,-143.7"/>
-<polygon fill="black" stroke="black" points="3573.02,-143.7 3576.52,-153.7 3580.02,-143.7 3573.02,-143.7"/>
-</g>
-<!-- DatabaseModule&#45;&gt;ConfigurationModule -->
 <g id="edge25" class="edge">
 <title>DatabaseModule&#45;&gt;ConfigurationModule</title>
-<path fill="none" stroke="black" d="M2707.67,-114C2902.52,-114 3542,-114 3542,-114 3542,-114 3542,-143.97 3542,-143.97"/>
-<polygon fill="black" stroke="black" points="3538.5,-143.97 3542,-153.97 3545.5,-143.97 3538.5,-143.97"/>
+<path fill="none" stroke="black" d="M2707.48,-111C2907.99,-111 3583.43,-111 3583.43,-111 3583.43,-111 3583.43,-143.7 3583.43,-143.7"/>
+<polygon fill="black" stroke="black" points="3579.93,-143.7 3583.43,-153.7 3586.93,-143.7 3579.93,-143.7"/>
+</g>
+<!-- DatabaseModule&#45;&gt;ConfigurationModule -->
+<g id="edge26" class="edge">
+<title>DatabaseModule&#45;&gt;ConfigurationModule</title>
+<path fill="none" stroke="black" d="M2707.52,-114C2904.16,-114 3555.81,-114 3555.81,-114 3555.81,-114 3555.81,-143.97 3555.81,-143.97"/>
+<polygon fill="black" stroke="black" points="3552.31,-143.97 3555.81,-153.97 3559.31,-143.97 3552.31,-143.97"/>
 </g>
 <!-- GdprModule -->
-<g id="node29" class="node">
+<g id="node30" class="node">
 <title>GdprModule</title>
 <polygon fill="#8dd3c7" stroke="black" points="3723.32,-190 3720.32,-194 3699.32,-194 3696.32,-190 3634.68,-190 3634.68,-154 3723.32,-154 3723.32,-190"/>
 <text text-anchor="middle" x="3679" y="-167.8" font-family="Times,serif" font-size="14.00">GdprModule</text>
 </g>
 <!-- DatabaseModule&#45;&gt;GdprModule -->
-<g id="edge30" class="edge">
+<g id="edge32" class="edge">
 <title>DatabaseModule&#45;&gt;GdprModule</title>
-<path fill="none" stroke="black" d="M2707.58,-109C2921.4,-109 3679,-109 3679,-109 3679,-109 3679,-143.78 3679,-143.78"/>
-<polygon fill="black" stroke="black" points="3675.5,-143.78 3679,-153.78 3682.5,-143.78 3675.5,-143.78"/>
+<path fill="none" stroke="black" d="M2707.69,-109C2922.84,-109 3687.83,-109 3687.83,-109 3687.83,-109 3687.83,-143.78 3687.83,-143.78"/>
+<polygon fill="black" stroke="black" points="3684.33,-143.78 3687.83,-153.78 3691.33,-143.78 3684.33,-143.78"/>
 </g>
 <!-- DatabaseModule&#45;&gt;GdprModule -->
-<g id="edge31" class="edge">
+<g id="edge33" class="edge">
 <title>DatabaseModule&#45;&gt;GdprModule</title>
-<path fill="none" stroke="black" d="M2707.66,-106C2924.55,-106 3701.08,-106 3701.08,-106 3701.08,-106 3701.08,-143.97 3701.08,-143.97"/>
-<polygon fill="black" stroke="black" points="3697.58,-143.97 3701.08,-153.97 3704.58,-143.97 3697.58,-143.97"/>
+<path fill="none" stroke="black" d="M2707.53,-106C2924.81,-106 3705.5,-106 3705.5,-106 3705.5,-106 3705.5,-143.97 3705.5,-143.97"/>
+<polygon fill="black" stroke="black" points="3702,-143.97 3705.5,-153.97 3709,-143.97 3702,-143.97"/>
 </g>
 <!-- MailModule -->
-<g id="node35" class="node">
+<g id="node36" class="node">
 <title>MailModule</title>
 <polygon fill="#8dd3c7" stroke="black" points="3832.99,-190 3829.99,-194 3808.99,-194 3805.99,-190 3747.01,-190 3747.01,-154 3832.99,-154 3832.99,-190"/>
 <text text-anchor="middle" x="3790" y="-167.8" font-family="Times,serif" font-size="14.00">MailModule</text>
 </g>
 <!-- DatabaseModule&#45;&gt;MailModule -->
-<g id="edge53" class="edge">
+<g id="edge58" class="edge">
 <title>DatabaseModule&#45;&gt;MailModule</title>
-<path fill="none" stroke="black" d="M2707.53,-100C2938.56,-100 3811.5,-100 3811.5,-100 3811.5,-100 3811.5,-143.83 3811.5,-143.83"/>
-<polygon fill="black" stroke="black" points="3808,-143.83 3811.5,-153.83 3815,-143.83 3808,-143.83"/>
+<path fill="none" stroke="black" d="M2707.74,-100C2939.62,-100 3815.8,-100 3815.8,-100 3815.8,-100 3815.8,-143.83 3815.8,-143.83"/>
+<polygon fill="black" stroke="black" points="3812.3,-143.83 3815.8,-153.83 3819.3,-143.83 3812.3,-143.83"/>
 </g>
 <!-- DatabaseModule&#45;&gt;MailModule -->
-<g id="edge54" class="edge">
+<g id="edge59" class="edge">
 <title>DatabaseModule&#45;&gt;MailModule</title>
-<path fill="none" stroke="black" d="M2707.66,-103C2936.13,-103 3790,-103 3790,-103 3790,-103 3790,-143.87 3790,-143.87"/>
-<polygon fill="black" stroke="black" points="3786.5,-143.87 3790,-153.87 3793.5,-143.87 3786.5,-143.87"/>
+<path fill="none" stroke="black" d="M2707.69,-103C2937.31,-103 3798.6,-103 3798.6,-103 3798.6,-103 3798.6,-143.87 3798.6,-143.87"/>
+<polygon fill="black" stroke="black" points="3795.1,-143.87 3798.6,-153.87 3802.1,-143.87 3795.1,-143.87"/>
 </g>
 <!-- SchedulingModule -->
-<g id="node36" class="node">
+<g id="node37" class="node">
 <title>SchedulingModule</title>
 <polygon fill="#8dd3c7" stroke="black" points="3979.04,-190 3976.04,-194 3955.04,-194 3952.04,-190 3856.96,-190 3856.96,-154 3979.04,-154 3979.04,-190"/>
 <text text-anchor="middle" x="3918" y="-167.8" font-family="Times,serif" font-size="14.00">SchedulingModule</text>
 </g>
 <!-- DatabaseModule&#45;&gt;SchedulingModule -->
-<g id="edge56" class="edge">
+<g id="edge62" class="edge">
 <title>DatabaseModule&#45;&gt;SchedulingModule</title>
-<path fill="none" stroke="black" d="M2707.62,-98C2951.96,-98 3918,-98 3918,-98 3918,-98 3918,-143.71 3918,-143.71"/>
-<polygon fill="black" stroke="black" points="3914.5,-143.71 3918,-153.71 3921.5,-143.71 3914.5,-143.71"/>
+<path fill="none" stroke="black" d="M2707.75,-98C2953.77,-98 3930.25,-98 3930.25,-98 3930.25,-98 3930.25,-143.71 3930.25,-143.71"/>
+<polygon fill="black" stroke="black" points="3926.75,-143.71 3930.25,-153.71 3933.75,-143.71 3926.75,-143.71"/>
 </g>
 <!-- DatabaseModule&#45;&gt;SchedulingModule -->
-<g id="edge57" class="edge">
+<g id="edge63" class="edge">
 <title>DatabaseModule&#45;&gt;SchedulingModule</title>
-<path fill="none" stroke="black" d="M2707.71,-95C2955.9,-95 3948.64,-95 3948.64,-95 3948.64,-95 3948.64,-143.75 3948.64,-143.75"/>
-<polygon fill="black" stroke="black" points="3945.14,-143.75 3948.64,-153.75 3952.14,-143.75 3945.14,-143.75"/>
+<path fill="none" stroke="black" d="M2707.56,-95C2956.22,-95 3954.76,-95 3954.76,-95 3954.76,-95 3954.76,-143.75 3954.76,-143.75"/>
+<polygon fill="black" stroke="black" points="3951.26,-143.75 3954.76,-153.75 3958.26,-143.75 3951.26,-143.75"/>
 </g>
 <!-- UsersModule -->
-<g id="node39" class="node">
+<g id="node40" class="node">
 <title>UsersModule</title>
 <polygon fill="#8dd3c7" stroke="black" points="4094.92,-190 4091.92,-194 4070.92,-194 4067.92,-190 4003.08,-190 4003.08,-154 4094.92,-154 4094.92,-190"/>
 <text text-anchor="middle" x="4049" y="-167.8" font-family="Times,serif" font-size="14.00">UsersModule</text>
 </g>
 <!-- DatabaseModule&#45;&gt;UsersModule -->
-<g id="edge62" class="edge">
+<g id="edge69" class="edge">
 <title>DatabaseModule&#45;&gt;UsersModule</title>
-<path fill="none" stroke="black" d="M2707.66,-89C2970.17,-89 4071.86,-89 4071.86,-89 4071.86,-89 4071.86,-143.99 4071.86,-143.99"/>
-<polygon fill="black" stroke="black" points="4068.36,-143.99 4071.86,-153.99 4075.36,-143.99 4068.36,-143.99"/>
+<path fill="none" stroke="black" d="M2707.4,-89C2969.97,-89 4076.43,-89 4076.43,-89 4076.43,-89 4076.43,-143.99 4076.43,-143.99"/>
+<polygon fill="black" stroke="black" points="4072.93,-143.99 4076.43,-153.99 4079.93,-143.99 4072.93,-143.99"/>
 </g>
 <!-- DatabaseModule&#45;&gt;UsersModule -->
-<g id="edge63" class="edge">
+<g id="edge70" class="edge">
 <title>DatabaseModule&#45;&gt;UsersModule</title>
-<path fill="none" stroke="black" d="M2707.63,-92C2967.45,-92 4049,-92 4049,-92 4049,-92 4049,-143.85 4049,-143.85"/>
-<polygon fill="black" stroke="black" points="4045.5,-143.85 4049,-153.85 4052.5,-143.85 4045.5,-143.85"/>
+<path fill="none" stroke="black" d="M2707.56,-92C2968.31,-92 4058.14,-92 4058.14,-92 4058.14,-92 4058.14,-143.85 4058.14,-143.85"/>
+<polygon fill="black" stroke="black" points="4054.64,-143.85 4058.14,-153.85 4061.64,-143.85 4054.64,-143.85"/>
+</g>
+<!-- HealthCheckModule -->
+<g id="node8" class="node">
+<title>HealthCheckModule</title>
+<polygon fill="#8dd3c7" stroke="black" points="2578.13,-122 2575.13,-126 2554.13,-126 2551.13,-122 2445.87,-122 2445.87,-86 2578.13,-86 2578.13,-122"/>
+<text text-anchor="middle" x="2512" y="-99.8" font-family="Times,serif" font-size="14.00">HealthCheckModule</text>
+</g>
+<!-- HealthCheckModule&#45;&gt;IdentitySharedModule -->
+<g id="edge43" class="edge">
+<title>HealthCheckModule&#45;&gt;IdentitySharedModule</title>
+<path fill="none" stroke="black" d="M2455.55,-122.3C2455.55,-140.27 2455.55,-165 2455.55,-165 2455.55,-165 831.11,-165 831.11,-165"/>
+<polygon fill="black" stroke="black" points="831.11,-161.5 821.11,-165 831.11,-168.5 831.11,-161.5"/>
+</g>
+<!-- HealthCheckModule&#45;&gt;AlertsModule -->
+<g id="edge8" class="edge">
+<title>HealthCheckModule&#45;&gt;AlertsModule</title>
+<path fill="none" stroke="black" d="M2540.52,-122.22C2540.52,-122.22 2540.52,-143.73 2540.52,-143.73"/>
+<polygon fill="black" stroke="black" points="2537.02,-143.73 2540.52,-153.73 2544.02,-143.73 2537.02,-143.73"/>
+</g>
+<!-- HealthCheckModule&#45;&gt;JournalSharedModule -->
+<g id="edge54" class="edge">
+<title>HealthCheckModule&#45;&gt;JournalSharedModule</title>
+<path fill="none" stroke="black" d="M2545.92,-122.18C2545.92,-135.04 2545.92,-150 2545.92,-150 2545.92,-150 3357.04,-150 3357.04,-150 3357.04,-150 3357.04,-150.38 3357.04,-150.38"/>
+<polygon fill="black" stroke="black" points="3353.54,-143.83 3357.04,-153.83 3360.54,-143.83 3353.54,-143.83"/>
+</g>
+<!-- HealthCheckModule&#45;&gt;ConfigurationModule -->
+<g id="edge27" class="edge">
+<title>HealthCheckModule&#45;&gt;ConfigurationModule</title>
+<path fill="none" stroke="black" d="M2551.32,-122.06C2551.32,-133.44 2551.32,-146 2551.32,-146 2551.32,-146 3528.19,-146 3528.19,-146 3528.19,-146 3528.19,-146.79 3528.19,-146.79"/>
+<polygon fill="black" stroke="black" points="3524.69,-143.94 3528.19,-153.94 3531.69,-143.94 3524.69,-143.94"/>
+</g>
+<!-- HealthCheckModule&#45;&gt;GdprModule -->
+<g id="edge34" class="edge">
+<title>HealthCheckModule&#45;&gt;GdprModule</title>
+<path fill="none" stroke="black" d="M2556.72,-122.11C2556.72,-131.9 2556.72,-142 2556.72,-142 2556.72,-142 3670.17,-142 3670.17,-142 3670.17,-142 3670.17,-143.86 3670.17,-143.86"/>
+<polygon fill="black" stroke="black" points="3666.67,-143.86 3670.17,-153.86 3673.67,-143.86 3666.67,-143.86"/>
+</g>
+<!-- HealthCheckModule&#45;&gt;MailModule -->
+<g id="edge60" class="edge">
+<title>HealthCheckModule&#45;&gt;MailModule</title>
+<path fill="none" stroke="black" d="M2562.12,-122.04C2562.12,-129.75 2562.12,-137 2562.12,-137 2562.12,-137 3781.4,-137 3781.4,-137 3781.4,-137 3781.4,-143.68 3781.4,-143.68"/>
+<polygon fill="black" stroke="black" points="3777.9,-143.68 3781.4,-153.68 3784.9,-143.68 3777.9,-143.68"/>
+</g>
+<!-- HealthCheckModule&#45;&gt;SchedulingModule -->
+<g id="edge64" class="edge">
+<title>HealthCheckModule&#45;&gt;SchedulingModule</title>
+<path fill="none" stroke="black" d="M2567.52,-122.2C2567.52,-128.03 2567.52,-133 2567.52,-133 2567.52,-133 3905.75,-133 3905.75,-133 3905.75,-133 3905.75,-143.87 3905.75,-143.87"/>
+<polygon fill="black" stroke="black" points="3902.25,-143.87 3905.75,-153.87 3909.25,-143.87 3902.25,-143.87"/>
+</g>
+<!-- HealthCheckModule&#45;&gt;UsersModule -->
+<g id="edge71" class="edge">
+<title>HealthCheckModule&#45;&gt;UsersModule</title>
+<path fill="none" stroke="black" d="M2572.92,-122.17C2572.92,-126.05 2572.92,-129 2572.92,-129 2572.92,-129 4039.86,-129 4039.86,-129 4039.86,-129 4039.86,-143.51 4039.86,-143.51"/>
+<polygon fill="black" stroke="black" points="4036.36,-143.51 4039.86,-153.51 4043.36,-143.51 4036.36,-143.51"/>
 </g>
 <!-- IntegrationEventsModule -->
-<g id="node8" class="node">
+<g id="node9" class="node">
 <title>IntegrationEventsModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="2578.57,-122 2575.57,-126 2554.57,-126 2551.57,-122 2419.43,-122 2419.43,-86 2578.57,-86 2578.57,-122"/>
-<text text-anchor="middle" x="2499" y="-99.8" font-family="Times,serif" font-size="14.00">IntegrationEventsModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="2427.57,-122 2424.57,-126 2403.57,-126 2400.57,-122 2268.43,-122 2268.43,-86 2427.57,-86 2427.57,-122"/>
+<text text-anchor="middle" x="2348" y="-99.8" font-family="Times,serif" font-size="14.00">IntegrationEventsModule</text>
 </g>
 <!-- IntegrationEventsModule&#45;&gt;IdentitySharedModule -->
-<g id="edge40" class="edge">
+<g id="edge44" class="edge">
 <title>IntegrationEventsModule&#45;&gt;IdentitySharedModule</title>
-<path fill="none" stroke="black" d="M2438.07,-122.01C2438.07,-138.05 2438.07,-159 2438.07,-159 2438.07,-159 831.19,-159 831.19,-159"/>
-<polygon fill="black" stroke="black" points="831.19,-155.5 821.19,-159 831.19,-162.5 831.19,-155.5"/>
+<path fill="none" stroke="black" d="M2290.59,-122.03C2290.59,-138.4 2290.59,-160 2290.59,-160 2290.59,-160 831.22,-160 831.22,-160"/>
+<polygon fill="black" stroke="black" points="831.22,-156.5 821.22,-160 831.22,-163.5 831.22,-156.5"/>
 </g>
 <!-- IntegrationEventsModule&#45;&gt;AlertsModule -->
-<g id="edge8" class="edge">
+<g id="edge9" class="edge">
 <title>IntegrationEventsModule&#45;&gt;AlertsModule</title>
-<path fill="none" stroke="black" d="M2569.01,-122.02C2569.01,-139.37 2569.01,-163 2569.01,-163 2569.01,-163 2595.17,-163 2595.17,-163"/>
-<polygon fill="black" stroke="black" points="2595.17,-166.5 2605.17,-163 2595.17,-159.5 2595.17,-166.5"/>
+<path fill="none" stroke="black" d="M2414.78,-122.03C2414.78,-141.58 2414.78,-170 2414.78,-170 2414.78,-170 2524.97,-170 2524.97,-170"/>
+<polygon fill="black" stroke="black" points="2524.97,-173.5 2534.97,-170 2524.97,-166.5 2524.97,-173.5"/>
 </g>
 <!-- IntegrationEventsModule&#45;&gt;JournalSharedModule -->
-<g id="edge50" class="edge">
+<g id="edge55" class="edge">
 <title>IntegrationEventsModule&#45;&gt;JournalSharedModule</title>
-<path fill="none" stroke="black" d="M2511.87,-122.18C2511.87,-135.04 2511.87,-150 2511.87,-150 2511.87,-150 3336.09,-150 3336.09,-150 3336.09,-150 3336.09,-150.38 3336.09,-150.38"/>
-<polygon fill="black" stroke="black" points="3332.59,-143.83 3336.09,-153.83 3339.59,-143.83 3332.59,-143.83"/>
+<path fill="none" stroke="black" d="M2338.23,-122.15C2338.23,-135.74 2338.23,-152 2338.23,-152 2338.23,-152 3329.11,-152 3329.11,-152 3329.11,-152 3329.11,-152.18 3329.11,-152.18"/>
+<polygon fill="black" stroke="black" points="3325.61,-143.85 3329.11,-153.85 3332.61,-143.85 3325.61,-143.85"/>
 </g>
 <!-- IntegrationEventsModule&#45;&gt;ConfigurationModule -->
-<g id="edge26" class="edge">
+<g id="edge28" class="edge">
 <title>IntegrationEventsModule&#45;&gt;ConfigurationModule</title>
-<path fill="none" stroke="black" d="M2521.4,-122.1C2521.4,-133.09 2521.4,-145 2521.4,-145 2521.4,-145 3507.48,-145 3507.48,-145 3507.48,-145 3507.48,-145.88 3507.48,-145.88"/>
-<polygon fill="black" stroke="black" points="3503.98,-143.84 3507.48,-153.84 3510.98,-143.84 3503.98,-143.84"/>
+<path fill="none" stroke="black" d="M2350.99,-122.15C2350.99,-134.27 2350.99,-148 2350.99,-148 2350.99,-148 3500.57,-148 3500.57,-148 3500.57,-148 3500.57,-148.58 3500.57,-148.58"/>
+<polygon fill="black" stroke="black" points="3497.07,-143.81 3500.57,-153.81 3504.07,-143.81 3497.07,-143.81"/>
 </g>
 <!-- IntegrationEventsModule&#45;&gt;GdprModule -->
-<g id="edge32" class="edge">
+<g id="edge35" class="edge">
 <title>IntegrationEventsModule&#45;&gt;GdprModule</title>
-<path fill="none" stroke="black" d="M2530.92,-122.07C2530.92,-131.46 2530.92,-141 2530.92,-141 2530.92,-141 3656.92,-141 3656.92,-141 3656.92,-141 3656.92,-143.97 3656.92,-143.97"/>
-<polygon fill="black" stroke="black" points="3653.42,-143.97 3656.92,-153.97 3660.42,-143.97 3653.42,-143.97"/>
+<path fill="none" stroke="black" d="M2363.75,-122.13C2363.75,-132.71 2363.75,-144 2363.75,-144 2363.75,-144 3652.5,-144 3652.5,-144 3652.5,-144 3652.5,-144.98 3652.5,-144.98"/>
+<polygon fill="black" stroke="black" points="3649.01,-143.79 3652.5,-153.79 3656.01,-143.79 3649.01,-143.79"/>
 </g>
 <!-- IntegrationEventsModule&#45;&gt;MailModule -->
-<g id="edge55" class="edge">
+<g id="edge61" class="edge">
 <title>IntegrationEventsModule&#45;&gt;MailModule</title>
-<path fill="none" stroke="black" d="M2540.44,-122.24C2540.44,-129.43 2540.44,-136 2540.44,-136 2540.44,-136 3768.5,-136 3768.5,-136 3768.5,-136 3768.5,-143.58 3768.5,-143.58"/>
-<polygon fill="black" stroke="black" points="3765,-143.58 3768.5,-153.58 3772,-143.58 3765,-143.58"/>
+<path fill="none" stroke="black" d="M2376.5,-122.42C2376.5,-131.28 2376.5,-140 2376.5,-140 2376.5,-140 3764.2,-140 3764.2,-140 3764.2,-140 3764.2,-143.76 3764.2,-143.76"/>
+<polygon fill="black" stroke="black" points="3760.7,-143.76 3764.2,-153.76 3767.7,-143.76 3760.7,-143.76"/>
 </g>
 <!-- IntegrationEventsModule&#45;&gt;SchedulingModule -->
-<g id="edge58" class="edge">
+<g id="edge65" class="edge">
 <title>IntegrationEventsModule&#45;&gt;SchedulingModule</title>
-<path fill="none" stroke="black" d="M2549.97,-122.21C2549.97,-127.55 2549.97,-132 2549.97,-132 2549.97,-132 3887.36,-132 3887.36,-132 3887.36,-132 3887.36,-143.87 3887.36,-143.87"/>
-<polygon fill="black" stroke="black" points="3883.86,-143.87 3887.36,-153.87 3890.86,-143.87 3883.86,-143.87"/>
+<path fill="none" stroke="black" d="M2389.26,-122.03C2389.26,-128.85 2389.26,-135 2389.26,-135 2389.26,-135 3881.24,-135 3881.24,-135 3881.24,-135 3881.24,-143.93 3881.24,-143.93"/>
+<polygon fill="black" stroke="black" points="3877.74,-143.93 3881.24,-153.93 3884.74,-143.93 3877.74,-143.93"/>
 </g>
 <!-- IntegrationEventsModule&#45;&gt;UsersModule -->
-<g id="edge64" class="edge">
+<g id="edge72" class="edge">
 <title>IntegrationEventsModule&#45;&gt;UsersModule</title>
-<path fill="none" stroke="black" d="M2559.49,-122.12C2559.49,-124.97 2559.49,-127 2559.49,-127 2559.49,-127 4026.14,-127 4026.14,-127 4026.14,-127 4026.14,-143.96 4026.14,-143.96"/>
-<polygon fill="black" stroke="black" points="4022.64,-143.96 4026.14,-153.96 4029.64,-143.96 4022.64,-143.96"/>
+<path fill="none" stroke="black" d="M2402.02,-122.16C2402.02,-127.04 2402.02,-131 2402.02,-131 2402.02,-131 4021.57,-131 4021.57,-131 4021.57,-131 4021.57,-143.9 4021.57,-143.9"/>
+<polygon fill="black" stroke="black" points="4018.07,-143.9 4021.57,-153.9 4025.07,-143.9 4018.07,-143.9"/>
 </g>
 <!-- AccessTokenStrategy -->
-<g id="node10" class="node">
+<g id="node11" class="node">
 <title>AccessTokenStrategy</title>
 <ellipse fill="#fdb462" stroke="black" cx="4222" cy="-104" rx="95.46" ry="18"/>
 <text text-anchor="middle" x="4222" y="-99.8" font-family="Times,serif" font-size="14.00">AccessTokenStrategy</text>
 </g>
 <!-- AppModule -->
-<g id="node11" class="node">
+<g id="node12" class="node">
 <title>AppModule</title>
 <polygon fill="#8dd3c7" stroke="black" points="4263.66,-190 4260.66,-194 4239.66,-194 4236.66,-190 4180.34,-190 4180.34,-154 4263.66,-154 4263.66,-190"/>
 <text text-anchor="middle" x="4222" y="-167.8" font-family="Times,serif" font-size="14.00">AppModule</text>
 </g>
 <!-- AccessTokenStrategy&#45;&gt;AppModule -->
-<g id="edge9" class="edge">
+<g id="edge10" class="edge">
 <title>AccessTokenStrategy&#45;&gt;AppModule</title>
 <path fill="none" stroke="black" d="M4222,-122.22C4222,-122.22 4222,-143.73 4222,-143.73"/>
 <polygon fill="black" stroke="black" points="4218.5,-143.73 4222,-153.73 4225.5,-143.73 4218.5,-143.73"/>
 </g>
 <!-- TwoFactorAuthenticationModule&#45;&gt;AuthenticationModule -->
-<g id="edge12" class="edge">
+<g id="edge13" class="edge">
 <title>TwoFactorAuthenticationModule&#45;&gt;AuthenticationModule</title>
 <path fill="none" stroke="black" d="M2071,-258.01C2071,-280.49 2071,-316 2071,-316 2071,-316 1185.5,-316 1185.5,-316"/>
 <polygon fill="black" stroke="black" points="1185.5,-312.5 1175.5,-316 1185.5,-319.5 1185.5,-312.5"/>
 </g>
 <!-- TwoFactorAuthenticationModule&#45;&gt;IdentityModule -->
-<g id="edge37" class="edge">
+<g id="edge40" class="edge">
 <title>TwoFactorAuthenticationModule&#45;&gt;IdentityModule</title>
 <path fill="none" stroke="black" d="M2019.96,-258.24C2019.96,-265.43 2019.96,-272 2019.96,-272 2019.96,-272 822.88,-272 822.88,-272 822.88,-272 822.88,-355.51 822.88,-355.51"/>
 <polygon fill="black" stroke="black" points="819.38,-355.51 822.88,-365.51 826.38,-355.51 819.38,-355.51"/>
 </g>
 <!-- AccountActivatedEventHandler  -->
-<g id="node37" class="node">
+<g id="node38" class="node">
 <title>AccountActivatedEventHandler </title>
 <polygon fill="#fb8072" stroke="black" points="2706.59,-334 2507.41,-334 2507.41,-298 2706.59,-298 2706.59,-334"/>
 <text text-anchor="middle" x="2607" y="-311.8" font-family="Times,serif" font-size="14.00">AccountActivatedEventHandler </text>
 </g>
 <!-- TwoFactorAuthenticationModule&#45;&gt;AccountActivatedEventHandler  -->
-<g id="edge60" class="edge">
+<g id="edge67" class="edge">
 <title>TwoFactorAuthenticationModule&#45;&gt;AccountActivatedEventHandler </title>
 <path fill="none" stroke="black" stroke-dasharray="5,2" d="M2122.04,-258.04C2122.04,-270.56 2122.04,-285 2122.04,-285 2122.04,-285 2557.31,-285 2557.31,-285 2557.31,-285 2557.31,-287.97 2557.31,-287.97"/>
 <polygon fill="black" stroke="black" points="2553.81,-287.97 2557.31,-297.97 2560.81,-287.97 2553.81,-287.97"/>
 </g>
 <!-- AccountPasswordUpdatedEventHandler  -->
-<g id="node14" class="node">
+<g id="node15" class="node">
 <title>AccountPasswordUpdatedEventHandler </title>
 <polygon fill="#fb8072" stroke="black" points="1330.75,-402 1085.25,-402 1085.25,-366 1330.75,-366 1330.75,-402"/>
 <text text-anchor="middle" x="1208" y="-379.8" font-family="Times,serif" font-size="14.00">AccountPasswordUpdatedEventHandler </text>
 </g>
 <!-- AuthenticationModule&#45;&gt;AccountPasswordUpdatedEventHandler  -->
-<g id="edge13" class="edge">
+<g id="edge14" class="edge">
 <title>AuthenticationModule&#45;&gt;AccountPasswordUpdatedEventHandler </title>
 <path fill="none" stroke="black" stroke-dasharray="5,2" d="M1130.25,-334.22C1130.25,-334.22 1130.25,-355.73 1130.25,-355.73"/>
 <polygon fill="black" stroke="black" points="1126.75,-355.73 1130.25,-365.73 1133.75,-355.73 1126.75,-355.73"/>
 </g>
 <!-- AccountSuspendedEventHandler  -->
-<g id="node15" class="node">
+<g id="node16" class="node">
 <title>AccountSuspendedEventHandler </title>
 <polygon fill="#fb8072" stroke="black" points="1066.83,-402 861.17,-402 861.17,-366 1066.83,-366 1066.83,-402"/>
 <text text-anchor="middle" x="964" y="-379.8" font-family="Times,serif" font-size="14.00">AccountSuspendedEventHandler </text>
 </g>
 <!-- AuthenticationModule&#45;&gt;AccountSuspendedEventHandler  -->
-<g id="edge14" class="edge">
+<g id="edge15" class="edge">
 <title>AuthenticationModule&#45;&gt;AccountSuspendedEventHandler </title>
 <path fill="none" stroke="black" stroke-dasharray="5,2" d="M1049.64,-334.22C1049.64,-334.22 1049.64,-355.73 1049.64,-355.73"/>
 <polygon fill="black" stroke="black" points="1046.14,-355.73 1049.64,-365.73 1053.14,-355.73 1046.14,-355.73"/>
 </g>
 <!-- RefreshTokenInvalidationJobTriggeredEventHandler  -->
-<g id="node16" class="node">
+<g id="node17" class="node">
 <title>RefreshTokenInvalidationJobTriggeredEventHandler </title>
 <polygon fill="#fb8072" stroke="black" points="1667.33,-402 1348.67,-402 1348.67,-366 1667.33,-366 1667.33,-402"/>
 <text text-anchor="middle" x="1508" y="-379.8" font-family="Times,serif" font-size="14.00">RefreshTokenInvalidationJobTriggeredEventHandler </text>
 </g>
 <!-- AuthenticationModule&#45;&gt;RefreshTokenInvalidationJobTriggeredEventHandler  -->
-<g id="edge15" class="edge">
+<g id="edge16" class="edge">
 <title>AuthenticationModule&#45;&gt;RefreshTokenInvalidationJobTriggeredEventHandler </title>
 <path fill="none" stroke="black" stroke-dasharray="5,2" d="M1175.27,-325C1268.43,-325 1419.84,-325 1419.84,-325 1419.84,-325 1419.84,-355.98 1419.84,-355.98"/>
 <polygon fill="black" stroke="black" points="1416.34,-355.98 1419.84,-365.98 1423.34,-355.98 1416.34,-355.98"/>
 </g>
 <!-- AuthenticationModule&#45;&gt;IdentityModule -->
-<g id="edge35" class="edge">
+<g id="edge38" class="edge">
 <title>AuthenticationModule&#45;&gt;IdentityModule</title>
 <path fill="none" stroke="black" d="M1032.58,-325C950.4,-325 826.66,-325 826.66,-325 826.66,-325 826.66,-355.98 826.66,-355.98"/>
 <polygon fill="black" stroke="black" points="823.16,-355.98 826.66,-365.98 830.16,-355.98 823.16,-355.98"/>
 </g>
 <!-- AccountPasswordUpdatedEventHandler -->
-<g id="node17" class="node">
+<g id="node18" class="node">
 <title>AccountPasswordUpdatedEventHandler</title>
 <ellipse fill="#fdb462" stroke="black" cx="1324" cy="-240" rx="167.2" ry="18"/>
 <text text-anchor="middle" x="1324" y="-235.8" font-family="Times,serif" font-size="14.00">AccountPasswordUpdatedEventHandler</text>
 </g>
 <!-- AccountPasswordUpdatedEventHandler&#45;&gt;AuthenticationModule -->
-<g id="edge16" class="edge">
+<g id="edge17" class="edge">
 <title>AccountPasswordUpdatedEventHandler&#45;&gt;AuthenticationModule</title>
 <path fill="none" stroke="black" d="M1166.14,-245.96C1166.14,-245.96 1166.14,-287.93 1166.14,-287.93"/>
 <polygon fill="black" stroke="black" points="1162.64,-287.93 1166.14,-297.93 1169.64,-287.93 1162.64,-287.93"/>
 </g>
 <!-- AccountSuspendedEventHandler -->
-<g id="node18" class="node">
+<g id="node19" class="node">
 <title>AccountSuspendedEventHandler</title>
 <ellipse fill="#fdb462" stroke="black" cx="1000" cy="-240" rx="139.43" ry="18"/>
 <text text-anchor="middle" x="1000" y="-235.8" font-family="Times,serif" font-size="14.00">AccountSuspendedEventHandler</text>
 </g>
 <!-- AccountSuspendedEventHandler&#45;&gt;AuthenticationModule -->
-<g id="edge17" class="edge">
+<g id="edge18" class="edge">
 <title>AccountSuspendedEventHandler&#45;&gt;AuthenticationModule</title>
 <path fill="none" stroke="black" d="M1085.92,-254.3C1085.92,-254.3 1085.92,-287.73 1085.92,-287.73"/>
 <polygon fill="black" stroke="black" points="1082.42,-287.73 1085.92,-297.73 1089.42,-287.73 1082.42,-287.73"/>
 </g>
 <!-- RefreshTokenInvalidationJobTriggeredEventHandler -->
-<g id="node19" class="node">
+<g id="node20" class="node">
 <title>RefreshTokenInvalidationJobTriggeredEventHandler</title>
 <ellipse fill="#fdb462" stroke="black" cx="1727" cy="-240" rx="217.52" ry="18"/>
 <text text-anchor="middle" x="1727" y="-235.8" font-family="Times,serif" font-size="14.00">RefreshTokenInvalidationJobTriggeredEventHandler</text>
 </g>
 <!-- RefreshTokenInvalidationJobTriggeredEventHandler&#45;&gt;AuthenticationModule -->
-<g id="edge18" class="edge">
+<g id="edge19" class="edge">
 <title>RefreshTokenInvalidationJobTriggeredEventHandler&#45;&gt;AuthenticationModule</title>
 <path fill="none" stroke="black" d="M1588.45,-253.88C1588.45,-273.51 1588.45,-307 1588.45,-307 1588.45,-307 1185.48,-307 1185.48,-307"/>
 <polygon fill="black" stroke="black" points="1185.48,-303.5 1175.48,-307 1185.48,-310.5 1185.48,-303.5"/>
 </g>
 <!-- AuthorsModule -->
-<g id="node21" class="node">
+<g id="node22" class="node">
 <title>AuthorsModule</title>
 <polygon fill="#8dd3c7" stroke="black" points="3286.15,-258 3283.15,-262 3262.15,-262 3259.15,-258 3181.85,-258 3181.85,-222 3286.15,-222 3286.15,-258"/>
 <text text-anchor="middle" x="3234" y="-235.8" font-family="Times,serif" font-size="14.00">AuthorsModule</text>
 </g>
 <!-- JournalSharedModule&#45;&gt;AuthorsModule -->
-<g id="edge19" class="edge">
+<g id="edge20" class="edge">
 <title>JournalSharedModule&#45;&gt;AuthorsModule</title>
 <path fill="none" stroke="black" d="M3301.21,-172C3289.93,-172 3281.87,-172 3281.87,-172 3281.87,-172 3281.87,-211.78 3281.87,-211.78"/>
 <polygon fill="black" stroke="black" points="3278.37,-211.78 3281.87,-221.78 3285.37,-211.78 3278.37,-211.78"/>
 </g>
 <!-- DailyModule -->
-<g id="node27" class="node">
+<g id="node28" class="node">
 <title>DailyModule</title>
 <polygon fill="#8dd3c7" stroke="black" points="3568.15,-258 3565.15,-262 3544.15,-262 3541.15,-258 3477.85,-258 3477.85,-222 3568.15,-222 3568.15,-258"/>
 <text text-anchor="middle" x="3523" y="-235.8" font-family="Times,serif" font-size="14.00">DailyModule</text>
 </g>
 <!-- JournalSharedModule&#45;&gt;DailyModule -->
-<g id="edge27" class="edge">
+<g id="edge29" class="edge">
 <title>JournalSharedModule&#45;&gt;DailyModule</title>
 <path fill="none" stroke="black" d="M3426.2,-190.27C3426.2,-208.56 3426.2,-234 3426.2,-234 3426.2,-234 3467.72,-234 3467.72,-234"/>
 <polygon fill="black" stroke="black" points="3467.72,-237.5 3477.72,-234 3467.72,-230.5 3467.72,-237.5"/>
 </g>
 <!-- EntriesModule -->
-<g id="node28" class="node">
+<g id="node29" class="node">
 <title>EntriesModule</title>
 <polygon fill="#8dd3c7" stroke="black" points="3572.7,-334 3569.7,-338 3548.7,-338 3545.7,-334 3473.3,-334 3473.3,-298 3572.7,-298 3572.7,-334"/>
 <text text-anchor="middle" x="3523" y="-311.8" font-family="Times,serif" font-size="14.00">EntriesModule</text>
 </g>
 <!-- JournalSharedModule&#45;&gt;EntriesModule -->
-<g id="edge29" class="edge">
+<g id="edge31" class="edge">
 <title>JournalSharedModule&#45;&gt;EntriesModule</title>
 <path fill="none" stroke="black" d="M3411.58,-190.24C3411.58,-228.99 3411.58,-316 3411.58,-316 3411.58,-316 3463.16,-316 3463.16,-316"/>
 <polygon fill="black" stroke="black" points="3463.16,-319.5 3473.16,-316 3463.16,-312.5 3463.16,-319.5"/>
 </g>
 <!-- GoalsModule -->
-<g id="node30" class="node">
+<g id="node31" class="node">
 <title>GoalsModule</title>
 <polygon fill="#8dd3c7" stroke="black" points="3721.21,-334 3718.21,-338 3697.21,-338 3694.21,-334 3628.79,-334 3628.79,-298 3721.21,-298 3721.21,-334"/>
 <text text-anchor="middle" x="3675" y="-311.8" font-family="Times,serif" font-size="14.00">GoalsModule</text>
 </g>
 <!-- JournalSharedModule&#45;&gt;GoalsModule -->
-<g id="edge33" class="edge">
+<g id="edge36" class="edge">
 <title>JournalSharedModule&#45;&gt;GoalsModule</title>
 <path fill="none" stroke="black" d="M3382.34,-190.06C3382.34,-201.44 3382.34,-214 3382.34,-214 3382.34,-214 3677.97,-214 3677.97,-214 3677.97,-214 3677.97,-287.76 3677.97,-287.76"/>
 <polygon fill="black" stroke="black" points="3674.47,-287.76 3677.97,-297.76 3681.47,-287.76 3674.47,-287.76"/>
 </g>
 <!-- JournalSharedModule&#45;&gt;DatabaseModule  -->
-<g id="edge51" class="edge">
+<g id="edge56" class="edge">
 <title>JournalSharedModule&#45;&gt;DatabaseModule </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M3335.8,-190.19C3335.8,-198.28 3335.8,-206 3335.8,-206 3335.8,-206 2602.98,-206 2602.98,-206 2602.98,-206 2602.98,-211.81 2602.98,-211.81"/>
-<polygon fill="black" stroke="black" points="2599.48,-211.81 2602.98,-221.81 2606.48,-211.81 2599.48,-211.81"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M3335.8,-190.19C3335.8,-198.28 3335.8,-206 3335.8,-206 3335.8,-206 2571.15,-206 2571.15,-206 2571.15,-206 2571.15,-211.81 2571.15,-211.81"/>
+<polygon fill="black" stroke="black" points="2567.65,-211.81 2571.15,-221.81 2574.65,-211.81 2567.65,-211.81"/>
 </g>
 <!-- JournalSharedModule&#45;&gt;IntegrationEventsModule  -->
-<g id="edge52" class="edge">
+<g id="edge57" class="edge">
 <title>JournalSharedModule&#45;&gt;IntegrationEventsModule </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M3318.49,-190.06C3318.49,-194.49 3318.49,-198 3318.49,-198 3318.49,-198 2456.68,-198 2456.68,-198 2456.68,-198 2456.68,-211.94 2456.68,-211.94"/>
-<polygon fill="black" stroke="black" points="2453.18,-211.94 2456.68,-221.94 2460.18,-211.94 2453.18,-211.94"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M3318.49,-190.06C3318.49,-194.49 3318.49,-198 3318.49,-198 3318.49,-198 2465.42,-198 2465.42,-198 2465.42,-198 2465.42,-211.94 2465.42,-211.94"/>
+<polygon fill="black" stroke="black" points="2461.92,-211.94 2465.42,-221.94 2468.92,-211.94 2461.92,-211.94"/>
 </g>
 <!-- JournalModule -->
-<g id="node34" class="node">
+<g id="node35" class="node">
 <title>JournalModule</title>
 <polygon fill="#8dd3c7" stroke="black" points="3651.26,-402 3648.26,-406 3627.26,-406 3624.26,-402 3550.74,-402 3550.74,-366 3651.26,-366 3651.26,-402"/>
 <text text-anchor="middle" x="3601" y="-379.8" font-family="Times,serif" font-size="14.00">JournalModule</text>
 </g>
 <!-- JournalSharedModule&#45;&gt;JournalModule -->
-<g id="edge47" class="edge">
+<g id="edge51" class="edge">
 <title>JournalSharedModule&#45;&gt;JournalModule</title>
 <path fill="none" stroke="black" d="M3396.96,-190.28C3396.96,-240.7 3396.96,-378 3396.96,-378 3396.96,-378 3540.56,-378 3540.56,-378"/>
 <polygon fill="black" stroke="black" points="3540.56,-381.5 3550.56,-378 3540.56,-374.5 3540.56,-381.5"/>
 </g>
 <!-- AccountCreatedEventHandler  -->
-<g id="node22" class="node">
+<g id="node23" class="node">
 <title>AccountCreatedEventHandler </title>
 <polygon fill="#fb8072" stroke="black" points="3353.2,-334 3164.8,-334 3164.8,-298 3353.2,-298 3353.2,-334"/>
 <text text-anchor="middle" x="3259" y="-311.8" font-family="Times,serif" font-size="14.00">AccountCreatedEventHandler </text>
 </g>
 <!-- AuthorsModule&#45;&gt;AccountCreatedEventHandler  -->
-<g id="edge20" class="edge">
+<g id="edge21" class="edge">
 <title>AuthorsModule&#45;&gt;AccountCreatedEventHandler </title>
 <path fill="none" stroke="black" stroke-dasharray="5,2" d="M3234,-258.01C3234,-258.01 3234,-287.85 3234,-287.85"/>
 <polygon fill="black" stroke="black" points="3230.5,-287.85 3234,-297.85 3237.5,-287.85 3230.5,-287.85"/>
 </g>
 <!-- AuthorRemovedEventHandler  -->
-<g id="node23" class="node">
+<g id="node24" class="node">
 <title>AuthorRemovedEventHandler </title>
 <polygon fill="#fb8072" stroke="black" points="3147.06,-334 2956.94,-334 2956.94,-298 3147.06,-298 3147.06,-334"/>
 <text text-anchor="middle" x="3052" y="-311.8" font-family="Times,serif" font-size="14.00">AuthorRemovedEventHandler </text>
 </g>
 <!-- AuthorsModule&#45;&gt;AuthorRemovedEventHandler  -->
-<g id="edge21" class="edge">
+<g id="edge22" class="edge">
 <title>AuthorsModule&#45;&gt;AuthorRemovedEventHandler </title>
 <path fill="none" stroke="black" stroke-dasharray="5,2" d="M3181.45,-246C3138.53,-246 3084.94,-246 3084.94,-246 3084.94,-246 3084.94,-287.97 3084.94,-287.97"/>
 <polygon fill="black" stroke="black" points="3081.44,-287.97 3084.94,-297.97 3088.44,-287.97 3081.44,-287.97"/>
 </g>
 <!-- AuthorsModule&#45;&gt;JournalModule -->
-<g id="edge43" class="edge">
+<g id="edge47" class="edge">
 <title>AuthorsModule&#45;&gt;JournalModule</title>
 <path fill="none" stroke="black" d="M3286.47,-246C3323.93,-246 3367.72,-246 3367.72,-246 3367.72,-246 3367.72,-390 3367.72,-390 3367.72,-390 3540.67,-390 3540.67,-390"/>
 <polygon fill="black" stroke="black" points="3540.67,-393.5 3550.67,-390 3540.67,-386.5 3540.67,-393.5"/>
 </g>
 <!-- AccountCreatedEventHandler -->
-<g id="node24" class="node">
+<g id="node25" class="node">
 <title>AccountCreatedEventHandler</title>
 <ellipse fill="#fdb462" stroke="black" cx="3150" cy="-172" rx="127.31" ry="18"/>
 <text text-anchor="middle" x="3150" y="-167.8" font-family="Times,serif" font-size="14.00">AccountCreatedEventHandler</text>
 </g>
 <!-- AccountCreatedEventHandler&#45;&gt;AuthorsModule -->
-<g id="edge22" class="edge">
+<g id="edge23" class="edge">
 <title>AccountCreatedEventHandler&#45;&gt;AuthorsModule</title>
 <path fill="none" stroke="black" d="M3229.54,-186.09C3229.54,-186.09 3229.54,-211.79 3229.54,-211.79"/>
 <polygon fill="black" stroke="black" points="3226.04,-211.79 3229.54,-221.79 3233.04,-211.79 3226.04,-211.79"/>
 </g>
 <!-- AuthorRemovedEventHandler -->
-<g id="node25" class="node">
+<g id="node26" class="node">
 <title>AuthorRemovedEventHandler</title>
 <ellipse fill="#fdb462" stroke="black" cx="2876" cy="-172" rx="129.06" ry="18"/>
 <text text-anchor="middle" x="2876" y="-167.8" font-family="Times,serif" font-size="14.00">AuthorRemovedEventHandler</text>
 </g>
 <!-- AuthorRemovedEventHandler&#45;&gt;AuthorsModule -->
-<g id="edge23" class="edge">
+<g id="edge24" class="edge">
 <title>AuthorRemovedEventHandler&#45;&gt;AuthorsModule</title>
 <path fill="none" stroke="black" d="M2980.88,-182.52C2980.88,-200.21 2980.88,-234 2980.88,-234 2980.88,-234 3171.55,-234 3171.55,-234"/>
 <polygon fill="black" stroke="black" points="3171.55,-237.5 3181.55,-234 3171.55,-230.5 3171.55,-237.5"/>
 </g>
 <!-- DailyModule&#45;&gt;EntriesModule -->
-<g id="edge28" class="edge">
+<g id="edge30" class="edge">
 <title>DailyModule&#45;&gt;EntriesModule</title>
 <path fill="none" stroke="black" d="M3523,-258.01C3523,-258.01 3523,-287.85 3523,-287.85"/>
 <polygon fill="black" stroke="black" points="3519.5,-287.85 3523,-297.85 3526.5,-287.85 3519.5,-287.85"/>
 </g>
 <!-- DailyModule&#45;&gt;JournalModule -->
-<g id="edge44" class="edge">
+<g id="edge48" class="edge">
 <title>DailyModule&#45;&gt;JournalModule</title>
 <path fill="none" stroke="black" d="M3568.52,-240C3581.32,-240 3591.82,-240 3591.82,-240 3591.82,-240 3591.82,-355.76 3591.82,-355.76"/>
 <polygon fill="black" stroke="black" points="3588.32,-355.76 3591.82,-365.76 3595.32,-355.76 3588.32,-355.76"/>
 </g>
 <!-- EntriesModule&#45;&gt;JournalModule -->
-<g id="edge45" class="edge">
+<g id="edge49" class="edge">
 <title>EntriesModule&#45;&gt;JournalModule</title>
 <path fill="none" stroke="black" d="M3561.61,-334.22C3561.61,-334.22 3561.61,-355.73 3561.61,-355.73"/>
 <polygon fill="black" stroke="black" points="3558.11,-355.73 3561.61,-365.73 3565.11,-355.73 3558.11,-355.73"/>
 </g>
 <!-- GoalsModule&#45;&gt;JournalModule -->
-<g id="edge46" class="edge">
+<g id="edge50" class="edge">
 <title>GoalsModule&#45;&gt;JournalModule</title>
 <path fill="none" stroke="black" d="M3640.14,-334.22C3640.14,-334.22 3640.14,-355.73 3640.14,-355.73"/>
 <polygon fill="black" stroke="black" points="3636.64,-355.73 3640.14,-365.73 3643.64,-355.73 3636.64,-355.73"/>
 </g>
 <!-- AccountActivatedEventHandler -->
-<g id="node38" class="node">
+<g id="node39" class="node">
 <title>AccountActivatedEventHandler</title>
 <ellipse fill="#fdb462" stroke="black" cx="2348" cy="-316" rx="134.83" ry="18"/>
 <text text-anchor="middle" x="2348" y="-311.8" font-family="Times,serif" font-size="14.00">AccountActivatedEventHandler</text>
 </g>
 <!-- AccountActivatedEventHandler&#45;&gt;TwoFactorAuthenticationModule -->
-<g id="edge61" class="edge">
+<g id="edge68" class="edge">
 <title>AccountActivatedEventHandler&#45;&gt;TwoFactorAuthenticationModule</title>
-<path fill="none" stroke="black" d="M2262.9,-301.7C2262.9,-279.69 2262.9,-240 2262.9,-240 2262.9,-240 2183.13,-240 2183.13,-240"/>
-<polygon fill="black" stroke="black" points="2183.13,-236.5 2173.13,-240 2183.13,-243.5 2183.13,-236.5"/>
+<path fill="none" stroke="black" d="M2240.77,-304.79C2240.77,-283.65 2240.77,-240 2240.77,-240 2240.77,-240 2183.19,-240 2183.19,-240"/>
+<polygon fill="black" stroke="black" points="2183.19,-236.5 2173.19,-240 2183.19,-243.5 2183.19,-236.5"/>
 </g>
 </g>
 </svg>

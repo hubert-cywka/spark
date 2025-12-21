@@ -112,10 +112,19 @@
                 <td class="col-md-4">
                     <ul class="index-list">
                         <li>
+                            <a href="#after" title="src/common/observability/monitors/eventLoopMonitorHook.ts" ><b>after</b>&nbsp;&nbsp;&nbsp;(src/.../eventLoopMonitorHook.ts)</a>
+                        </li>
+                        <li>
                             <a href="#assertConnection" title="src/common/utils/databaseUtils.ts" ><b>assertConnection</b>&nbsp;&nbsp;&nbsp;(src/.../databaseUtils.ts)</a>
                         </li>
                         <li>
+                            <a href="#before" title="src/common/observability/monitors/eventLoopMonitorHook.ts" ><b>before</b>&nbsp;&nbsp;&nbsp;(src/.../eventLoopMonitorHook.ts)</a>
+                        </li>
+                        <li>
                             <a href="#createClient" title="src/common/utils/databaseUtils.ts" ><b>createClient</b>&nbsp;&nbsp;&nbsp;(src/.../databaseUtils.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#destroy" title="src/common/observability/monitors/eventLoopMonitorHook.ts" ><b>destroy</b>&nbsp;&nbsp;&nbsp;(src/.../eventLoopMonitorHook.ts)</a>
                         </li>
                         <li>
                             <a href="#dropDatabase" title="src/common/utils/databaseUtils.ts" ><b>dropDatabase</b>&nbsp;&nbsp;&nbsp;(src/.../databaseUtils.ts)</a>
@@ -125,6 +134,9 @@
                         </li>
                         <li>
                             <a href="#groupEventsByPartitionKey" title="src/common/events/tests/utils/groupEventsByPartitionKey.ts" ><b>groupEventsByPartitionKey</b>&nbsp;&nbsp;&nbsp;(src/.../groupEventsByPartitionKey.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#init" title="src/common/observability/monitors/eventLoopMonitorHook.ts" ><b>init</b>&nbsp;&nbsp;&nbsp;(src/.../eventLoopMonitorHook.ts)</a>
                         </li>
                         <li>
                             <a href="#initializeDatabase" title="src/common/utils/databaseUtils.ts" ><b>initializeDatabase</b>&nbsp;&nbsp;&nbsp;(src/.../databaseUtils.ts)</a>
@@ -160,7 +172,237 @@
     </table>
 </section>
 
-    <h3>src/common/utils/databaseUtils.ts</h3>
+    <h3>src/common/observability/monitors/eventLoopMonitorHook.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="after"></a>
+                    <span class="name">
+                        <span ><b>after</b></span>
+                        <a href="#after"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>after(asyncId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>asyncId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="before"></a>
+                    <span class="name">
+                        <span ><b>before</b></span>
+                        <a href="#before"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>before(asyncId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>asyncId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="destroy"></a>
+                    <span class="name">
+                        <span ><b>destroy</b></span>
+                        <a href="#destroy"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>destroy(asyncId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>asyncId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="init"></a>
+                    <span class="name">
+                        <span ><b>init</b></span>
+                        <a href="#init"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>init(asyncId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>asyncId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>type</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/common/utils/databaseUtils.ts</h3>
     <section data-compodoc="block-methods">
     <h3></h3>    <table class="table table-sm table-bordered">
         <tbody>

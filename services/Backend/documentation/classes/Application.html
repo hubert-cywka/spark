@@ -210,7 +210,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/app.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app.ts:23</a></div>
                             </td>
                         </tr>
 
@@ -278,7 +278,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/app.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -306,7 +306,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">src/app.ts:20</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">src/app.ts:21</a></div>
                         </td>
                     </tr>
 
@@ -333,7 +333,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">src/app.ts:21</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/app.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -369,8 +369,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="76"
-                                    class="link-to-prism">src/app.ts:76</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="78"
+                                    class="link-to-prism">src/app.ts:78</a></div>
                         </td>
                     </tr>
 
@@ -408,8 +408,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="85"
-                                    class="link-to-prism">src/app.ts:85</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="87"
+                                    class="link-to-prism">src/app.ts:87</a></div>
                         </td>
                     </tr>
 
@@ -447,8 +447,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="68"
-                                    class="link-to-prism">src/app.ts:68</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">src/app.ts:70</a></div>
                         </td>
                     </tr>
 
@@ -487,8 +487,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="30"
-                                    class="link-to-prism">src/app.ts:30</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">src/app.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -527,8 +527,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="98"
-                                    class="link-to-prism">src/app.ts:98</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="100"
+                                    class="link-to-prism">src/app.ts:100</a></div>
                         </td>
                     </tr>
 
@@ -609,6 +609,7 @@ import { Logger } from &quot;nestjs-pino&quot;;
 import { initializeTransactionalContext } from &quot;typeorm-transactional&quot;;
 
 import { AppModule } from &quot;@/App.module&quot;;
+import { disableEventLoopMonitor, enableEventLoopMonitor } from &quot;@/common/observability/monitors/eventLoopMonitorHook&quot;;
 import { logger } from &quot;@/lib/logger&quot;;
 
 dayjs.extend(utc);
@@ -653,6 +654,7 @@ export class Application {
         this.addSwagger();
         this.enableGracefulShutdown();
 
+        enableEventLoopMonitor();
         await this.app.startAllMicroservices();
         await this.app.listen(this.config.getOrThrow&lt;number&gt;(&quot;port&quot;), &quot;0.0.0.0&quot;, (err, address) &#x3D;&gt; {
             if (err) {
@@ -698,6 +700,7 @@ export class Application {
 
         try {
             await this.getApp().close();
+            disableEventLoopMonitor();
             this.logger.log(&quot;NestJS application closed gracefully.&quot;);
         } catch (cleanupError) {
             this.logger.error(cleanupError, &quot;Error during NestJS application closure.&quot;);

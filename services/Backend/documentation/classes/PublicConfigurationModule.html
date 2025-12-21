@@ -142,6 +142,8 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DynamicModule, Inject, Module, OnModuleInit } from &quot;@nestjs/common&quot;;
 import { ConfigService } from &quot;@nestjs/config&quot;;
+import { InjectDataSource } from &quot;@nestjs/typeorm&quot;;
+import { DataSource } from &quot;typeorm&quot;;
 
 import { CONFIGURATION_MODULE_DATA_SOURCE } from &quot;./infrastructure/database/constants&quot;;
 
@@ -178,6 +180,11 @@ import { FeatureFlagServiceToken } from &quot;@/modules/configuration/services/i
 import { FeatureFlagsProviderToken } from &quot;@/modules/configuration/services/interfaces/IFeatureFlagsProvider&quot;;
 import { FeatureFlagsStoreToken } from &quot;@/modules/configuration/services/interfaces/IFeatureFlagsStore&quot;;
 import { TenantServiceToken } from &quot;@/modules/configuration/services/interfaces/ITenant.service&quot;;
+import { HealthCheckModule } from &quot;@/modules/healthcheck/HealthCheck.module&quot;;
+import {
+    type IHealthCheckProbesRegistry,
+    HealthCheckProbesRegistryToken,
+} from &quot;@/modules/healthcheck/services/interfaces/IHealthCheckProbesRegistry&quot;;
 
 @Module({
     providers: [
@@ -202,6 +209,7 @@ import { TenantServiceToken } from &quot;@/modules/configuration/services/interf
         },
     ],
     imports: [
+        HealthCheckModule,
         DatabaseModule.forRootAsync(CONFIGURATION_MODULE_DATA_SOURCE, {
             useFactory: (configService: ConfigService) &#x3D;&gt; ({
                 logging: configService.getOrThrow&lt;boolean&gt;(&quot;modules.configuration.database.logging&quot;),
@@ -248,7 +256,11 @@ export class ConfigurationModule implements OnModuleInit {
         @Inject(IntegrationEventsJobsOrchestratorToken)
         private readonly orchestrator: IIntegrationEventsJobsOrchestrator,
         @Inject(InboxEventHandlersToken)
-        private readonly handlers: IInboxEventHandler[]
+        private readonly handlers: IInboxEventHandler[],
+        @InjectDataSource(CONFIGURATION_MODULE_DATA_SOURCE)
+        private readonly dataSource: DataSource,
+        @Inject(HealthCheckProbesRegistryToken)
+        private readonly healthCheckProbesService: IHealthCheckProbesRegistry
     ) {}
 
     static forRoot(options?: { global?: boolean }): DynamicModule {
@@ -265,6 +277,8 @@ export class ConfigurationModule implements OnModuleInit {
     }
 
     public onModuleInit() {
+        this.healthCheckProbesService.registerDatabaseConnectionProbe(&#x60;database_${CONFIGURATION_MODULE_DATA_SOURCE}&#x60;, this.dataSource);
+
         this.orchestrator.startProcessingInbox(this.handlers);
         this.orchestrator.startClearingInbox();
         this.orchestrator.startProcessingOutbox();

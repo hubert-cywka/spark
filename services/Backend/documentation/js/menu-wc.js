@@ -109,8 +109,8 @@ customElements.define(
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${
                                             isNormalMode
-                                                ? 'data-bs-target="#controllers-links-module-AlertsModule-3d3a53487b6da8e337a812e20089545c68328334cc5f1c361f63a3558e37fda38fe5aa5fd1e80bfd0ca84f5e56d0156e1fecd830996699e4e41cbae8a46cbdb3"'
-                                                : 'data-bs-target="#xs-controllers-links-module-AlertsModule-3d3a53487b6da8e337a812e20089545c68328334cc5f1c361f63a3558e37fda38fe5aa5fd1e80bfd0ca84f5e56d0156e1fecd830996699e4e41cbae8a46cbdb3"'
+                                                ? 'data-bs-target="#controllers-links-module-AlertsModule-5e70dc7c9f809244e258adcc0fe1287d2d27abad9e1bc7ea574576819be647472dd25c4a314f627bb31c80f0a208457736092be1cda0eb6384fe5bd394f8a9e0"'
+                                                : 'data-bs-target="#xs-controllers-links-module-AlertsModule-5e70dc7c9f809244e258adcc0fe1287d2d27abad9e1bc7ea574576819be647472dd25c4a314f627bb31c80f0a208457736092be1cda0eb6384fe5bd394f8a9e0"'
                                         }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
@@ -118,8 +118,8 @@ customElements.define(
                                         </div>
                                         <ul class="links collapse" ${
                                             isNormalMode
-                                                ? 'id="controllers-links-module-AlertsModule-3d3a53487b6da8e337a812e20089545c68328334cc5f1c361f63a3558e37fda38fe5aa5fd1e80bfd0ca84f5e56d0156e1fecd830996699e4e41cbae8a46cbdb3"'
-                                                : 'id="xs-controllers-links-module-AlertsModule-3d3a53487b6da8e337a812e20089545c68328334cc5f1c361f63a3558e37fda38fe5aa5fd1e80bfd0ca84f5e56d0156e1fecd830996699e4e41cbae8a46cbdb3"'
+                                                ? 'id="controllers-links-module-AlertsModule-5e70dc7c9f809244e258adcc0fe1287d2d27abad9e1bc7ea574576819be647472dd25c4a314f627bb31c80f0a208457736092be1cda0eb6384fe5bd394f8a9e0"'
+                                                : 'id="xs-controllers-links-module-AlertsModule-5e70dc7c9f809244e258adcc0fe1287d2d27abad9e1bc7ea574576819be647472dd25c4a314f627bb31c80f0a208457736092be1cda0eb6384fe5bd394f8a9e0"'
                                         }>
                                             <li class="link">
                                                 <a href="controllers/AlertsController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >AlertsController</a>
@@ -239,8 +239,8 @@ customElements.define(
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${
                                             isNormalMode
-                                                ? 'data-bs-target="#controllers-links-module-ConfigurationModule-868ff19632947c7841565131ae5678c3e4cf574251118b132f09c95bdf45d8c89790b4a718923b5924ac5187925a853cd66fed1d7fb0f9fe421eb056105a25fd"'
-                                                : 'data-bs-target="#xs-controllers-links-module-ConfigurationModule-868ff19632947c7841565131ae5678c3e4cf574251118b132f09c95bdf45d8c89790b4a718923b5924ac5187925a853cd66fed1d7fb0f9fe421eb056105a25fd"'
+                                                ? 'data-bs-target="#controllers-links-module-ConfigurationModule-6fcdaefd543d872e899466d490177d5b1b91fff8dd4360cd9c9b576bb42f9dd817513cf0a14a6cade5996f84af32a9e81c726d30754921d3b35342de588f9ca2"'
+                                                : 'data-bs-target="#xs-controllers-links-module-ConfigurationModule-6fcdaefd543d872e899466d490177d5b1b91fff8dd4360cd9c9b576bb42f9dd817513cf0a14a6cade5996f84af32a9e81c726d30754921d3b35342de588f9ca2"'
                                         }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
@@ -248,8 +248,8 @@ customElements.define(
                                         </div>
                                         <ul class="links collapse" ${
                                             isNormalMode
-                                                ? 'id="controllers-links-module-ConfigurationModule-868ff19632947c7841565131ae5678c3e4cf574251118b132f09c95bdf45d8c89790b4a718923b5924ac5187925a853cd66fed1d7fb0f9fe421eb056105a25fd"'
-                                                : 'id="xs-controllers-links-module-ConfigurationModule-868ff19632947c7841565131ae5678c3e4cf574251118b132f09c95bdf45d8c89790b4a718923b5924ac5187925a853cd66fed1d7fb0f9fe421eb056105a25fd"'
+                                                ? 'id="controllers-links-module-ConfigurationModule-6fcdaefd543d872e899466d490177d5b1b91fff8dd4360cd9c9b576bb42f9dd817513cf0a14a6cade5996f84af32a9e81c726d30754921d3b35342de588f9ca2"'
+                                                : 'id="xs-controllers-links-module-ConfigurationModule-6fcdaefd543d872e899466d490177d5b1b91fff8dd4360cd9c9b576bb42f9dd817513cf0a14a6cade5996f84af32a9e81c726d30754921d3b35342de588f9ca2"'
                                         }>
                                             <li class="link">
                                                 <a href="controllers/FeatureFlagsController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >FeatureFlagsController</a>
@@ -346,8 +346,8 @@ customElements.define(
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${
                                             isNormalMode
-                                                ? 'data-bs-target="#controllers-links-module-HealthCheckModule-c8dc09736cd6b6153fbcb995c7636b7b02fed13448bed01dfb47bce0604ca931f0b7935b7dff30c0e3e317d15e2aafb7e5e19118541c1b612ad2c222d3785338"'
-                                                : 'data-bs-target="#xs-controllers-links-module-HealthCheckModule-c8dc09736cd6b6153fbcb995c7636b7b02fed13448bed01dfb47bce0604ca931f0b7935b7dff30c0e3e317d15e2aafb7e5e19118541c1b612ad2c222d3785338"'
+                                                ? 'data-bs-target="#controllers-links-module-HealthCheckModule-b4747e04c05d4c9ba5821eaed3a4063df92671fac6cbb18f1a9ede00d7bb0d9388b651b420f94d865d99c077949168a17a5e02319e86c1da892a7efb158c3735"'
+                                                : 'data-bs-target="#xs-controllers-links-module-HealthCheckModule-b4747e04c05d4c9ba5821eaed3a4063df92671fac6cbb18f1a9ede00d7bb0d9388b651b420f94d865d99c077949168a17a5e02319e86c1da892a7efb158c3735"'
                                         }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
@@ -355,8 +355,8 @@ customElements.define(
                                         </div>
                                         <ul class="links collapse" ${
                                             isNormalMode
-                                                ? 'id="controllers-links-module-HealthCheckModule-c8dc09736cd6b6153fbcb995c7636b7b02fed13448bed01dfb47bce0604ca931f0b7935b7dff30c0e3e317d15e2aafb7e5e19118541c1b612ad2c222d3785338"'
-                                                : 'id="xs-controllers-links-module-HealthCheckModule-c8dc09736cd6b6153fbcb995c7636b7b02fed13448bed01dfb47bce0604ca931f0b7935b7dff30c0e3e317d15e2aafb7e5e19118541c1b612ad2c222d3785338"'
+                                                ? 'id="controllers-links-module-HealthCheckModule-b4747e04c05d4c9ba5821eaed3a4063df92671fac6cbb18f1a9ede00d7bb0d9388b651b420f94d865d99c077949168a17a5e02319e86c1da892a7efb158c3735"'
+                                                : 'id="xs-controllers-links-module-HealthCheckModule-b4747e04c05d4c9ba5821eaed3a4063df92671fac6cbb18f1a9ede00d7bb0d9388b651b420f94d865d99c077949168a17a5e02319e86c1da892a7efb158c3735"'
                                         }>
                                             <li class="link">
                                                 <a href="controllers/HealthCheckController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >HealthCheckController</a>
@@ -439,8 +439,8 @@ customElements.define(
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${
                                             isNormalMode
-                                                ? 'data-bs-target="#controllers-links-module-UsersModule-727f5c1beb28252d5f502e086a579f64345a20ffd373f7be2e9036a19e044b2ba2a21cedd83c41f4a725fa82866bdbf48d573ce8672d8cc2ba3a8c409c7318db"'
-                                                : 'data-bs-target="#xs-controllers-links-module-UsersModule-727f5c1beb28252d5f502e086a579f64345a20ffd373f7be2e9036a19e044b2ba2a21cedd83c41f4a725fa82866bdbf48d573ce8672d8cc2ba3a8c409c7318db"'
+                                                ? 'data-bs-target="#controllers-links-module-UsersModule-82beec3790b275cb2d38e4c435faedd93a5184214fd9dd22c7499e532a420a55b9c768cb8921fb34814fd1e96e40164825dff7d51a2d2af0d3041afdde9a4993"'
+                                                : 'data-bs-target="#xs-controllers-links-module-UsersModule-82beec3790b275cb2d38e4c435faedd93a5184214fd9dd22c7499e532a420a55b9c768cb8921fb34814fd1e96e40164825dff7d51a2d2af0d3041afdde9a4993"'
                                         }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
@@ -448,8 +448,8 @@ customElements.define(
                                         </div>
                                         <ul class="links collapse" ${
                                             isNormalMode
-                                                ? 'id="controllers-links-module-UsersModule-727f5c1beb28252d5f502e086a579f64345a20ffd373f7be2e9036a19e044b2ba2a21cedd83c41f4a725fa82866bdbf48d573ce8672d8cc2ba3a8c409c7318db"'
-                                                : 'id="xs-controllers-links-module-UsersModule-727f5c1beb28252d5f502e086a579f64345a20ffd373f7be2e9036a19e044b2ba2a21cedd83c41f4a725fa82866bdbf48d573ce8672d8cc2ba3a8c409c7318db"'
+                                                ? 'id="controllers-links-module-UsersModule-82beec3790b275cb2d38e4c435faedd93a5184214fd9dd22c7499e532a420a55b9c768cb8921fb34814fd1e96e40164825dff7d51a2d2af0d3041afdde9a4993"'
+                                                : 'id="xs-controllers-links-module-UsersModule-82beec3790b275cb2d38e4c435faedd93a5184214fd9dd22c7499e532a420a55b9c768cb8921fb34814fd1e96e40164825dff7d51a2d2af0d3041afdde9a4993"'
                                         }>
                                             <li class="link">
                                                 <a href="controllers/UserController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >UserController</a>
@@ -1366,6 +1366,9 @@ customElements.define(
                                     <a href="injectables/EventInbox.html" data-type="entity-link" >EventInbox</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/EventLoopLagHealthIndicator.html" data-type="entity-link" >EventLoopLagHealthIndicator</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/EventOutbox.html" data-type="entity-link" >EventOutbox</a>
                                 </li>
                                 <li class="link">
@@ -1382,6 +1385,9 @@ customElements.define(
                                 </li>
                                 <li class="link">
                                     <a href="injectables/GoogleOIDCProvider.html" data-type="entity-link" >GoogleOIDCProvider</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/HealthCheckProbesRegistry.html" data-type="entity-link" >HealthCheckProbesRegistry</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/HtmlEmailTemplateFactory.html" data-type="entity-link" >HtmlEmailTemplateFactory</a>
@@ -1652,6 +1658,9 @@ customElements.define(
                                 <a href="interfaces/IEventInboxProcessor.html" data-type="entity-link" >IEventInboxProcessor</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/IEventLoopLagHealthIndicator.html" data-type="entity-link" >IEventLoopLagHealthIndicator</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/IEventOutbox.html" data-type="entity-link" >IEventOutbox</a>
                             </li>
                             <li class="link">
@@ -1695,6 +1704,9 @@ customElements.define(
                             </li>
                             <li class="link">
                                 <a href="interfaces/IGoalService.html" data-type="entity-link" >IGoalService</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/IHealthCheckProbesRegistry.html" data-type="entity-link" >IHealthCheckProbesRegistry</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/IInboxEventHandler.html" data-type="entity-link" >IInboxEventHandler</a>

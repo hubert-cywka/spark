@@ -487,7 +487,7 @@
 import { Inject } from &quot;@nestjs/common&quot;;
 
 import { cacheMetrics } from &quot;@/common/cache/observability/metrics&quot;;
-import { IDistributedCache } from &quot;@/common/cache/services/interfaces/ICache&quot;;
+import { IDistributedCache } from &quot;@/common/cache/services/interfaces/IDistributedCache&quot;;
 
 export class DistributedCache implements IDistributedCache {
     public constructor(@Inject(CACHE_MANAGER) private readonly cacheManager: Cache) {}

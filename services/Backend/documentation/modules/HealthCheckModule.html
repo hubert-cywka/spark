@@ -140,13 +140,28 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module } from &quot;@nestjs/common&quot;;
+import { TerminusModule } from &quot;@nestjs/terminus&quot;;
 
 import { HealthCheckController } from &quot;@/modules/healthcheck/controllers/HealthCheck.controller&quot;;
+import { EventLoopLagHealthIndicator } from &quot;@/modules/healthcheck/services/implementations/EventLoopHealthIndicator&quot;;
+import { HealthCheckProbesRegistry } from &quot;@/modules/healthcheck/services/implementations/HealthCheckProbesRegistry&quot;;
+import { EventLoopLagHealthIndicatorToken } from &quot;@/modules/healthcheck/services/interfaces/IEventLoopLagHealthIndicator&quot;;
+import { HealthCheckProbesRegistryToken } from &quot;@/modules/healthcheck/services/interfaces/IHealthCheckProbesRegistry&quot;;
 
 @Module({
-    providers: [],
-    imports: [],
+    providers: [
+        {
+            provide: HealthCheckProbesRegistryToken,
+            useClass: HealthCheckProbesRegistry,
+        },
+        {
+            provide: EventLoopLagHealthIndicatorToken,
+            useClass: EventLoopLagHealthIndicator,
+        },
+    ],
+    imports: [TerminusModule],
     controllers: [HealthCheckController],
+    exports: [HealthCheckProbesRegistryToken],
 })
 export class HealthCheckModule {}
 </code></pre>
