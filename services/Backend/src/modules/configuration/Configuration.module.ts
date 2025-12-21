@@ -1,5 +1,7 @@
 import { DynamicModule, Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { InjectDataSource } from "@nestjs/typeorm";
+import { DataSource } from "typeorm";
 
 import { CONFIGURATION_MODULE_DATA_SOURCE } from "./infrastructure/database/constants";
 
@@ -36,6 +38,11 @@ import { FeatureFlagServiceToken } from "@/modules/configuration/services/interf
 import { FeatureFlagsProviderToken } from "@/modules/configuration/services/interfaces/IFeatureFlagsProvider";
 import { FeatureFlagsStoreToken } from "@/modules/configuration/services/interfaces/IFeatureFlagsStore";
 import { TenantServiceToken } from "@/modules/configuration/services/interfaces/ITenant.service";
+import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
+import {
+    type IHealthCheckProbesRegistry,
+    HealthCheckProbesRegistryToken,
+} from "@/modules/healthcheck/services/interfaces/IHealthCheckProbesRegistry";
 
 @Module({
     providers: [
@@ -60,6 +67,7 @@ import { TenantServiceToken } from "@/modules/configuration/services/interfaces/
         },
     ],
     imports: [
+        HealthCheckModule,
         DatabaseModule.forRootAsync(CONFIGURATION_MODULE_DATA_SOURCE, {
             useFactory: (configService: ConfigService) => ({
                 logging: configService.getOrThrow<boolean>("modules.configuration.database.logging"),
@@ -106,7 +114,11 @@ export class ConfigurationModule implements OnModuleInit {
         @Inject(IntegrationEventsJobsOrchestratorToken)
         private readonly orchestrator: IIntegrationEventsJobsOrchestrator,
         @Inject(InboxEventHandlersToken)
-        private readonly handlers: IInboxEventHandler[]
+        private readonly handlers: IInboxEventHandler[],
+        @InjectDataSource(CONFIGURATION_MODULE_DATA_SOURCE)
+        private readonly dataSource: DataSource,
+        @Inject(HealthCheckProbesRegistryToken)
+        private readonly healthCheckProbesService: IHealthCheckProbesRegistry
     ) {}
 
     static forRoot(options?: { global?: boolean }): DynamicModule {
@@ -123,6 +135,8 @@ export class ConfigurationModule implements OnModuleInit {
     }
 
     public onModuleInit() {
+        this.healthCheckProbesService.registerDatabaseConnectionProbe(`database_${CONFIGURATION_MODULE_DATA_SOURCE}`, this.dataSource);
+
         this.orchestrator.startProcessingInbox(this.handlers);
         this.orchestrator.startClearingInbox();
         this.orchestrator.startProcessingOutbox();

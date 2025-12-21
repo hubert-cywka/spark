@@ -3,7 +3,7 @@ import { CacheModule as BaseCacheModule } from "@nestjs/cache-manager";
 import { DynamicModule, Module } from "@nestjs/common";
 
 import { DistributedCache } from "@/common/cache/services/implementations/DistributedCache";
-import { DistributedCacheToken } from "@/common/cache/services/interfaces/ICache";
+import { DistributedCacheToken } from "@/common/cache/services/interfaces/IDistributedCache";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 
 type CacheModuleOptions = {
@@ -35,7 +35,7 @@ export class CacheModule {
                     isGlobal: options.global,
                 }),
             ],
-            exports: [CacheModule, DistributedCacheToken],
+            exports: [DistributedCacheToken],
         };
     }
 }

@@ -1,5 +1,7 @@
 import { Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { InjectDataSource } from "@nestjs/typeorm";
+import { DataSource } from "typeorm";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEvents, IntegrationEventsModule } from "@/common/events";
@@ -14,6 +16,11 @@ import {
     type IIntegrationEventsSubscriber,
     IntegrationEventsSubscriberToken,
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
+import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
+import {
+    type IHealthCheckProbesRegistry,
+    HealthCheckProbesRegistryToken,
+} from "@/modules/healthcheck/services/interfaces/IHealthCheckProbesRegistry";
 import { UserController } from "@/modules/users/controllers/User.controller";
 import { UserEntity } from "@/modules/users/entities/User.entity";
 import { UserActivatedEventHandler } from "@/modules/users/events/UserActivatedEvent.handler";
@@ -49,6 +56,7 @@ import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.se
         },
     ],
     imports: [
+        HealthCheckModule,
         DatabaseModule.forRootAsync(USERS_MODULE_DATA_SOURCE, {
             useFactory: (configService: ConfigService) => ({
                 logging: configService.getOrThrow<boolean>("modules.users.database.logging"),
@@ -93,10 +101,16 @@ export class UsersModule implements OnModuleInit {
         @Inject(IntegrationEventsJobsOrchestratorToken)
         private readonly orchestrator: IIntegrationEventsJobsOrchestrator,
         @Inject(InboxEventHandlersToken)
-        private readonly handlers: IInboxEventHandler[]
+        private readonly handlers: IInboxEventHandler[],
+        @InjectDataSource(USERS_MODULE_DATA_SOURCE)
+        private readonly dataSource: DataSource,
+        @Inject(HealthCheckProbesRegistryToken)
+        private readonly healthCheckProbesService: IHealthCheckProbesRegistry
     ) {}
 
     public onModuleInit() {
+        this.healthCheckProbesService.registerDatabaseConnectionProbe(`database_${USERS_MODULE_DATA_SOURCE}`, this.dataSource);
+
         this.orchestrator.startProcessingInbox(this.handlers);
         this.orchestrator.startProcessingOutbox();
         this.orchestrator.startClearingInbox();

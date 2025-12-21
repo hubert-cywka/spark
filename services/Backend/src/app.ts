@@ -11,6 +11,7 @@ import { Logger } from "nestjs-pino";
 import { initializeTransactionalContext } from "typeorm-transactional";
 
 import { AppModule } from "@/App.module";
+import { disableEventLoopMonitor, enableEventLoopMonitor } from "@/common/observability/monitors/eventLoopMonitorHook";
 import { logger } from "@/lib/logger";
 
 dayjs.extend(utc);
@@ -55,6 +56,7 @@ export class Application {
         this.addSwagger();
         this.enableGracefulShutdown();
 
+        enableEventLoopMonitor();
         await this.app.startAllMicroservices();
         await this.app.listen(this.config.getOrThrow<number>("port"), "0.0.0.0", (err, address) => {
             if (err) {
@@ -100,6 +102,7 @@ export class Application {
 
         try {
             await this.getApp().close();
+            disableEventLoopMonitor();
             this.logger.log("NestJS application closed gracefully.");
         } catch (cleanupError) {
             this.logger.error(cleanupError, "Error during NestJS application closure.");

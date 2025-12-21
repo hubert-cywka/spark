@@ -7,12 +7,12 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Artifacts
 node_modules
 dist
 dist-ssr
 *.local
 .vite
-
 obj
 
 # Secrets
@@ -32,7 +32,9 @@ obj
 *.sw
 
 # Auto-generated files
+services/Backend/documentation/**
 docker-compose.local.override.yml
 
+# AI
 infrastructure/docker/ollama-models/**
 .aider*
