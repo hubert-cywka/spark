@@ -2,7 +2,7 @@ import { createHook } from "node:async_hooks";
 
 import { otelTracer } from "@/common/observability/traces";
 
-const THRESHOLD_NS = 1e8; // 100ms
+const THRESHOLD_NS = 5e7; // 50ms
 
 const cache = new Map<number, { type: string; start?: [number, number] }>();
 
@@ -58,6 +58,7 @@ function after(asyncId: number) {
     }
 }
 
+// This hook will detect operations that block the event loop, and produce a trace, so it's easier to track.
 const eventLoopMonitorHook = createHook({ init, before, after, destroy });
 
 export const enableEventLoopMonitor = () => eventLoopMonitorHook.enable();
