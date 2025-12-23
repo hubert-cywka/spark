@@ -46,7 +46,7 @@ variable "mail_service_name" {
   type = string
 }
 
-variable "gdpr_service_name" {
+variable "privacy_service_name" {
   type = string
 }
 

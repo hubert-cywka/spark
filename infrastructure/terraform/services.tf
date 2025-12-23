@@ -2,7 +2,7 @@ locals {
   journal_service_name       = "journal-service"
   mail_service_name          = "mail-service"
   identity_service_name      = "identity-service"
-  gdpr_service_name          = "gdpr-service"
+  privacy_service_name       = "privacy-service"
   scheduling_service_name    = "scheduling-service"
   configuration_service_name = "configuration-service"
   alerts_service_name        = "alerts-service"
@@ -226,10 +226,10 @@ module "identity-service" {
   secret_name = kubernetes_secret_v1.app_secrets.metadata[0].name
 }
 
-module "gdpr-service" {
+module "privacy-service" {
   source = "./modules/microservice"
 
-  service_name   = local.gdpr_service_name
+  service_name   = local.privacy_service_name
   namespace      = kubernetes_namespace_v1.app.metadata[0].name
   image          = "hejs22/codename-backend:latest"
   replicas       = 1
@@ -243,10 +243,10 @@ module "gdpr-service" {
   ]
 
   env_vars = {
-    "GDPR_MODULE_ENABLED"                       = "true"
+    "PRIVACY_MODULE_ENABLED"                    = "true"
     "PORT"                                      = var.BACKEND_PORT
     "APP_NAME"                                  = var.APP_NAME
-    "OTEL_APP_NAME"                             = "${var.APP_NAME}-${local.gdpr_service_name}"
+    "OTEL_APP_NAME"                             = "${var.APP_NAME}-${local.privacy_service_name}"
     "OTEL_EXPORTER_OTLP_ENDPOINT"               = "${module.observability.otel_collector_address}"
     "OTEL_EXPORTER_OTLP_PROTOCOL"               = "grpc"
     "DATABASE_LOGGING_ENABLED"                  = var.DATABASE_LOGGING_ENABLED
@@ -272,7 +272,7 @@ module "gdpr-service" {
     "PUBSUB_OUTBOX_PROCESSOR_CLEARING_INTERVAL" = var.PUBSUB_OUTBOX_PROCESSOR_CLEARING_INTERVAL
     "PUBSUB_OUTBOX_PROCESSOR_MAX_ATTEMPTS"      = var.PUBSUB_OUTBOX_PROCESSOR_MAX_ATTEMPTS
     "JWT_SIGNING_SECRET"                        = var.JWT_SIGNING_SECRET
-    "GDPR_DATABASE_NAME"                        = var.GDPR_DATABASE_NAME
+    "PRIVACY_DATABASE_NAME"                     = var.PRIVACY_DATABASE_NAME
     "COOKIES_SECRET"                            = var.COOKIES_SECRET
     "RATE_LIMITING_BASE_LIMIT"                  = var.RATE_LIMITING_BASE_LIMIT
     "RATE_LIMITING_BASE_TTL"                    = var.RATE_LIMITING_BASE_TTL

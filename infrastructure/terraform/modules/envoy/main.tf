@@ -84,11 +84,11 @@ resource "kubernetes_deployment_v1" "envoy" {
           }
 
           env {
-            name  = "GDPR_SERVICE_ADDRESS"
-            value = "${var.gdpr_service_name}.${var.namespace}.svc.cluster.local"
+            name  = "PRIVACY_SERVICE_ADDRESS"
+            value = "${var.privacy_service_name}.${var.namespace}.svc.cluster.local"
           }
           env {
-            name  = "GDPR_SERVICE_PORT"
+            name  = "PRIVACY_SERVICE_PORT"
             value = var.backend_port
           }
 

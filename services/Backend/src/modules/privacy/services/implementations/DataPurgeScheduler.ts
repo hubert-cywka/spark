@@ -4,13 +4,13 @@ import dayjs from "dayjs";
 import { IsNull, Repository } from "typeorm";
 import { Transactional } from "typeorm-transactional";
 
-import { DataPurgePlanEntity } from "@/modules/gdpr/entities/DataPurgePlan.entity";
-import { GDPR_MODULE_DATA_SOURCE } from "@/modules/gdpr/infrastructure/database/constants";
+import { DataPurgePlanEntity } from "@/modules/privacy/entities/DataPurgePlan.entity";
+import { PRIVACY_MODULE_DATA_SOURCE } from "@/modules/privacy/infrastructure/database/constants";
 import {
     type IDataPurgeEventsPublisher,
     DataPurgeEventsPublisherToken,
-} from "@/modules/gdpr/services/interfaces/IDataPurgeEventsPublisher";
-import { type IDataPurgeScheduler } from "@/modules/gdpr/services/interfaces/IDataPurgeScheduler";
+} from "@/modules/privacy/services/interfaces/IDataPurgeEventsPublisher";
+import { type IDataPurgeScheduler } from "@/modules/privacy/services/interfaces/IDataPurgeScheduler";
 
 const DATA_RETENTION_PERIOD_IN_DAYS = 7;
 
@@ -19,13 +19,13 @@ export class DataPurgeScheduler implements IDataPurgeScheduler {
     private readonly logger = new Logger(DataPurgeScheduler.name);
 
     public constructor(
-        @InjectRepository(DataPurgePlanEntity, GDPR_MODULE_DATA_SOURCE)
+        @InjectRepository(DataPurgePlanEntity, PRIVACY_MODULE_DATA_SOURCE)
         private readonly repository: Repository<DataPurgePlanEntity>,
         @Inject(DataPurgeEventsPublisherToken)
         private readonly publisher: IDataPurgeEventsPublisher
     ) {}
 
-    @Transactional({ connectionName: GDPR_MODULE_DATA_SOURCE })
+    @Transactional({ connectionName: PRIVACY_MODULE_DATA_SOURCE })
     public async scheduleForTenant(tenantId: string): Promise<void> {
         const repository = this.getRepository();
         const existingPlan = await repository.findOne({
@@ -52,7 +52,7 @@ export class DataPurgeScheduler implements IDataPurgeScheduler {
         this.logger.log({ tenantId, planId: newPlan.id }, "Purge plan created.");
     }
 
-    @Transactional({ connectionName: GDPR_MODULE_DATA_SOURCE })
+    @Transactional({ connectionName: PRIVACY_MODULE_DATA_SOURCE })
     public async cancelForTenant(tenantId: string): Promise<void> {
         const repository = this.getRepository();
         const result = await repository.update({ tenantId, cancelledAt: IsNull(), processedAt: IsNull() }, { cancelledAt: new Date() });

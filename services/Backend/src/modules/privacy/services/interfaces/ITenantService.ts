@@ -1,4 +1,4 @@
-import { type Tenant } from "@/modules/gdpr/models/Tenant.model";
+import { type Tenant } from "@/modules/privacy/models/Tenant.model";
 
 export const TenantServiceToken = Symbol("TenantServiceToken");
 

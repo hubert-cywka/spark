@@ -1,9 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 
 import { IActionDeduplicator } from "@/common/services/interfaces/IActionDeduplicator";
 
 @Injectable()
 export class DeferredActionDeduplicator implements IActionDeduplicator {
+    private readonly logger = new Logger(DeferredActionDeduplicator.name);
     private readonly pendingCallbacks = new Set<string>();
 
     public run(id: string, callback: () => void | Promise<void>, time: number): boolean {
@@ -15,7 +16,12 @@ export class DeferredActionDeduplicator implements IActionDeduplicator {
 
         setTimeout(async () => {
             this.pendingCallbacks.delete(id);
-            await callback();
+
+            try {
+                await callback();
+            } catch (e) {
+                this.logger.error(e, "Error occurred when processing deferred action.");
+            }
         }, time);
 
         return true;

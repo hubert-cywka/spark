@@ -10,7 +10,7 @@ import {
     AccountRemovalScheduledEvent,
     AccountRemovalScheduledEventPayload,
 } from "@/common/events/types/account/AccountRemovalScheduledEvent";
-import { type IDataPurgeEventsPublisher } from "@/modules/gdpr/services/interfaces/IDataPurgeEventsPublisher";
+import { type IDataPurgeEventsPublisher } from "@/modules/privacy/services/interfaces/IDataPurgeEventsPublisher";
 
 @Injectable()
 export class DataPurgeEventsPublisher implements IDataPurgeEventsPublisher {

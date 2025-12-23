@@ -1,8 +1,8 @@
 import { createEventLabelFactory } from "@/common/events/types/createEventLabelFactory";
 
-const label = createEventLabelFactory("gdpr");
+const label = createEventLabelFactory("privacy");
 
-export const GDPR_EVENTS = {
+export const PRIVACY_EVENTS = {
     purge: {
         triggered: label("purge.triggered"),
     },

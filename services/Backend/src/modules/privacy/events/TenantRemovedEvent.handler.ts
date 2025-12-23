@@ -9,8 +9,8 @@ import {
 } from "@/common/events/services/interfaces/IEventsRemovalService";
 import { IntegrationEventSubject } from "@/common/events/types";
 import { type AccountRemovalCompletedEventPayload } from "@/common/events/types/account/AccountRemovalCompletedEvent";
-import { GDPR_MODULE_DATA_SOURCE } from "@/modules/gdpr/infrastructure/database/constants";
-import { type ITenantService, TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenantService";
+import { PRIVACY_MODULE_DATA_SOURCE } from "@/modules/privacy/infrastructure/database/constants";
+import { type ITenantService, TenantServiceToken } from "@/modules/privacy/services/interfaces/ITenantService";
 
 @Injectable()
 export class TenantRemovedEventHandler implements IInboxEventHandler {
@@ -27,7 +27,7 @@ export class TenantRemovedEventHandler implements IInboxEventHandler {
         return subject === IntegrationEvents.account.removal.completed.subject;
     }
 
-    @Transactional({ connectionName: GDPR_MODULE_DATA_SOURCE })
+    @Transactional({ connectionName: PRIVACY_MODULE_DATA_SOURCE })
     async handle(event: IntegrationEvent): Promise<void> {
         const payload = event.getPayload() as AccountRemovalCompletedEventPayload;
         await this.inboxRemovalService.removeByTenant(payload.account.id);
