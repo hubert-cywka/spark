@@ -6,13 +6,13 @@ import {
     type IEventsRemovalService,
     InboxEventsRemovalServiceToken,
     OutboxEventsRemovalServiceToken,
-} from "@/common/events/services/interfaces/IEventsRemoval.service";
+} from "@/common/events/services/interfaces/IEventsRemovalService";
 import { IntegrationEventSubject } from "@/common/events/types";
 import { type AccountRemovalCompletedEventPayload } from "@/common/events/types/account/AccountRemovalCompletedEvent";
 import {
     type IAccountRemovalService,
     AccountRemovalServiceToken,
-} from "@/modules/identity/account/services/interfaces/IAccountRemoval.service";
+} from "@/modules/identity/account/services/interfaces/IAccountRemovalService";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 
 @Injectable()

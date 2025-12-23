@@ -27,11 +27,11 @@ import { JobExecutionEntity } from "@/modules/scheduling/entities/JobExecution.e
 import { JobScheduleEntity } from "@/modules/scheduling/entities/JobScheduleEntity";
 import { IntervalJobScheduleUpdatedEventHandler } from "@/modules/scheduling/events/IntervalJobScheduleUpdatedEvent.handler";
 import { InitSchedulingModule1764101420518 } from "@/modules/scheduling/infrastructure/database/migrations/1764101420518-init-scheduling-module";
-import { JobExecutionsPurgeService } from "@/modules/scheduling/services/implementations/JobExecutionsPurge.service";
-import { JobScheduleConfigurationService } from "@/modules/scheduling/services/implementations/JobScheduleConfiguration.service";
+import { JobExecutionsPurgeService } from "@/modules/scheduling/services/implementations/JobExecutionsPurgeService";
+import { JobScheduleConfigurationService } from "@/modules/scheduling/services/implementations/JobScheduleConfigurationService";
 import { JobScheduler } from "@/modules/scheduling/services/implementations/JobScheduler";
-import { JobExecutionsPurgeServiceToken } from "@/modules/scheduling/services/interfaces/IJobExecutionsPurge.service";
-import { JobScheduleConfigurationServiceToken } from "@/modules/scheduling/services/interfaces/IJobScheduleConfiguration.service";
+import { JobExecutionsPurgeServiceToken } from "@/modules/scheduling/services/interfaces/IJobExecutionsPurgeService";
+import { JobScheduleConfigurationServiceToken } from "@/modules/scheduling/services/interfaces/IJobScheduleConfigurationService";
 import { JobSchedulerToken } from "@/modules/scheduling/services/interfaces/IJobScheduler";
 
 @Module({

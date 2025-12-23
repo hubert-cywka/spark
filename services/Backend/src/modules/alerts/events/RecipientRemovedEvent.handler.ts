@@ -6,11 +6,11 @@ import {
     type IEventsRemovalService,
     InboxEventsRemovalServiceToken,
     OutboxEventsRemovalServiceToken,
-} from "@/common/events/services/interfaces/IEventsRemoval.service";
+} from "@/common/events/services/interfaces/IEventsRemovalService";
 import { IntegrationEventSubject } from "@/common/events/types";
 import { type AccountRemovalCompletedEventPayload } from "@/common/events/types/account/AccountRemovalCompletedEvent";
 import { ALERTS_MODULE_DATA_SOURCE } from "@/modules/alerts/infrastructure/database/constants";
-import { type IRecipientService, RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRecipient.service";
+import { type IRecipientService, RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRecipientService";
 
 @Injectable()
 export class RecipientRemovedEventHandler implements IInboxEventHandler {

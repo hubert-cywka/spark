@@ -9,7 +9,7 @@ import { CreateAlertDto } from "@/modules/alerts/dto/CreateAlert.dto";
 import { UpdateAlertStatusDto } from "@/modules/alerts/dto/UpdateAlertStatus.dto";
 import { UpdateAlertTimeDto } from "@/modules/alerts/dto/UpdateAlertTime.dto";
 import { type IAlertMapper, AlertMapperToken } from "@/modules/alerts/mappers/IAlert.mapper";
-import { type IAlertService, AlertServiceToken } from "@/modules/alerts/services/interfaces/IAlert.service";
+import { type IAlertService, AlertServiceToken } from "@/modules/alerts/services/interfaces/IAlertService";
 import { type User } from "@/types/User";
 
 @Controller("alert")

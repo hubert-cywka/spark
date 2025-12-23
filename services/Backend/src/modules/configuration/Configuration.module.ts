@@ -30,14 +30,14 @@ import { FeatureFlagMapper } from "@/modules/configuration/mappers/FeatureFlag.m
 import { FeatureFlagMapperToken } from "@/modules/configuration/mappers/IFeatureFlag.mapper";
 import { TenantMapperToken } from "@/modules/configuration/mappers/ITenant.mapper";
 import { TenantMapper } from "@/modules/configuration/mappers/Tenant.mapper";
-import { FeatureFlagService } from "@/modules/configuration/services/implementations/FeatureFlag.service";
+import { FeatureFlagService } from "@/modules/configuration/services/implementations/FeatureFlagService";
 import { FeatureFlagsProvider } from "@/modules/configuration/services/implementations/FeatureFlagsProvider";
 import { FeatureFlagsStore } from "@/modules/configuration/services/implementations/FeatureFlagsStore";
-import { TenantService } from "@/modules/configuration/services/implementations/Tenant.service";
-import { FeatureFlagServiceToken } from "@/modules/configuration/services/interfaces/IFeatureFlag.service";
+import { TenantService } from "@/modules/configuration/services/implementations/TenantService";
+import { FeatureFlagServiceToken } from "@/modules/configuration/services/interfaces/IFeatureFlagService";
 import { FeatureFlagsProviderToken } from "@/modules/configuration/services/interfaces/IFeatureFlagsProvider";
 import { FeatureFlagsStoreToken } from "@/modules/configuration/services/interfaces/IFeatureFlagsStore";
-import { TenantServiceToken } from "@/modules/configuration/services/interfaces/ITenant.service";
+import { TenantServiceToken } from "@/modules/configuration/services/interfaces/ITenantService";
 import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
 import {
     type IHealthCheckProbesRegistry,

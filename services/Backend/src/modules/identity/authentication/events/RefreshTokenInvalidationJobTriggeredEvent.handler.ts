@@ -5,7 +5,7 @@ import { IntegrationEventSubject } from "@/common/events/types";
 import {
     type IRefreshTokenService,
     RefreshTokenServiceToken,
-} from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
+} from "@/modules/identity/authentication/services/interfaces/IRefreshTokenService";
 
 @Injectable()
 export class RefreshTokenInvalidationJobTriggeredEventHandler implements IInboxEventHandler {

@@ -11,7 +11,7 @@ import {
     type IEventsRemovalService,
     InboxEventsRemovalServiceToken,
     OutboxEventsRemovalServiceToken,
-} from "@/common/events/services/interfaces/IEventsRemoval.service";
+} from "@/common/events/services/interfaces/IEventsRemovalService";
 import { type IIntegrationEventsJobsOrchestrator } from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
 
 export class IntegrationEventsJobsOrchestrator implements IIntegrationEventsJobsOrchestrator {

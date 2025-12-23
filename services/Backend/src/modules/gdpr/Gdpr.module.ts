@@ -36,14 +36,14 @@ import { RegenerateMigrations1749289951431 } from "@/modules/gdpr/infrastructure
 import { AddTimestamps1752925879790 } from "@/modules/gdpr/infrastructure/database/migrations/1752925879790-AddTimestamps";
 import { TenantMapperToken } from "@/modules/gdpr/mappers/ITenant.mapper";
 import { TenantMapper } from "@/modules/gdpr/mappers/Tenant.mapper";
-import { DataPurgeEventsPublisher } from "@/modules/gdpr/services/implementations/DataPurgeEventsPublisher.service";
-import { DataPurgeProcessor } from "@/modules/gdpr/services/implementations/DataPurgeProcessor.service";
-import { DataPurgeScheduler } from "@/modules/gdpr/services/implementations/DataPurgeScheduler.service";
-import { TenantService } from "@/modules/gdpr/services/implementations/Tenant.service";
-import { DataPurgeEventsPublisherToken } from "@/modules/gdpr/services/interfaces/IDataPurgeEventsPublisher.service";
-import { DataPurgeProcessorToken } from "@/modules/gdpr/services/interfaces/IDataPurgeProcessor.service";
-import { DataPurgeSchedulerToken } from "@/modules/gdpr/services/interfaces/IDataPurgeScheduler.service";
-import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.service";
+import { DataPurgeEventsPublisher } from "@/modules/gdpr/services/implementations/DataPurgeEventsPublisher";
+import { DataPurgeProcessor } from "@/modules/gdpr/services/implementations/DataPurgeProcessor";
+import { DataPurgeScheduler } from "@/modules/gdpr/services/implementations/DataPurgeScheduler";
+import { TenantService } from "@/modules/gdpr/services/implementations/TenantService";
+import { DataPurgeEventsPublisherToken } from "@/modules/gdpr/services/interfaces/IDataPurgeEventsPublisher";
+import { DataPurgeProcessorToken } from "@/modules/gdpr/services/interfaces/IDataPurgeProcessor";
+import { DataPurgeSchedulerToken } from "@/modules/gdpr/services/interfaces/IDataPurgeScheduler";
+import { TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenantService";
 import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
 import {
     type IHealthCheckProbesRegistry,

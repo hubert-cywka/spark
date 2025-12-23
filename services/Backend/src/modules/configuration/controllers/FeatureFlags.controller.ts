@@ -3,7 +3,7 @@ import { Body, Controller, Delete, Get, Inject, Param, ParseUUIDPipe, Post, Quer
 import { GetFeatureFlagsDto } from "@/modules/configuration/dto/GetFeatureFlags.dto";
 import { SetFeatureFlagDto } from "@/modules/configuration/dto/SetFeatureFlag.dto";
 import { type IFeatureFlagMapper, FeatureFlagMapperToken } from "@/modules/configuration/mappers/IFeatureFlag.mapper";
-import { type IFeatureFlagService, FeatureFlagServiceToken } from "@/modules/configuration/services/interfaces/IFeatureFlag.service";
+import { type IFeatureFlagService, FeatureFlagServiceToken } from "@/modules/configuration/services/interfaces/IFeatureFlagService";
 
 @Controller("internal/configuration/feature-flag")
 export class FeatureFlagsController {

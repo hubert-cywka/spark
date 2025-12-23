@@ -7,28 +7,27 @@ import { initializeTransactionalContext, runInTransaction } from "typeorm-transa
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import {
+    type IEventInbox,
+    type IEventPublisher,
     EventInboxToken,
     EventPublisherToken,
-    IEventInbox,
-    IEventPublisher,
     IntegrationEvent,
     IntegrationEventsModule,
 } from "@/common/events";
 import { EventAdminToken, IEventAdmin } from "@/common/events/drivers/interfaces/IEventAdmin";
-import { EventProducerToken, IEventProducer } from "@/common/events/drivers/interfaces/IEventProducer";
 import { IInboxEventRepository, InboxEventRepositoryToken } from "@/common/events/repositories/interfaces/IInboxEvent.repository";
 import {
-    IInboxPartitionRepository,
+    type IInboxPartitionRepository,
     InboxPartitionRepositoryToken,
 } from "@/common/events/repositories/interfaces/IInboxPartition.repository";
-import { IOutboxEventRepository, OutboxEventRepositoryToken } from "@/common/events/repositories/interfaces/IOutboxEvent.repository";
+import { type IOutboxEventRepository, OutboxEventRepositoryToken } from "@/common/events/repositories/interfaces/IOutboxEvent.repository";
 import {
-    IOutboxPartitionRepository,
+    type IOutboxPartitionRepository,
     OutboxPartitionRepositoryToken,
 } from "@/common/events/repositories/interfaces/IOutboxPartition.repository";
-import { EventInboxProcessorToken, IEventInboxProcessor } from "@/common/events/services/interfaces/IEventInboxProcessor";
-import { EventOutboxToken, IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
-import { EventOutboxProcessorToken, IEventOutboxProcessor } from "@/common/events/services/interfaces/IEventOutboxProcessor";
+import { type IEventInboxProcessor, EventInboxProcessorToken } from "@/common/events/services/interfaces/IEventInboxProcessor";
+import { type IEventOutbox, EventOutboxToken } from "@/common/events/services/interfaces/IEventOutbox";
+import { type IEventOutboxProcessor, EventOutboxProcessorToken } from "@/common/events/services/interfaces/IEventOutboxProcessor";
 import { generateEvents } from "@/common/events/tests/utils/generateEvents";
 import { groupEventsByPartitionKey } from "@/common/events/tests/utils/groupEventsByPartitionKey";
 import { seedPartitions } from "@/common/events/tests/utils/seedPartitions";
@@ -290,7 +289,7 @@ describe("IntegrationEventsModule", () => {
     describe("OutboxProcessor", () => {
         const setup = () => {
             const admin = app.get<IEventAdmin>(EventAdminToken);
-            const producer = app.get<IEventProducer>(EventProducerToken);
+            const publisher = app.get<IEventPublisher>(EventPublisherToken);
             const outbox = app.get<IEventOutbox>(EventOutboxToken);
             const processor = app.get<IEventOutboxProcessor>(EventOutboxProcessorToken);
             const eventRepository = app.get<IOutboxEventRepository>(OutboxEventRepositoryToken);
@@ -300,7 +299,7 @@ describe("IntegrationEventsModule", () => {
                 eventRepository,
                 partitionRepository,
                 processor,
-                producer,
+                publisher,
                 admin,
             };
         };
@@ -359,10 +358,10 @@ describe("IntegrationEventsModule", () => {
         });
 
         it("should maintain order of events when processing in parallel", async () => {
-            const { processor, producer } = setup();
+            const { processor, publisher } = setup();
 
             const eventsInProcessingOrder: IntegrationEvent[] = [];
-            jest.spyOn(producer, "publishBatch").mockImplementation(async (events) => {
+            jest.spyOn(publisher, "publishMany").mockImplementation(async (events) => {
                 eventsInProcessingOrder.push(...events);
                 return { ack: true };
             });
@@ -398,13 +397,13 @@ describe("IntegrationEventsModule", () => {
         });
 
         it("should stop whole processing on first failure", async () => {
-            const { processor, eventRepository, producer } = setup();
+            const { processor, eventRepository, publisher } = setup();
             const { seededEventsCount } = await seedData({
                 numOfTenants: 10,
                 eventsPerTenant: 10,
             });
 
-            jest.spyOn(producer, "publishBatch").mockImplementationOnce(async () => {
+            jest.spyOn(publisher, "publishMany").mockImplementationOnce(async () => {
                 throw new Error();
             });
 
@@ -417,7 +416,7 @@ describe("IntegrationEventsModule", () => {
         });
 
         it("should recover after failure and process remaining messages on next iteration", async () => {
-            const { processor, eventRepository, producer } = setup();
+            const { processor, eventRepository, publisher } = setup();
             const { seededEventsCount } = await seedData({
                 numOfTenants: 10,
                 eventsPerTenant: 10,
@@ -425,7 +424,7 @@ describe("IntegrationEventsModule", () => {
 
             let processedMessagesCounter = 0;
             const consecutiveAttemptToFail = 16;
-            jest.spyOn(producer, "publishBatch").mockImplementation(async () => {
+            jest.spyOn(publisher, "publishMany").mockImplementation(async () => {
                 if (processedMessagesCounter === consecutiveAttemptToFail) {
                     throw new Error();
                 }

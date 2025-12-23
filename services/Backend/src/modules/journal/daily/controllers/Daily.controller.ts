@@ -27,19 +27,19 @@ import { FindDailyFiltersDto } from "@/modules/journal/daily/dto/FindDailyFilter
 import { FindDailyMetricsDto } from "@/modules/journal/daily/dto/FindDailyMetrics.dto";
 import { UpdateDailyDateDto } from "@/modules/journal/daily/dto/UpdateDailyDate.dto";
 import { type IDailyMapper, DailyMapperToken } from "@/modules/journal/daily/mappers/IDaily.mapper";
-import { type IDailyService, DailyServiceToken } from "@/modules/journal/daily/services/interfaces/IDaily.service";
 import {
     type IDailyInsightsProvider,
     DailyInsightsProviderToken,
-} from "@/modules/journal/daily/services/interfaces/IDailyInsightsProvider.service";
-import { type IDailyProviderService, DailyProviderServiceToken } from "@/modules/journal/daily/services/interfaces/IDailyProvider.service";
+} from "@/modules/journal/daily/services/interfaces/IDailyInsightsProvider";
+import { type IDailyProvider, DailyProviderToken } from "@/modules/journal/daily/services/interfaces/IDailyProvider";
+import { type IDailyService, DailyServiceToken } from "@/modules/journal/daily/services/interfaces/IDailyService";
 import { type User } from "@/types/User";
 
 @Controller("daily")
 export class DailyController {
     public constructor(
         @Inject(DailyServiceToken) private readonly dailyService: IDailyService,
-        @Inject(DailyProviderServiceToken) private readonly dailyProvider: IDailyProviderService,
+        @Inject(DailyProviderToken) private readonly dailyProvider: IDailyProvider,
         @Inject(DailyInsightsProviderToken)
         private readonly insightsService: IDailyInsightsProvider,
         @Inject(DailyMapperToken) private readonly dailyMapper: IDailyMapper

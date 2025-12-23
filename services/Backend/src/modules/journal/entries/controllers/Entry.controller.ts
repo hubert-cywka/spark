@@ -16,8 +16,8 @@ import { type IEntryDetailMapper, EntryDetailMapperToken } from "@/modules/journ
 import {
     type IEntriesInsightsProvider,
     EntriesInsightsProviderToken,
-} from "@/modules/journal/entries/services/interfaces/IEntriesInsightsProvider.service";
-import { type IEntryService, EntryServiceToken } from "@/modules/journal/entries/services/interfaces/IEntry.service";
+} from "@/modules/journal/entries/services/interfaces/IEntriesInsightsProvider";
+import { type IEntryService, EntryServiceToken } from "@/modules/journal/entries/services/interfaces/IEntryService";
 import { type User } from "@/types/User";
 
 @Controller("entry")

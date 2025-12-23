@@ -5,7 +5,7 @@ import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
-import { type IDomainVerifierService, DomainVerifierServiceToken } from "@/common/services/interfaces/IDomainVerifier.service";
+import { type IDomainVerifier, DomainVerifierToken } from "@/common/services/interfaces/IDomainVerifier";
 import { RedeemActivationTokenDto } from "@/modules/identity/account/dto/RedeemActivationToken.dto";
 import { RequestActivationTokenDto } from "@/modules/identity/account/dto/RequestActivationToken.dto";
 import { RequestPasswordResetDto } from "@/modules/identity/account/dto/RequestPasswordReset.dto";
@@ -13,7 +13,7 @@ import { UpdatePasswordDto } from "@/modules/identity/account/dto/UpdatePassword
 import {
     type IManagedAccountService,
     ManagedAccountServiceToken,
-} from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
+} from "@/modules/identity/account/services/interfaces/IManagedAccountService";
 import { UntrustedDomainError } from "@/modules/identity/authentication/errors/UntrustedDomain.error";
 import { IDENTITY_MODULE_DEFAULT_RATE_LIMITING, IDENTITY_MODULE_STRICT_RATE_LIMITING } from "@/modules/identity/shared/constants";
 
@@ -23,8 +23,8 @@ export class AccountController {
     constructor(
         @Inject(ManagedAccountServiceToken)
         private accountService: IManagedAccountService,
-        @Inject(DomainVerifierServiceToken)
-        private readonly domainVerifier: IDomainVerifierService
+        @Inject(DomainVerifierToken)
+        private readonly domainVerifier: IDomainVerifier
     ) {}
 
     @HttpCode(HttpStatus.CREATED)

@@ -8,7 +8,7 @@ import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
-import { type IDomainVerifierService, DomainVerifierServiceToken } from "@/common/services/interfaces/IDomainVerifier.service";
+import { type IDomainVerifier, DomainVerifierToken } from "@/common/services/interfaces/IDomainVerifier";
 import { REFRESH_TOKEN_COOKIE_NAME } from "@/modules/identity/authentication/constants";
 import { LoginDto } from "@/modules/identity/authentication/dto/incoming/Login.dto";
 import { LogoutDto } from "@/modules/identity/authentication/dto/incoming/Logout.dto";
@@ -18,7 +18,7 @@ import { type IAuthenticationMapper, AuthenticationMapperToken } from "@/modules
 import {
     type IAuthenticationService,
     AuthenticationServiceToken,
-} from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
+} from "@/modules/identity/authentication/services/interfaces/IAuthenticationService";
 import {
     type IRefreshTokenCookieStrategy,
     RefreshTokenCookieStrategyToken,
@@ -31,8 +31,8 @@ export class AuthenticationController {
     private readonly refreshTokenCookieMaxAge: number;
 
     public constructor(
-        @Inject(DomainVerifierServiceToken)
-        private readonly domainVerifier: IDomainVerifierService,
+        @Inject(DomainVerifierToken)
+        private readonly domainVerifier: IDomainVerifier,
         @Inject(AuthenticationServiceToken)
         private readonly authService: IAuthenticationService,
         @Inject(AuthenticationMapperToken)

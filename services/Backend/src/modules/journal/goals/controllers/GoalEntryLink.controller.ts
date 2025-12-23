@@ -6,7 +6,7 @@ import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
 import { AccessGuard } from "@/common/guards/Access.guard";
 import { LinkEntryWithGoalDto } from "@/modules/journal/goals/dto/LinkEntryWithGoal.dto";
-import { type IGoalEntryLinkService, GoalEntryLinkServiceToken } from "@/modules/journal/goals/services/interfaces/IGoalEntryLink.service";
+import { type IGoalEntryLinkService, GoalEntryLinkServiceToken } from "@/modules/journal/goals/services/interfaces/IGoalEntryLinkService";
 import { type User } from "@/types/User";
 
 @Controller("goal/:goalId/entry")

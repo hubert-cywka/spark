@@ -25,7 +25,7 @@ import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
-import { type IDomainVerifierService, DomainVerifierServiceToken } from "@/common/services/interfaces/IDomainVerifier.service";
+import { type IDomainVerifier, DomainVerifierToken } from "@/common/services/interfaces/IDomainVerifier";
 import {
     OIDC_CODE_VERIFIER_COOKIE_NAME,
     OIDC_EXTERNAL_IDENTITY,
@@ -39,7 +39,7 @@ import { type IAuthenticationMapper, AuthenticationMapperToken } from "@/modules
 import {
     type IAuthenticationService,
     AuthenticationServiceToken,
-} from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
+} from "@/modules/identity/authentication/services/interfaces/IAuthenticationService";
 import {
     type IOIDCProviderFactory,
     OIDCProviderFactoryToken,
@@ -59,8 +59,8 @@ export class OpenIDConnectController {
     private readonly oidcCookieMaxAge: number;
 
     public constructor(
-        @Inject(DomainVerifierServiceToken)
-        private readonly domainVerifier: IDomainVerifierService,
+        @Inject(DomainVerifierToken)
+        private readonly domainVerifier: IDomainVerifier,
         @Inject(OIDCProviderFactoryToken)
         private readonly oidcProviderFactory: IOIDCProviderFactory,
         @Inject(AuthenticationMapperToken)

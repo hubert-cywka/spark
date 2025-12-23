@@ -6,11 +6,11 @@ import {
     type IEventsRemovalService,
     InboxEventsRemovalServiceToken,
     OutboxEventsRemovalServiceToken,
-} from "@/common/events/services/interfaces/IEventsRemoval.service";
+} from "@/common/events/services/interfaces/IEventsRemovalService";
 import { IntegrationEventSubject } from "@/common/events/types";
 import { type AccountRemovalCompletedEventPayload } from "@/common/events/types/account/AccountRemovalCompletedEvent";
 import { GDPR_MODULE_DATA_SOURCE } from "@/modules/gdpr/infrastructure/database/constants";
-import { type ITenantService, TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenant.service";
+import { type ITenantService, TenantServiceToken } from "@/modules/gdpr/services/interfaces/ITenantService";
 
 @Injectable()
 export class TenantRemovedEventHandler implements IInboxEventHandler {

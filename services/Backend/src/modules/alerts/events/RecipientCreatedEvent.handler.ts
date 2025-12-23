@@ -2,7 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 
 import { AccountCreatedEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEvents } from "@/common/events";
 import { IntegrationEventSubject } from "@/common/events/types";
-import { type IRecipientService, RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRecipient.service";
+import { type IRecipientService, RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRecipientService";
 
 @Injectable()
 export class RecipientCreatedEventHandler implements IInboxEventHandler {

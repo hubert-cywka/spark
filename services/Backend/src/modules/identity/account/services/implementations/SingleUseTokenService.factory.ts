@@ -4,10 +4,10 @@ import { Repository } from "typeorm";
 
 import { SingleUseTokenEntity } from "@/modules/identity/account/entities/SingleUseTokenEntity";
 import { VariantNotSupportedError } from "@/modules/identity/account/errors/VariantNotSupported.error";
-import { AccountActivationTokenService } from "@/modules/identity/account/services/implementations/AccountActivationToken.service";
-import { PasswordResetTokenService } from "@/modules/identity/account/services/implementations/PasswordResetToken.service";
+import { AccountActivationTokenService } from "@/modules/identity/account/services/implementations/AccountActivationTokenService";
+import { PasswordResetTokenService } from "@/modules/identity/account/services/implementations/PasswordResetTokenService";
 import { type ISingleUseTokenServiceFactory } from "@/modules/identity/account/services/interfaces/ISingelUseTokenService.factory";
-import { type ISingleUseTokenService } from "@/modules/identity/account/services/interfaces/ISingleUseToken.service";
+import { type ISingleUseTokenService } from "@/modules/identity/account/services/interfaces/ISingleUseTokenService";
 import { type SingleUseTokenType } from "@/modules/identity/account/types/SingleUseToken";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 

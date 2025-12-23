@@ -6,7 +6,7 @@ import { AccountSuspendedEventPayload } from "@/common/events/types/account/Acco
 import {
     type IRefreshTokenService,
     RefreshTokenServiceToken,
-} from "@/modules/identity/authentication/services/interfaces/IRefreshToken.service";
+} from "@/modules/identity/authentication/services/interfaces/IRefreshTokenService";
 
 @Injectable()
 export class AccountSuspendedEventHandler implements IInboxEventHandler {

@@ -5,15 +5,15 @@ import { Repository } from "typeorm";
 
 import { TwoFactorAuthenticationIntegrationEntity } from "@/modules/identity/2fa/entities/TwoFactorAuthenticationIntegration.entity";
 import { IntegrationMethodNotSupportedError } from "@/modules/identity/2fa/errors/IntegrationMethodNotSupported.error";
-import { App2FAIntegrationService } from "@/modules/identity/2fa/services/implementations/App2FAIntegration.service";
-import { Email2FAIntegrationService } from "@/modules/identity/2fa/services/implementations/Email2FAIntegration.service";
-import { type ITOTPSecretsManager, TOTPSecretsManagerToken } from "@/modules/identity/2fa/services/interfaces/ITOTPSecretsManager.service";
+import { App2FAIntegrationService } from "@/modules/identity/2fa/services/implementations/App2FAIntegrationService";
+import { Email2FAIntegrationService } from "@/modules/identity/2fa/services/implementations/Email2FAIntegrationService";
+import { type ITOTPSecretsManager, TOTPSecretsManagerToken } from "@/modules/identity/2fa/services/interfaces/ITOTPSecretsManager";
 import { type ITwoFactorAuthenticationFactory } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthentication.factory";
 import {
     type ITwoFactorAuthenticationEventsPublisher,
     TwoFactorAuthenticationEventsPublisherToken,
-} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationEventsPublisher.service";
-import { type ITwoFactorAuthenticationIntegrationService } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationIntegration.service";
+} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationEventsPublisher";
+import { type ITwoFactorAuthenticationIntegrationService } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationIntegrationService";
 import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 

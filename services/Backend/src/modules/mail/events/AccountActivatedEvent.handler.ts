@@ -2,8 +2,8 @@ import { Inject, Injectable } from "@nestjs/common";
 
 import { AccountActivatedEventPayload, IInboxEventHandler, IntegrationEvent, IntegrationEvents } from "@/common/events";
 import { IntegrationEventSubject } from "@/common/events/types";
-import { type IMailSender, MailSenderToken } from "@/modules/mail/services/interfaces/IMailSender.service";
-import { type IRecipientService, RecipientServiceToken } from "@/modules/mail/services/interfaces/IRecipient.service";
+import { type IMailSender, MailSenderToken } from "@/modules/mail/services/interfaces/IMailSender";
+import { type IRecipientService, RecipientServiceToken } from "@/modules/mail/services/interfaces/IRecipientService";
 import { type IEmailTemplateFactory, EmailTemplateFactoryToken } from "@/modules/mail/templates/IEmailTemplate.factory";
 
 @Injectable()

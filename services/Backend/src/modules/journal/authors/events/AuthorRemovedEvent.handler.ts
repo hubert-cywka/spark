@@ -6,10 +6,10 @@ import {
     type IEventsRemovalService,
     InboxEventsRemovalServiceToken,
     OutboxEventsRemovalServiceToken,
-} from "@/common/events/services/interfaces/IEventsRemoval.service";
+} from "@/common/events/services/interfaces/IEventsRemovalService";
 import { IntegrationEventSubject } from "@/common/events/types";
 import { type AccountRemovalCompletedEventPayload } from "@/common/events/types/account/AccountRemovalCompletedEvent";
-import { type IAuthorService, AuthorServiceToken } from "@/modules/journal/authors/services/interfaces/IAuthor.service";
+import { type IAuthorService, AuthorServiceToken } from "@/modules/journal/authors/services/interfaces/IAuthorService";
 import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
 
 @Injectable()

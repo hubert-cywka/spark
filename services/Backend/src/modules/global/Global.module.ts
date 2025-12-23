@@ -1,22 +1,22 @@
 import { Global, Module } from "@nestjs/common";
 
-import { DomainVerifierService } from "@/common/services/implementations/DomainVerifier.service";
-import { Throttler } from "@/common/services/implementations/Throttler";
-import { DomainVerifierServiceToken } from "@/common/services/interfaces/IDomainVerifier.service";
-import { ThrottlerToken } from "@/common/services/interfaces/IThrottler";
+import { DeferredActionDeduplicator } from "@/common/services/implementations/DeferredActionDeduplicator";
+import { DomainVerifier } from "@/common/services/implementations/DomainVerifier";
+import { ActionDeduplicatorToken } from "@/common/services/interfaces/IActionDeduplicator";
+import { DomainVerifierToken } from "@/common/services/interfaces/IDomainVerifier";
 
 @Global()
 @Module({
     providers: [
         {
-            provide: DomainVerifierServiceToken,
-            useClass: DomainVerifierService,
+            provide: DomainVerifierToken,
+            useClass: DomainVerifier,
         },
         {
-            provide: ThrottlerToken,
-            useClass: Throttler,
+            provide: ActionDeduplicatorToken,
+            useClass: DeferredActionDeduplicator,
         },
     ],
-    exports: [DomainVerifierServiceToken, ThrottlerToken],
+    exports: [DomainVerifierToken, ActionDeduplicatorToken],
 })
 export class GlobalModule {}

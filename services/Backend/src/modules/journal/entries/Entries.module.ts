@@ -7,10 +7,10 @@ import { EntryMapper } from "@/modules/journal/entries/mappers/Entry.mapper";
 import { EntryDetailMapper } from "@/modules/journal/entries/mappers/EntryDetail.mapper";
 import { EntryMapperToken } from "@/modules/journal/entries/mappers/IEntry.mapper";
 import { EntryDetailMapperToken } from "@/modules/journal/entries/mappers/IEntryDetail.mapper";
-import { EntriesInsightsProvider } from "@/modules/journal/entries/services/implementations/EntriesInsightsProvider.service";
-import { EntryService } from "@/modules/journal/entries/services/implementations/Entry.service";
-import { EntriesInsightsProviderToken } from "@/modules/journal/entries/services/interfaces/IEntriesInsightsProvider.service";
-import { EntryServiceToken } from "@/modules/journal/entries/services/interfaces/IEntry.service";
+import { EntriesInsightsProvider } from "@/modules/journal/entries/services/implementations/EntriesInsightsProvider";
+import { EntryService } from "@/modules/journal/entries/services/implementations/EntryService";
+import { EntriesInsightsProviderToken } from "@/modules/journal/entries/services/interfaces/IEntriesInsightsProvider";
+import { EntryServiceToken } from "@/modules/journal/entries/services/interfaces/IEntryService";
 import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.module";
 
 @Module({

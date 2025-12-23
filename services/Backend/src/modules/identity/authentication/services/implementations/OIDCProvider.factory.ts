@@ -2,9 +2,9 @@ import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { UnsupportedOIDCProviderError } from "@/modules/identity/authentication/errors/UnsupportedOIDCProvider.error";
-import { GoogleOIDCProvider } from "@/modules/identity/authentication/services/implementations/GoogleOIDCProvider.service";
+import { GoogleOIDCProvider } from "@/modules/identity/authentication/services/implementations/GoogleOIDCProvider";
+import { type IOIDCProvider } from "@/modules/identity/authentication/services/interfaces/IOIDCProvider";
 import { type IOIDCProviderFactory } from "@/modules/identity/authentication/services/interfaces/IOIDCProvider.factory";
-import { type IOIDCProvider } from "@/modules/identity/authentication/services/interfaces/IOIDCProvider.service";
 import { FederatedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
 
 @Injectable()

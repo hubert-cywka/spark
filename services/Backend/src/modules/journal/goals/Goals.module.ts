@@ -4,10 +4,10 @@ import { GoalController } from "@/modules/journal/goals/controllers/Goal.control
 import { GoalEntryLinkController } from "@/modules/journal/goals/controllers/GoalEntryLink.controller";
 import { GoalMapper } from "@/modules/journal/goals/mappers/Goal.mapper";
 import { GoalMapperToken } from "@/modules/journal/goals/mappers/IGoal.mapper";
-import { GoalService } from "@/modules/journal/goals/services/implementations/Goal.service";
-import { GoalEntryLinkService } from "@/modules/journal/goals/services/implementations/GoalEntryLink.service";
-import { GoalServiceToken } from "@/modules/journal/goals/services/interfaces/IGoal.service";
-import { GoalEntryLinkServiceToken } from "@/modules/journal/goals/services/interfaces/IGoalEntryLink.service";
+import { GoalEntryLinkService } from "@/modules/journal/goals/services/implementations/GoalEntryLinkService";
+import { GoalService } from "@/modules/journal/goals/services/implementations/GoalService";
+import { GoalEntryLinkServiceToken } from "@/modules/journal/goals/services/interfaces/IGoalEntryLinkService";
+import { GoalServiceToken } from "@/modules/journal/goals/services/interfaces/IGoalService";
 import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.module";
 
 @Module({
