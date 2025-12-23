@@ -14,7 +14,7 @@ import { type IEventInboxProcessor } from "@/common/events/services/interfaces/I
 import { type IIntegrationEventsEncryptionService } from "@/common/events/services/interfaces/IIntegrationEventsEncryptionService";
 import { IPartitionAssigner } from "@/common/events/services/interfaces/IPartitionAssigner";
 import { RetryBackoffPolicy } from "@/common/retry/RetryBackoffPolicy";
-import { IThrottler } from "@/common/services/interfaces/IThrottler";
+import { IActionDeduplicator } from "@/common/services/interfaces/IActionDeduplicator";
 
 export interface EventInboxProcessorOptions {
     retryPolicy: RetryBackoffPolicy;
@@ -30,7 +30,7 @@ const DEFAULT_MAX_BATCH_SIZE = 5;
 const DEFAULT_MAX_ATTEMPTS = 7;
 const DEFAULT_STALE_PARTITION_THRESHOLD_MILLISECONDS = 30_000;
 
-const INVALIDATION_THROTTLE_TIME = 300;
+const INVALIDATION_DEDUPLICATION_PERIOD = 300;
 
 export class EventInboxProcessor implements IEventInboxProcessor {
     private readonly logger: Logger;
@@ -48,7 +48,7 @@ export class EventInboxProcessor implements IEventInboxProcessor {
         private readonly partitionsRepository: IInboxPartitionRepository,
         private readonly partitionAssigner: IPartitionAssigner,
         private readonly encryptionService: IIntegrationEventsEncryptionService,
-        private readonly throttler: IThrottler,
+        private readonly actionDeduplicator: IActionDeduplicator,
         options: EventInboxProcessorOptions
     ) {
         this.logger = new Logger(options.context);
@@ -63,10 +63,10 @@ export class EventInboxProcessor implements IEventInboxProcessor {
 
     public notifyOnEnqueued(event: IntegrationEvent): void {
         const partition = this.partitionAssigner.assign(event.getPartitionKey());
-        this.throttler.throttle(
+        this.actionDeduplicator.run(
             `invalidate_inbox_partition_${partition}`,
             () => this.prioritizePartition(partition),
-            INVALIDATION_THROTTLE_TIME
+            INVALIDATION_DEDUPLICATION_PERIOD
         );
     }
 

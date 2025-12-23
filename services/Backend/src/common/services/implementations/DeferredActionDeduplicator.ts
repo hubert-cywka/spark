@@ -1,21 +1,21 @@
 import { Injectable } from "@nestjs/common";
 
-import { IThrottler } from "@/common/services/interfaces/IThrottler";
+import { IActionDeduplicator } from "@/common/services/interfaces/IActionDeduplicator";
 
 @Injectable()
-export class Throttler implements IThrottler {
+export class DeferredActionDeduplicator implements IActionDeduplicator {
     private readonly pendingCallbacks = new Set<string>();
 
-    public throttle(id: string, callback: () => void, time: number): boolean {
+    public run(id: string, callback: () => void | Promise<void>, time: number): boolean {
         if (this.pendingCallbacks.has(id)) {
             return false;
         }
 
         this.pendingCallbacks.add(id);
 
-        setTimeout(() => {
-            callback();
+        setTimeout(async () => {
             this.pendingCallbacks.delete(id);
+            await callback();
         }, time);
 
         return true;

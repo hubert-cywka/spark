@@ -10,13 +10,13 @@ import { type IOutboxEventRepository } from "@/common/events/repositories/interf
 import { type IOutboxPartitionRepository } from "@/common/events/repositories/interfaces/IOutboxPartition.repository";
 import { type IEventOutboxProcessor } from "@/common/events/services/interfaces/IEventOutboxProcessor";
 import { type IPartitionAssigner } from "@/common/events/services/interfaces/IPartitionAssigner";
-import { IThrottler } from "@/common/services/interfaces/IThrottler";
+import { IActionDeduplicator } from "@/common/services/interfaces/IActionDeduplicator";
 
 const DEFAULT_MAX_BATCH_SIZE = 1000;
 const DEFAULT_MAX_ATTEMPTS = 10_000;
 const DEFAULT_STALE_PARTITION_THRESHOLD_MILLISECONDS = 30_000;
 
-const INVALIDATION_THROTTLE_TIME = 300;
+const INVALIDATION_DEDUPLICATION_PERIOD = 300;
 
 export interface EventOutboxProcessorOptions {
     connectionName: string;
@@ -39,7 +39,7 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
         private readonly eventsRepository: IOutboxEventRepository,
         private readonly partitionsRepository: IOutboxPartitionRepository,
         private readonly partitionAssigner: IPartitionAssigner,
-        private readonly throttler: IThrottler,
+        private readonly actionDeduplicator: IActionDeduplicator,
         options: EventOutboxProcessorOptions
     ) {
         this.logger = new Logger(options.context);
@@ -52,10 +52,10 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
 
     public notifyOnEnqueued(event: IntegrationEvent): void {
         const partition = this.partitionAssigner.assign(event.getPartitionKey());
-        this.throttler.throttle(
+        this.actionDeduplicator.run(
             `invalidate_outbox_partition_${partition}`,
             () => this.prioritizePartition(partition),
-            INVALIDATION_THROTTLE_TIME
+            INVALIDATION_DEDUPLICATION_PERIOD
         );
     }
 

@@ -1,9 +1,9 @@
 import { Global, Module } from "@nestjs/common";
 
+import { DeferredActionDeduplicator } from "@/common/services/implementations/DeferredActionDeduplicator";
 import { DomainVerifier } from "@/common/services/implementations/DomainVerifier";
-import { Throttler } from "@/common/services/implementations/Throttler";
+import { ActionDeduplicatorToken } from "@/common/services/interfaces/IActionDeduplicator";
 import { DomainVerifierToken } from "@/common/services/interfaces/IDomainVerifier";
-import { ThrottlerToken } from "@/common/services/interfaces/IThrottler";
 
 @Global()
 @Module({
@@ -13,10 +13,10 @@ import { ThrottlerToken } from "@/common/services/interfaces/IThrottler";
             useClass: DomainVerifier,
         },
         {
-            provide: ThrottlerToken,
-            useClass: Throttler,
+            provide: ActionDeduplicatorToken,
+            useClass: DeferredActionDeduplicator,
         },
     ],
-    exports: [DomainVerifierToken, ThrottlerToken],
+    exports: [DomainVerifierToken, ActionDeduplicatorToken],
 })
 export class GlobalModule {}
