@@ -211,7 +211,7 @@ services:
             - cache
             - pooler
 
-    gdpr-service:
+    privacy-service:
         build:
             context: ../../services/Backend
             dockerfile: Dockerfile

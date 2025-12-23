@@ -1,10 +1,10 @@
 import { plainToInstance } from "class-transformer";
 
 import { BaseModelDTOEntityMapper } from "@/common/mappers/BaseModelDTOEntity.mapper";
-import { TenantDto } from "@/modules/gdpr/dto/Tenant.dto";
-import { TenantEntity } from "@/modules/gdpr/entities/Tenant.entity";
-import { type ITenantMapper } from "@/modules/gdpr/mappers/ITenant.mapper";
-import { Tenant } from "@/modules/gdpr/models/Tenant.model";
+import { TenantDto } from "@/modules/privacy/dto/Tenant.dto";
+import { TenantEntity } from "@/modules/privacy/entities/Tenant.entity";
+import { type ITenantMapper } from "@/modules/privacy/mappers/ITenant.mapper";
+import { Tenant } from "@/modules/privacy/models/Tenant.model";
 
 export class TenantMapper extends BaseModelDTOEntityMapper<Tenant, TenantDto, TenantEntity> implements ITenantMapper {
     fromDtoToModel(dto: TenantDto): Tenant {

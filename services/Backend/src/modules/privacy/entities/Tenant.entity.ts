@@ -1,6 +1,6 @@
 import { type Relation, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
-import { DataPurgePlanEntity } from "@/modules/gdpr/entities/DataPurgePlan.entity";
+import { DataPurgePlanEntity } from "@/modules/privacy/entities/DataPurgePlan.entity";
 
 @Entity("tenant")
 export class TenantEntity {

@@ -47,7 +47,7 @@
         "port": 5200,
         "detachable": true
     },
-    "gdpr-service": {
+    "privacy-service": {
         "port": 5200,
         "detachable": true
     },

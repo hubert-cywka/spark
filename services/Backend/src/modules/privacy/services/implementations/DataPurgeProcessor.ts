@@ -4,26 +4,26 @@ import dayjs from "dayjs";
 import { Repository } from "typeorm";
 import { Transactional } from "typeorm-transactional";
 
-import { DataPurgePlanEntity } from "@/modules/gdpr/entities/DataPurgePlan.entity";
-import { GDPR_MODULE_DATA_SOURCE } from "@/modules/gdpr/infrastructure/database/constants";
+import { DataPurgePlanEntity } from "@/modules/privacy/entities/DataPurgePlan.entity";
+import { PRIVACY_MODULE_DATA_SOURCE } from "@/modules/privacy/infrastructure/database/constants";
 import {
     type IDataPurgeEventsPublisher,
     DataPurgeEventsPublisherToken,
-} from "@/modules/gdpr/services/interfaces/IDataPurgeEventsPublisher";
-import { IDataPurgeProcessor } from "@/modules/gdpr/services/interfaces/IDataPurgeProcessor";
+} from "@/modules/privacy/services/interfaces/IDataPurgeEventsPublisher";
+import { IDataPurgeProcessor } from "@/modules/privacy/services/interfaces/IDataPurgeProcessor";
 
 @Injectable()
 export class DataPurgeProcessor implements IDataPurgeProcessor {
     private readonly logger = new Logger(DataPurgeProcessor.name);
 
     public constructor(
-        @InjectRepository(DataPurgePlanEntity, GDPR_MODULE_DATA_SOURCE)
+        @InjectRepository(DataPurgePlanEntity, PRIVACY_MODULE_DATA_SOURCE)
         private readonly repository: Repository<DataPurgePlanEntity>,
         @Inject(DataPurgeEventsPublisherToken)
         private readonly publisher: IDataPurgeEventsPublisher
     ) {}
 
-    @Transactional({ connectionName: GDPR_MODULE_DATA_SOURCE })
+    @Transactional({ connectionName: PRIVACY_MODULE_DATA_SOURCE })
     public async processDataPurgePlans(): Promise<void> {
         const now = dayjs();
 
@@ -41,7 +41,7 @@ export class DataPurgeProcessor implements IDataPurgeProcessor {
         }
     }
 
-    @Transactional({ connectionName: GDPR_MODULE_DATA_SOURCE })
+    @Transactional({ connectionName: PRIVACY_MODULE_DATA_SOURCE })
     private async processPlan(plan: DataPurgePlanEntity): Promise<void> {
         const now = dayjs();
 

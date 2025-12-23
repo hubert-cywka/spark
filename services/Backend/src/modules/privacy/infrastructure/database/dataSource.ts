@@ -6,8 +6,8 @@ import { InboxEventPartitionEntity } from "@/common/events/entities/InboxEventPa
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { OutboxEventPartitionEntity } from "@/common/events/entities/OutboxEventPartition.entity";
 import { AppConfig } from "@/config/configuration";
-import { DataPurgePlanEntity } from "@/modules/gdpr/entities/DataPurgePlan.entity";
-import { TenantEntity } from "@/modules/gdpr/entities/Tenant.entity";
+import { DataPurgePlanEntity } from "@/modules/privacy/entities/DataPurgePlan.entity";
+import { TenantEntity } from "@/modules/privacy/entities/Tenant.entity";
 
 configDotenv();
 
@@ -15,11 +15,11 @@ const config = AppConfig();
 
 export const dataSource = new DataSource({
     type: "postgres",
-    port: parseInt(config.modules.gdpr.database.port ?? ""),
-    host: config.modules.gdpr.database.host,
-    username: config.modules.gdpr.database.username,
-    password: config.modules.gdpr.database.password,
-    database: config.modules.gdpr.database.name,
+    port: parseInt(config.modules.privacy.database.port ?? ""),
+    host: config.modules.privacy.database.host,
+    username: config.modules.privacy.database.username,
+    password: config.modules.privacy.database.password,
+    database: config.modules.privacy.database.name,
     synchronize: false,
     dropSchema: false,
     migrationsRun: false,
