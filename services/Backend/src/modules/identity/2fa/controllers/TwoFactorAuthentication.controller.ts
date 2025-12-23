@@ -32,9 +32,9 @@ import {
     TwoFactorAuthenticationFactoryToken,
 } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthentication.factory";
 import {
-    type ITwoFactorAuthenticationIntegrationsProviderService,
-    TwoFactorAuthenticationMethodsProviderServiceToken,
-} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationIntegrationsProvider.service";
+    type ITwoFactorAuthenticationIntegrationsProvider,
+    TwoFactorAuthenticationMethodsProviderToken,
+} from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationIntegrationsProvider";
 import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 import { IDENTITY_MODULE_DEFAULT_RATE_LIMITING, IDENTITY_MODULE_STRICT_RATE_LIMITING } from "@/modules/identity/shared/constants";
 import { type User } from "@/types/User";
@@ -45,8 +45,8 @@ export class TwoFactorAuthenticationController {
     public constructor(
         @Inject(TwoFactorAuthenticationFactoryToken)
         private readonly twoFactorAuthFactory: ITwoFactorAuthenticationFactory,
-        @Inject(TwoFactorAuthenticationMethodsProviderServiceToken)
-        private readonly integrationsProvider: ITwoFactorAuthenticationIntegrationsProviderService,
+        @Inject(TwoFactorAuthenticationMethodsProviderToken)
+        private readonly integrationsProvider: ITwoFactorAuthenticationIntegrationsProvider,
         @Inject(TwoFactorAuthenticationIntegrationMapperToken)
         private readonly mapper: ITwoFactorAuthenticationIntegrationMapper
     ) {}

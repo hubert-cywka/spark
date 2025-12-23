@@ -1,7 +1,7 @@
 import dayjs, { Dayjs } from "dayjs";
 import utc from "dayjs/plugin/utc.js";
 
-import { AlertScheduler } from "./AlertScheduler.service";
+import { AlertScheduler } from "./AlertScheduler";
 
 import { UTCDay } from "@/modules/alerts/types/UTCDay";
 

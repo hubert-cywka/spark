@@ -6,11 +6,11 @@ import {
     type IEventsRemovalService,
     InboxEventsRemovalServiceToken,
     OutboxEventsRemovalServiceToken,
-} from "@/common/events/services/interfaces/IEventsRemoval.service";
+} from "@/common/events/services/interfaces/IEventsRemovalService";
 import { IntegrationEventSubject } from "@/common/events/types";
 import { type AccountRemovalCompletedEventPayload } from "@/common/events/types/account/AccountRemovalCompletedEvent";
 import { CONFIGURATION_MODULE_DATA_SOURCE } from "@/modules/configuration/infrastructure/database/constants";
-import { type ITenantService, TenantServiceToken } from "@/modules/configuration/services/interfaces/ITenant.service";
+import { type ITenantService, TenantServiceToken } from "@/modules/configuration/services/interfaces/ITenantService";
 
 @Injectable()
 export class TenantRemovedEventHandler implements IInboxEventHandler {

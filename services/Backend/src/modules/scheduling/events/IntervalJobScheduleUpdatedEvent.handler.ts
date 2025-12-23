@@ -6,7 +6,7 @@ import { IntervalJobScheduleUpdatedEventPayload } from "@/common/events/types/sc
 import {
     type IJobScheduleConfigurationService,
     JobScheduleConfigurationServiceToken,
-} from "@/modules/scheduling/services/interfaces/IJobScheduleConfiguration.service";
+} from "@/modules/scheduling/services/interfaces/IJobScheduleConfigurationService";
 
 @Injectable()
 export class IntervalJobScheduleUpdatedEventHandler implements IInboxEventHandler {

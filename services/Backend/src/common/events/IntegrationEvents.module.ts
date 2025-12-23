@@ -29,8 +29,8 @@ import { EventInboxProcessor, EventInboxProcessorOptions } from "@/common/events
 import { EventOutbox } from "@/common/events/services/implementations/EventOutbox";
 import { EventOutboxProcessor, EventOutboxProcessorOptions } from "@/common/events/services/implementations/EventOutboxProcessor";
 import { EventPublisher } from "@/common/events/services/implementations/EventPublisher";
-import { EventsRemovalService } from "@/common/events/services/implementations/EventsRemoval.service";
-import { IntegrationEventsEncryptionService } from "@/common/events/services/implementations/IntegrationEventsEncryption.service";
+import { EventsRemovalService } from "@/common/events/services/implementations/EventsRemovalService";
+import { IntegrationEventsEncryptionService } from "@/common/events/services/implementations/IntegrationEventsEncryptionService";
 import { IntegrationEventsJobsOrchestrator } from "@/common/events/services/implementations/IntegrationEventsJobsOrchestrator";
 import { IntegrationEventsSubscriber } from "@/common/events/services/implementations/IntegrationEventsSubscriber";
 import { PartitionAssigner } from "@/common/events/services/implementations/PartitionAssigner";
@@ -38,15 +38,12 @@ import { EventInboxToken } from "@/common/events/services/interfaces/IEventInbox
 import { EventInboxProcessorToken } from "@/common/events/services/interfaces/IEventInboxProcessor";
 import { EventOutboxToken, IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
 import { EventOutboxProcessorToken } from "@/common/events/services/interfaces/IEventOutboxProcessor";
-import { EventPublisherToken } from "@/common/events/services/interfaces/IEventPublisher";
-import {
-    InboxEventsRemovalServiceToken,
-    OutboxEventsRemovalServiceToken,
-} from "@/common/events/services/interfaces/IEventsRemoval.service";
+import { type IEventPublisher, EventPublisherToken } from "@/common/events/services/interfaces/IEventPublisher";
+import { InboxEventsRemovalServiceToken, OutboxEventsRemovalServiceToken } from "@/common/events/services/interfaces/IEventsRemovalService";
 import {
     type IIntegrationEventsEncryptionService,
     IntegrationEventsEncryptionServiceToken,
-} from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
+} from "@/common/events/services/interfaces/IIntegrationEventsEncryptionService";
 import { IntegrationEventsJobsOrchestratorToken } from "@/common/events/services/interfaces/IIntegrationEventsJobsOrchestrator";
 import { IntegrationEventsSubscriberToken } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
 import { type IPartitionAssigner, PartitionAssignerToken } from "@/common/events/services/interfaces/IPartitionAssigner";
@@ -174,12 +171,12 @@ export class IntegrationEventsModule {
                     useFactory: (
                         eventRepository: IOutboxEventRepository,
                         partitionRepository: IOutboxPartitionRepository,
-                        producer: IEventProducer,
+                        publisher: IEventPublisher,
                         assigner: IPartitionAssigner,
                         throttler: IThrottler,
                         { outboxProcessorOptions }: IntegrationEventsModuleForFeatureDynamicOptions
                     ) =>
-                        new EventOutboxProcessor(producer, eventRepository, partitionRepository, assigner, throttler, {
+                        new EventOutboxProcessor(publisher, eventRepository, partitionRepository, assigner, throttler, {
                             context: options.context,
                             connectionName: options.connectionName,
                             ...outboxProcessorOptions,
@@ -187,7 +184,7 @@ export class IntegrationEventsModule {
                     inject: [
                         OutboxEventRepositoryToken,
                         OutboxPartitionRepositoryToken,
-                        EventProducerToken,
+                        EventPublisherToken,
                         PartitionAssignerToken,
                         ThrottlerToken,
                         IntegrationEventsForFeatureOptionsToken,

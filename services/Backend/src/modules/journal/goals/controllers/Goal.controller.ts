@@ -22,7 +22,7 @@ import { PageOptionsDto } from "@/common/pagination/dto/PageOptions.dto";
 import { CreateOrUpdateGoalDto } from "@/modules/journal/goals/dto/CreateOrUpdateGoal.dto";
 import { FindGoalsFiltersDto } from "@/modules/journal/goals/dto/FindGoalsFilters.dto";
 import { type IGoalMapper, GoalMapperToken } from "@/modules/journal/goals/mappers/IGoal.mapper";
-import { type IGoalService, GoalServiceToken } from "@/modules/journal/goals/services/interfaces/IGoal.service";
+import { type IGoalService, GoalServiceToken } from "@/modules/journal/goals/services/interfaces/IGoalService";
 import { type User } from "@/types/User";
 
 @Controller("goal")

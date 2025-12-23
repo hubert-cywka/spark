@@ -2,7 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 
 import { type AccountCreatedEventPayload, type IInboxEventHandler, IntegrationEvent, IntegrationEvents } from "@/common/events";
 import { IntegrationEventSubject } from "@/common/events/types";
-import { type IAuthorService, AuthorServiceToken } from "@/modules/journal/authors/services/interfaces/IAuthor.service";
+import { type IAuthorService, AuthorServiceToken } from "@/modules/journal/authors/services/interfaces/IAuthorService";
 
 @Injectable()
 export class AccountCreatedEventHandler implements IInboxEventHandler {

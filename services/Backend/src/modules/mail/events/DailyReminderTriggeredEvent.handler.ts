@@ -3,8 +3,8 @@ import { Inject, Injectable } from "@nestjs/common";
 import { IInboxEventHandler, IntegrationEvent, IntegrationEvents } from "@/common/events";
 import { IntegrationEventSubject } from "@/common/events/types";
 import { type DailyReminderTriggeredEventPayload } from "@/common/events/types/alert/DailyReminderTriggeredEvent";
-import { type IEmailLookup, EmailLookupToken } from "@/modules/mail/services/interfaces/IEmailLookup.service";
-import { type IMailSender, MailSenderToken } from "@/modules/mail/services/interfaces/IMailSender.service";
+import { type IEmailLookup, EmailLookupToken } from "@/modules/mail/services/interfaces/IEmailLookup";
+import { type IMailSender, MailSenderToken } from "@/modules/mail/services/interfaces/IMailSender";
 import { type IEmailTemplateFactory, EmailTemplateFactoryToken } from "@/modules/mail/templates/IEmailTemplate.factory";
 
 @Injectable()

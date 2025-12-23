@@ -7,15 +7,15 @@ import { AccountModuleFacade } from "@/modules/identity/account/facade/AccountMo
 import { AccountModuleFacadeToken } from "@/modules/identity/account/facade/IAccountModule.facade";
 import { AccountMapper } from "@/modules/identity/account/mappers/Account.mapper";
 import { AccountMapperToken } from "@/modules/identity/account/mappers/IAccount.mapper";
-import { AccountEventsPublisher } from "@/modules/identity/account/services/implementations/AccountEventsPublisher.service";
-import { AccountRemovalService } from "@/modules/identity/account/services/implementations/AccountRemoval.service";
-import { FederatedAccountService } from "@/modules/identity/account/services/implementations/FederatedAccount.service";
-import { ManagedAccountService } from "@/modules/identity/account/services/implementations/ManagedAccount.service";
+import { AccountEventsPublisher } from "@/modules/identity/account/services/implementations/AccountEventsPublisher";
+import { AccountRemovalService } from "@/modules/identity/account/services/implementations/AccountRemovalService";
+import { FederatedAccountService } from "@/modules/identity/account/services/implementations/FederatedAccountService";
+import { ManagedAccountService } from "@/modules/identity/account/services/implementations/ManagedAccountService";
 import { SingleUseTokenServiceFactory } from "@/modules/identity/account/services/implementations/SingleUseTokenService.factory";
-import { AccountEventsPublisherToken } from "@/modules/identity/account/services/interfaces/IAccountEventsPublisher.service";
-import { AccountRemovalServiceToken } from "@/modules/identity/account/services/interfaces/IAccountRemoval.service";
-import { FederatedAccountServiceToken } from "@/modules/identity/account/services/interfaces/IFederatedAccount.service";
-import { ManagedAccountServiceToken } from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
+import { AccountEventsPublisherToken } from "@/modules/identity/account/services/interfaces/IAccountEventsPublisher";
+import { AccountRemovalServiceToken } from "@/modules/identity/account/services/interfaces/IAccountRemovalService";
+import { FederatedAccountServiceToken } from "@/modules/identity/account/services/interfaces/IFederatedAccountService";
+import { ManagedAccountServiceToken } from "@/modules/identity/account/services/interfaces/IManagedAccountService";
 import { SingleUseTokenServiceFactoryToken } from "@/modules/identity/account/services/interfaces/ISingelUseTokenService.factory";
 import { IdentitySharedModule } from "@/modules/identity/shared/IdentityShared.module";
 

@@ -3,12 +3,12 @@ import { Module } from "@nestjs/common";
 import { DailyController } from "@/modules/journal/daily/controllers/Daily.controller";
 import { DailyMapper } from "@/modules/journal/daily/mappers/Daily.mapper";
 import { DailyMapperToken } from "@/modules/journal/daily/mappers/IDaily.mapper";
-import { DailyService } from "@/modules/journal/daily/services/implementations/Daily.service";
-import { DailyInsightsProvider } from "@/modules/journal/daily/services/implementations/DailyInsightsProvider.service";
-import { DailyProviderService } from "@/modules/journal/daily/services/implementations/DailyProvider.service";
-import { DailyServiceToken } from "@/modules/journal/daily/services/interfaces/IDaily.service";
-import { DailyInsightsProviderToken } from "@/modules/journal/daily/services/interfaces/IDailyInsightsProvider.service";
-import { DailyProviderServiceToken } from "@/modules/journal/daily/services/interfaces/IDailyProvider.service";
+import { DailyInsightsProvider } from "@/modules/journal/daily/services/implementations/DailyInsightsProvider";
+import { DailyProvider } from "@/modules/journal/daily/services/implementations/DailyProvider";
+import { DailyService } from "@/modules/journal/daily/services/implementations/DailyService";
+import { DailyInsightsProviderToken } from "@/modules/journal/daily/services/interfaces/IDailyInsightsProvider";
+import { DailyProviderToken } from "@/modules/journal/daily/services/interfaces/IDailyProvider";
+import { DailyServiceToken } from "@/modules/journal/daily/services/interfaces/IDailyService";
 import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.module";
 
 @Module({
@@ -23,8 +23,8 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
             useClass: DailyService,
         },
         {
-            provide: DailyProviderServiceToken,
-            useClass: DailyProviderService,
+            provide: DailyProviderToken,
+            useClass: DailyProvider,
         },
         {
             provide: DailyInsightsProviderToken,
@@ -32,6 +32,6 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
         },
     ],
     controllers: [DailyController],
-    exports: [DailyProviderServiceToken],
+    exports: [DailyProviderToken],
 })
 export class DailyModule {}

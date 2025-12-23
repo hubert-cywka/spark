@@ -16,7 +16,7 @@ import { type IAuthenticationMapper, AuthenticationMapperToken } from "@/modules
 import {
     type IAuthenticationService,
     AuthenticationServiceToken,
-} from "@/modules/identity/authentication/services/interfaces/IAuthentication.service";
+} from "@/modules/identity/authentication/services/interfaces/IAuthenticationService";
 import { IDENTITY_MODULE_DEFAULT_RATE_LIMITING, IDENTITY_MODULE_STRICT_RATE_LIMITING } from "@/modules/identity/shared/constants";
 import { type User } from "@/types/User";
 

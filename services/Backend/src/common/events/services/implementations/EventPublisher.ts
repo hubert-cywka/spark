@@ -4,7 +4,8 @@ import { type IEventPublisher, IntegrationEvent } from "@/common/events";
 import { type IEventProducer } from "@/common/events/drivers/interfaces/IEventProducer";
 import { type IEventOutbox } from "@/common/events/services/interfaces/IEventOutbox";
 import { EventPublishOptions } from "@/common/events/services/interfaces/IEventPublisher";
-import { type IIntegrationEventsEncryptionService } from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
+import { type IIntegrationEventsEncryptionService } from "@/common/events/services/interfaces/IIntegrationEventsEncryptionService";
+import { PublishAck } from "@/common/events/types";
 
 @Injectable()
 export class EventPublisher implements IEventPublisher {
@@ -14,14 +15,14 @@ export class EventPublisher implements IEventPublisher {
         private readonly outbox: IEventOutbox
     ) {}
 
-    public async publish(event: IntegrationEvent, options?: EventPublishOptions): Promise<void> {
+    public async publish(event: IntegrationEvent, options?: EventPublishOptions): Promise<PublishAck> {
         const preparedEvent = await this.prepareEventToStore(event, options);
-        await this.eventProducer.publish(preparedEvent);
+        return await this.eventProducer.publish(preparedEvent);
     }
 
-    public async publishMany(events: IntegrationEvent[], options?: EventPublishOptions): Promise<void> {
+    public async publishMany(events: IntegrationEvent[], options?: EventPublishOptions): Promise<PublishAck> {
         const preparedEvents = await this.prepareEventsToStore(events, options);
-        await this.eventProducer.publishBatch(preparedEvents);
+        return await this.eventProducer.publishBatch(preparedEvents);
     }
 
     public async enqueue(event: IntegrationEvent, options?: EventPublishOptions): Promise<void> {

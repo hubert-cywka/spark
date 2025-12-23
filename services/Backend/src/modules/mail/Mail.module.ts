@@ -35,12 +35,12 @@ import { RegenerateMigrations1749289938815 } from "@/modules/mail/infrastructure
 import { AddTimestamps1752925904452 } from "@/modules/mail/infrastructure/database/migrations/1752925904452-AddTimestamps";
 import { RecipientMapperToken } from "@/modules/mail/mappers/IRecipient.mapper";
 import { RecipientMapper } from "@/modules/mail/mappers/Recipient.mapper";
-import { EmailLookup } from "@/modules/mail/services/implementations/EmailLookup.service";
-import { RecipientService } from "@/modules/mail/services/implementations/Recipient.service";
-import { ResendMailSender } from "@/modules/mail/services/implementations/ResendMailSender.service";
-import { EmailLookupToken } from "@/modules/mail/services/interfaces/IEmailLookup.service";
-import { MailSenderToken } from "@/modules/mail/services/interfaces/IMailSender.service";
-import { RecipientServiceToken } from "@/modules/mail/services/interfaces/IRecipient.service";
+import { EmailLookup } from "@/modules/mail/services/implementations/EmailLookup";
+import { RecipientService } from "@/modules/mail/services/implementations/RecipientService";
+import { ResendMailSender } from "@/modules/mail/services/implementations/ResendMailSender";
+import { EmailLookupToken } from "@/modules/mail/services/interfaces/IEmailLookup";
+import { MailSenderToken } from "@/modules/mail/services/interfaces/IMailSender";
+import { RecipientServiceToken } from "@/modules/mail/services/interfaces/IRecipientService";
 import { HtmlEmailTemplateFactory } from "@/modules/mail/templates/html/HtmlEmailTemplate.factory";
 import { EmailTemplateFactoryToken } from "@/modules/mail/templates/IEmailTemplate.factory";
 

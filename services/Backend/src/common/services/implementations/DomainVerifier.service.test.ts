@@ -1,9 +1,9 @@
 import { ConfigService } from "@nestjs/config";
 
-import { DomainVerifierService } from "./DomainVerifier.service";
+import { DomainVerifier } from "./DomainVerifier";
 
 describe("DomainVerifierService", () => {
-    let domainVerifierService: DomainVerifierService;
+    let domainVerifierService: DomainVerifier;
     let configService: ConfigService;
 
     const trustedBaseUrl = "https://trusted.com";
@@ -13,7 +13,7 @@ describe("DomainVerifierService", () => {
         configService = {
             getOrThrow: jest.fn().mockReturnValue(trustedBaseUrl),
         };
-        domainVerifierService = new DomainVerifierService(configService);
+        domainVerifierService = new DomainVerifier(configService);
     });
 
     it("should return true for a trusted URL string", () => {

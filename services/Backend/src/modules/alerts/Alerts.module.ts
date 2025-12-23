@@ -38,16 +38,16 @@ import { AlertMapper } from "@/modules/alerts/mappers/Alert.mapper";
 import { AlertMapperToken } from "@/modules/alerts/mappers/IAlert.mapper";
 import { RecipientMapperToken } from "@/modules/alerts/mappers/IRecipient.mapper";
 import { RecipientMapper } from "@/modules/alerts/mappers/Recipient.mapper";
-import { AlertService } from "@/modules/alerts/services/implementations/Alert.service";
-import { AlertEventsPublisher } from "@/modules/alerts/services/implementations/AlertEventsPublisher.service";
-import { AlertScheduler } from "@/modules/alerts/services/implementations/AlertScheduler.service";
-import { AlertsProcessor } from "@/modules/alerts/services/implementations/AlertsProcessor.service";
-import { RecipientService } from "@/modules/alerts/services/implementations/Recipient.service";
-import { AlertServiceToken } from "@/modules/alerts/services/interfaces/IAlert.service";
-import { AlertEventsPublisherToken } from "@/modules/alerts/services/interfaces/IAlertEventsPublisher.service";
-import { AlertSchedulerToken } from "@/modules/alerts/services/interfaces/IAlertScheduler.service";
-import { AlertsProcessorToken } from "@/modules/alerts/services/interfaces/IAlertsProcessor.service";
-import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRecipient.service";
+import { AlertEventsPublisher } from "@/modules/alerts/services/implementations/AlertEventsPublisher";
+import { AlertScheduler } from "@/modules/alerts/services/implementations/AlertScheduler";
+import { AlertService } from "@/modules/alerts/services/implementations/AlertService";
+import { AlertsProcessor } from "@/modules/alerts/services/implementations/AlertsProcessor";
+import { RecipientService } from "@/modules/alerts/services/implementations/RecipientService";
+import { AlertEventsPublisherToken } from "@/modules/alerts/services/interfaces/IAlertEventsPublisher";
+import { AlertSchedulerToken } from "@/modules/alerts/services/interfaces/IAlertScheduler";
+import { AlertServiceToken } from "@/modules/alerts/services/interfaces/IAlertService";
+import { AlertsProcessorToken } from "@/modules/alerts/services/interfaces/IAlertsProcessor";
+import { RecipientServiceToken } from "@/modules/alerts/services/interfaces/IRecipientService";
 import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
 import {
     type IHealthCheckProbesRegistry,

@@ -1,4 +1,4 @@
-import { IntegrationEventsEncryptionService } from "./IntegrationEventsEncryption.service";
+import { IntegrationEventsEncryptionService } from "./IntegrationEventsEncryptionService";
 
 import { IntegrationEvent } from "@/common/events";
 import { AesGcmEncryptionAlgorithm } from "@/common/services/implementations/AesGcmEncryptionAlgorithm";

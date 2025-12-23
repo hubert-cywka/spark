@@ -6,7 +6,7 @@ import { AccountRemovalRequestedEventPayload } from "@/common/events/types/accou
 import {
     type IAccountRemovalService,
     AccountRemovalServiceToken,
-} from "@/modules/identity/account/services/interfaces/IAccountRemoval.service";
+} from "@/modules/identity/account/services/interfaces/IAccountRemovalService";
 
 @Injectable()
 export class AccountRemovalRequestedEventHandler implements IInboxEventHandler {

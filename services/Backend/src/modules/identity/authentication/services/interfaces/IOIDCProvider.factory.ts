@@ -1,4 +1,4 @@
-import { type IOIDCProvider } from "@/modules/identity/authentication/services/interfaces/IOIDCProvider.service";
+import { type IOIDCProvider } from "@/modules/identity/authentication/services/interfaces/IOIDCProvider";
 import { FederatedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
 
 export const OIDCProviderFactoryToken = Symbol("IOIDCProviderFactory");

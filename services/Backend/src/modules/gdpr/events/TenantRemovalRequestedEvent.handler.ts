@@ -3,7 +3,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { type IInboxEventHandler, IntegrationEvent, IntegrationEvents } from "@/common/events";
 import { IntegrationEventSubject } from "@/common/events/types";
 import { AccountRemovalRequestedEventPayload } from "@/common/events/types/account/AccountRemovalRequestedEvent";
-import { type IDataPurgeScheduler, DataPurgeSchedulerToken } from "@/modules/gdpr/services/interfaces/IDataPurgeScheduler.service";
+import { type IDataPurgeScheduler, DataPurgeSchedulerToken } from "@/modules/gdpr/services/interfaces/IDataPurgeScheduler";
 
 @Injectable()
 export class TenantRemovalRequestedEventHandler implements IInboxEventHandler {

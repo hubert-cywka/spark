@@ -4,8 +4,7 @@ import { runInTransaction } from "typeorm-transactional";
 
 import { outboxMetrics } from "../../observability/metrics";
 
-import { IntegrationEvent } from "@/common/events";
-import { type IEventProducer } from "@/common/events/drivers/interfaces/IEventProducer";
+import { type IEventPublisher, IntegrationEvent } from "@/common/events";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { type IOutboxEventRepository } from "@/common/events/repositories/interfaces/IOutboxEvent.repository";
 import { type IOutboxPartitionRepository } from "@/common/events/repositories/interfaces/IOutboxPartition.repository";
@@ -36,7 +35,7 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
     private readonly maxBatchSize: number;
 
     public constructor(
-        private readonly client: IEventProducer,
+        private readonly publisher: IEventPublisher,
         private readonly eventsRepository: IOutboxEventRepository,
         private readonly partitionsRepository: IOutboxPartitionRepository,
         private readonly partitionAssigner: IPartitionAssigner,
@@ -115,9 +114,14 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
                         take: this.maxBatchSize,
                     });
 
-                    outboxMetrics.batchSize.record(events.length, { partitionId });
+                    let successfulEvents: OutboxEventEntity[] = [];
+                    let failedEvent: OutboxEventEntity | null = null;
 
-                    const { successfulEvents, failedEvent } = await this.publishEvents(events);
+                    if (events.length) {
+                        outboxMetrics.batchSize.record(events.length, { partitionId });
+                        ({ successfulEvents, failedEvent } = await this.publishEvents(events));
+                    }
+
                     await this.updateEventsAndPartition(partitionId, successfulEvents, events);
 
                     if (failedEvent) {
@@ -143,7 +147,7 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
         const integrationEvents = events.map((e) => IntegrationEvent.fromEntity(e));
 
         try {
-            await this.client.publishBatch(integrationEvents);
+            await this.publisher.publishMany(integrationEvents);
             successfulEvents.push(...events);
 
             integrationEvents.forEach((event) => {
@@ -180,7 +184,10 @@ export class EventOutboxProcessor implements IEventOutboxProcessor {
             await this.eventsRepository.markAsProcessed(successfulEventIds);
         }
 
-        if (allAttemptedEventIds.length === successfulEventIds.length) {
+        const hadProcessedAll = allAttemptedEventIds.length === successfulEventIds.length;
+        const hadNoneToProcess = allAttemptedEventIds.length === 0;
+
+        if (hadNoneToProcess || hadProcessedAll) {
             const staleAt = dayjs().add(this.stalePartitionThreshold, "milliseconds").toDate();
             await this.partitionsRepository.markAsProcessed(partitionId, staleAt);
         }

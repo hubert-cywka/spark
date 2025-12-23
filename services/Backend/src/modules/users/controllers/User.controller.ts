@@ -6,7 +6,7 @@ import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
 import { AccessGuard } from "@/common/guards/Access.guard";
 import { type IUserMapper, UserMapperToken } from "@/modules/users/mappers/IUser.mapper";
-import { type IUsersService, UsersServiceToken } from "@/modules/users/services/interfaces/IUsers.service";
+import { type IUsersService, UsersServiceToken } from "@/modules/users/services/interfaces/IUsersService";
 import { type User } from "@/types/User";
 
 @Controller("user")

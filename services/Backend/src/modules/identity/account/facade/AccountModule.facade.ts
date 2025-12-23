@@ -6,11 +6,11 @@ import { Account } from "@/modules/identity/account/models/Account.model";
 import {
     type IFederatedAccountService,
     FederatedAccountServiceToken,
-} from "@/modules/identity/account/services/interfaces/IFederatedAccount.service";
+} from "@/modules/identity/account/services/interfaces/IFederatedAccountService";
 import {
     type IManagedAccountService,
     ManagedAccountServiceToken,
-} from "@/modules/identity/account/services/interfaces/IManagedAccount.service";
+} from "@/modules/identity/account/services/interfaces/IManagedAccountService";
 import { FederatedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 

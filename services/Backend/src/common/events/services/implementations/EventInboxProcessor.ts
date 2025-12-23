@@ -11,7 +11,7 @@ import { EventHandlersNotFoundError } from "@/common/events/errors/EventHandlers
 import { type IInboxEventRepository } from "@/common/events/repositories/interfaces/IInboxEvent.repository";
 import { type IInboxPartitionRepository } from "@/common/events/repositories/interfaces/IInboxPartition.repository";
 import { type IEventInboxProcessor } from "@/common/events/services/interfaces/IEventInboxProcessor";
-import { type IIntegrationEventsEncryptionService } from "@/common/events/services/interfaces/IIntegrationEventsEncryption.service";
+import { type IIntegrationEventsEncryptionService } from "@/common/events/services/interfaces/IIntegrationEventsEncryptionService";
 import { IPartitionAssigner } from "@/common/events/services/interfaces/IPartitionAssigner";
 import { RetryBackoffPolicy } from "@/common/retry/RetryBackoffPolicy";
 import { IThrottler } from "@/common/services/interfaces/IThrottler";

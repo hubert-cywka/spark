@@ -4,8 +4,8 @@ import { AccountCreatedEventHandler } from "@/modules/journal/authors/events/Acc
 import { AuthorRemovedEventHandler } from "@/modules/journal/authors/events/AuthorRemovedEvent.handler";
 import { AuthorMapper } from "@/modules/journal/authors/mappers/Author.mapper";
 import { AuthorMapperToken } from "@/modules/journal/authors/mappers/IAuthor.mapper";
-import { AuthorService } from "@/modules/journal/authors/services/implementations/Author.service";
-import { AuthorServiceToken } from "@/modules/journal/authors/services/interfaces/IAuthor.service";
+import { AuthorService } from "@/modules/journal/authors/services/implementations/AuthorService";
+import { AuthorServiceToken } from "@/modules/journal/authors/services/interfaces/IAuthorService";
 import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.module";
 
 @Module({
