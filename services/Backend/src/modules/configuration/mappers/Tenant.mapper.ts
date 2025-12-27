@@ -7,12 +7,6 @@ import { type ITenantMapper } from "@/modules/configuration/mappers/ITenant.mapp
 import { Tenant } from "@/modules/configuration/models/Tenant.model";
 
 export class TenantMapper extends BaseModelDTOEntityMapper<Tenant, TenantDto, TenantEntity> implements ITenantMapper {
-    fromDtoToModel(dto: TenantDto): Tenant {
-        return {
-            id: dto.id,
-        };
-    }
-
     fromEntityToModel(entity: TenantEntity): Tenant {
         return {
             id: entity.id,

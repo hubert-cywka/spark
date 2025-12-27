@@ -9,20 +9,23 @@ import {
     type IIntegrationEventsSubscriber,
     IntegrationEventsSubscriberToken,
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
+import { getDataExportEventHandlers, getDataExportEventTopics, provideDataExporter } from "@/common/export/provideDataExporter";
 import { AuthorsModule } from "@/modules/journal/authors/Authors.module";
 import { AccountCreatedEventHandler } from "@/modules/journal/authors/events/AccountCreatedEvent.handler";
 import { AuthorRemovedEventHandler } from "@/modules/journal/authors/events/AuthorRemovedEvent.handler";
 import { DailyModule } from "@/modules/journal/daily/Daily.module";
 import { EntriesModule } from "@/modules/journal/entries/Entries.module";
+import { EntriesDataExportProvider } from "@/modules/journal/entries/services/implementations/EntriesDataExportProvider";
 import { GoalsModule } from "@/modules/journal/goals/Goals.module";
 import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.module";
 
 @Module({
     providers: [
+        ...provideDataExporter([EntriesDataExportProvider]),
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
-            inject: [AccountCreatedEventHandler, AuthorRemovedEventHandler],
+            inject: [AccountCreatedEventHandler, AuthorRemovedEventHandler, ...getDataExportEventHandlers()],
         },
     ],
     imports: [JournalSharedModule, AuthorsModule, DailyModule, GoalsModule, EntriesModule],
@@ -45,6 +48,10 @@ export class JournalModule implements OnModuleInit {
         this.orchestrator.startClearingInbox();
         this.orchestrator.startClearingOutbox();
 
-        void this.subscriber.listen([IntegrationEvents.account.created, IntegrationEvents.account.removal.completed]);
+        void this.subscriber.listen([
+            IntegrationEvents.account.created,
+            IntegrationEvents.account.removal.completed,
+            ...getDataExportEventTopics(),
+        ]);
     }
 }

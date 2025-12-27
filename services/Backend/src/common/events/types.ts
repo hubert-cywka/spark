@@ -9,5 +9,5 @@ export type IntegrationEventLabel = {
     subject: IntegrationEventSubject;
 };
 
-export type IntegrationEventTopic = "account" | "alert" | "2fa" | "scheduling" | "refresh_token" | "privacy";
+export type IntegrationEventTopic = "account" | "alert" | "2fa" | "scheduling" | "refresh_token" | "purge" | "export";
 export type IntegrationEventSubject = `${IntegrationEventTopic}.${string}`;

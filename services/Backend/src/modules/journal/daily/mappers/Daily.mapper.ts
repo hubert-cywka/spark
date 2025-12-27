@@ -7,16 +7,6 @@ import { IDailyMapper } from "@/modules/journal/daily/mappers/IDaily.mapper";
 import { Daily } from "@/modules/journal/daily/models/Daily.model";
 
 export class DailyMapper extends BaseModelDTOEntityMapper<Daily, DailyDto, DailyEntity> implements IDailyMapper {
-    public fromDtoToModel(dto: DailyDto): Daily {
-        return {
-            id: dto.id,
-            date: dto.date,
-            authorId: dto.authorId,
-            createdAt: new Date(dto.createdAt),
-            updatedAt: new Date(dto.updatedAt),
-        };
-    }
-
     public fromEntityToModel(entity: DailyEntity): Daily {
         return {
             id: entity.id,

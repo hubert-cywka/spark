@@ -10,15 +10,6 @@ export class FeatureFlagMapper
     extends BaseModelDTOEntityMapper<FeatureFlag, FeatureFlagDto, FeatureFlagEntity>
     implements IFeatureFlagMapper
 {
-    fromDtoToModel(dto: FeatureFlagDto): FeatureFlag {
-        return {
-            id: dto.id,
-            key: dto.key,
-            value: dto.value,
-            tenantId: dto.tenantId,
-        };
-    }
-
     fromEntityToModel(entity: FeatureFlagEntity): FeatureFlag {
         return {
             id: entity.id,

@@ -7,6 +7,7 @@ import { EntryMapper } from "@/modules/journal/entries/mappers/Entry.mapper";
 import { EntryDetailMapper } from "@/modules/journal/entries/mappers/EntryDetail.mapper";
 import { EntryMapperToken } from "@/modules/journal/entries/mappers/IEntry.mapper";
 import { EntryDetailMapperToken } from "@/modules/journal/entries/mappers/IEntryDetail.mapper";
+import { EntriesDataExportProvider } from "@/modules/journal/entries/services/implementations/EntriesDataExportProvider";
 import { EntriesInsightsProvider } from "@/modules/journal/entries/services/implementations/EntriesInsightsProvider";
 import { EntryService } from "@/modules/journal/entries/services/implementations/EntryService";
 import { EntriesInsightsProviderToken } from "@/modules/journal/entries/services/interfaces/IEntriesInsightsProvider";
@@ -16,6 +17,7 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
 @Module({
     imports: [JournalSharedModule, DailyModule],
     providers: [
+        { provide: EntriesDataExportProvider, useClass: EntriesDataExportProvider },
         { provide: EntryMapperToken, useClass: EntryMapper },
         { provide: EntryDetailMapperToken, useClass: EntryDetailMapper },
         { provide: EntryServiceToken, useClass: EntryService },
@@ -24,6 +26,7 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
             useClass: EntriesInsightsProvider,
         },
     ],
+    exports: [EntriesDataExportProvider],
     controllers: [EntryController, DailyEntryController],
 })
 export class EntriesModule {}

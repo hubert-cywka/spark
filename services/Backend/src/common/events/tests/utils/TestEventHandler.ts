@@ -9,7 +9,7 @@ export class TestEventHandler implements IInboxEventHandler {
         return true;
     }
 
-    async handle(event: IntegrationEvent): Promise<void> {
+    public async handle(event: IntegrationEvent): Promise<void> {
         await wait(this.waitTime);
     }
 }

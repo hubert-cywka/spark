@@ -14,18 +14,6 @@ export class TwoFactorAuthenticationIntegrationMapper
     >
     implements ITwoFactorAuthenticationIntegrationMapper
 {
-    public fromDtoToModel(dto: TwoFactorAuthenticationIntegrationDto): TwoFactorAuthenticationIntegration {
-        return {
-            id: dto.id,
-            method: dto.method,
-            secret: "",
-            totpTTL: dto.totpTTL,
-            enabledAt: dto.enabledAt ? new Date(dto.enabledAt) : null,
-            createdAt: new Date(dto.createdAt),
-            updatedAt: new Date(dto.updatedAt),
-        };
-    }
-
     public fromEntityToModel(entity: TwoFactorAuthenticationIntegrationEntity): TwoFactorAuthenticationIntegration {
         return {
             id: entity.id,

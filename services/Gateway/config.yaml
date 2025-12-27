@@ -164,6 +164,11 @@ static_resources:
                                             route:
                                                 cluster: identity
 
+                                        -   match:
+                                              prefix: /api/export
+                                            route:
+                                              cluster: privacy
+
                                         - match:
                                               prefix: /
                                           route:

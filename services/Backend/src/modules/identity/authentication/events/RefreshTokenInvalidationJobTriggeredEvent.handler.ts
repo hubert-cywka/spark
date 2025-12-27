@@ -1,7 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { type IInboxEventHandler, IntegrationEvent, IntegrationEvents } from "@/common/events";
+import { type IInboxEventHandler, IntegrationEvents } from "@/common/events";
 import { IntegrationEventSubject } from "@/common/events/types";
+import { JobTriggeredEvent } from "@/common/events/types/scheduling/JobTriggeredEvent";
 import {
     type IRefreshTokenService,
     RefreshTokenServiceToken,
@@ -18,7 +19,7 @@ export class RefreshTokenInvalidationJobTriggeredEventHandler implements IInboxE
         return subject === IntegrationEvents.refreshToken.invalidation.triggered.subject;
     }
 
-    public async handle(event: IntegrationEvent): Promise<void> {
+    public async handle(event: JobTriggeredEvent): Promise<void> {
         await this.refreshTokenService.deleteAllExpired();
     }
 }

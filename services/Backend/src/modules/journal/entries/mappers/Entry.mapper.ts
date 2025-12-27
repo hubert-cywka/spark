@@ -7,19 +7,6 @@ import { IEntryMapper } from "@/modules/journal/entries/mappers/IEntry.mapper";
 import { Entry } from "@/modules/journal/entries/models/Entry.model";
 
 export class EntryMapper extends BaseModelDTOEntityMapper<Entry, EntryDto, EntryEntity> implements IEntryMapper {
-    public fromDtoToModel(dto: EntryDto): Entry {
-        return {
-            id: dto.id,
-            content: dto.content,
-            isCompleted: dto.isCompleted,
-            isFeatured: dto.isFeatured,
-            dailyId: dto.dailyId,
-            authorId: dto.authorId,
-            createdAt: new Date(dto.createdAt),
-            updatedAt: new Date(dto.updatedAt),
-        };
-    }
-
     public fromEntityToModel(entity: EntryEntity): Entry {
         return {
             id: entity.id,
