@@ -4,7 +4,7 @@ import { ChecksumCalculator } from "@/common/services/implementations/ChecksumCa
 import { CsvParser } from "@/common/services/implementations/CsvParser";
 import { DeferredActionDeduplicator } from "@/common/services/implementations/DeferredActionDeduplicator";
 import { DomainVerifier } from "@/common/services/implementations/DomainVerifier";
-import { FileService } from "@/common/services/implementations/FileService";
+import { LocalFileService } from "@/common/services/implementations/FileService";
 import { ActionDeduplicatorToken } from "@/common/services/interfaces/IActionDeduplicator";
 import { ChecksumCalculatorToken } from "@/common/services/interfaces/IChecksumCalculator";
 import { CsvParserToken } from "@/common/services/interfaces/ICsvParser";
@@ -32,7 +32,7 @@ import { FileServiceToken } from "@/common/services/interfaces/IFileService";
         },
         {
             provide: FileServiceToken,
-            useClass: FileService,
+            useClass: LocalFileService,
         },
     ],
     exports: [DomainVerifierToken, ActionDeduplicatorToken, CsvParserToken, ChecksumCalculatorToken, FileServiceToken],

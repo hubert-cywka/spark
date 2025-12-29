@@ -1,0 +1,14 @@
+@use "src/styles/tokens";
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$spacing-400;
+  padding: 0;
+}
+
+.skeletonItem {
+  list-style: none;
+  border-radius: tokens.$radius-300;
+  overflow: hidden;
+}

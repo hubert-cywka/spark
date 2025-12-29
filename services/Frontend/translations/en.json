@@ -25,6 +25,19 @@
                 }
             }
         },
+        "exports": {
+            "start": {
+                "errors": {
+                    "conflict": "You already have active export.."
+                }
+            },
+            "cancel": {
+                "errors": {
+                    "notFound": "This export does not exist anymore.",
+                    "conflict": "This export has already been completed or cancelled."
+                }
+            }
+        },
         "entries": {
             "goals": {
                 "createLink": {
@@ -171,7 +184,7 @@
     "common": {
         "modal": {
             "closeButton": {
-                "label": "Close modal"
+                "label": "Close"
             }
         },
         "dateRangePicker": {
@@ -561,6 +574,80 @@
             }
         }
     },
+    "exports": {
+        "common": {
+            "status": {
+                "pending": "In progress",
+                "completed": "Completed",
+                "cancelled": "Cancelled"
+            },
+            "scope": {
+                "timeframe": "{from} - {to}",
+                "domains": {
+                    "entries": "Entries",
+                    "goals": "Goals"
+                }
+            }
+        },
+        "list": {
+            "header": "Showing up to 5 most recent exports:",
+            "noData": "You have not requested any data export yet.",
+            "buttons": {
+                "cancel": {
+                    "label": "Cancel active export"
+                },
+                "start": {
+                    "label": "Select export's scope"
+                }
+            },
+            "item": {
+                "startedAt": "Started at: {date}"
+            }
+        },
+        "start": {
+            "modal": {
+                "header": "Start new export",
+                "description": "Choose a domain and date range to specify the scope for data export.",
+                "buttons": {
+                    "addScope": {
+                        "label": "Add scope"
+                    },
+                    "removeScope": {
+                        "label": "Remove scope"
+                    },
+                    "cancel": {
+                        "label": "Cancel"
+                    },
+                    "confirm": {
+                        "label": "Submit"
+                    }
+                },
+                "selectDomain": "Select data domain",
+                "domainPlaceholder": "Choose domain...",
+                "allDomainsSelected": "All available domains have been added."
+            },
+            "notifications": {
+                "error": {
+                    "title": "Couldn't start new export"
+                },
+                "success": {
+                    "title": "New export started",
+                    "body": "It will take a while to complete."
+                }
+            }
+        },
+        "cancel": {
+            "notifications": {
+                "error": {
+                    "title": "Couldn't cancel export"
+                },
+                "success": {
+                    "title": "Export cancelled",
+                    "body": "Now you can start a new one."
+                }
+            }
+        }
+    },
     "daily": {
         "empty": {
             "title": "Not much to see here",
@@ -701,6 +788,10 @@
             "2fa": {
                 "header": "Two-factor authentication",
                 "description": "Two-factor authentication is required and enabled by default; codes are sent to your email you've provided during registration. If you wish, you can enable another 2FA option, such as authenticator app (e.g. Google Authenticator). At least one 2FA option needs to be enabled; if you wish you can enable all options."
+            },
+            "exports": {
+                "header": "Export your data",
+                "description": "You can export your data. Select what data you need, and we will process your request in the background. It may take a while, we will send you an e-mail once we are done. You can have only one active export at a time. Modifying the data when the export is being processed, may affect the outcome."
             }
         }
     },

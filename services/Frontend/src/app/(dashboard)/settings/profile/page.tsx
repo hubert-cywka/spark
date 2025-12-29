@@ -10,6 +10,7 @@ import { LogoutButton } from "@/features/auth/components/LogoutButton";
 import { TwoFactorAuthenticationConfiguration } from "@/features/auth/components/TwoFactorAuthenticationConfiguration";
 import { onlyAsAuthenticated } from "@/features/auth/hoc/withAuthorization";
 import { withSessionRestore } from "@/features/auth/hoc/withSessionRestore";
+import { ExportEntriesDashboard } from "@/features/export/components/ExportEntriesDashboard/ExportEntriesDashboard.tsx";
 import { AccountTerminationForm } from "@/features/user/components/AccountTerminationForm";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
@@ -40,6 +41,14 @@ function Page() {
                 <SectionTitle>{t("settings.profile.logoutFromAllDevices.header")}</SectionTitle>
                 <SectionDescription>{t("settings.profile.logoutFromAllDevices.description")}</SectionDescription>
                 <LogoutButton logoutFromAllSessions variant="primary" />
+            </Section>
+
+            <SectionSeparator />
+
+            <Section>
+                <SectionTitle>{t("settings.profile.exports.header")}</SectionTitle>
+                <SectionDescription>{t("settings.profile.exports.description")}</SectionDescription>
+                <ExportEntriesDashboard />
             </Section>
 
             <SectionSeparator />

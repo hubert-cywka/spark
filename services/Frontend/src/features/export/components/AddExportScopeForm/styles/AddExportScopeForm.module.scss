@@ -1,0 +1,12 @@
+@use "src/styles/tokens";
+
+.form {
+  padding: tokens.$spacing-500;
+  border-radius: tokens.$radius-100;
+  border: thin solid tokens.$color-neutral-surface-100;
+  background-color: tokens.$color-neutral-background-alpha-200;
+
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$spacing-400;
+}

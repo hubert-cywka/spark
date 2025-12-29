@@ -1,0 +1,45 @@
+@use "src/styles/tokens";
+
+.card {
+  list-style: none;
+  
+  .content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: tokens.$spacing-400;
+    margin-bottom: tokens.$spacing-300;
+
+    .info {
+      display: flex;
+      align-items: center;
+      gap: tokens.$spacing-400;
+
+      @media (max-width: tokens.$breakpoint-sm) {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: tokens.$spacing-200;
+      }
+
+      .timestamp {
+        font: tokens.$typography-body-100;
+        font-weight: tokens.$font-weight-300;
+      }
+    }
+  }
+
+  .scopeList {
+    padding-top: tokens.$spacing-200;
+    padding-left: tokens.$spacing-600;
+
+    li {
+      font: tokens.$typography-caption-200;
+      font-weight: tokens.$font-weight-200;
+      color: tokens.$color-neutral-text-200;
+
+      strong {
+        color: tokens.$color-accent-text-300;
+      }
+    }
+  }
+}

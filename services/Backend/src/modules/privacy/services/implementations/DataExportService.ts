@@ -5,6 +5,7 @@ import { Transactional } from "typeorm-transactional";
 
 import { type IDatabaseLockService, DatabaseLockServiceToken } from "@/common/database/services/IDatabaseLockService";
 import { DataExportScope } from "@/common/export/models/DataExportScope";
+import { PageOptions } from "@/common/pagination/types/PageOptions";
 import { DataExportEntity } from "@/modules/privacy/entities/DataExport.entity";
 import { AnotherDataExportActiveError } from "@/modules/privacy/errors/AnotherDataExportActiveError";
 import { DataExportAlreadyCancelledError } from "@/modules/privacy/errors/DataExportAlreadyCancelled.error";
@@ -27,6 +28,25 @@ export class DataExportService implements IDataExportService {
         @Inject(DatabaseLockServiceToken)
         private readonly dbLockService: IDatabaseLockService
     ) {}
+
+    public async getAll(tenantId: string, pageOptions: PageOptions) {
+        const queryBuilder = this.getRepository()
+            .createQueryBuilder("export")
+            .where("export.tenantId = :tenantId", { tenantId })
+            .addOrderBy("export.createdAt", pageOptions.order)
+            .skip(pageOptions.skip)
+            .take(pageOptions.take);
+        const [dataExports, itemCount] = await queryBuilder.getManyAndCount();
+
+        return {
+            data: this.mapper.fromEntityToModelBulk(dataExports),
+            meta: {
+                itemCount,
+                page: pageOptions.page,
+                take: pageOptions.take,
+            },
+        };
+    }
 
     // We could simply add a more specific WHERE clause, but in this case it's important to differentiate between a
     // scenario where the export does not exist at all and where it's completed/canceled already.
@@ -55,11 +75,6 @@ export class DataExportService implements IDataExportService {
         }
 
         return this.mapper.fromEntityToModel(dataExport);
-    }
-
-    public async getAll(tenantId: string) {
-        const dataExports = await this.getRepository().find({ where: { tenantId } });
-        return this.mapper.fromEntityToModelBulk(dataExports);
     }
 
     @Transactional({ connectionName: PRIVACY_MODULE_DATA_SOURCE })

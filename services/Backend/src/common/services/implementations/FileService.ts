@@ -7,9 +7,10 @@ import { ExportAttachmentManifest } from "@/common/export/models/ExportAttachmen
 import { type IChecksumCalculator, ChecksumCalculatorToken } from "@/common/services/interfaces/IChecksumCalculator";
 import { type IFileService } from "@/common/services/interfaces/IFileService";
 
+// TODO: Replace with S3-like storage
 @Injectable()
-export class FileService implements IFileService {
-    private readonly logger = new Logger(FileService.name);
+export class LocalFileService implements IFileService {
+    private readonly logger = new Logger(LocalFileService.name);
 
     public constructor(@Inject(ChecksumCalculatorToken) private readonly checksumCalculator: IChecksumCalculator) {}
 

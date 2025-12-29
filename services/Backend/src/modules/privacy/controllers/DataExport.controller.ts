@@ -1,38 +1,31 @@
-import { Body, ConflictException, Controller, Delete, Get, Inject, NotFoundException, Param, Post, UseGuards } from "@nestjs/common";
+import { Body, ConflictException, Controller, Delete, Get, Inject, NotFoundException, Param, Post, Query, UseGuards } from "@nestjs/common";
 
 import { AccessScopes } from "@/common/decorators/AccessScope.decorator";
 import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
 import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
-import { DataExportScopeDomain } from "@/common/export/types/DataExportScopeDomain";
 import { AccessGuard } from "@/common/guards/Access.guard";
+import { PageOptionsDto } from "@/common/pagination/dto/PageOptions.dto";
 import { StartDataExportDto } from "@/modules/privacy/dto/StartDataExport.dto";
+import { type IDataExportMapper, DataExportMapperToken } from "@/modules/privacy/mappers/IDataExport.mapper";
+import { type IDataExportService, DataExportServiceToken } from "@/modules/privacy/services/interfaces/IDataExportService";
 import { type IExportOrchestrator, ExportOrchestratorToken } from "@/modules/privacy/services/interfaces/IExportOrchestrator";
 import type { User } from "@/types/User";
 
-// TODO: GET to return all exports (with status and attachments).
-
 @Controller("export")
 export class DataExportController {
-    public constructor(@Inject(ExportOrchestratorToken) private readonly exportOrchestrator: IExportOrchestrator) {}
+    public constructor(
+        @Inject(ExportOrchestratorToken) private readonly exportOrchestrator: IExportOrchestrator,
+        @Inject(DataExportServiceToken) private readonly service: IDataExportService,
+        @Inject(DataExportMapperToken) private readonly mapper: IDataExportMapper
+    ) {}
 
-    // TODO: Remove after tests
     @Get()
-    public async test() {
-        try {
-            await this.exportOrchestrator.start("75e53e76-7ca3-4fb8-84a1-614a68ddb352", [
-                {
-                    domain: DataExportScopeDomain.ENTRIES,
-                    dateRange: {
-                        from: "2025-01-01",
-                        to: "2026-01-01",
-                    },
-                },
-            ]);
-        } catch (err) {
-            whenError(err).is(EntityConflictError).throw(new ConflictException()).elseRethrow();
-        }
+    @UseGuards(AccessGuard)
+    public async getAll(@Query() pageOptions: PageOptionsDto, @AuthenticatedUserContext() tenant: User) {
+        const exports = await this.service.getAll(tenant.id, pageOptions);
+        return this.mapper.fromModelToDtoPage(exports);
     }
 
     @Post()

@@ -16,6 +16,7 @@ import {
 import { type IExportOrchestrator } from "@/modules/privacy/services/interfaces/IExportOrchestrator";
 import { type IExportScopeCalculator, ExportScopeCalculatorToken } from "@/modules/privacy/services/interfaces/IExportScopeCalculator";
 
+// TODO: Trim scopes with future dates
 // TODO: Complete 'completed' flow - e.g., aggregate attachments, send them to the user.
 // TODO: Complete 'cancelled' flow - e.g., remove attachments, or ask other modules to remove them. No need to
 //  cancel in-flight exports.
