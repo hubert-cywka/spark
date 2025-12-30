@@ -1,4 +1,5 @@
 import { Body, ConflictException, Controller, Delete, Get, Inject, NotFoundException, Param, Post, Query, UseGuards } from "@nestjs/common";
+import { Throttle } from "@nestjs/throttler";
 
 import { AccessScopes } from "@/common/decorators/AccessScope.decorator";
 import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
@@ -7,6 +8,7 @@ import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
 import { AccessGuard } from "@/common/guards/Access.guard";
 import { PageOptionsDto } from "@/common/pagination/dto/PageOptions.dto";
+import { STRICT_RATE_LIMITING } from "@/common/rateLimiting/buckets";
 import { StartDataExportDto } from "@/modules/privacy/dto/StartDataExport.dto";
 import { type IDataExportMapper, DataExportMapperToken } from "@/modules/privacy/mappers/IDataExport.mapper";
 import { type IDataExportService, DataExportServiceToken } from "@/modules/privacy/services/interfaces/IDataExportService";
@@ -31,6 +33,7 @@ export class DataExportController {
     @Post()
     @UseGuards(AccessGuard)
     @AccessScopes("write:account")
+    @Throttle(STRICT_RATE_LIMITING)
     public async startExport(@AuthenticatedUserContext() tenant: User, @Body() dto: StartDataExportDto) {
         try {
             await this.exportOrchestrator.start(tenant.id, dto.targetScopes);
@@ -42,6 +45,7 @@ export class DataExportController {
     @Delete(":exportId")
     @UseGuards(AccessGuard)
     @AccessScopes("write:account")
+    @Throttle(STRICT_RATE_LIMITING)
     public async cancelExport(@Param("exportId") exportId: string, @AuthenticatedUserContext() tenant: User) {
         try {
             await this.exportOrchestrator.cancel(tenant.id, exportId);

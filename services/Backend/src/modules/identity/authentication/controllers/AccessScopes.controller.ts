@@ -7,6 +7,7 @@ import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
 import { AccessGuard } from "@/common/guards/Access.guard";
+import { AUTH_DEFAULT_RATE_LIMITING, AUTH_STRICT_RATE_LIMITING } from "@/common/rateLimiting/buckets";
 import {
     type ITwoFactorAuthenticationModuleFacade,
     TwoFactorAuthenticationModuleFacadeToken,
@@ -17,10 +18,9 @@ import {
     type IAuthenticationService,
     AuthenticationServiceToken,
 } from "@/modules/identity/authentication/services/interfaces/IAuthenticationService";
-import { IDENTITY_MODULE_DEFAULT_RATE_LIMITING, IDENTITY_MODULE_STRICT_RATE_LIMITING } from "@/modules/identity/shared/constants";
 import { type User } from "@/types/User";
 
-@Throttle(IDENTITY_MODULE_DEFAULT_RATE_LIMITING)
+@Throttle(AUTH_DEFAULT_RATE_LIMITING)
 @Controller("scopes")
 export class AccessScopesController {
     public constructor(
@@ -34,7 +34,7 @@ export class AccessScopesController {
 
     @Post("activate")
     @UseGuards(AccessGuard)
-    @Throttle(IDENTITY_MODULE_STRICT_RATE_LIMITING)
+    @Throttle(AUTH_STRICT_RATE_LIMITING)
     async activateAccessScopes(
         @Body() dto: ActivateAccessScopesDto,
         @AuthenticatedUserContext() user: User,

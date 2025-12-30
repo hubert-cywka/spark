@@ -93,8 +93,6 @@ module "journal-service" {
     "JWT_SIGNING_SECRET"                        = var.JWT_SIGNING_SECRET
     "JOURNAL_DATABASE_NAME"                     = var.JOURNAL_DATABASE_NAME
     "COOKIES_SECRET"                            = var.COOKIES_SECRET
-    "RATE_LIMITING_BASE_LIMIT"                  = var.RATE_LIMITING_BASE_LIMIT
-    "RATE_LIMITING_BASE_TTL"                    = var.RATE_LIMITING_BASE_TTL
     "GATEWAY_INTERNAL_URL"                      = "gateway.${kubernetes_namespace_v1.app.metadata[0].name}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
   }
 
@@ -152,8 +150,6 @@ module "mail-service" {
     "MAIL_SENDER_PASSWORD"                      = var.MAIL_SENDER_PASSWORD
     "MAIL_DEBUG_MODE"                           = var.MAIL_DEBUG_MODE
     "COOKIES_SECRET"                            = var.COOKIES_SECRET
-    "RATE_LIMITING_BASE_LIMIT"                  = var.RATE_LIMITING_BASE_LIMIT
-    "RATE_LIMITING_BASE_TTL"                    = var.RATE_LIMITING_BASE_TTL
     "GATEWAY_INTERNAL_URL"                      = "gateway.${kubernetes_namespace_v1.app.metadata[0].name}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
   }
 
@@ -212,14 +208,10 @@ module "identity-service" {
     "REFRESH_TOKEN_SIGNING_SECRET"               = var.REFRESH_TOKEN_SIGNING_SECRET
     "REFRESH_TOKEN_EXPIRATION_TIME_IN_SECONDS"   = var.REFRESH_TOKEN_EXPIRATION_TIME_IN_SECONDS
     "AUTH_DATABASE_NAME"                         = var.AUTH_DATABASE_NAME
-    "AUTH_THROTTLE_LIMIT"                        = var.AUTH_THROTTLE_LIMIT
-    "AUTH_THROTTLE_TTL_IN_MS"                    = var.AUTH_THROTTLE_TTL_IN_MS
     "COOKIES_SECRET"                             = var.COOKIES_SECRET
     "GOOGLE_CLIENT_ID"                           = var.GOOGLE_CLIENT_ID
     "GOOGLE_CLIENT_SECRET"                       = var.GOOGLE_CLIENT_SECRET
     "GOOGLE_OIDC_REDIRECT_URL"                   = var.GOOGLE_OIDC_REDIRECT_URL
-    "RATE_LIMITING_BASE_LIMIT"                   = var.RATE_LIMITING_BASE_LIMIT
-    "RATE_LIMITING_BASE_TTL"                     = var.RATE_LIMITING_BASE_TTL
     "GATEWAY_INTERNAL_URL"                       = "gateway.${kubernetes_namespace_v1.app.metadata[0].name}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
   }
 
@@ -274,8 +266,6 @@ module "privacy-service" {
     "JWT_SIGNING_SECRET"                        = var.JWT_SIGNING_SECRET
     "PRIVACY_DATABASE_NAME"                     = var.PRIVACY_DATABASE_NAME
     "COOKIES_SECRET"                            = var.COOKIES_SECRET
-    "RATE_LIMITING_BASE_LIMIT"                  = var.RATE_LIMITING_BASE_LIMIT
-    "RATE_LIMITING_BASE_TTL"                    = var.RATE_LIMITING_BASE_TTL
     "GATEWAY_INTERNAL_URL"                      = "gateway.${kubernetes_namespace_v1.app.metadata[0].name}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
   }
 
@@ -330,8 +320,6 @@ module "scheduling-service" {
     "JWT_SIGNING_SECRET"                        = var.JWT_SIGNING_SECRET
     "SCHEDULING_DATABASE_NAME"                  = var.SCHEDULING_DATABASE_NAME
     "COOKIES_SECRET"                            = var.COOKIES_SECRET
-    "RATE_LIMITING_BASE_LIMIT"                  = var.RATE_LIMITING_BASE_LIMIT
-    "RATE_LIMITING_BASE_TTL"                    = var.RATE_LIMITING_BASE_TTL
     "GATEWAY_INTERNAL_URL"                      = "gateway.${kubernetes_namespace_v1.app.metadata[0].name}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
   }
 
@@ -386,8 +374,6 @@ module "configuration-service" {
     "JWT_SIGNING_SECRET"                        = var.JWT_SIGNING_SECRET
     "CONFIGURATION_DATABASE_NAME"               = var.CONFIGURATION_DATABASE_NAME
     "COOKIES_SECRET"                            = var.COOKIES_SECRET
-    "RATE_LIMITING_BASE_LIMIT"                  = var.RATE_LIMITING_BASE_LIMIT
-    "RATE_LIMITING_BASE_TTL"                    = var.RATE_LIMITING_BASE_TTL
     "GATEWAY_INTERNAL_URL"                      = "gateway.${kubernetes_namespace_v1.app.metadata[0].name}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
   }
 
@@ -442,8 +428,6 @@ module "users-service" {
     "JWT_SIGNING_SECRET"                        = var.JWT_SIGNING_SECRET
     "USERS_DATABASE_NAME"                       = var.USERS_DATABASE_NAME
     "COOKIES_SECRET"                            = var.COOKIES_SECRET
-    "RATE_LIMITING_BASE_LIMIT"                  = var.RATE_LIMITING_BASE_LIMIT
-    "RATE_LIMITING_BASE_TTL"                    = var.RATE_LIMITING_BASE_TTL
     "GATEWAY_INTERNAL_URL"                      = "gateway.${kubernetes_namespace_v1.app.metadata[0].name}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
   }
 
@@ -498,8 +482,6 @@ module "alerts-service" {
     "JWT_SIGNING_SECRET"                        = var.JWT_SIGNING_SECRET
     "ALERTS_DATABASE_NAME"                      = var.ALERTS_DATABASE_NAME
     "COOKIES_SECRET"                            = var.COOKIES_SECRET
-    "RATE_LIMITING_BASE_LIMIT"                  = var.RATE_LIMITING_BASE_LIMIT
-    "RATE_LIMITING_BASE_TTL"                    = var.RATE_LIMITING_BASE_TTL
     "GATEWAY_INTERNAL_URL"                      = "gateway.${kubernetes_namespace_v1.app.metadata[0].name}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
   }
 

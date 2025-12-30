@@ -10,14 +10,6 @@ variable "TWO_FACTOR_AUTH_ENCRYPTION_SECRET_64_BYTES" {
   type = string
 }
 
-variable "RATE_LIMITING_BASE_TTL" {
-  type = number
-}
-
-variable "RATE_LIMITING_BASE_LIMIT" {
-  type = number
-}
-
 variable "DATABASE_LOGGING_ENABLED" {
   type = string
 }
@@ -86,14 +78,6 @@ variable "REFRESH_TOKEN_SIGNING_SECRET" {
 }
 
 variable "REFRESH_TOKEN_EXPIRATION_TIME_IN_SECONDS" {
-  type = number
-}
-
-variable "AUTH_THROTTLE_TTL_IN_MS" {
-  type = number
-}
-
-variable "AUTH_THROTTLE_LIMIT" {
   type = number
 }
 
