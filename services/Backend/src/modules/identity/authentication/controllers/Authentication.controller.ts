@@ -1,6 +1,5 @@
 import { Body, Controller, ForbiddenException, HttpCode, HttpStatus, Inject, Post, Res, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { Throttle } from "@nestjs/throttler";
 import { type FastifyReply } from "fastify";
 
 import { Cookie } from "@/common/decorators/Cookie.decorator";
@@ -8,7 +7,6 @@ import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
-import { AUTH_DEFAULT_RATE_LIMITING, AUTH_STRICT_RATE_LIMITING } from "@/common/rateLimiting/buckets";
 import { type IDomainVerifier, DomainVerifierToken } from "@/common/services/interfaces/IDomainVerifier";
 import { REFRESH_TOKEN_COOKIE_NAME } from "@/modules/identity/authentication/constants";
 import { LoginDto } from "@/modules/identity/authentication/dto/incoming/Login.dto";
@@ -25,7 +23,6 @@ import {
     RefreshTokenCookieStrategyToken,
 } from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
 
-@Throttle(AUTH_DEFAULT_RATE_LIMITING)
 @Controller("auth")
 export class AuthenticationController {
     private readonly refreshTokenCookieMaxAge: number;
@@ -46,7 +43,6 @@ export class AuthenticationController {
 
     @HttpCode(HttpStatus.CREATED)
     @Post("register")
-    @Throttle(AUTH_STRICT_RATE_LIMITING)
     async registerWithCredentials(@Body() dto: RegisterWithCredentialsDto) {
         if (!this.domainVerifier.verify(dto.accountActivationRedirectUrl)) {
             throw new UntrustedDomainError(dto.accountActivationRedirectUrl);
@@ -61,7 +57,6 @@ export class AuthenticationController {
 
     @HttpCode(HttpStatus.OK)
     @Post("login")
-    @Throttle(AUTH_STRICT_RATE_LIMITING)
     async login(@Body() dto: LoginDto, @Res() response: FastifyReply) {
         try {
             const result = await this.authService.loginWithCredentials({

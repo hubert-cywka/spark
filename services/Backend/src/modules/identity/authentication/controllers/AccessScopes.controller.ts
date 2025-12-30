@@ -1,5 +1,4 @@
 import { Body, Controller, ForbiddenException, Inject, Post, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
-import { Throttle } from "@nestjs/throttler";
 import { type FastifyRequest } from "fastify";
 
 import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
@@ -7,7 +6,6 @@ import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
 import { AccessGuard } from "@/common/guards/Access.guard";
-import { AUTH_DEFAULT_RATE_LIMITING, AUTH_STRICT_RATE_LIMITING } from "@/common/rateLimiting/buckets";
 import {
     type ITwoFactorAuthenticationModuleFacade,
     TwoFactorAuthenticationModuleFacadeToken,
@@ -20,7 +18,6 @@ import {
 } from "@/modules/identity/authentication/services/interfaces/IAuthenticationService";
 import { type User } from "@/types/User";
 
-@Throttle(AUTH_DEFAULT_RATE_LIMITING)
 @Controller("scopes")
 export class AccessScopesController {
     public constructor(
@@ -34,7 +31,6 @@ export class AccessScopesController {
 
     @Post("activate")
     @UseGuards(AccessGuard)
-    @Throttle(AUTH_STRICT_RATE_LIMITING)
     async activateAccessScopes(
         @Body() dto: ActivateAccessScopesDto,
         @AuthenticatedUserContext() user: User,
