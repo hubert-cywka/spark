@@ -7,14 +7,6 @@ import { type IUserMapper } from "@/modules/users/mappers/IUser.mapper";
 import { type User } from "@/modules/users/models/User.model";
 
 export class UserMapper extends BaseModelDTOEntityMapper<User, UserDto, UserEntity> implements IUserMapper {
-    fromDtoToModel(dto: UserDto): User {
-        return {
-            id: dto.id,
-            email: dto.email,
-            isActivated: dto.isActivated,
-        };
-    }
-
     fromEntityToModel(entity: UserEntity): User {
         return {
             id: entity.id,

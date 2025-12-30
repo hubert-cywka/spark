@@ -6,7 +6,9 @@ import { InboxEventPartitionEntity } from "@/common/events/entities/InboxEventPa
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { OutboxEventPartitionEntity } from "@/common/events/entities/OutboxEventPartition.entity";
 import { AppConfig } from "@/config/configuration";
+import { DataExportEntity } from "@/modules/privacy/entities/DataExport.entity";
 import { DataPurgePlanEntity } from "@/modules/privacy/entities/DataPurgePlan.entity";
+import { ExportAttachmentManifestEntity } from "@/modules/privacy/entities/ExportAttachmentManifest.entity";
 import { TenantEntity } from "@/modules/privacy/entities/Tenant.entity";
 
 configDotenv();
@@ -30,6 +32,8 @@ export const dataSource = new DataSource({
         DataPurgePlanEntity,
         OutboxEventPartitionEntity,
         InboxEventPartitionEntity,
+        DataExportEntity,
+        ExportAttachmentManifestEntity,
     ],
     migrations: [],
 });

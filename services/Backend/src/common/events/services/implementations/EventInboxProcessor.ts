@@ -125,7 +125,7 @@ export class EventInboxProcessor implements IEventInboxProcessor {
     private async processPartition(partitionId: number) {
         const blocked: string[] = [];
 
-        return await runInTransaction(
+        return runInTransaction(
             async () => {
                 const stillBlockedPartitionKeys = await this.eventsRepository.getBlockedEventsPartitionKeysByPartition({
                     partitionId: partitionId,

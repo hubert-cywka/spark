@@ -1,0 +1,140 @@
+import { Inject, Injectable, Logger } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { IsNull, Repository } from "typeorm";
+import { Transactional } from "typeorm-transactional";
+
+import { type IDatabaseLockService, DatabaseLockServiceToken } from "@/common/database/services/IDatabaseLockService";
+import { DataExportScope } from "@/common/export/models/DataExportScope";
+import { PageOptions } from "@/common/pagination/types/PageOptions";
+import { DataExportEntity } from "@/modules/privacy/entities/DataExport.entity";
+import { AnotherDataExportActiveError } from "@/modules/privacy/errors/AnotherDataExportActiveError";
+import { DataExportAlreadyCancelledError } from "@/modules/privacy/errors/DataExportAlreadyCancelled.error";
+import { DataExportAlreadyCompletedError } from "@/modules/privacy/errors/DataExportAlreadyCompleted.error";
+import { DataExportNotFoundError } from "@/modules/privacy/errors/DataExportNotFound.error";
+import { PRIVACY_MODULE_DATA_SOURCE } from "@/modules/privacy/infrastructure/database/constants";
+import { type IDataExportMapper, DataExportMapperToken } from "@/modules/privacy/mappers/IDataExport.mapper";
+import { DataExport } from "@/modules/privacy/models/DataExport.model";
+import { type IDataExportService } from "@/modules/privacy/services/interfaces/IDataExportService";
+
+@Injectable()
+export class DataExportService implements IDataExportService {
+    private readonly logger = new Logger(DataExportService.name);
+
+    public constructor(
+        @InjectRepository(DataExportEntity, PRIVACY_MODULE_DATA_SOURCE)
+        private readonly repository: Repository<DataExportEntity>,
+        @Inject(DataExportMapperToken)
+        private readonly mapper: IDataExportMapper,
+        @Inject(DatabaseLockServiceToken)
+        private readonly dbLockService: IDatabaseLockService
+    ) {}
+
+    public async getAll(tenantId: string, pageOptions: PageOptions) {
+        const queryBuilder = this.getRepository()
+            .createQueryBuilder("export")
+            .where("export.tenantId = :tenantId", { tenantId })
+            .addOrderBy("export.createdAt", pageOptions.order)
+            .skip(pageOptions.skip)
+            .take(pageOptions.take);
+        const [dataExports, itemCount] = await queryBuilder.getManyAndCount();
+
+        return {
+            data: this.mapper.fromEntityToModelBulk(dataExports),
+            meta: {
+                itemCount,
+                page: pageOptions.page,
+                take: pageOptions.take,
+            },
+        };
+    }
+
+    // We could simply add a more specific WHERE clause, but in this case it's important to differentiate between a
+    // scenario where the export does not exist at all and where it's completed/canceled already.
+    public async getActiveById(tenantId: string, exportId: string) {
+        const dataExport = await this.getAnyById(tenantId, exportId);
+        this.assertExportIsActive(tenantId, dataExport);
+        return dataExport;
+    }
+
+    private async getAnyById(tenantId: string, exportId: string) {
+        const dataExport = await this.getRepository().findOne({ where: { tenantId, id: exportId } });
+
+        if (!dataExport) {
+            this.logger.warn({ tenantId, exportId }, "Export not found");
+            throw new DataExportNotFoundError();
+        }
+
+        return this.mapper.fromEntityToModel(dataExport);
+    }
+
+    private async getActive(tenantId: string) {
+        const dataExport = await this.getRepository().findOne({ where: { tenantId, cancelledAt: IsNull(), completedAt: IsNull() } });
+
+        if (!dataExport) {
+            return null;
+        }
+
+        return this.mapper.fromEntityToModel(dataExport);
+    }
+
+    @Transactional({ connectionName: PRIVACY_MODULE_DATA_SOURCE })
+    public async createExportEntry(tenantId: string, targetScopes: DataExportScope[]) {
+        await this.dbLockService.acquireTransactionLock(this.getCreateExportEntryLockId(tenantId));
+        await this.assertCanCreateExportEntry(tenantId);
+
+        const result = await this.getRepository()
+            .createQueryBuilder()
+            .insert()
+            .into(DataExportEntity)
+            .values({
+                tenantId,
+                targetScopes,
+            })
+            .returning("*")
+            .execute();
+
+        const dataExport = result.raw[0] as DataExportEntity;
+        return this.mapper.fromEntityToModel(dataExport);
+    }
+
+    public async markExportAsCancelled(tenantId: string, exportId: string) {
+        await this.getActiveById(tenantId, exportId);
+        await this.getRepository().save({ id: exportId, cancelledAt: new Date() });
+    }
+
+    public async markExportAsCompleted(tenantId: string, exportId: string) {
+        await this.getActiveById(tenantId, exportId);
+        await this.getRepository().save({ id: exportId, completedAt: new Date() });
+    }
+
+    private async assertCanCreateExportEntry(tenantId: string) {
+        const activeExport = await this.getActive(tenantId);
+
+        if (activeExport) {
+            this.logger.warn({ tenantId }, "Another export is already in progress.");
+            throw new AnotherDataExportActiveError();
+        }
+
+        return activeExport;
+    }
+
+    private assertExportIsActive(tenantId: string, dataExport: DataExport) {
+        if (dataExport.cancelledAt) {
+            this.logger.warn({ tenantId, exportId: dataExport.id }, "Export already cancelled, cannot complete.");
+            throw new DataExportAlreadyCancelledError();
+        }
+
+        if (dataExport.completedAt) {
+            this.logger.warn({ tenantId, exportId: dataExport.id }, "Export already completed, cannot complete.");
+            throw new DataExportAlreadyCompletedError();
+        }
+    }
+
+    private getCreateExportEntryLockId(tenantId: string) {
+        return `create-export-lock-${tenantId}`;
+    }
+
+    private getRepository(): Repository<DataExportEntity> {
+        return this.repository;
+    }
+}

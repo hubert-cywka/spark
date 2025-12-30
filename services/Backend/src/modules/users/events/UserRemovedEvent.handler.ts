@@ -28,7 +28,7 @@ export class UserRemovedEventHandler implements IInboxEventHandler {
     }
 
     @Transactional({ connectionName: USERS_MODULE_DATA_SOURCE })
-    async handle(event: IntegrationEvent): Promise<void> {
+    public async handle(event: IntegrationEvent): Promise<void> {
         const payload = event.getPayload() as AccountRemovalCompletedEventPayload;
         await this.inboxRemovalService.removeByTenant(payload.account.id);
         await this.outboxRemovalService.removeByTenant(payload.account.id);

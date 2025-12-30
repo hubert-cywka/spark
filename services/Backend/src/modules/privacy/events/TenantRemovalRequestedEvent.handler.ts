@@ -16,7 +16,7 @@ export class TenantRemovalRequestedEventHandler implements IInboxEventHandler {
         return subject === IntegrationEvents.account.removal.requested.subject;
     }
 
-    async handle(event: IntegrationEvent): Promise<void> {
+    public async handle(event: IntegrationEvent): Promise<void> {
         const payload = event.getPayload() as AccountRemovalRequestedEventPayload;
         await this.dataPurgeService.scheduleForTenant(payload.account.id);
     }

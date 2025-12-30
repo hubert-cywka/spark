@@ -7,12 +7,6 @@ import { type IRecipientMapper } from "@/modules/alerts/mappers/IRecipient.mappe
 import { type Recipient } from "@/modules/alerts/models/Recipient.model";
 
 export class RecipientMapper extends BaseModelDTOEntityMapper<Recipient, RecipientDto, RecipientEntity> implements IRecipientMapper {
-    fromDtoToModel(dto: RecipientDto): Recipient {
-        return {
-            id: dto.id,
-        };
-    }
-
     fromEntityToModel(entity: RecipientEntity): Recipient {
         return {
             id: entity.id,

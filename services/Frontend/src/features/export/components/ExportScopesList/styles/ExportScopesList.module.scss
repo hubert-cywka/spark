@@ -1,0 +1,29 @@
+@use "src/styles/tokens";
+
+.list {
+  padding: 0;
+
+  .row {
+    padding: tokens.$spacing-400;
+    border-radius: tokens.$radius-100;
+    border: thin solid tokens.$color-neutral-surface-100;
+    background-color: tokens.$color-neutral-background-alpha-300;
+
+    display: flex;
+    align-items: center;
+    font: tokens.$typography-body-100;
+
+    .domain {
+      color: tokens.$color-accent-text-300;
+      font-weight: tokens.$font-weight-300;
+    }
+
+    .timeframe {
+      color: tokens.$color-neutral-text-100;
+    }
+
+    .actions {
+      margin-left: auto;
+    }
+  }
+}

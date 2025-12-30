@@ -7,18 +7,6 @@ import { type IAlertMapper } from "@/modules/alerts/mappers/IAlert.mapper";
 import { type Alert } from "@/modules/alerts/models/Alert.model";
 
 export class AlertMapper extends BaseModelDTOEntityMapper<Alert, AlertDto, AlertEntity> implements IAlertMapper {
-    fromDtoToModel(dto: AlertDto): Alert {
-        return {
-            id: dto.id,
-            time: dto.time,
-            daysOfWeek: dto.daysOfWeek,
-            enabled: dto.enabled,
-            createdAt: new Date(dto.createdAt),
-            nextTriggerAt: dto.nextTriggerAt ? new Date(dto.nextTriggerAt) : null,
-            recipientId: dto.recipientId,
-        };
-    }
-
     fromEntityToModel(entity: AlertEntity): Alert {
         return {
             id: entity.id,

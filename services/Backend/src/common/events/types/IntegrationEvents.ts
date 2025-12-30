@@ -1,7 +1,8 @@
 import { TWO_FACTOR_AUTH_EVENTS } from "@/common/events/types/2fa/TWO_FACTOR_AUTH_EVENTS";
 import { ACCOUNT_EVENTS } from "@/common/events/types/account/ACCOUNT_EVENTS";
 import { ALERT_EVENTS } from "@/common/events/types/alert/ALERT_EVENTS";
-import { PRIVACY_EVENTS } from "@/common/events/types/privacy/PRIVACY_EVENTS";
+import { EXPORT_EVENTS } from "@/common/events/types/export/EXPORT_EVENTS";
+import { PURGE_EVENTS } from "@/common/events/types/purge/PURGE_EVENTS";
 import { REFRESH_TOKEN_EVENTS } from "@/common/events/types/refreshToken/TWO_FACTOR_AUTH_EVENTS";
 import { SCHEDULING_EVENTS } from "@/common/events/types/scheduling/SCHEDULING_EVENTS";
 
@@ -10,6 +11,7 @@ export const IntegrationEvents = {
     alert: ALERT_EVENTS,
     twoFactorAuth: TWO_FACTOR_AUTH_EVENTS,
     refreshToken: REFRESH_TOKEN_EVENTS,
-    privacy: PRIVACY_EVENTS,
+    purge: PURGE_EVENTS,
+    export: EXPORT_EVENTS,
     scheduling: SCHEDULING_EVENTS,
 };

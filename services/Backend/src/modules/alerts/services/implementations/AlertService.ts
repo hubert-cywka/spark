@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Transactional } from "typeorm-transactional";
 
+import { type IDatabaseLockService, DatabaseLockServiceToken } from "@/common/database/services/IDatabaseLockService";
 import { AlertEntity } from "@/modules/alerts/entities/Alert.entity";
 import { AlertLimitReachedError } from "@/modules/alerts/errors/AlertLimitReached.error";
 import { AlertNotFoundError } from "@/modules/alerts/errors/AlertNotFound.error";
@@ -22,9 +23,12 @@ export class AlertService implements IAlertService {
     public constructor(
         @InjectRepository(AlertEntity, ALERTS_MODULE_DATA_SOURCE)
         private readonly repository: Repository<AlertEntity>,
-        @Inject(AlertMapperToken) private readonly alertMapper: IAlertMapper,
+        @Inject(AlertMapperToken)
+        private readonly alertMapper: IAlertMapper,
         @Inject(AlertSchedulerToken)
-        private readonly alertScheduler: IAlertScheduler
+        private readonly alertScheduler: IAlertScheduler,
+        @Inject(DatabaseLockServiceToken)
+        private readonly dbLockService: IDatabaseLockService
     ) {}
 
     public async getAll(recipientId: string): Promise<Alert[]> {
@@ -37,6 +41,7 @@ export class AlertService implements IAlertService {
 
     @Transactional({ connectionName: ALERTS_MODULE_DATA_SOURCE })
     public async create(recipientId: string, time: string, daysOfWeek: UTCDay[]): Promise<Alert> {
+        await this.dbLockService.acquireTransactionLock(this.getCreateAlertLockId(recipientId));
         await this.assertEligibilityToCreate(recipientId);
 
         const result = await this.getRepository()
@@ -143,6 +148,10 @@ export class AlertService implements IAlertService {
         return await this.getRepository().count({
             where: { recipient: { id: recipientId } },
         });
+    }
+
+    private getCreateAlertLockId(recipientId: string) {
+        return `alerts-lock-${recipientId}`;
     }
 
     private getRepository() {

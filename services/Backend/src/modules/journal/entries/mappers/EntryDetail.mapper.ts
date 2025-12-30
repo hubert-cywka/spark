@@ -7,17 +7,6 @@ import { type IEntryDetailMapper } from "@/modules/journal/entries/mappers/IEntr
 import { EntryDetail } from "@/modules/journal/entries/models/EntryDetail.model";
 
 export class EntryDetailMapper extends BaseModelDTOEntityMapper<EntryDetail, EntryDetailDto, EntryEntity> implements IEntryDetailMapper {
-    public fromDtoToModel(dto: EntryDetailDto): EntryDetail {
-        return {
-            id: dto.id,
-            content: dto.content,
-            isCompleted: dto.isCompleted,
-            isFeatured: dto.isFeatured,
-            daily: dto.daily,
-            goals: dto.goals,
-        };
-    }
-
     public fromEntityToModel(entity: EntryEntity): EntryDetail {
         return {
             id: entity.id,

@@ -1,8 +1,10 @@
 import { DynamicModule, Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
+import { getDataSourceToken, TypeOrmModule } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 import { addTransactionalDataSource, getDataSourceByName } from "typeorm-transactional";
 
+import { DatabaseLockService } from "@/common/database/services/DatabaseLockService";
+import { DatabaseLockServiceToken } from "@/common/database/services/IDatabaseLockService";
 import { initializeDatabase } from "@/common/utils/databaseUtils";
 import { EntityConstructor, MigrationConstructor } from "@/types/Database";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
@@ -73,7 +75,14 @@ export class DatabaseModule {
                     inject: options.inject || [],
                 }),
             ],
-            exports: [TypeOrmModule],
+            providers: [
+                {
+                    provide: DatabaseLockServiceToken,
+                    useFactory: (dataSource: DataSource) => new DatabaseLockService(dataSource, connectionName),
+                    inject: [getDataSourceToken(connectionName)],
+                },
+            ],
+            exports: [TypeOrmModule, DatabaseLockServiceToken],
         };
     }
 

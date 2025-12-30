@@ -15,7 +15,7 @@ export class TenantCreatedEventHandler implements IInboxEventHandler {
         return subject === IntegrationEvents.account.created.subject;
     }
 
-    async handle(event: IntegrationEvent): Promise<void> {
+    public async handle(event: IntegrationEvent): Promise<void> {
         const payload = event.getPayload() as AccountCreatedEventPayload;
         await this.tenantService.create(payload.account.id);
     }

@@ -2,12 +2,11 @@
 
 .badge {
     display: flex;
-    gap: tokens.$spacing-300;
-    align-items: center;
+    gap: tokens.$spacing-200;
     width: fit-content;
     
     font-size: tokens.$font-size-200;
-    padding: tokens.$spacing-100 tokens.$spacing-300;
+    padding: tokens.$spacing-100 tokens.$spacing-400 tokens.$spacing-100 tokens.$spacing-300;
     border-radius: tokens.$radius-400;
 
     border: thin solid;
@@ -34,6 +33,12 @@
         background: tokens.$color-info-surface-300;
         border-color: tokens.$color-info-surface-200;
         color: tokens.$color-info-text-200;
+    }
+
+    &[data-variant="danger"] {
+        background: tokens.$color-danger-surface-300;
+        border-color: tokens.$color-danger-surface-200;
+        color: tokens.$color-danger-text-200;
     }
 
     .icon {

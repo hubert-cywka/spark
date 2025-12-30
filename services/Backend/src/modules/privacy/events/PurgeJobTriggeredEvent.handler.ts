@@ -1,7 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { type IInboxEventHandler, IntegrationEvent, IntegrationEvents } from "@/common/events";
+import { type IInboxEventHandler, IntegrationEvents } from "@/common/events";
 import { IntegrationEventSubject } from "@/common/events/types";
+import { JobTriggeredEvent } from "@/common/events/types/scheduling/JobTriggeredEvent";
 import { type IDataPurgeProcessor, DataPurgeProcessorToken } from "@/modules/privacy/services/interfaces/IDataPurgeProcessor";
 
 @Injectable()
@@ -12,10 +13,10 @@ export class PurgeJobTriggeredEventHandler implements IInboxEventHandler {
     ) {}
 
     public canHandle(subject: IntegrationEventSubject): boolean {
-        return subject === IntegrationEvents.privacy.purge.triggered.subject;
+        return subject === IntegrationEvents.purge.triggered.subject;
     }
 
-    async handle(event: IntegrationEvent): Promise<void> {
+    public async handle(event: JobTriggeredEvent): Promise<void> {
         await this.purgeProcessor.processDataPurgePlans();
     }
 }

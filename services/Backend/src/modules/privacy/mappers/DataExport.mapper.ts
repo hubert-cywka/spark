@@ -1,0 +1,41 @@
+import { plainToInstance } from "class-transformer";
+
+import { DataExportScope } from "@/common/export/models/DataExportScope";
+import { BaseModelDTOEntityMapper } from "@/common/mappers/BaseModelDTOEntity.mapper";
+import { DataExportDto } from "@/modules/privacy/dto/DataExport.dto";
+import { DataExportScopeDto } from "@/modules/privacy/dto/DataExportScope.dto";
+import { DataExportEntity } from "@/modules/privacy/entities/DataExport.entity";
+import { type IDataExportMapper } from "@/modules/privacy/mappers/IDataExport.mapper";
+import { DataExport } from "@/modules/privacy/models/DataExport.model";
+
+export class DataExportMapper extends BaseModelDTOEntityMapper<DataExport, DataExportDto, DataExportEntity> implements IDataExportMapper {
+    fromEntityToModel = (entity: DataExportEntity): DataExport => {
+        return {
+            id: entity.id,
+            targetScopes: entity.targetScopes.map(this.unwrapScope),
+            startedAt: entity.createdAt,
+            completedAt: entity.completedAt,
+            cancelledAt: entity.cancelledAt,
+        };
+    };
+
+    fromModelToDto = (model: DataExport): DataExportDto => {
+        return plainToInstance(DataExportDto, {
+            id: model.id,
+            targetScopes: model.targetScopes.map(this.unwrapScope),
+            startedAt: model.startedAt,
+            completedAt: model.completedAt,
+            cancelledAt: model.cancelledAt,
+        } as DataExportDto);
+    };
+
+    private unwrapScope(scope: DataExportScope | DataExportScopeDto) {
+        return {
+            domain: scope.domain,
+            dateRange: {
+                from: scope.dateRange.from,
+                to: scope.dateRange.to,
+            },
+        };
+    }
+}

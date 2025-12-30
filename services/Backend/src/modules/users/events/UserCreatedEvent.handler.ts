@@ -12,7 +12,7 @@ export class UserCreatedEventHandler implements IInboxEventHandler {
         return subject === IntegrationEvents.account.created.subject;
     }
 
-    async handle(event: IntegrationEvent): Promise<void> {
+    public async handle(event: IntegrationEvent): Promise<void> {
         const payload = event.getPayload() as AccountCreatedEventPayload;
         await this.usersService.create({
             id: payload.account.id,
