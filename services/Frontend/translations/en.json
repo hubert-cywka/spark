@@ -591,6 +591,7 @@
         },
         "list": {
             "header": "Showing up to 5 most recent exports:",
+            "error": "Failed to load the list of data exports. Try again later.",
             "noData": "You have not requested any data export yet.",
             "buttons": {
                 "cancel": {

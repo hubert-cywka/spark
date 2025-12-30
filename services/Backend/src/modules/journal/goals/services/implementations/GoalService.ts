@@ -2,6 +2,7 @@ import { Inject, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
+import { applyCursorBasedPagination, createPage, createPaginationKeys } from "@/common/pagination/pagination";
 import { PageOptions } from "@/common/pagination/types/PageOptions";
 import { Paginated } from "@/common/pagination/types/Paginated";
 import { GoalEntity } from "@/modules/journal/goals/entities/Goal.entity";
@@ -28,6 +29,9 @@ export class GoalService implements IGoalService {
         { entries, excludeEntries, name, withProgress }: GoalFilters = {}
     ): Promise<Paginated<Goal>> {
         const queryBuilder = this.getRepository().createQueryBuilder("goal").where("goal.authorId = :authorId", { authorId });
+
+        const paginationKeys = createPaginationKeys(["createdAt", "id"]);
+        applyCursorBasedPagination(queryBuilder, pageOptions, paginationKeys);
 
         if (withProgress) {
             queryBuilder
@@ -56,18 +60,9 @@ export class GoalService implements IGoalService {
             });
         }
 
-        queryBuilder.addOrderBy("goal.createdAt", pageOptions.order).skip(pageOptions.skip).take(pageOptions.take);
-
-        const [goals, itemCount] = await queryBuilder.getManyAndCount();
-
-        return {
-            data: this.goalMapper.fromEntityToModelBulk(goals),
-            meta: {
-                itemCount,
-                page: pageOptions.page,
-                take: pageOptions.take,
-            },
-        };
+        const result = await queryBuilder.getMany();
+        const mappedResult = this.goalMapper.fromEntityToModelBulk(result);
+        return createPage(mappedResult, pageOptions.take, paginationKeys);
     }
 
     public async findOneById(authorId: string, goalId: string): Promise<Goal> {

@@ -13,7 +13,7 @@ export class DataExportMapper extends BaseModelDTOEntityMapper<DataExport, DataE
         return {
             id: entity.id,
             targetScopes: entity.targetScopes.map(this.unwrapScope),
-            startedAt: entity.createdAt,
+            startedAt: entity.startedAt,
             completedAt: entity.completedAt,
             cancelledAt: entity.cancelledAt,
         };

@@ -1,5 +1,4 @@
 export interface PageMeta {
-    page: number;
-    take: number;
-    itemCount: number;
+    nextCursor: string | null;
+    hasNextPage: boolean;
 }

@@ -19,7 +19,7 @@ import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 export const ExportEntriesDashboard = () => {
     const t = useTranslate();
 
-    const { data: exportEntries, isLoading } = useRecentDataExportEntries();
+    const { data: exportEntries, isLoading, isError } = useRecentDataExportEntries();
     const { mutateAsync: startExport } = useStartExport();
     const { mutateAsync: cancelExport } = useCancelExport();
     const { ensureAccess } = useAccessValidation();
@@ -61,7 +61,9 @@ export const ExportEntriesDashboard = () => {
         <article className={styles.container}>
             {isLoading && <ExportEntriesListSkeleton />}
 
-            {!isLoading && !exportEntries?.length && <Alert variant="info">{t("exports.list.noData")}</Alert>}
+            {isError && <Alert variant="danger">{t("exports.list.error")}</Alert>}
+
+            {!isLoading && !isError && !exportEntries?.length && <Alert variant="info">{t("exports.list.noData")}</Alert>}
 
             {!isLoading && !!exportEntries?.length && (
                 <>

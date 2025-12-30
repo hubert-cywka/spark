@@ -2,6 +2,7 @@ import { Inject, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
+import { applyCursorBasedPagination, createPage, createPaginationKeys } from "@/common/pagination/pagination";
 import { PageOptions } from "@/common/pagination/types/PageOptions";
 import { Paginated } from "@/common/pagination/types/Paginated";
 import { DailyEntity } from "@/modules/journal/daily/entities/Daily.entity";
@@ -31,23 +32,14 @@ export class DailyProvider implements IDailyProvider {
     ): Promise<Paginated<Daily>> {
         const queryBuilder = this.getRepository().createQueryBuilder("daily");
 
-        queryBuilder
-            .where("daily.date BETWEEN :from AND :to", { from, to })
-            .andWhere("daily.authorId = :authorId", { authorId })
-            .orderBy("daily.date", pageOptions.order)
-            .skip(pageOptions.skip)
-            .take(pageOptions.take);
+        queryBuilder.where("daily.date BETWEEN :from AND :to", { from, to }).andWhere("daily.authorId = :authorId", { authorId });
 
-        const [dailies, itemCount] = await queryBuilder.getManyAndCount();
+        const paginationKeys = createPaginationKeys(["createdAt", "id"]);
+        applyCursorBasedPagination(queryBuilder, pageOptions, paginationKeys);
 
-        return {
-            data: this.dailyMapper.fromEntityToModelBulk(dailies),
-            meta: {
-                itemCount,
-                page: pageOptions.page,
-                take: pageOptions.take,
-            },
-        };
+        const dailies = await queryBuilder.getMany();
+        const mappedDailies = this.dailyMapper.fromEntityToModelBulk(dailies);
+        return createPage(mappedDailies, pageOptions.take, paginationKeys);
     }
 
     public async findOneById(authorId: string, dailyId: string): Promise<Daily> {

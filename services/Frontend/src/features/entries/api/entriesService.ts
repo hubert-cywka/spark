@@ -1,4 +1,5 @@
 import { PageDto } from "@/api/dto/PageDto";
+import { PageCursor } from "@/api/types/PageCursor.ts";
 import { CreateEntryRequestDto } from "@/features/entries/api/dto/CreateEntryRequestDto";
 import { EntryDetailDto } from "@/features/entries/api/dto/EntryDetailDto.ts";
 import { EntryDto } from "@/features/entries/api/dto/EntryDto";
@@ -13,12 +14,15 @@ import { apiClient } from "@/lib/apiClient/apiClient";
 const PAGE_SIZE = 100;
 
 export class EntriesService {
-    public static async getPage(page: number, { from, to, goals, featured, completed }: EntriesQueryFilters = {}) {
+    public static async getPage(cursor: PageCursor, { from, to, goals, featured, completed }: EntriesQueryFilters = {}) {
         const searchParams = new URLSearchParams({
             order: "DESC",
-            page: String(page),
             take: String(PAGE_SIZE),
         });
+
+        if (cursor) {
+            searchParams.append("cursor", cursor);
+        }
 
         if (from) {
             searchParams.append("from", from);
@@ -44,15 +48,17 @@ export class EntriesService {
         return { ...data, data: data.data.map(EntriesService.mapDtoToEntry) };
     }
 
-    public static async getDetailedPage(page: number, { from, to, goals, featured, completed, content }: EntriesDetailsQueryFilters) {
+    public static async getDetailedPage(cursor: PageCursor, { from, to, goals, featured, completed, content }: EntriesDetailsQueryFilters) {
         const searchParams = new URLSearchParams({
             order: "DESC",
-            page: String(page),
             take: String(PAGE_SIZE),
+            from,
+            to,
         });
 
-        searchParams.append("from", from);
-        searchParams.append("to", to);
+        if (cursor) {
+            searchParams.append("cursor", cursor);
+        }
 
         if (content) {
             searchParams.append("content", content);

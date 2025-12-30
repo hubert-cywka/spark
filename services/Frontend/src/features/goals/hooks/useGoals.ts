@@ -5,7 +5,7 @@ import { GoalsService } from "@/features/goals/api/goalsService";
 import { GoalsQueryFilters } from "@/features/goals/api/types/GoalsQueryFilters";
 import { GoalQueryKeyFactory } from "@/features/goals/utils/goalQueryKeyFactory";
 import { useAutoFetch } from "@/hooks/useAutoFetch.ts";
-import { getNextPage, getPreviousPage } from "@/lib/queryClient/pagination";
+import { getNextCursor } from "@/lib/queryClient/pagination";
 
 type UseGoalsOptions = {
     filters?: GoalsQueryFilters;
@@ -15,16 +15,15 @@ type UseGoalsOptions = {
 export const useGoals = ({ filters = {}, autoFetch }: UseGoalsOptions) => {
     const queryKey = GoalQueryKeyFactory.createForFiltered(filters);
 
-    const { hasNextPage, fetchNextPage, data, ...rest } = useInfiniteQuery({
+    const { hasNextPage, fetchNextPage, isFetchingNextPage, data, ...rest } = useInfiniteQuery({
         queryKey,
-        initialPageParam: 1,
+        initialPageParam: null,
         queryFn: async ({ pageParam }) => await GoalsService.getPage(pageParam, filters),
-        getNextPageParam: getNextPage,
-        getPreviousPageParam: getPreviousPage,
+        getNextPageParam: getNextCursor,
     });
 
     useAutoFetch({
-        shouldFetch: !!autoFetch && hasNextPage,
+        shouldFetch: !!autoFetch && hasNextPage && !isFetchingNextPage,
         fetch: fetchNextPage,
     });
 

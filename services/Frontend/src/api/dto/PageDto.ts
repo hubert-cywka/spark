@@ -1,11 +1,9 @@
+import { PageCursor } from "@/api/types/PageCursor.ts";
+
 export type PageDto<T> = Readonly<{
     data: Readonly<T[]>;
     meta: Readonly<{
-        page: number;
-        take: number;
-        itemCount: number;
-        pageCount: number;
-        hasPreviousPage: boolean;
+        nextCursor: PageCursor;
         hasNextPage: boolean;
     }>;
 }>;

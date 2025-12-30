@@ -19,7 +19,7 @@ export class DataExportEntity {
     completedAt!: Date | null;
 
     @CreateDateColumn({ type: "timestamptz" })
-    createdAt!: Date;
+    startedAt!: Date;
 
     @UpdateDateColumn({ type: "timestamptz" })
     updatedAt!: Date;

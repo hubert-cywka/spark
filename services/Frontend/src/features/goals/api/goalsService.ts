@@ -1,4 +1,5 @@
 import { PageDto } from "@/api/dto/PageDto";
+import { PageCursor } from "@/api/types/PageCursor.ts";
 import { CreateOrUpdateGoalRequestDto } from "@/features/goals/api/dto/CreateOrUpdateGoalRequestDto";
 import { GoalDto } from "@/features/goals/api/dto/GoalDto";
 import { GoalsQueryFilters } from "@/features/goals/api/types/GoalsQueryFilters";
@@ -6,11 +7,14 @@ import { Goal } from "@/features/goals/types/Goal";
 import { apiClient } from "@/lib/apiClient/apiClient";
 
 export class GoalsService {
-    public static async getPage(page: number, { entries, excludeEntries, name, pageSize, withProgress }: GoalsQueryFilters = {}) {
+    public static async getPage(cursor: PageCursor, { entries, excludeEntries, name, pageSize, withProgress }: GoalsQueryFilters = {}) {
         const searchParams = new URLSearchParams({
             order: "DESC",
-            page: String(page),
         });
+
+        if (cursor) {
+            searchParams.append("cursor", cursor);
+        }
 
         if (withProgress) {
             searchParams.append("withProgress", "true");

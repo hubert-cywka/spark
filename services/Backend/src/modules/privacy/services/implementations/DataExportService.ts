@@ -5,6 +5,7 @@ import { Transactional } from "typeorm-transactional";
 
 import { type IDatabaseLockService, DatabaseLockServiceToken } from "@/common/database/services/IDatabaseLockService";
 import { DataExportScope } from "@/common/export/models/DataExportScope";
+import { applyCursorBasedPagination, createPage, createPaginationKeys } from "@/common/pagination/pagination";
 import { PageOptions } from "@/common/pagination/types/PageOptions";
 import { DataExportEntity } from "@/modules/privacy/entities/DataExport.entity";
 import { AnotherDataExportActiveError } from "@/modules/privacy/errors/AnotherDataExportActiveError";
@@ -30,22 +31,14 @@ export class DataExportService implements IDataExportService {
     ) {}
 
     public async getAll(tenantId: string, pageOptions: PageOptions) {
-        const queryBuilder = this.getRepository()
-            .createQueryBuilder("export")
-            .where("export.tenantId = :tenantId", { tenantId })
-            .addOrderBy("export.createdAt", pageOptions.order)
-            .skip(pageOptions.skip)
-            .take(pageOptions.take);
-        const [dataExports, itemCount] = await queryBuilder.getManyAndCount();
+        const queryBuilder = this.getRepository().createQueryBuilder("export").where("export.tenantId = :tenantId", { tenantId });
 
-        return {
-            data: this.mapper.fromEntityToModelBulk(dataExports),
-            meta: {
-                itemCount,
-                page: pageOptions.page,
-                take: pageOptions.take,
-            },
-        };
+        const paginationKeys = createPaginationKeys(["startedAt", "id"]);
+        applyCursorBasedPagination(queryBuilder, pageOptions, paginationKeys);
+
+        const dataExports = await queryBuilder.getMany();
+        const mappedExports = this.mapper.fromEntityToModelBulk(dataExports);
+        return createPage(mappedExports, pageOptions.take, paginationKeys);
     }
 
     // We could simply add a more specific WHERE clause, but in this case it's important to differentiate between a
