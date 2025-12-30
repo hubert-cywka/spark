@@ -17,7 +17,7 @@ type UseGetDailiesByDateRangeOptions = {
 export const useGetDailiesByDateRange = ({ filters, autoFetch }: UseGetDailiesByDateRangeOptions) => {
     const queryKey = DailyQueryKeyFactory.createForDateRange(filters.from, filters.to);
 
-    const { hasNextPage, fetchNextPage, ...rest } = useInfiniteQuery({
+    const { hasNextPage, fetchNextPage, isFetchingNextPage, ...rest } = useInfiniteQuery({
         queryKey,
         initialPageParam: null,
         queryFn: async ({ pageParam }) => await DailyService.getPage(filters.from, filters.to, pageParam),
@@ -26,7 +26,7 @@ export const useGetDailiesByDateRange = ({ filters, autoFetch }: UseGetDailiesBy
     });
 
     useAutoFetch({
-        shouldFetch: !!autoFetch && hasNextPage,
+        shouldFetch: !!autoFetch && hasNextPage && !isFetchingNextPage,
         fetch: fetchNextPage,
     });
 

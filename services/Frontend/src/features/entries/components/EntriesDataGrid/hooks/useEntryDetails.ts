@@ -21,7 +21,7 @@ type UseEntryDetailsOptions = {
 export const useEntryDetails = ({ filters, autoFetch }: UseEntryDetailsOptions) => {
     const queryKey = EntriesQueryKeyFactory.createForDetailed(filters);
 
-    const { hasNextPage, fetchNextPage, data, ...rest } = useInfiniteQuery({
+    const { hasNextPage, fetchNextPage, isFetchingNextPage, data, ...rest } = useInfiniteQuery({
         queryKey,
         initialPageParam: null,
         queryFn: async ({ pageParam }) => await EntriesService.getDetailedPage(pageParam, filters),
@@ -29,7 +29,7 @@ export const useEntryDetails = ({ filters, autoFetch }: UseEntryDetailsOptions) 
     });
 
     useAutoFetch({
-        shouldFetch: !!autoFetch && hasNextPage,
+        shouldFetch: !!autoFetch && hasNextPage && !isFetchingNextPage,
         fetch: fetchNextPage,
     });
 

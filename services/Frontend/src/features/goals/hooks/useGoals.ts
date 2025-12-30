@@ -15,7 +15,7 @@ type UseGoalsOptions = {
 export const useGoals = ({ filters = {}, autoFetch }: UseGoalsOptions) => {
     const queryKey = GoalQueryKeyFactory.createForFiltered(filters);
 
-    const { hasNextPage, fetchNextPage, data, ...rest } = useInfiniteQuery({
+    const { hasNextPage, fetchNextPage, isFetchingNextPage, data, ...rest } = useInfiniteQuery({
         queryKey,
         initialPageParam: null,
         queryFn: async ({ pageParam }) => await GoalsService.getPage(pageParam, filters),
@@ -23,7 +23,7 @@ export const useGoals = ({ filters = {}, autoFetch }: UseGoalsOptions) => {
     });
 
     useAutoFetch({
-        shouldFetch: !!autoFetch && hasNextPage,
+        shouldFetch: !!autoFetch && hasNextPage && !isFetchingNextPage,
         fetch: fetchNextPage,
     });
 
