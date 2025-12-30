@@ -1,3 +1,54 @@
+# TODO: Enable more granular rate-limiting (cheap GETs get bigger limits, expensive/critical operations get lower ones)
+
+!ignore templates:
+  standard: &standard_rate_limit
+    "@type": type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+    stat_prefix: standard
+    enable_x_ratelimit_headers: DRAFT_VERSION_03
+    token_bucket:
+      max_tokens: 500
+      tokens_per_fill: 250
+      fill_interval: 60s
+    filter_enabled:
+      default_value: { numerator: 100, denominator: HUNDRED }
+    filter_enforced:
+      default_value: { numerator: 100, denominator: HUNDRED }
+    response_headers_to_add:
+      - header: { key: x-rate-limit, value: standard }
+      - header: { key: content-type, value: application/json }
+
+  auth: &auth_rate_limit
+    "@type": type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+    stat_prefix: auth
+    enable_x_ratelimit_headers: DRAFT_VERSION_03
+    token_bucket:
+      max_tokens: 30
+      tokens_per_fill: 15
+      fill_interval: 60s
+    filter_enabled:
+      default_value: { numerator: 100, denominator: HUNDRED }
+    filter_enforced:
+      default_value: { numerator: 100, denominator: HUNDRED }
+    response_headers_to_add:
+      - header: { key: x-rate-limit, value: auth }
+      - header: { key: content-type, value: application/json }
+
+  export: &export_rate_limit
+    "@type": type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+    stat_prefix: export
+    enable_x_ratelimit_headers: DRAFT_VERSION_03
+    token_bucket:
+      max_tokens: 30
+      tokens_per_fill: 15
+      fill_interval: 60s
+    filter_enabled:
+      default_value: { numerator: 100, denominator: HUNDRED }
+    filter_enforced:
+      default_value: { numerator: 100, denominator: HUNDRED }
+    response_headers_to_add:
+      - header: { key: x-rate-limit, value: export }
+      - header: { key: content-type, value: application/json }
+        
 admin:
     address:
         socket_address:
@@ -22,7 +73,7 @@ static_resources:
                           http_filters:
                             - name: envoy.filters.http.router
                               typed_config:
-                                '@type': type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+                                "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
                           
                           route_config:
                               name: internal_api
@@ -108,66 +159,85 @@ static_resources:
                                               prefix: /api/alert
                                           route:
                                               cluster: alerts
-
+                                          typed_per_filter_config:
+                                              envoy.filters.http.local_ratelimit: *standard_rate_limit
+                                                  
                                         -   match:
                                                 prefix: /api/user
                                             route:
                                                 cluster: users
-
+                                            typed_per_filter_config:
+                                                envoy.filters.http.local_ratelimit: *standard_rate_limit
+                                                  
                                         -   match:
                                                 prefix: /api/alert
                                             route:
                                                 cluster: alerts
-
+                                            typed_per_filter_config:
+                                                envoy.filters.http.local_ratelimit: *standard_rate_limit
+                                                  
                                         -   match:
                                                 prefix: /api/daily
                                             route:
                                                 cluster: journal
-
+                                            typed_per_filter_config:
+                                                envoy.filters.http.local_ratelimit: *standard_rate_limit
+                                                  
                                         -   match:
                                                 prefix: /api/entry
                                             route:
                                                 cluster: journal
-
+                                            typed_per_filter_config:
+                                                envoy.filters.http.local_ratelimit: *standard_rate_limit
+                                                  
                                         -   match:
                                                 prefix: /api/goal
                                             route:
                                                 cluster: journal
-
+                                            typed_per_filter_config:
+                                                envoy.filters.http.local_ratelimit: *standard_rate_limit
+                                                  
                                         -   match:
                                                 prefix: /api/2fa
                                             route:
                                                 cluster: identity
-
-                                        -   match:
-                                                prefix: /api/2fa
-                                            route:
-                                                cluster: identity
+                                            typed_per_filter_config:
+                                                envoy.filters.http.local_ratelimit: *auth_rate_limit
 
                                         -   match:
                                                 prefix: /api/account
                                             route:
                                                 cluster: identity
+                                            typed_per_filter_config:
+                                                envoy.filters.http.local_ratelimit: *auth_rate_limit
 
                                         -   match:
                                                 prefix: /api/scopes
                                             route:
                                                 cluster: identity
+                                            typed_per_filter_config:
+                                                envoy.filters.http.local_ratelimit: *auth_rate_limit
 
                                         -   match:
                                                 prefix: /api/auth
                                             route:
                                                 cluster: identity
+                                            typed_per_filter_config:
+                                                envoy.filters.http.local_ratelimit: *auth_rate_limit
 
                                         -   match:
                                                 prefix: /api/open-id-connect
                                             route:
                                                 cluster: identity
+                                            typed_per_filter_config:
+                                                envoy.filters.http.local_ratelimit: *auth_rate_limit
 
                                         -   match:
                                               prefix: /api/export
                                             route:
                                               cluster: privacy
+                                            typed_per_filter_config:
+                                                envoy.filters.http.local_ratelimit: *export_rate_limit
 
                                         - match:
                                               prefix: /
@@ -175,9 +245,13 @@ static_resources:
                                               cluster: frontend
 
                           http_filters:
-                              - name: envoy.filters.http.router
-                                typed_config:
-                                    '@type': type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+                            - name: envoy.filters.http.local_ratelimit
+                              typed_config:
+                                "@type": type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+                                stat_prefix: http_local_rate_limiter
+                            - name: envoy.filters.http.router
+                              typed_config:
+                                "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
     clusters:
         - name: frontend
           connect_timeout: 5s
