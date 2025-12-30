@@ -5,10 +5,10 @@ export class DataExportScaffolding1766833967020 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
-            'CREATE TABLE "data_export" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "targetScopes" jsonb NOT NULL, "cancelledAt" TIMESTAMP WITH TIME ZONE, "completedAt" TIMESTAMP WITH TIME ZONE, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "tenantId" uuid NOT NULL, CONSTRAINT "PK_0765a950021643539f983b764ad" PRIMARY KEY ("id"))'
+            'CREATE TABLE "data_export" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "targetScopes" jsonb NOT NULL, "cancelledAt" TIMESTAMP WITH TIME ZONE, "completedAt" TIMESTAMP WITH TIME ZONE, "startedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "tenantId" uuid NOT NULL, CONSTRAINT "PK_0765a950021643539f983b764ad" PRIMARY KEY ("id"))'
         );
         await queryRunner.query(
-            'CREATE TABLE "export_attachment_manifest" ("key" character varying NOT NULL, "path" character varying NOT NULL, "part" integer NOT NULL, "nextPart" integer, "checksum" character varying NOT NULL, "scope" jsonb NOT NULL, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "dataExportId" uuid NOT NULL, "tenantId" uuid, CONSTRAINT "PK_7269ec9bfba5d5ad28ebf0a0a77" PRIMARY KEY ("key"))'
+            'CREATE TABLE "export_attachment_manifest" ("key" character varying NOT NULL, "path" character varying NOT NULL, "part" integer NOT NULL, "nextPart" integer, "checksum" character varying NOT NULL, "scope" jsonb NOT NULL, "startedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "dataExportId" uuid NOT NULL, "tenantId" uuid, CONSTRAINT "PK_7269ec9bfba5d5ad28ebf0a0a77" PRIMARY KEY ("key"))'
         );
         await queryRunner.query(
             'ALTER TABLE "data_export" ADD CONSTRAINT "FK_5502cc4482421a2ac526f23329f" FOREIGN KEY ("tenantId") REFERENCES "tenant"("id") ON DELETE CASCADE ON UPDATE NO ACTION'

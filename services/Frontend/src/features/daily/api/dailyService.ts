@@ -1,4 +1,5 @@
 import { PageDto } from "@/api/dto/PageDto";
+import { PageCursor } from "@/api/types/PageCursor.ts";
 import { CreateDailyRequestDto } from "@/features/daily/api/dto/CreateDailyRequestDto";
 import { DailyDto } from "@/features/daily/api/dto/DailyDto";
 import { UpdateDailyDateRequestDto } from "@/features/daily/api/dto/UpdateDailyDateRequestDto";
@@ -6,8 +7,18 @@ import { Daily } from "@/features/daily/types/Daily";
 import { apiClient } from "@/lib/apiClient/apiClient";
 
 export class DailyService {
-    public static async getPage(from: string, to: string, page: number) {
-        const { data } = await apiClient.get<PageDto<DailyDto>>(`/daily?from=${from}&to=${to}&page=${page}&order=DESC`);
+    public static async getPage(from: string, to: string, cursor: PageCursor) {
+        const searchParams = new URLSearchParams({
+            order: "DESC",
+            from,
+            to,
+        });
+
+        if (cursor) {
+            searchParams.append("cursor", cursor);
+        }
+
+        const { data } = await apiClient.get<PageDto<DailyDto>>(`/daily?${searchParams}`);
         return { ...data, data: data.data.map(DailyService.mapDtoToDaily) };
     }
 

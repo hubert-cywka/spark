@@ -2,6 +2,7 @@ import { Inject, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
+import { applyCursorBasedPagination, createPage, createPaginationKeys } from "@/common/pagination/pagination";
 import { type PageOptions } from "@/common/pagination/types/PageOptions";
 import { type Paginated } from "@/common/pagination/types/Paginated";
 import { type IDailyProvider, DailyProviderToken } from "@/modules/journal/daily/services/interfaces/IDailyProvider";
@@ -37,6 +38,9 @@ export class EntryService implements IEntryService {
 
         queryBuilder.innerJoinAndSelect("entry.daily", "daily").where("entry.authorId = :authorId", { authorId });
 
+        const paginationKeys = createPaginationKeys(["createdAt", "id"]);
+        applyCursorBasedPagination(queryBuilder, pageOptions, paginationKeys);
+
         if (from) {
             queryBuilder.andWhere("daily.date >= :from", { from });
         }
@@ -59,22 +63,9 @@ export class EntryService implements IEntryService {
             queryBuilder.innerJoin("entry.goals", "goal").andWhere("goal.id IN (:...goals)", { goals });
         }
 
-        queryBuilder
-            .orderBy("daily.date", pageOptions.order)
-            .addOrderBy("entry.createdAt", "ASC")
-            .take(pageOptions.take)
-            .skip(pageOptions.skip);
-
-        const [entries, itemCount] = await queryBuilder.getManyAndCount();
-
-        return {
-            data: this.entryMapper.fromEntityToModelBulk(entries),
-            meta: {
-                itemCount,
-                page: pageOptions.page,
-                take: pageOptions.take,
-            },
-        };
+        const entries = await queryBuilder.getMany();
+        const mappedEntries = this.entryMapper.fromEntityToModelBulk(entries);
+        return createPage(mappedEntries, pageOptions.take, paginationKeys);
     }
 
     public async findAllDetailed(
@@ -90,6 +81,9 @@ export class EntryService implements IEntryService {
             .where("entry.authorId = :authorId", { authorId })
             .andWhere("daily.date >= :from", { from })
             .andWhere("daily.date <= :to", { to });
+
+        const paginationKeys = createPaginationKeys(["createdAt", "id"]);
+        applyCursorBasedPagination(queryBuilder, pageOptions, paginationKeys);
 
         if (featured !== undefined) {
             queryBuilder.andWhere("entry.isFeatured = :featured", { featured });
@@ -110,22 +104,10 @@ export class EntryService implements IEntryService {
             queryBuilder.andWhere("goal.id IN (:...goals)", { goals });
         }
 
-        queryBuilder
-            .orderBy("daily.date", pageOptions.order)
-            .addOrderBy("entry.createdAt", "ASC")
-            .take(pageOptions.take)
-            .skip(pageOptions.skip);
+        const entries = await queryBuilder.getMany();
 
-        const [entries, itemCount] = await queryBuilder.getManyAndCount();
-
-        return {
-            data: this.entryDetailMapper.fromEntityToModelBulk(entries),
-            meta: {
-                itemCount,
-                page: pageOptions.page,
-                take: pageOptions.take,
-            },
-        };
+        const mappedEntries = this.entryDetailMapper.fromEntityToModelBulk(entries);
+        return createPage(mappedEntries, pageOptions.take, paginationKeys);
     }
 
     public async create(

@@ -42,17 +42,19 @@ export class EntriesDataExportProvider implements IDataExportProvider {
     private async *getBatchStream(tenantId: string, batchScope: DataExportScope): AsyncIterable<DataExportBatch> {
         const take = 1000;
         let page = 1;
+
+        let nextCursor: string | null = null;
         let hasMore = true;
 
         while (hasMore) {
             const entries = await this.entryService.findAll(
                 tenantId,
-                { page, take, skip: (page - 1) * take, order: Order.ASC },
+                { cursor: nextCursor, take, order: Order.ASC },
                 { from: batchScope.dateRange.from, to: batchScope.dateRange.to }
             );
 
-            const pagesCount = Math.ceil(entries.meta.itemCount / take);
-            hasMore = page < pagesCount;
+            hasMore = entries.meta.hasNextPage;
+            nextCursor = entries.meta.nextCursor;
 
             // Yield even if there is no data. Optimize later.
             yield {

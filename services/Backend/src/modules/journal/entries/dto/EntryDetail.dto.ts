@@ -21,4 +21,7 @@ export class EntryDetailDto {
     @IsArray()
     @IsString({ each: true })
     goals!: string[];
+
+    @IsDateString()
+    createdAt!: string;
 }

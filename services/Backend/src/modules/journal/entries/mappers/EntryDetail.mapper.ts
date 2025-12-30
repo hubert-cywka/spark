@@ -15,6 +15,7 @@ export class EntryDetailMapper extends BaseModelDTOEntityMapper<EntryDetail, Ent
             isFeatured: entity.isFeatured,
             daily: entity.daily.date,
             goals: entity.goals.map((goal) => goal.name),
+            createdAt: entity.createdAt,
         };
     }
 
@@ -26,6 +27,7 @@ export class EntryDetailMapper extends BaseModelDTOEntityMapper<EntryDetail, Ent
             isFeatured: model.isFeatured,
             daily: model.daily,
             goals: model.goals,
+            createdAt: model.createdAt,
         });
     }
 }

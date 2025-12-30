@@ -1,19 +1,12 @@
 import { Type } from "class-transformer";
-import { IsEnum, IsInt, IsOptional, Max, Min } from "class-validator";
+import { IsEnum, IsInt, IsOptional, IsString, Max, Min } from "class-validator";
 
 import { Order } from "@/common/pagination/types/Order";
-import { PageOptions } from "@/common/pagination/types/PageOptions";
 
-export class PageOptionsDto implements PageOptions {
+export class PageOptionsDto {
     @IsEnum(Order)
     @IsOptional()
     readonly order: Order = Order.ASC;
-
-    @Type(() => Number)
-    @IsInt()
-    @Min(1)
-    @IsOptional()
-    readonly page: number = 1;
 
     @Type(() => Number)
     @IsInt()
@@ -22,7 +15,7 @@ export class PageOptionsDto implements PageOptions {
     @IsOptional()
     readonly take: number = 20;
 
-    get skip(): number {
-        return (this.page - 1) * this.take;
-    }
+    @IsString()
+    @IsOptional()
+    readonly cursor?: string;
 }

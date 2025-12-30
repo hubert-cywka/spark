@@ -3,7 +3,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { DailyService } from "@/features/daily/api/dailyService";
 import { DailyQueryKeyFactory } from "@/features/daily/utils/dailyQueryKeyFactory";
 import { useAutoFetch } from "@/hooks/useAutoFetch.ts";
-import { getNextPage, getPreviousPage } from "@/lib/queryClient/pagination";
+import { getNextCursor } from "@/lib/queryClient/pagination";
 import { ISODateString } from "@/types/ISODateString";
 
 type UseGetDailiesByDateRangeOptions = {
@@ -19,10 +19,9 @@ export const useGetDailiesByDateRange = ({ filters, autoFetch }: UseGetDailiesBy
 
     const { hasNextPage, fetchNextPage, ...rest } = useInfiniteQuery({
         queryKey,
-        initialPageParam: 1,
+        initialPageParam: null,
         queryFn: async ({ pageParam }) => await DailyService.getPage(filters.from, filters.to, pageParam),
-        getNextPageParam: getNextPage,
-        getPreviousPageParam: getPreviousPage,
+        getNextPageParam: getNextCursor,
         staleTime: 0, // TODO: Can this be optimized?
     });
 
