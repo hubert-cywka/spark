@@ -1,7 +1,7 @@
 @use "src/styles/tokens";
 
 .container {
-    background: tokens.$color-accent-surface-200;
+    background: tokens.$color-accent-solid-300;
     border: 1px solid tokens.$color-accent-solid-100;
     padding: tokens.$spacing-400;
     border-radius: tokens.$radius-200;
