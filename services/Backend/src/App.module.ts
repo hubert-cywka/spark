@@ -1,14 +1,22 @@
+import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis";
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { APP_GUARD } from "@nestjs/core";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ThrottlerModule } from "@nestjs/throttler";
+import Redis from "ioredis";
 import { LoggerModule } from "nestjs-pino";
 
 import { CacheModule } from "@/common/cache/Cache.module";
 import { IntegrationEventsModule } from "@/common/events";
 import { AccessTokenStrategy } from "@/common/guards/AccessToken.strategy";
 import { ThrottlingGuard } from "@/common/guards/Throttling.guard";
+import {
+    AUTH_DEFAULT_RATE_LIMITING,
+    AUTH_STRICT_RATE_LIMITING,
+    DEFAULT_RATE_LIMITING,
+    STRICT_RATE_LIMITING,
+} from "@/common/rateLimiting/buckets";
 import { ServiceToServiceModule } from "@/common/s2s/ServiceToService.module";
 import { AppConfig } from "@/config/configuration";
 import { logger, loggerOptions } from "@/lib/logger";
@@ -44,12 +52,15 @@ const getAppBaseImports = (): ModuleImport[] => {
         }),
         ScheduleModule.forRoot(),
         ThrottlerModule.forRootAsync({
-            useFactory: (configService: ConfigService) => [
-                {
-                    ttl: configService.getOrThrow<number>("throttle.ttl"),
-                    limit: configService.getOrThrow<number>("throttle.limit"),
-                },
-            ],
+            useFactory: (configService: ConfigService) => ({
+                throttlers: [
+                    DEFAULT_RATE_LIMITING.default,
+                    STRICT_RATE_LIMITING.strict,
+                    AUTH_DEFAULT_RATE_LIMITING.auth_default,
+                    AUTH_STRICT_RATE_LIMITING.auth_strict,
+                ],
+                storage: new ThrottlerStorageRedisService(new Redis(configService.getOrThrow<string>("cache.connectionString"))),
+            }),
             inject: [ConfigService],
         }),
         CacheModule.forRootAsync({

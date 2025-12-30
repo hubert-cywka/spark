@@ -6,11 +6,6 @@ export const AppConfig = () => ({
         enableEventLoopMonitoring: process.env.ENABLE_EVENT_LOOP_MONITORING === "true",
     },
 
-    throttle: {
-        ttl: process.env.RATE_LIMITING_BASE_TTL,
-        limit: process.env.RATE_LIMITING_BASE_LIMIT,
-    },
-
     client: {
         url: {
             base: process.env.CLIENT_URL_BASE,
@@ -172,10 +167,6 @@ export const AppConfig = () => ({
                 password: process.env.DATABASE_PASSWORD,
                 host: process.env.DATABASE_HOST,
                 name: process.env.AUTH_DATABASE_NAME,
-            },
-            throttle: {
-                ttl: parseInt(process.env.AUTH_THROTTLE_TTL_IN_MS ?? ""),
-                limit: parseInt(process.env.AUTH_THROTTLE_LIMIT ?? ""),
             },
             oidc: {
                 cookie: {

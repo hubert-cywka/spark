@@ -21,6 +21,7 @@ import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
 import { AccessGuard } from "@/common/guards/Access.guard";
+import { AUTH_DEFAULT_RATE_LIMITING, AUTH_STRICT_RATE_LIMITING } from "@/common/rateLimiting/buckets";
 import { EnableApp2FADto } from "@/modules/identity/2fa/dto/EnableApp2FA.dto";
 import { Verify2FACodeDto } from "@/modules/identity/2fa/dto/Verify2FACode.dto";
 import {
@@ -36,10 +37,9 @@ import {
     TwoFactorAuthenticationMethodsProviderToken,
 } from "@/modules/identity/2fa/services/interfaces/ITwoFactorAuthenticationIntegrationsProvider";
 import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
-import { IDENTITY_MODULE_DEFAULT_RATE_LIMITING, IDENTITY_MODULE_STRICT_RATE_LIMITING } from "@/modules/identity/shared/constants";
 import { type User } from "@/types/User";
 
-@Throttle(IDENTITY_MODULE_DEFAULT_RATE_LIMITING)
+@Throttle(AUTH_DEFAULT_RATE_LIMITING)
 @Controller("2fa")
 export class TwoFactorAuthenticationController {
     public constructor(
@@ -60,7 +60,7 @@ export class TwoFactorAuthenticationController {
 
     @Post("method/:method/issue")
     @UseGuards(AccessGuard)
-    @Throttle(IDENTITY_MODULE_STRICT_RATE_LIMITING)
+    @Throttle(AUTH_STRICT_RATE_LIMITING)
     async issue2FACode(
         @Param("method", new ParseEnumPipe(TwoFactorAuthenticationMethod))
         method: TwoFactorAuthenticationMethod,
@@ -84,7 +84,7 @@ export class TwoFactorAuthenticationController {
 
     @Post("method/app/enable")
     @UseGuards(AccessGuard)
-    @Throttle(IDENTITY_MODULE_STRICT_RATE_LIMITING)
+    @Throttle(AUTH_STRICT_RATE_LIMITING)
     @AccessScopes("write:2fa")
     async enableApp2FA(@AuthenticatedUserContext() user: User) {
         const twoFactorAuthService = this.twoFactorAuthFactory.createIntegrationService(TwoFactorAuthenticationMethod.AUTHENTICATOR);
@@ -99,7 +99,7 @@ export class TwoFactorAuthenticationController {
 
     @Post("method/:method/enable")
     @UseGuards(AccessGuard)
-    @Throttle(IDENTITY_MODULE_STRICT_RATE_LIMITING)
+    @Throttle(AUTH_STRICT_RATE_LIMITING)
     @AccessScopes("write:2fa")
     async enable2FA(
         @Param("method", new ParseEnumPipe(TwoFactorAuthenticationMethod))
@@ -117,7 +117,7 @@ export class TwoFactorAuthenticationController {
 
     @Post("method/:method/verify")
     @UseGuards(AccessGuard)
-    @Throttle(IDENTITY_MODULE_STRICT_RATE_LIMITING)
+    @Throttle(AUTH_STRICT_RATE_LIMITING)
     @AccessScopes("write:2fa")
     async verify2FA(
         @Param("method", new ParseEnumPipe(TwoFactorAuthenticationMethod))
@@ -143,7 +143,6 @@ export class TwoFactorAuthenticationController {
 
     @Post("method/:method/disable")
     @UseGuards(AccessGuard)
-    @Throttle(IDENTITY_MODULE_STRICT_RATE_LIMITING)
     @AccessScopes("delete:2fa")
     async disable2FA(
         @Param("method", new ParseEnumPipe(TwoFactorAuthenticationMethod))

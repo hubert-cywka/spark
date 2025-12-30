@@ -2,11 +2,6 @@ export const TestConfig = () => ({
     appName: process.env.APP_NAME,
     port: parseInt(process.env.PORT ?? ""),
 
-    throttle: {
-        ttl: process.env.RATE_LIMITING_BASE_TTL,
-        limit: process.env.RATE_LIMITING_BASE_LIMIT,
-    },
-
     client: {
         url: {
             base: process.env.CLIENT_URL_BASE,
@@ -185,10 +180,6 @@ export const TestConfig = () => ({
             },
             cache: {
                 connectionString: process.env.CACHE_CONNECTION_STRING,
-            },
-            throttle: {
-                ttl: parseInt(process.env.AUTH_THROTTLE_TTL_IN_MS ?? ""),
-                limit: parseInt(process.env.AUTH_THROTTLE_LIMIT ?? ""),
             },
         },
     },

@@ -25,6 +25,7 @@ import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { ForbiddenError } from "@/common/errors/Forbidden.error";
 import { whenError } from "@/common/errors/whenError";
+import { AUTH_DEFAULT_RATE_LIMITING, AUTH_STRICT_RATE_LIMITING } from "@/common/rateLimiting/buckets";
 import { type IDomainVerifier, DomainVerifierToken } from "@/common/services/interfaces/IDomainVerifier";
 import {
     OIDC_CODE_VERIFIER_COOKIE_NAME,
@@ -50,9 +51,8 @@ import {
 } from "@/modules/identity/authentication/strategies/refreshToken/IRefreshTokenCookie.strategy";
 import { FederatedAccountProvider } from "@/modules/identity/authentication/types/ManagedAccountProvider";
 import { type ExternalIdentity } from "@/modules/identity/authentication/types/OpenIDConnect";
-import { IDENTITY_MODULE_DEFAULT_RATE_LIMITING, IDENTITY_MODULE_STRICT_RATE_LIMITING } from "@/modules/identity/shared/constants";
 
-@Throttle(IDENTITY_MODULE_DEFAULT_RATE_LIMITING)
+@Throttle(AUTH_DEFAULT_RATE_LIMITING)
 @Controller("open-id-connect")
 export class OpenIDConnectController {
     private readonly refreshTokenCookieMaxAge: number;
@@ -77,7 +77,7 @@ export class OpenIDConnectController {
 
     @HttpCode(HttpStatus.OK)
     @Get("login/:providerId")
-    @Throttle(IDENTITY_MODULE_STRICT_RATE_LIMITING)
+    @Throttle(AUTH_STRICT_RATE_LIMITING)
     async login(
         @Res() response: FastifyReply,
         @Param("providerId", new ParseEnumPipe(FederatedAccountProvider))
@@ -161,7 +161,7 @@ export class OpenIDConnectController {
 
     @HttpCode(HttpStatus.CREATED)
     @Post("register")
-    @Throttle(IDENTITY_MODULE_STRICT_RATE_LIMITING)
+    @Throttle(AUTH_STRICT_RATE_LIMITING)
     async registerWithOIDC(
         @Res() response: FastifyReply,
         @Body() _dto: RegisterViaOIDCDto,
