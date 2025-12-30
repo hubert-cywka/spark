@@ -1,3 +1,5 @@
+# TODO: Enable more granular rate-limiting (cheap GETs get bigger limits, expensive/critical operations get lower ones)
+
 !ignore templates:
   standard: &standard_rate_limit
     "@type": type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
