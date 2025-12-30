@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { DataExportCancelledEvent, DataExportStartedEvent } from "@/common/events";
-import { type IEventPublisher,EventPublisherToken } from "@/common/events/services/interfaces/IEventPublisher";
+import { type IEventPublisher, EventPublisherToken } from "@/common/events/services/interfaces/IEventPublisher";
 import { DataExportCompletedEvent } from "@/common/events/types/export/DataExportCompletedEvent";
 import { DataExportScope } from "@/common/export/models/DataExportScope";
 import { type IDataExportEventsPublisher } from "@/modules/privacy/services/interfaces/IDataExportEventsPublisher";
