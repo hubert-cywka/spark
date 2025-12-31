@@ -3,6 +3,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { type IEventPublisher, DataExportBatchReadyEvent, EventPublisherToken } from "@/common/events";
 import { DataExportScope } from "@/common/export/models/DataExportScope";
 import { ExportAttachmentManifest } from "@/common/export/models/ExportAttachment.model";
+import { DataExportPathBuilder } from "@/common/export/services/DataExportPathBuilder";
 import { type IDataExporter } from "@/common/export/services/IDataExporter";
 import { type IDataExportProvider, DataExportProvidersToken } from "@/common/export/services/IDataExportProvider";
 import { DataExportBatch } from "@/common/export/types/DataExportBatch";
@@ -83,6 +84,6 @@ export class DataExporter implements IDataExporter {
     }
 
     private buildAttachmentPath(exportId: string, scope: DataExportScope, page: number) {
-        return `export/${exportId}/${scope.domain}/${scope.dateRange.from}_${scope.dateRange.to}/page-${page}.csv`;
+        return DataExportPathBuilder.forExport(exportId).setScope(scope).setFilename(`page-${page}.csv`).build();
     }
 }

@@ -1,6 +1,6 @@
 export const ObjectStorageToken = Symbol("ObjectStorageToken");
 
 export interface IObjectStorage {
-    upload(key: string, content: Buffer): Promise<void>;
-    zipToStream(keyPrefix: string): Promise<NodeJS.ReadableStream>;
+    upload(path: string, content: Buffer): Promise<void>;
+    zipToStream(pathPrefix: string): Promise<NodeJS.ReadableStream>;
 }

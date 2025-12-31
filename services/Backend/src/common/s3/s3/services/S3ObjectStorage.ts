@@ -27,8 +27,8 @@ export class S3ObjectStorage implements IObjectStorage {
         this.bucketName = this.configService.getOrThrow("s3.bucket.name");
     }
 
-    async upload(key: string, content: Buffer): Promise<void> {
-        const s3Key = key.startsWith("/") ? key.substring(1) : key;
+    async upload(path: string, content: Buffer): Promise<void> {
+        const s3Key = path.startsWith("/") ? path.substring(1) : path;
 
         await this.s3.send(
             new PutObjectCommand({
@@ -41,7 +41,7 @@ export class S3ObjectStorage implements IObjectStorage {
     }
 
     // TODO: Batching, pagination?
-    async zipToStream(keyPrefix: string): Promise<NodeJS.ReadableStream> {
+    async zipToStream(pathPrefix: string): Promise<NodeJS.ReadableStream> {
         const archive = Archiver("zip");
 
         const { readable, writable } = new NodeTransformStream<string, string>();
@@ -53,7 +53,7 @@ export class S3ObjectStorage implements IObjectStorage {
         const objects = await this.s3.send(
             new ListObjectsV2Command({
                 Bucket: this.bucketName,
-                Prefix: keyPrefix,
+                Prefix: pathPrefix,
             })
         );
 

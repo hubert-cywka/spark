@@ -19,6 +19,7 @@ import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserC
 import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
+import { DataExportPathBuilder } from "@/common/export/services/DataExportPathBuilder";
 import { AccessGuard } from "@/common/guards/Access.guard";
 import { PageOptionsDto } from "@/common/pagination/dto/PageOptions.dto";
 import { type IObjectStorage, ObjectStorageToken } from "@/common/s3/services/IObjectStorage";
@@ -43,9 +44,8 @@ export class DataExportController {
         try {
             const dataExport = await this.service.getCompletedById(tenant.id, exportId);
 
-            // TODO: Key prefix should be abstracted
-            const keyPrefix = `${dataExport.id}/`;
-            const stream = await this.objectStorage.zipToStream(keyPrefix);
+            const pathPrefix = DataExportPathBuilder.forExport(exportId).build();
+            const stream = await this.objectStorage.zipToStream(pathPrefix);
 
             response.header("Content-Type", "application/zip");
             response.header("Content-Disposition", `attachment; filename="export-${dataExport.id}.zip"`);
