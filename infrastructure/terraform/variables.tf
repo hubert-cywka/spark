@@ -243,3 +243,35 @@ variable "PUBSUB_OUTBOX_PROCESSOR_CLEARING_INTERVAL" {
 variable "PUBSUB_OUTBOX_PROCESSOR_MAX_ATTEMPTS" {
   type = number
 }
+
+variable "S3_ACCESS_KEY_ID" {
+  type = string
+}
+
+variable "S3_SECRET_ACCESS_KEY" {
+  type      = string
+  sensitive = true
+}
+
+variable "S3_REGION" {
+  type = string
+}
+
+variable "S3_RPC_SECRET" {
+  type      = string
+  sensitive = true
+}
+
+variable "S3_ADMIN_TOKEN" {
+  type      = string
+  sensitive = true
+}
+
+variable "S3_METRICS_TOKEN" {
+  type      = string
+  sensitive = true
+}
+
+variable "S3_BUCKET_NAME" {
+  type = string
+}

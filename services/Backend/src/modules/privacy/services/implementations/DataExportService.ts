@@ -11,6 +11,7 @@ import { DataExportEntity } from "@/modules/privacy/entities/DataExport.entity";
 import { AnotherDataExportActiveError } from "@/modules/privacy/errors/AnotherDataExportActiveError";
 import { DataExportAlreadyCancelledError } from "@/modules/privacy/errors/DataExportAlreadyCancelled.error";
 import { DataExportAlreadyCompletedError } from "@/modules/privacy/errors/DataExportAlreadyCompleted.error";
+import { DataExportNotCompletedError } from "@/modules/privacy/errors/DataExportNotCompleted.error";
 import { DataExportNotFoundError } from "@/modules/privacy/errors/DataExportNotFound.error";
 import { PRIVACY_MODULE_DATA_SOURCE } from "@/modules/privacy/infrastructure/database/constants";
 import { type IDataExportMapper, DataExportMapperToken } from "@/modules/privacy/mappers/IDataExport.mapper";
@@ -49,25 +50,10 @@ export class DataExportService implements IDataExportService {
         return dataExport;
     }
 
-    private async getAnyById(tenantId: string, exportId: string) {
-        const dataExport = await this.getRepository().findOne({ where: { tenantId, id: exportId } });
-
-        if (!dataExport) {
-            this.logger.warn({ tenantId, exportId }, "Export not found");
-            throw new DataExportNotFoundError();
-        }
-
-        return this.mapper.fromEntityToModel(dataExport);
-    }
-
-    private async getActive(tenantId: string) {
-        const dataExport = await this.getRepository().findOne({ where: { tenantId, cancelledAt: IsNull(), completedAt: IsNull() } });
-
-        if (!dataExport) {
-            return null;
-        }
-
-        return this.mapper.fromEntityToModel(dataExport);
+    public async getCompletedById(tenantId: string, exportId: string) {
+        const dataExport = await this.getAnyById(tenantId, exportId);
+        this.assertExportIsCompleted(tenantId, dataExport);
+        return dataExport;
     }
 
     @Transactional({ connectionName: PRIVACY_MODULE_DATA_SOURCE })
@@ -100,6 +86,27 @@ export class DataExportService implements IDataExportService {
         await this.getRepository().save({ id: exportId, completedAt: new Date() });
     }
 
+    private async getAnyById(tenantId: string, exportId: string) {
+        const dataExport = await this.getRepository().findOne({ where: { tenantId, id: exportId } });
+
+        if (!dataExport) {
+            this.logger.warn({ tenantId, exportId }, "Export not found");
+            throw new DataExportNotFoundError();
+        }
+
+        return this.mapper.fromEntityToModel(dataExport);
+    }
+
+    private async getActive(tenantId: string) {
+        const dataExport = await this.getRepository().findOne({ where: { tenantId, cancelledAt: IsNull(), completedAt: IsNull() } });
+
+        if (!dataExport) {
+            return null;
+        }
+
+        return this.mapper.fromEntityToModel(dataExport);
+    }
+
     private async assertCanCreateExportEntry(tenantId: string) {
         const activeExport = await this.getActive(tenantId);
 
@@ -120,6 +127,13 @@ export class DataExportService implements IDataExportService {
         if (dataExport.completedAt) {
             this.logger.warn({ tenantId, exportId: dataExport.id }, "Export already completed, cannot complete.");
             throw new DataExportAlreadyCompletedError();
+        }
+    }
+
+    private assertExportIsCompleted(tenantId: string, dataExport: DataExport) {
+        if (!dataExport.completedAt) {
+            this.logger.warn({ tenantId, exportId: dataExport.id }, "Export not completed yet.");
+            throw new DataExportNotCompletedError();
         }
     }
 

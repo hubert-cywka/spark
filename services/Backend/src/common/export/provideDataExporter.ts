@@ -27,4 +27,4 @@ export const provideDataExporter = (dataExportProviders: UseFactoryArgs): Provid
 
 export const getDataExportEventHandlers = () => [DataExportStartedEventHandler];
 
-export const getDataExportEventTopics = () => [IntegrationEvents.export.started, IntegrationEvents.export.cancelled];
+export const getDataExportEventTopics = () => [IntegrationEvents.export.started];

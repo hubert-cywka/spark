@@ -96,7 +96,7 @@ resource "kubernetes_config_map_v1" "prometheus_config" {
   }
 
   data = {
-    "prometheus.yml" = templatefile("${path.module}/config/prometheus/prometheus.yml.tpl", {
+    "prometheus.yml" = templatefile("${path.module}/config/prometheus/prometheus.yml.tftpl", {
       otel_metrics_port = var.otel_metrics_port
     })
   }

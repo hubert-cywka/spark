@@ -28,13 +28,19 @@
         "exports": {
             "start": {
                 "errors": {
-                    "conflict": "You already have active export.."
+                    "conflict": "You already have active export."
                 }
             },
             "cancel": {
                 "errors": {
                     "notFound": "This export does not exist anymore.",
                     "conflict": "This export has already been completed or cancelled."
+                }
+            },
+            "download": {
+                "errors": {
+                    "notFound": "This export does not exist anymore.",
+                    "conflict": "This export has not been completed."
                 }
             }
         },
@@ -597,6 +603,9 @@
                 "cancel": {
                     "label": "Cancel active export"
                 },
+                "download": {
+                    "label": "Download export files"
+                },
                 "start": {
                     "label": "Select export's scope"
                 }
@@ -645,6 +654,13 @@
                 "success": {
                     "title": "Export cancelled",
                     "body": "Now you can start a new one."
+                }
+            }
+        },
+        "download": {
+            "notifications": {
+                "error": {
+                    "title": "Couldn't download export files"
                 }
             }
         }

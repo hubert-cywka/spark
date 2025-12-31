@@ -5,7 +5,7 @@ resource "kubernetes_config_map_v1" "grafana_datasources" {
   }
 
   data = {
-    "datasources.yaml" = templatefile("${path.module}/config/grafana/datasources.yaml.tpl", {
+    "datasources.yaml" = templatefile("${path.module}/config/grafana/datasources.yaml.tftpl", {
       namespace           = var.namespace
       tempo_http_port     = var.tempo_http_port
       prometheus_web_port = var.prometheus_web_port
@@ -19,7 +19,7 @@ resource "kubernetes_config_map_v1" "grafana_dashboard_provisioning" {
     namespace = var.namespace
   }
   data = {
-    "dashboard.yaml" = templatefile("${path.module}/config/grafana/dashboard.yaml.tpl", {})
+    "dashboard.yaml" = templatefile("${path.module}/config/grafana/dashboard.yaml.tftpl", {})
   }
 }
 

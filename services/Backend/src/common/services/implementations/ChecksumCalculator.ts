@@ -10,7 +10,7 @@ export class ChecksumCalculator implements IChecksumCalculator {
         return this.calculate(buffer);
     }
 
-    public async fromArrayBuffer(buffer: Buffer<ArrayBufferLike>): Promise<string> {
+    public async fromBuffer(buffer: Buffer): Promise<string> {
         return this.calculate(buffer);
     }
 

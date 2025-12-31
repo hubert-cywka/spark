@@ -6,11 +6,10 @@ import { ExportAttachmentManifest } from "@/common/export/models/ExportAttachmen
 import { type IDataExporter } from "@/common/export/services/IDataExporter";
 import { type IDataExportProvider, DataExportProvidersToken } from "@/common/export/services/IDataExportProvider";
 import { DataExportBatch } from "@/common/export/types/DataExportBatch";
+import { type IObjectStorage, ObjectStorageToken } from "@/common/s3/services/IObjectStorage";
 import { type IChecksumCalculator, ChecksumCalculatorToken } from "@/common/services/interfaces/IChecksumCalculator";
 import { type ICsvParser, CsvParserToken } from "@/common/services/interfaces/ICsvParser";
-import { type IFileService, FileServiceToken } from "@/common/services/interfaces/IFileService";
 
-// TODO: Optimization - resume from the last processed batch/scope.
 @Injectable()
 export class DataExporter implements IDataExporter {
     constructor(
@@ -22,8 +21,8 @@ export class DataExporter implements IDataExporter {
         private readonly parser: ICsvParser,
         @Inject(ChecksumCalculatorToken)
         private readonly checksumCalculator: IChecksumCalculator,
-        @Inject(FileServiceToken)
-        private readonly fileService: IFileService
+        @Inject(ObjectStorageToken)
+        private readonly objectStorage: IObjectStorage
     ) {}
 
     async exportTenantData(tenantId: string, exportId: string, scopes: DataExportScope[]): Promise<void> {
@@ -41,8 +40,8 @@ export class DataExporter implements IDataExporter {
 
     private async processExport(tenantId: string, exportId: string, data: AsyncIterable<DataExportBatch>) {
         for await (const { batch, batchScope, page, hasMore } of data) {
-            const fileContent = this.convertToCsvBlob(batch);
-            const fileChecksum = await this.calculateChecksum(fileContent);
+            const fileContent = this.parser.toBuffer(batch);
+            const fileChecksum = await this.checksumCalculator.fromBuffer(fileContent);
 
             const manifest = {
                 scope: batchScope,
@@ -55,28 +54,16 @@ export class DataExporter implements IDataExporter {
                 },
             };
 
-            await this.ensureFileExists(manifest, fileContent);
+            await this.objectStorage.upload(manifest.path, fileContent);
             await this.publishDataExportBatchReadyEvent(tenantId, exportId, manifest);
         }
-    }
-
-    private convertToCsvBlob(data: object[]) {
-        return this.parser.toCsvBlob(data);
-    }
-
-    private async ensureFileExists(manifest: ExportAttachmentManifest, content: Blob) {
-        return this.fileService.ensureFileExists(manifest, content);
     }
 
     private async publishDataExportBatchReadyEvent(tenantId: string, exportId: string, manifest: ExportAttachmentManifest): Promise<void> {
         await this.publisher.enqueue(
             new DataExportBatchReadyEvent(tenantId, {
-                tenant: {
-                    id: tenantId,
-                },
-                export: {
-                    id: exportId,
-                },
+                tenant: { id: tenantId },
+                export: { id: exportId },
                 attachment: {
                     key: manifest.key,
                     path: manifest.path,
@@ -96,10 +83,6 @@ export class DataExporter implements IDataExporter {
     }
 
     private buildAttachmentPath(exportId: string, scope: DataExportScope, page: number) {
-        return `/export/${exportId}/${scope.domain}/${scope.dateRange.from}_${scope.dateRange.to}/page-${page}.csv`;
-    }
-
-    private async calculateChecksum(data: Blob): Promise<string> {
-        return await this.checksumCalculator.fromBlob(data);
+        return `export/${exportId}/${scope.domain}/${scope.dateRange.from}_${scope.dateRange.to}/page-${page}.csv`;
     }
 }

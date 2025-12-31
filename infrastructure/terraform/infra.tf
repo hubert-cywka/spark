@@ -76,6 +76,15 @@ module "cache" {
   volume_size_request = "1Gi"
 }
 
+module "s3" {
+  source = "./modules/garage"
+
+  namespace     = kubernetes_namespace_v1.app.metadata[0].name
+  rpc_secret    = var.S3_RPC_SECRET
+  admin_token   = var.S3_ADMIN_TOKEN
+  metrics_token = var.S3_METRICS_TOKEN
+}
+
 module "kafka_cluster" {
   source = "./modules/kafka"
 

@@ -17,6 +17,9 @@
     "cache": {
         "detachable": false
     },
+    "s3": {
+        "detachable": false
+    },
     "db": {
         "detachable": false
     },

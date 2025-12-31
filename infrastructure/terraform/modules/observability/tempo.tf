@@ -119,7 +119,7 @@ resource "kubernetes_config_map_v1" "tempo_config" {
   }
 
   data = {
-    "tempo.yaml" = templatefile("${path.module}/config/tempo/tempo.yml.tpl", {
+    "tempo.yaml" = templatefile("${path.module}/config/tempo/tempo.yml.tftpl", {
       tempo_http_port      = var.tempo_http_port
       tempo_grpc_port      = var.tempo_grpc_port
       tempo_http_port_otlp = var.tempo_http_port_otlp
