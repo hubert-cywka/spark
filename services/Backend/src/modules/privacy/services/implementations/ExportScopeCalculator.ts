@@ -30,6 +30,30 @@ export class ExportScopeCalculator implements IExportScopeCalculator {
         return this.mergeScopes(missingScopes);
     }
 
+    public trimScopesAfter(scopes: DataExportScope[], cutoffDate: ISODateString): DataExportScope[] {
+        const cutoff = dayjs(cutoffDate);
+        const trimmedScopes: DataExportScope[] = [];
+
+        for (const scope of scopes) {
+            const scopeFrom = dayjs(scope.dateRange.from);
+            const scopeTo = dayjs(scope.dateRange.to);
+
+            if (scopeFrom.isAfter(cutoff)) {
+                continue;
+            }
+
+            const cloned = this.cloneScope(scope);
+
+            if (scopeTo.isAfter(cutoff)) {
+                cloned.dateRange.to = cutoffDate;
+            }
+
+            trimmedScopes.push(cloned);
+        }
+
+        return trimmedScopes;
+    }
+
     public mergeScopes(scopes: DataExportScope[]): DataExportScope[] {
         if (scopes.length <= 1) {
             return scopes;

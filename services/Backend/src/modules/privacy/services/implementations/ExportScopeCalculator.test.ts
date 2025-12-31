@@ -13,6 +13,49 @@ describe("ExportScopeCalculator", () => {
     const OTHER_DOMAIN = "other_domain" as DataExportScopeDomain;
     const calculator = new ExportScopeCalculator();
 
+    describe("trimScopesAfter", () => {
+        const CUTOFF_DATE = "2025-06-15";
+
+        it("should not modify scopes that are entirely before the cutoff date", () => {
+            const scopes: DataExportScope[] = [
+                { domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-31" } },
+                { domain: OTHER_DOMAIN, dateRange: { from: "2025-06-01", to: "2025-06-14" } },
+            ];
+
+            const result = calculator.trimScopesAfter(scopes, CUTOFF_DATE);
+
+            expect(result).toEqual(scopes);
+        });
+
+        it("should trim the 'to' date of scopes that overlap the cutoff date", () => {
+            const scopes: DataExportScope[] = [{ domain: MAIN_DOMAIN, dateRange: { from: "2025-06-10", to: "2025-06-20" } }];
+
+            const result = calculator.trimScopesAfter(scopes, CUTOFF_DATE);
+
+            expect(result).toEqual([{ domain: MAIN_DOMAIN, dateRange: { from: "2025-06-10", to: CUTOFF_DATE } }]);
+        });
+
+        it("should remove scopes that start after the cutoff date", () => {
+            const scopes: DataExportScope[] = [
+                { domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-10" } },
+                { domain: MAIN_DOMAIN, dateRange: { from: "2025-06-16", to: "2025-06-30" } },
+            ];
+
+            const result = calculator.trimScopesAfter(scopes, CUTOFF_DATE);
+
+            expect(result).toHaveLength(1);
+            expect(result[0].dateRange.to).toBe("2025-01-10");
+        });
+
+        it("should trim scope to one day if it starts exactly on the cutoff date", () => {
+            const scopes: DataExportScope[] = [{ domain: MAIN_DOMAIN, dateRange: { from: "2025-06-15", to: "2025-06-25" } }];
+
+            const result = calculator.trimScopesAfter(scopes, CUTOFF_DATE);
+
+            expect(result).toEqual([{ domain: MAIN_DOMAIN, dateRange: { from: "2025-06-15", to: "2025-06-15" } }]);
+        });
+    });
+
     describe("mergeScopes", () => {
         it("should merge overlapping date ranges in the same domain", () => {
             const scopes: DataExportScope[] = [

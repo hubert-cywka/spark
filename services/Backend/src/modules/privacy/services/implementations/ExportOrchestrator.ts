@@ -3,6 +3,7 @@ import { Transactional } from "typeorm-transactional";
 
 import { DataExportScope } from "@/common/export/models/DataExportScope";
 import { type ExportAttachmentManifest } from "@/common/export/models/ExportAttachment.model";
+import { formatToISODateString } from "@/common/utils/dateUtils";
 import { PRIVACY_MODULE_DATA_SOURCE } from "@/modules/privacy/infrastructure/database/constants";
 import {
     type IDataExportEventsPublisher,
@@ -16,7 +17,6 @@ import {
 import { type IExportOrchestrator } from "@/modules/privacy/services/interfaces/IExportOrchestrator";
 import { type IExportScopeCalculator, ExportScopeCalculatorToken } from "@/modules/privacy/services/interfaces/IExportScopeCalculator";
 
-// TODO: Trim scopes with future dates
 // TODO: Complete 'completed' flow - e.g., aggregate attachments, send them to the user.
 // TODO: Complete 'cancelled' flow - e.g., remove attachments, or ask other modules to remove them. No need to
 //  cancel in-flight exports.
@@ -37,9 +37,12 @@ export class ExportOrchestrator implements IExportOrchestrator {
 
     @Transactional({ connectionName: PRIVACY_MODULE_DATA_SOURCE })
     public async start(tenantId: string, scopes: DataExportScope[]) {
+        const today = formatToISODateString(new Date());
         const mergedScopes = this.scopeCalculator.mergeScopes(scopes);
-        const exportEntry = await this.dataExportService.createExportEntry(tenantId, mergedScopes);
-        await this.publisher.onExportStarted(tenantId, exportEntry.id, mergedScopes);
+        const trimmedScopes = this.scopeCalculator.trimScopesAfter(mergedScopes, today);
+
+        const exportEntry = await this.dataExportService.createExportEntry(tenantId, trimmedScopes);
+        await this.publisher.onExportStarted(tenantId, exportEntry.id, trimmedScopes);
     }
 
     @Transactional({ connectionName: PRIVACY_MODULE_DATA_SOURCE })
