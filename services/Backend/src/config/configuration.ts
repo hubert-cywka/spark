@@ -69,6 +69,16 @@ export const AppConfig = () => ({
         connectionString: process.env.CACHE_CONNECTION_STRING,
     },
 
+    s3: {
+        endpoint: process.env.S3_ENDPOINT,
+        region: process.env.S3_REGION,
+        accessKeyId: process.env.S3_ACCESS_KEY_ID,
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+        bucket: {
+            name: process.env.S3_BUCKET_NAME,
+        },
+    },
+
     modules: {
         privacy: {
             database: {

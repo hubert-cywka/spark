@@ -7,6 +7,7 @@ import { CacheModule } from "@/common/cache/Cache.module";
 import { IntegrationEventsModule } from "@/common/events";
 import { AccessTokenStrategy } from "@/common/guards/AccessToken.strategy";
 import { ServiceToServiceModule } from "@/common/s2s/ServiceToService.module";
+import { ObjectStorageModule } from "@/common/s3/ObjectStorage.module";
 import { AppConfig } from "@/config/configuration";
 import { logger, loggerOptions } from "@/lib/logger";
 import { AlertsModule } from "@/modules/alerts/Alerts.module";
@@ -65,6 +66,18 @@ const getAppBaseImports = (): ModuleImport[] => {
                     },
                 };
             },
+            inject: [ConfigService],
+            global: true,
+        }),
+        ObjectStorageModule.forRootAsync({
+            useFactory: (configService: ConfigService) => ({
+                credentials: {
+                    accessKeyId: configService.getOrThrow<string>("s3.accessKeyId"),
+                    secretAccessKey: configService.getOrThrow<string>("s3.secretAccessKey"),
+                },
+                region: configService.getOrThrow<string>("s3.region"),
+                endpoint: configService.getOrThrow<string>("s3.endpoint"),
+            }),
             inject: [ConfigService],
             global: true,
         }),

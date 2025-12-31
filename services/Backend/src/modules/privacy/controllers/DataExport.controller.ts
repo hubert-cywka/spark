@@ -1,4 +1,18 @@
-import { Body, ConflictException, Controller, Delete, Get, Inject, NotFoundException, Param, Post, Query, UseGuards } from "@nestjs/common";
+import {
+    Body,
+    ConflictException,
+    Controller,
+    Delete,
+    Get,
+    Inject,
+    NotFoundException,
+    Param,
+    Post,
+    Query,
+    Res,
+    UseGuards,
+} from "@nestjs/common";
+import type { FastifyReply } from "fastify";
 
 import { AccessScopes } from "@/common/decorators/AccessScope.decorator";
 import { AuthenticatedUserContext } from "@/common/decorators/AuthenticatedUserContext.decorator";
@@ -7,6 +21,7 @@ import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
 import { AccessGuard } from "@/common/guards/Access.guard";
 import { PageOptionsDto } from "@/common/pagination/dto/PageOptions.dto";
+import { type IObjectStorage, ObjectStorageToken } from "@/common/s3/services/IObjectStorage";
 import { StartDataExportDto } from "@/modules/privacy/dto/StartDataExport.dto";
 import { type IDataExportMapper, DataExportMapperToken } from "@/modules/privacy/mappers/IDataExport.mapper";
 import { type IDataExportService, DataExportServiceToken } from "@/modules/privacy/services/interfaces/IDataExportService";
@@ -18,8 +33,32 @@ export class DataExportController {
     public constructor(
         @Inject(ExportOrchestratorToken) private readonly exportOrchestrator: IExportOrchestrator,
         @Inject(DataExportServiceToken) private readonly service: IDataExportService,
-        @Inject(DataExportMapperToken) private readonly mapper: IDataExportMapper
+        @Inject(DataExportMapperToken) private readonly mapper: IDataExportMapper,
+        @Inject(ObjectStorageToken) private readonly objectStorage: IObjectStorage
     ) {}
+
+    @Get(":exportId/files")
+    @UseGuards(AccessGuard)
+    async download(@Param("exportId") exportId: string, @Res() response: FastifyReply, @AuthenticatedUserContext() tenant: User) {
+        try {
+            const dataExport = await this.service.getCompletedById(tenant.id, exportId);
+
+            // TODO: Key prefix should be abstracted
+            const keyPrefix = `${dataExport.id}/`;
+            const stream = await this.objectStorage.zipToStream(keyPrefix);
+
+            response.header("Content-Type", "application/zip");
+            response.header("Content-Disposition", `attachment; filename="export-${dataExport.id}.zip"`);
+            return response.send(stream);
+        } catch (err) {
+            whenError(err)
+                .is(EntityNotFoundError)
+                .throw(new NotFoundException())
+                .is(EntityConflictError)
+                .throw(new ConflictException())
+                .elseRethrow();
+        }
+    }
 
     @Get()
     @UseGuards(AccessGuard)

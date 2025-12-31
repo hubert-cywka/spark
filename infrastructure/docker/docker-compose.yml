@@ -4,17 +4,27 @@ services:
         image: busybox:latest
         user: root
         entrypoint:
-            - "chown"
-            - "10001:10001"
-            - "/var/tempo"
+            - "sh"
+            - "-c"
+            - "chown -R 10001:10001 /var/tempo /var/lib/garage /etc/garage"
         volumes:
             - ./tempo:/var/tempo
+            - ./garage/data:/var/lib/garage
+            - ./garage/config:/etc/garage
     
     tunnel:
         image: ngrok/ngrok:latest
         restart: always
         networks:
             - services_network
+
+    s3:
+        image: dxflrs/garage:v2.1.0
+        restart: always
+        networks:
+            - services_network
+        depends_on:
+            - init
 
     tempo:
         image: grafana/tempo:latest
@@ -182,6 +192,7 @@ services:
             - kafka-broker-3
             - cache
             - pooler
+            - s3
 
     journal-service:
         build:
@@ -196,6 +207,7 @@ services:
             - kafka-broker-3
             - cache
             - pooler
+            - s3
 
     alerts-service:
         build:
@@ -210,6 +222,7 @@ services:
             - kafka-broker-3
             - cache
             - pooler
+            - s3
 
     privacy-service:
         build:
@@ -224,6 +237,7 @@ services:
             - kafka-broker-3
             - cache
             - pooler
+            - s3
 
     scheduling-service:
         build:
@@ -238,6 +252,7 @@ services:
             - kafka-broker-3
             - cache
             - pooler
+            - s3
 
     configuration-service:
         build:
@@ -252,6 +267,7 @@ services:
             - kafka-broker-3
             - cache
             - pooler
+            - s3
 
     users-service:
         build:
@@ -266,6 +282,7 @@ services:
             - kafka-broker-3
             - cache
             - pooler
+            - s3
 
     mail-service:
         build:
@@ -280,6 +297,7 @@ services:
             - kafka-broker-3
             - cache
             - pooler
+            - s3
 
     frontend:
         build:
@@ -302,6 +320,7 @@ networks:
         external: true
 
 volumes:
+    garage:
     tempo:
     grafana:
     prometheus:

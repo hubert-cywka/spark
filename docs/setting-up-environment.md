@@ -17,4 +17,5 @@ To install, run: `choco install pwsh`
         and `MAIL_SENDER_NAME` (the email address recipients will see). If `MAIL_DEBUG_MODE` is set `true`, no 
         emails will be sent, and their payload will be logged in the application's console instead. If you don't 
         want to configure Resend, you can simply set `MAIL_DEBUG_MODE` to `true`.
+    3. **S3** - TODO: update docs.
 3. Follow [the local development guide](./local-development.md).

@@ -1,5 +1,6 @@
 export const CsvParserToken = Symbol("CsvParserToken");
 
 export interface ICsvParser {
-    toCsvBlob(data: object[]): Blob;
+    toBlob(data: object[]): Blob;
+    toBuffer(data: object[]): Buffer;
 }

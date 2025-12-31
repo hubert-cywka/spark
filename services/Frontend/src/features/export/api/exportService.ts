@@ -3,6 +3,7 @@ import { DataExportEntryDto } from "@/features/export/api/dto/DataExportEntryDto
 import { StartDataExportDto } from "@/features/export/api/dto/StartDataExportDto.ts";
 import { DataExportEntry, DataExportStatus } from "@/features/export/types/DataExport";
 import { apiClient } from "@/lib/apiClient/apiClient";
+import { downloadBlob } from "@/utils/download.ts";
 
 const PAGE_SIZE = 5;
 
@@ -24,6 +25,14 @@ export class ExportService {
 
     public static async cancel(id: string) {
         await apiClient.delete(`/export/${id}`);
+    }
+
+    public static async download(id: string) {
+        const { data } = await apiClient.get<Blob>(`/export/${id}/files`, {
+            responseType: "blob",
+        });
+
+        downloadBlob(`export-${id}.zip`, data);
     }
 
     private static mapDtoToExportEntry(dto: DataExportEntryDto): DataExportEntry {

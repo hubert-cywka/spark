@@ -1,0 +1,27 @@
+metadata_dir = "/var/lib/garage/meta"
+data_dir = "/var/lib/garage/data"
+db_engine = "sqlite"
+
+replication_factor = ${replication_factor}
+
+rpc_bind_addr = "[::]:3901"
+rpc_public_addr = "$${POD_NAME}.${service_name}.${namespace}.svc.cluster.local:3901"
+rpc_secret = "${rpc_secret}"
+
+[s3_api]
+s3_region = "${region}"
+api_bind_addr = "[::]:3900"
+root_domain = "${s3_root_domain}"
+
+[s3_web]
+bind_addr = "[::]:3902"
+root_domain = "${web_root_domain}"
+index = "index.html"
+
+[k2v_api]
+api_bind_addr = "[::]:3904"
+
+[admin]
+api_bind_addr = "[::]:3903"
+admin_token = "${admin_token}"
+metrics_token = "${metrics_token}"

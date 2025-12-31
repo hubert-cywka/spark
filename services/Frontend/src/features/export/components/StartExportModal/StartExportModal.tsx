@@ -9,21 +9,42 @@ import { Modal, ModalHeader } from "@/components/Modal";
 import { ModalBody } from "@/components/Modal/components/ModalBody/ModalBody";
 import { ModalFooter } from "@/components/Modal/components/ModalFooter/ModalFooter";
 import { ModalTrigger } from "@/components/Modal/types/Modal";
+import { useAccessValidation } from "@/features/auth/hooks";
 import { AddExportScopeForm } from "@/features/export/components/AddExportScopeForm/AddExportScopeForm.tsx";
 import { ExportScopesList } from "@/features/export/components/ExportScopesList/ExportScopesList.tsx";
+import { useStartExport } from "@/features/export/hooks/useStartExport.ts";
+import { useStartExportEvents } from "@/features/export/hooks/useStartExportEvents.ts";
 import { DataExportScope, DataExportScopeDomain } from "@/features/export/types/DataExport";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
 type StartExportModalProps = {
     trigger: ModalTrigger;
-    onSubmit: (scopes: DataExportScope[]) => Promise<boolean>;
 };
 
-export const StartExportModal = ({ trigger, onSubmit }: StartExportModalProps) => {
+export const StartExportModal = ({ trigger }: StartExportModalProps) => {
     const t = useTranslate();
     const [isOpen, setIsOpen] = useState(false);
     const [scopes, setScopes] = useState<DataExportScope[]>([]);
     const isAnyScopeSelected = scopes.length > 0;
+
+    const { ensureAccess } = useAccessValidation();
+    const { mutateAsync: startExport, isPending: isStarting } = useStartExport();
+    const { onStartExportError, onStartExportSuccess } = useStartExportEvents();
+
+    const handleStartExport = async (scopes: DataExportScope[]) => {
+        if (!ensureAccess(["write:account"])) {
+            return false;
+        }
+
+        try {
+            await startExport({ targetScopes: scopes });
+            onStartExportSuccess();
+            return true;
+        } catch (error) {
+            onStartExportError(error);
+            return false;
+        }
+    };
 
     const close = () => {
         setIsOpen(false);
@@ -39,7 +60,7 @@ export const StartExportModal = ({ trigger, onSubmit }: StartExportModalProps) =
     };
 
     const handleOnSubmit = async () => {
-        const result = await onSubmit(scopes);
+        const result = await handleStartExport(scopes);
 
         if (result) {
             close();
@@ -62,7 +83,7 @@ export const StartExportModal = ({ trigger, onSubmit }: StartExportModalProps) =
                 <Button variant="secondary" onPress={close}>
                     {t("exports.start.modal.buttons.cancel.label")}
                 </Button>
-                <Button variant="confirm" onPress={handleOnSubmit} isDisabled={!isAnyScopeSelected}>
+                <Button variant="confirm" onPress={handleOnSubmit} isDisabled={!isAnyScopeSelected} isLoading={isStarting}>
                     {t("exports.start.modal.buttons.confirm.label")}
                 </Button>
             </ModalFooter>

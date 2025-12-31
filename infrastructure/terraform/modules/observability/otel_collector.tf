@@ -104,7 +104,7 @@ resource "kubernetes_config_map_v1" "otel_collector_config" {
   }
 
   data = {
-    "otel-collector-config.yml" = templatefile("${path.module}/config/otel_collector/otel-collector-config.yml.tpl", {
+    "otel-collector-config.yml" = templatefile("${path.module}/config/otel_collector/otel-collector-config.yml.tftpl", {
       namespace           = var.namespace
       tempo_grpc_port     = var.tempo_grpc_port
       prometheus_web_port = var.prometheus_web_port
