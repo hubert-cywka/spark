@@ -20,6 +20,10 @@ export const provideDataExporter = (dataExportProviders: UseFactoryArgs): Provid
         useClass: DataExportStartedEventHandler,
     },
     {
+        provide: DataExportCancelledEventHandler,
+        useClass: DataExportCancelledEventHandler,
+    },
+    {
         provide: DataExportProvidersToken,
         useFactory: (...providers: IDataExportProvider[]) => providers,
         inject: dataExportProviders,
