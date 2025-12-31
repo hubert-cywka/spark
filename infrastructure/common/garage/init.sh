@@ -1,8 +1,9 @@
 #!/bin/bash
-set -e
+
+trap finish EXIT
 
 # --- Common configuration ---
-BUCKET_NAME=""
+BUCKET_NAME="spark"
 REGION="garage"
 
 # --- Kubernetes configuration ---
@@ -17,14 +18,14 @@ REGION="garage"
 MODE="docker"
 EXEC_CMD="docker exec"
 REPLICAS=1
-SERVICE_NAME="s3"
+SERVICE_NAME="docker-s3"
 
 
 run_on_node0() {
     if [ "$MODE" == "k8s" ]; then
         $EXEC_CMD garage-0 -- garage "$@"
     else
-        $EXEC_CMD ${SERVICE_NAME}-1 garage "$@"
+        MSYS_NO_PATHCONV=1 $EXEC_CMD ${SERVICE_NAME}-1 /garage "$@"
     fi
 }
 
@@ -46,7 +47,7 @@ NODE_IDS=$(run_on_node0 status | grep -E "^[0-9a-f]" | awk '{print $1}')
 
 for ID in $NODE_IDS; do
     echo "Assigning role to node $ID."
-    run_on_node0 layout assign "$ID" --zone "$REGION" --capacity 100 --role gateway --role storage
+    run_on_node0 layout assign "$ID" --zone "$REGION" --capacity 100
 done
 
 echo "3. Applying configuration."
@@ -57,9 +58,17 @@ run_on_node0 layout apply --version $NEXT_VERSION
 echo "4. Creating API key."
 KEY_OUTPUT=$(run_on_node0 key create admin)
 KEY_ID=$(echo "$KEY_OUTPUT" | grep "Key ID:" | awk '{print $3}')
+SECRET_KEY=$(echo "$KEY_OUTPUT" | grep "Secret key:" | awk '{print $3}' | tr -d '\r')
 
 echo "5. Creating bucket: $BUCKET_NAME."
 run_on_node0 bucket create "$BUCKET_NAME"
-run_on_node0 bucket allow "$BUCKET_NAME" --read --write --key "$KEY_ID"
+run_on_node0 bucket allow --read --write --owner "$BUCKET_NAME" --key "$KEY_ID"
 
 echo "Garage initialized."
+echo "--------------------------------------"
+echo "S3 ACCESS KEY ID:     $KEY_ID"
+echo "S3 SECRET ACCESS KEY: $SECRET_KEY"
+echo "--------------------------------------"
+
+echo "Press [Enter], to exit..."
+read

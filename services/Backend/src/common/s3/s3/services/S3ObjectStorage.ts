@@ -40,6 +40,7 @@ export class S3ObjectStorage implements IObjectStorage {
         );
     }
 
+    // TODO: Batching, pagination?
     async zipToStream(keyPrefix: string): Promise<NodeJS.ReadableStream> {
         const archive = Archiver("zip");
 

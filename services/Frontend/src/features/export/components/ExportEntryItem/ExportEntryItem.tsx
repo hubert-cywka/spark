@@ -71,7 +71,7 @@ export const ExportEntryItem = ({ entry }: ExportEntryItemProps) => {
                     <IconButton
                         aria-label={t("exports.list.buttons.download.label")}
                         tooltip={t("exports.list.buttons.download.label")}
-                        variant="confirm"
+                        variant="primary"
                         onClick={() => handleRequestExportFiles(entry.id)}
                         isLoading={isRequestingFiles}
                         iconSlot={DownloadIcon}
