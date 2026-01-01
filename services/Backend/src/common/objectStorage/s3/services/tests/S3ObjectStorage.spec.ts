@@ -49,11 +49,11 @@ describe("S3ObjectStorage", () => {
         await app.close();
     });
 
-    afterEach(async () => {
-        await cleanup();
-    });
-
     describe("exists", () => {
+        afterEach(async () => {
+            await cleanup();
+        });
+
         it("should return false if file does not exist", async () => {
             const result = await objectStorage.exists(FILE_PATH_1);
 
@@ -70,6 +70,10 @@ describe("S3ObjectStorage", () => {
     });
 
     describe("upload", () => {
+        afterEach(async () => {
+            await cleanup();
+        });
+
         it("should create a file", async () => {
             const mockContent = Buffer.from("mock content");
             const mockType = "text/plain";
@@ -82,6 +86,10 @@ describe("S3ObjectStorage", () => {
     });
 
     describe("delete", () => {
+        afterEach(async () => {
+            await cleanup();
+        });
+
         it("should delete file", async () => {
             await createFile(FILE_PATH_1);
 
@@ -124,6 +132,10 @@ describe("S3ObjectStorage", () => {
     });
 
     describe("zipToStream", () => {
+        afterEach(async () => {
+            await cleanup();
+        });
+
         it("should return a stream containing zipped files", async () => {
             await createFile(FILE_PATH_1);
             await createFile(FILE_PATH_2);
@@ -138,6 +150,10 @@ describe("S3ObjectStorage", () => {
     });
 
     describe("zipToStorage", () => {
+        afterEach(async () => {
+            await cleanup();
+        });
+
         it("should upload a new file", async () => {
             await createFile(FILE_PATH_1);
             await createFile(FILE_PATH_2);

@@ -124,16 +124,11 @@ describe("ExportOrchestrator", () => {
         await app.close();
     });
 
-    beforeEach(async () => {
-        await manifestsRepositor.deleteAll();
-        await dataExportRepository.deleteAll();
-        await tenantRepository.deleteAll();
-
-        await deleteAttachments(TENANT_ID);
-        await createTenant(TENANT_ID);
-    });
-
     describe("start", () => {
+        beforeEach(async () => {
+            await cleanup();
+        });
+
         it("should throw when trying to create another export, while the previous one is still ongoing", async () => {
             await orchestrator.start(TENANT_ID, [SCOPE_A, SCOPE_B]);
 
@@ -142,6 +137,10 @@ describe("ExportOrchestrator", () => {
     });
 
     describe("cancel", () => {
+        beforeEach(async () => {
+            await cleanup();
+        });
+
         it("should cancel export when requested", async () => {
             await orchestrator.start(TENANT_ID, [SCOPE_A]);
             const entry = await dataExportRepository.findOneBy({ tenantId: TENANT_ID });
@@ -176,6 +175,10 @@ describe("ExportOrchestrator", () => {
     });
 
     describe("checkpoint", () => {
+        beforeEach(async () => {
+            await cleanup();
+        });
+
         it("should throw when trying to checkpoint non-existent export", async () => {
             const attachment = buildAttachmentManifest({ scopes: [SCOPE_A], part: 1, nextPart: null });
             await expect(orchestrator.checkpoint(TENANT_ID, "non-existent-uuid", attachment)).rejects.toThrow();
@@ -308,5 +311,14 @@ describe("ExportOrchestrator", () => {
             stage: ExportAttachmentStage.TEMPORARY,
             metadata: { checksum: "irrelevant", part, nextPart },
         };
+    };
+
+    const cleanup = async () => {
+        await manifestsRepositor.deleteAll();
+        await dataExportRepository.deleteAll();
+        await tenantRepository.deleteAll();
+
+        await deleteAttachments(TENANT_ID);
+        await createTenant(TENANT_ID);
     };
 });
