@@ -8,7 +8,7 @@ import { type IDataExporter } from "@/common/export/services/IDataExporter";
 import { type IDataExportProvider, DataExportProvidersToken } from "@/common/export/services/IDataExportProvider";
 import { DataExportBatch } from "@/common/export/types/DataExportBatch";
 import { ExportAttachmentStage } from "@/common/export/types/ExportAttachmentStage";
-import { type IObjectStorage, ObjectStorageToken } from "@/common/s3/services/IObjectStorage";
+import { type IObjectStorage, ObjectStorageToken } from "@/common/objectStorage/services/IObjectStorage";
 import { type ICsvParser, CsvParserToken } from "@/common/services/interfaces/ICsvParser";
 
 @Injectable()

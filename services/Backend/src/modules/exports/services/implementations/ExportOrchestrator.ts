@@ -6,7 +6,7 @@ import { DataExportScope } from "@/common/export/models/DataExportScope";
 import { type ExportAttachmentManifest } from "@/common/export/models/ExportAttachment.model";
 import { DataExportAttachmentPathBuilder } from "@/common/export/services/DataExportAttachmentPathBuilder";
 import { ExportAttachmentStage } from "@/common/export/types/ExportAttachmentStage";
-import { type IObjectStorage, ObjectStorageToken } from "@/common/s3/services/IObjectStorage";
+import { type IObjectStorage, ObjectStorageToken } from "@/common/objectStorage/services/IObjectStorage";
 import { EXPORTS_MODULE_DATA_SOURCE } from "@/modules/exports/infrastructure/database/constants";
 import {
     type IDataExportEventsPublisher,

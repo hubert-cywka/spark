@@ -15,13 +15,13 @@ import Bottleneck from "bottleneck";
 import { type S3, InjectS3 } from "nestjs-s3";
 import { PassThrough, Readable } from "node:stream";
 
-import { ObjectBodyEmptyError } from "@/common/s3/errors/ObjectBodyEmpty.error";
-import { ObjectDeleteFailedError } from "@/common/s3/errors/ObjectDeleteFailedError.error";
-import { ObjectDownloadFailedError } from "@/common/s3/errors/ObjectDownloadFailed.error";
-import { ObjectETagEmptyError } from "@/common/s3/errors/ObjectETagEmpty.error";
-import { ObjectUploadFailedError } from "@/common/s3/errors/ObjectUploadFailed.error";
-import { ObjectZipFailedError } from "@/common/s3/errors/ObjectZipFailed.error";
-import { type IObjectStorage, ObjectManifest } from "@/common/s3/services/IObjectStorage";
+import { ObjectBodyEmptyError } from "@/common/objectStorage/errors/ObjectBodyEmpty.error";
+import { ObjectDeleteFailedError } from "@/common/objectStorage/errors/ObjectDeleteFailedError.error";
+import { ObjectDownloadFailedError } from "@/common/objectStorage/errors/ObjectDownloadFailed.error";
+import { ObjectETagEmptyError } from "@/common/objectStorage/errors/ObjectETagEmpty.error";
+import { ObjectUploadFailedError } from "@/common/objectStorage/errors/ObjectUploadFailed.error";
+import { ObjectZipFailedError } from "@/common/objectStorage/errors/ObjectZipFailed.error";
+import { type IObjectStorage, ObjectManifest } from "@/common/objectStorage/services/IObjectStorage";
 
 // TODO: Clean up
 

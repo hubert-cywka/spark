@@ -1,8 +1,8 @@
 import { DynamicModule, Module } from "@nestjs/common";
 import { S3Module } from "nestjs-s3";
 
-import { S3ObjectStorage } from "@/common/s3/s3/services/S3ObjectStorage";
-import { ObjectStorageToken } from "@/common/s3/services/IObjectStorage";
+import { S3ObjectStorage } from "@/common/objectStorage/s3/services/S3ObjectStorage";
+import { ObjectStorageToken } from "@/common/objectStorage/services/IObjectStorage";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 
 type ObjectStorageModuleOptions = {

@@ -1,4 +1,4 @@
-import { ObjectStorageError } from "@/common/s3/errors/ObjectStorage.error";
+import { ObjectStorageError } from "@/common/objectStorage/errors/ObjectStorage.error";
 
 export class ObjectUploadFailedError extends ObjectStorageError {
     public constructor(path: string) {
