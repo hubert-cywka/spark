@@ -7,6 +7,7 @@ import { type IDatabaseLockService, DatabaseLockServiceToken } from "@/common/da
 import { DataExportScope } from "@/common/export/models/DataExportScope";
 import { applyCursorBasedPagination, createPage, createPaginationKeys } from "@/common/pagination/pagination";
 import { PageOptions } from "@/common/pagination/types/PageOptions";
+import { formatToISODateString } from "@/common/utils/dateUtils";
 import { DataExportEntity } from "@/modules/privacy/entities/DataExport.entity";
 import { AnotherDataExportActiveError } from "@/modules/privacy/errors/AnotherDataExportActiveError";
 import { DataExportAlreadyCancelledError } from "@/modules/privacy/errors/DataExportAlreadyCancelled.error";
@@ -17,6 +18,7 @@ import { PRIVACY_MODULE_DATA_SOURCE } from "@/modules/privacy/infrastructure/dat
 import { type IDataExportMapper, DataExportMapperToken } from "@/modules/privacy/mappers/IDataExport.mapper";
 import { DataExport } from "@/modules/privacy/models/DataExport.model";
 import { type IDataExportService } from "@/modules/privacy/services/interfaces/IDataExportService";
+import { type IExportScopeCalculator, ExportScopeCalculatorToken } from "@/modules/privacy/services/interfaces/IExportScopeCalculator";
 
 @Injectable()
 export class DataExportService implements IDataExportService {
@@ -28,7 +30,9 @@ export class DataExportService implements IDataExportService {
         @Inject(DataExportMapperToken)
         private readonly mapper: IDataExportMapper,
         @Inject(DatabaseLockServiceToken)
-        private readonly dbLockService: IDatabaseLockService
+        private readonly dbLockService: IDatabaseLockService,
+        @Inject(ExportScopeCalculatorToken)
+        private readonly scopeCalculator: IExportScopeCalculator
     ) {}
 
     public async findAll(tenantId: string, pageOptions: PageOptions) {
@@ -58,7 +62,11 @@ export class DataExportService implements IDataExportService {
 
     @Transactional({ connectionName: PRIVACY_MODULE_DATA_SOURCE })
     public async createExportEntry(tenantId: string, targetScopes: DataExportScope[]) {
-        await this.dbLockService.acquireTransactionLock(this.getCreateExportEntryLockId(tenantId));
+        const today = formatToISODateString(new Date());
+        const mergedScopes = this.scopeCalculator.mergeScopes(targetScopes);
+        const trimmedScopes = this.scopeCalculator.trimScopesAfter(mergedScopes, today);
+
+        await this.acquireLockForCreate(tenantId);
         await this.assertCanCreateExportEntry(tenantId);
 
         const result = await this.getRepository()
@@ -67,7 +75,7 @@ export class DataExportService implements IDataExportService {
             .into(DataExportEntity)
             .values({
                 tenantId,
-                targetScopes,
+                targetScopes: trimmedScopes,
             })
             .returning("*")
             .execute();
@@ -118,6 +126,11 @@ export class DataExportService implements IDataExportService {
         return activeExport;
     }
 
+    private async acquireLockForCreate(tenantId: string) {
+        const lockId = `create-export-lock-${tenantId}`;
+        await this.dbLockService.acquireTransactionLock(lockId);
+    }
+
     private assertExportIsActive(tenantId: string, dataExport: DataExport) {
         if (dataExport.cancelledAt) {
             this.logger.warn({ tenantId, exportId: dataExport.id }, "Export already cancelled, cannot complete.");
@@ -135,10 +148,6 @@ export class DataExportService implements IDataExportService {
             this.logger.warn({ tenantId, exportId: dataExport.id }, "Export not completed yet.");
             throw new DataExportNotCompletedError();
         }
-    }
-
-    private getCreateExportEntryLockId(tenantId: string) {
-        return `create-export-lock-${tenantId}`;
     }
 
     private getRepository(): Repository<DataExportEntity> {

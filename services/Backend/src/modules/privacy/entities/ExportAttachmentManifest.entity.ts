@@ -41,6 +41,9 @@ export class ExportAttachmentManifestEntity {
     @ManyToOne(() => TenantEntity, (tenant) => tenant.dataPurgePlans, { onDelete: "CASCADE" })
     tenant!: Relation<TenantEntity>;
 
+    @Column({ type: "varchar" })
+    tenantId!: string;
+
     @ManyToOne(() => DataExportEntity, (dataExport) => dataExport.attachmentManifests, { onDelete: "CASCADE" })
     dataExport!: Relation<DataExportEntity>;
 

@@ -1,9 +1,10 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { In, Repository } from "typeorm";
 
 import { type ExportAttachmentManifest } from "@/common/export/models/ExportAttachment.model";
 import { ExportAttachmentKind, ExportAttachmentManifestEntity } from "@/modules/privacy/entities/ExportAttachmentManifest.entity";
+import { ExportManifestNotFoundError } from "@/modules/privacy/errors/ExportManifestNotFound.error";
 import { PRIVACY_MODULE_DATA_SOURCE } from "@/modules/privacy/infrastructure/database/constants";
 import {
     type IExportAttachmentManifestMapper,
@@ -13,6 +14,8 @@ import { type IExportAttachmentManifestService } from "@/modules/privacy/service
 
 @Injectable()
 export class ExportAttachmentManifestService implements IExportAttachmentManifestService {
+    private readonly logger = new Logger(ExportAttachmentManifestService.name);
+
     public constructor(
         @InjectRepository(ExportAttachmentManifestEntity, PRIVACY_MODULE_DATA_SOURCE)
         private readonly repository: Repository<ExportAttachmentManifestEntity>,
@@ -20,16 +23,21 @@ export class ExportAttachmentManifestService implements IExportAttachmentManifes
         private readonly mapper: IExportAttachmentManifestMapper
     ) {}
 
-    public async findTemporaryManifestsByExportId(exportId: string) {
-        const dataExports = await this.getRepository().find({ where: { dataExportId: exportId, kind: ExportAttachmentKind.TEMPORARY } });
+    public async findTemporaryManifestsByExportId(tenantId: string, exportId: string) {
+        const dataExports = await this.getRepository().find({
+            where: { tenantId, dataExportId: exportId, kind: ExportAttachmentKind.TEMPORARY },
+        });
         return this.mapper.fromEntityToModelBulk(dataExports);
     }
 
-    public async findFinalManifestByExportId(exportId: string) {
-        const dataExport = await this.getRepository().findOne({ where: { dataExportId: exportId, kind: ExportAttachmentKind.FINAL } });
+    public async getFinalManifestByExportId(tenantId: string, exportId: string) {
+        const dataExport = await this.getRepository().findOne({
+            where: { tenantId, dataExportId: exportId, kind: ExportAttachmentKind.FINAL },
+        });
 
         if (!dataExport) {
-            return null;
+            this.logger.warn({ tenantId, exportId }, "Final export attachment manifest not found");
+            throw new ExportManifestNotFoundError();
         }
 
         return this.mapper.fromEntityToModel(dataExport);

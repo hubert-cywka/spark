@@ -1,11 +1,11 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { Transactional } from "typeorm-transactional";
 
+import { type IDatabaseLockService, DatabaseLockServiceToken } from "@/common/database/services/IDatabaseLockService";
 import { DataExportScope } from "@/common/export/models/DataExportScope";
 import { type ExportAttachmentManifest } from "@/common/export/models/ExportAttachment.model";
 import { DataExportPathBuilder } from "@/common/export/services/DataExportPathBuilder";
 import { type IObjectStorage, ObjectStorageToken } from "@/common/s3/services/IObjectStorage";
-import { formatToISODateString } from "@/common/utils/dateUtils";
 import { ExportAttachmentKind } from "@/modules/privacy/entities/ExportAttachmentManifest.entity";
 import { PRIVACY_MODULE_DATA_SOURCE } from "@/modules/privacy/infrastructure/database/constants";
 import {
@@ -32,25 +32,24 @@ export class ExportOrchestrator implements IExportOrchestrator {
         @Inject(DataExportServiceToken)
         private readonly dataExportService: IDataExportService,
         @Inject(ExportAttachmentManifestServiceToken)
-        private readonly exportAttachmentService: IExportAttachmentManifestService,
+        private readonly attachmentService: IExportAttachmentManifestService,
         @Inject(ExportScopeCalculatorToken)
         private readonly scopeCalculator: IExportScopeCalculator,
         @Inject(ObjectStorageToken)
-        private readonly objectStorage: IObjectStorage
+        private readonly objectStorage: IObjectStorage,
+        @Inject(DatabaseLockServiceToken)
+        private readonly dbLockService: IDatabaseLockService
     ) {}
 
     @Transactional({ connectionName: PRIVACY_MODULE_DATA_SOURCE })
     public async start(tenantId: string, scopes: DataExportScope[]) {
-        const today = formatToISODateString(new Date());
-        const mergedScopes = this.scopeCalculator.mergeScopes(scopes);
-        const trimmedScopes = this.scopeCalculator.trimScopesAfter(mergedScopes, today);
-
-        const exportEntry = await this.dataExportService.createExportEntry(tenantId, trimmedScopes);
-        await this.publisher.onExportStarted(tenantId, exportEntry.id, trimmedScopes);
+        const exportEntry = await this.dataExportService.createExportEntry(tenantId, scopes);
+        await this.publisher.onExportStarted(tenantId, exportEntry.id, exportEntry.targetScopes);
     }
 
     @Transactional({ connectionName: PRIVACY_MODULE_DATA_SOURCE })
     public async cancel(tenantId: string, exportId: string) {
+        await this.acquireLockForExportUpdate(exportId);
         await this.dataExportService.markExportAsCancelled(tenantId, exportId);
         await this.publisher.onExportCancelled(tenantId, exportId);
     }
@@ -58,26 +57,31 @@ export class ExportOrchestrator implements IExportOrchestrator {
     // TODO: Don't accept attachments if scope is fully covered
     @Transactional({ connectionName: PRIVACY_MODULE_DATA_SOURCE })
     async checkpoint(tenantId: string, exportId: string, attachmentManifest: ExportAttachmentManifest) {
+        await this.acquireLockForExportUpdate(exportId);
         const exportToCheckpoint = await this.dataExportService.getActiveById(tenantId, exportId);
+
         await this.checkpointAttachment(exportId, attachmentManifest);
-        const manifests = await this.exportAttachmentService.findTemporaryManifestsByExportId(exportId);
+        const manifests = await this.attachmentService.findTemporaryManifestsByExportId(tenantId, exportId);
 
         if (!this.isExportCompleted(exportToCheckpoint.targetScopes, manifests)) {
             this.logger.log({ exportId }, "Export checkpoint completed. Attachments still missing.");
             return;
         }
 
-        await this.compactAttachments(exportId, manifests);
+        await this.mergeAttachments(exportId, manifests);
         await this.dataExportService.markExportAsCompleted(tenantId, exportId);
         await this.publisher.onExportCompleted(tenantId, exportId);
         this.logger.log({ exportId }, "Export checkpoint completed. All attachments ready.");
     }
 
-    // TODO: Write to yourself?
-    private async cleanup(exportId: string) {
-        const manifests = await this.exportAttachmentService.findTemporaryManifestsByExportId(exportId);
-        await this.removeTemporaryAttachments(manifests);
-        await this.removeTemporaryAttachmentsManifests(manifests);
+    @Transactional({ connectionName: PRIVACY_MODULE_DATA_SOURCE })
+    public async cleanup(tenantId: string, exportId: string) {
+        await this.acquireLockForExportUpdate(exportId);
+        const manifests = await this.attachmentService.findTemporaryManifestsByExportId(tenantId, exportId);
+        const paths = manifests.map((manifest) => manifest.path);
+
+        await this.objectStorage.delete(paths);
+        await this.attachmentService.deleteAttachmentManifests(manifests);
         this.logger.log({ exportId }, "Temporary export attachments cleaned up.");
     }
 
@@ -86,7 +90,7 @@ export class ExportOrchestrator implements IExportOrchestrator {
         return !missingScopes.length;
     }
 
-    private async compactAttachments(exportId: string, manifests: ExportAttachmentManifest[]) {
+    private async mergeAttachments(exportId: string, manifests: ExportAttachmentManifest[]) {
         const attachmentsToMergePathPrefix = DataExportPathBuilder.forExport(exportId).build();
         const finalAttachmentPath = DataExportPathBuilder.forExport(exportId).setFilename("final.zip").build();
 
@@ -101,7 +105,7 @@ export class ExportOrchestrator implements IExportOrchestrator {
         const mergedScopes = this.scopeCalculator.mergeScopes(scopes);
 
         const finalManifest = {
-            key: `${exportId}-final`,
+            key: `${exportId}-merged`,
             path: finalAttachmentPath,
             scopes: mergedScopes,
             kind: ExportAttachmentKind.FINAL,
@@ -116,15 +120,11 @@ export class ExportOrchestrator implements IExportOrchestrator {
     }
 
     private async checkpointAttachment(exportId: string, manifest: ExportAttachmentManifest) {
-        await this.exportAttachmentService.storeAttachmentManifest(exportId, manifest);
+        await this.attachmentService.storeAttachmentManifest(exportId, manifest);
     }
 
-    private async removeTemporaryAttachments(manifests: ExportAttachmentManifest[]) {
-        const paths = manifests.map((manifest) => manifest.path);
-        await this.objectStorage.delete(paths);
-    }
-
-    private async removeTemporaryAttachmentsManifests(manifests: ExportAttachmentManifest[]) {
-        await this.exportAttachmentService.deleteAttachmentManifests(manifests);
+    private async acquireLockForExportUpdate(exportId: string) {
+        const lockId = `update-export-lock-${exportId}`;
+        await this.dbLockService.acquireTransactionLock(lockId);
     }
 }

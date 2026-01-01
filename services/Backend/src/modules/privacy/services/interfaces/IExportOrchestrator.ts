@@ -7,4 +7,5 @@ export interface IExportOrchestrator {
     start(tenantId: string, scopes: DataExportScope[]): Promise<void>;
     checkpoint(tenantId: string, exportId: string, attachmentManifest: ExportAttachmentManifest): Promise<void>;
     cancel(tenantId: string, exportId: string): Promise<void>;
+    cleanup(tenantId: string, exportId: string): Promise<void>;
 }

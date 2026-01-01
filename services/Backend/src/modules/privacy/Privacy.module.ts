@@ -24,6 +24,7 @@ import {
     type IIntegrationEventsSubscriber,
     IntegrationEventsSubscriberToken,
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
+import { DataExportCancelledEventHandler } from "@/common/export/events/DataExportCancelledEvent.handler";
 import { fromHours } from "@/common/utils/timeUtils";
 import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
 import {
@@ -36,6 +37,7 @@ import { DataPurgePlanEntity } from "@/modules/privacy/entities/DataPurgePlan.en
 import { ExportAttachmentManifestEntity } from "@/modules/privacy/entities/ExportAttachmentManifest.entity";
 import { TenantEntity } from "@/modules/privacy/entities/Tenant.entity";
 import { DataExportBatchReadyEventHandler } from "@/modules/privacy/events/DataExportBatchReadyEvent.handler";
+import { DataExportCompletedEventHandler } from "@/modules/privacy/events/DataExportCompletedEvent.handler";
 import { PurgeJobTriggeredEventHandler } from "@/modules/privacy/events/PurgeJobTriggeredEvent.handler";
 import { TenantCreatedEventHandler } from "@/modules/privacy/events/TenantCreatedEvent.handler";
 import { TenantRemovalRequestedEventHandler } from "@/modules/privacy/events/TenantRemovalRequestedEvent.handler";
@@ -101,6 +103,14 @@ import { TenantServiceToken } from "@/modules/privacy/services/interfaces/ITenan
             useClass: DataExportBatchReadyEventHandler,
         },
         {
+            provide: DataExportCompletedEventHandler,
+            useClass: DataExportCompletedEventHandler,
+        },
+        {
+            provide: DataExportCancelledEventHandler,
+            useClass: DataExportCancelledEventHandler,
+        },
+        {
             provide: DataExportEventsPublisherToken,
             useClass: DataExportEventsPublisher,
         },
@@ -137,6 +147,8 @@ import { TenantServiceToken } from "@/modules/privacy/services/interfaces/ITenan
                 TenantRemovalRequestedEventHandler,
                 PurgeJobTriggeredEventHandler,
                 DataExportBatchReadyEventHandler,
+                DataExportCompletedEventHandler,
+                DataExportCancelledEventHandler,
             ],
         },
     ],
