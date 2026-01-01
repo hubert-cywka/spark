@@ -61,6 +61,16 @@ export const TestConfig = () => ({
         internalUrl: process.env.GATEWAY_INTERNAL_URL,
     },
 
+    s3: {
+        endpoint: process.env.S3_ENDPOINT,
+        region: process.env.S3_REGION,
+        accessKeyId: process.env.S3_ACCESS_KEY_ID,
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+        bucket: {
+            name: process.env.S3_BUCKET_NAME,
+        },
+    },
+
     modules: {
         privacy: {
             database: {
@@ -73,6 +83,17 @@ export const TestConfig = () => ({
             },
             cache: {
                 connectionString: process.env.CACHE_CONNECTION_STRING,
+            },
+        },
+
+        exports: {
+            database: {
+                logging: process.env.DATABASE_LOGGING_ENABLED === "true",
+                port: process.env.DATABASE_PORT,
+                username: process.env.DATABASE_USERNAME,
+                password: process.env.DATABASE_PASSWORD,
+                host: process.env.DATABASE_HOST,
+                name: process.env.EXPORTS_DATABASE_NAME,
             },
         },
 
