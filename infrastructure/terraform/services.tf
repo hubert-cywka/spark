@@ -3,6 +3,7 @@ locals {
   mail_service_name          = "mail-service"
   identity_service_name      = "identity-service"
   privacy_service_name       = "privacy-service"
+  exports_service_name       = "exports-service"
   scheduling_service_name    = "scheduling-service"
   configuration_service_name = "configuration-service"
   alerts_service_name        = "alerts-service"
@@ -285,6 +286,65 @@ module "privacy-service" {
     "PUBSUB_OUTBOX_PROCESSOR_MAX_ATTEMPTS"      = var.PUBSUB_OUTBOX_PROCESSOR_MAX_ATTEMPTS
     "JWT_SIGNING_SECRET"                        = var.JWT_SIGNING_SECRET
     "PRIVACY_DATABASE_NAME"                     = var.PRIVACY_DATABASE_NAME
+    "COOKIES_SECRET"                            = var.COOKIES_SECRET
+    "GATEWAY_INTERNAL_URL"                      = "gateway.${kubernetes_namespace_v1.app.metadata[0].name}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
+  }
+
+  secret_name = kubernetes_secret_v1.app_secrets.metadata[0].name
+}
+
+module "exports-service" {
+  source = "./modules/microservice"
+
+  service_name   = local.exports_service_name
+  namespace      = kubernetes_namespace_v1.app.metadata[0].name
+  image          = "hejs22/codename-backend:latest"
+  replicas       = 1
+  service_port   = var.BACKEND_PORT
+  container_port = var.BACKEND_PORT
+
+  depends_on = [
+    module.database,
+    module.cache,
+    module.kafka_cluster
+  ]
+
+  env_vars = {
+    "EXPORTS_MODULE_ENABLED"                    = "true"
+    "PORT"                                      = var.BACKEND_PORT
+    "APP_NAME"                                  = var.APP_NAME
+    "OTEL_APP_NAME"                             = "${var.APP_NAME}-${local.exports_service_name}"
+    "OTEL_EXPORTER_OTLP_ENDPOINT"               = module.observability.otel_collector_address
+    "OTEL_EXPORTER_OTLP_PROTOCOL"               = "grpc"
+    "DATABASE_LOGGING_ENABLED"                  = var.DATABASE_LOGGING_ENABLED
+    "EVENTS_ENCRYPTION_SECRET_64_BYTES"         = var.EVENTS_ENCRYPTION_SECRET_64_BYTES
+    "CLIENT_URL_BASE"                           = var.CLIENT_URL_BASE
+    "DATABASE_PORT"                             = var.DATABASE_PORT
+    "DATABASE_USERNAME"                         = var.DATABASE_USERNAME
+    "DATABASE_PASSWORD"                         = var.DATABASE_PASSWORD
+    "DATABASE_HOST"                             = module.database.host
+    "CACHE_CONNECTION_STRING"                   = module.cache.connection_string
+    "S3_ACCESS_KEY_ID"                          = var.S3_ACCESS_KEY_ID
+    "S3_SECRET_ACCESS_KEY"                      = var.S3_SECRET_ACCESS_KEY
+    "S3_REGION"                                 = var.S3_REGION
+    "S3_BUCKET_NAME"                            = var.S3_BUCKET_NAME
+    "S3_ENDPOINT"                               = module.s3.s3_endpoint
+    "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
+    "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
+    "PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH"       = var.PUBSUB_CONSUMER_MAX_BYTES_PER_PATCH
+    "PUBSUB_CONSUMER_MAX_WAIT_FOR_BATCH_MS"     = var.PUBSUB_CONSUMER_MAX_WAIT_FOR_BATCH_MS
+    "PUBSUB_PARTITIONS_NUM_OF_PARTITIONS"       = var.PUBSUB_PARTITIONS_NUM_OF_PARTITIONS
+    "PUBSUB_PARTITIONS_STALE_THRESHOLD_IN_MS"   = var.PUBSUB_PARTITIONS_STALE_THRESHOLD_IN_MS
+    "PUBSUB_INBOX_PROCESSOR_POLLING_INTERVAL"   = var.PUBSUB_INBOX_PROCESSOR_POLLING_INTERVAL
+    "PUBSUB_INBOX_PROCESSOR_MAX_BATCH_SIZE"     = var.PUBSUB_INBOX_PROCESSOR_MAX_BATCH_SIZE
+    "PUBSUB_INBOX_PROCESSOR_CLEARING_INTERVAL"  = var.PUBSUB_INBOX_PROCESSOR_CLEARING_INTERVAL
+    "PUBSUB_INBOX_PROCESSOR_MAX_ATTEMPTS"       = var.PUBSUB_INBOX_PROCESSOR_MAX_ATTEMPTS
+    "PUBSUB_OUTBOX_PROCESSOR_POLLING_INTERVAL"  = var.PUBSUB_OUTBOX_PROCESSOR_POLLING_INTERVAL
+    "PUBSUB_OUTBOX_PROCESSOR_MAX_BATCH_SIZE"    = var.PUBSUB_OUTBOX_PROCESSOR_MAX_BATCH_SIZE
+    "PUBSUB_OUTBOX_PROCESSOR_CLEARING_INTERVAL" = var.PUBSUB_OUTBOX_PROCESSOR_CLEARING_INTERVAL
+    "PUBSUB_OUTBOX_PROCESSOR_MAX_ATTEMPTS"      = var.PUBSUB_OUTBOX_PROCESSOR_MAX_ATTEMPTS
+    "JWT_SIGNING_SECRET"                        = var.JWT_SIGNING_SECRET
+    "EXPORTS_DATABASE_NAME"                     = var.EXPORTS_DATABASE_NAME
     "COOKIES_SECRET"                            = var.COOKIES_SECRET
     "GATEWAY_INTERNAL_URL"                      = "gateway.${kubernetes_namespace_v1.app.metadata[0].name}.svc.cluster.local:${var.GATEWAY_INTERNAL_PORT}"
   }

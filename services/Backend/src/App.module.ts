@@ -12,6 +12,7 @@ import { AppConfig } from "@/config/configuration";
 import { logger, loggerOptions } from "@/lib/logger";
 import { AlertsModule } from "@/modules/alerts/Alerts.module";
 import { ConfigurationModule } from "@/modules/configuration/Configuration.module";
+import { ExportsModule } from "@/modules/exports/Exports.module";
 import { GlobalModule } from "@/modules/global/Global.module";
 import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
 import { IdentityModule } from "@/modules/identity/Identity.module";
@@ -30,6 +31,7 @@ const PLUGGABLE_MODULES_MAP = {
     ALERTS_MODULE_ENABLED: AlertsModule,
     USERS_MODULE_ENABLED: UsersModule,
     PRIVACY_MODULE_ENABLED: PrivacyModule,
+    EXPORTS_MODULE_ENABLED: ExportsModule,
     MAIL_MODULE_ENABLED: MailModule,
 };
 

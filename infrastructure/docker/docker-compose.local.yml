@@ -206,6 +206,8 @@ services:
             - MAIL_SERVICE_PORT=80
             - PRIVACY_SERVICE_ADDRESS=${PRIVACY_SERVICE_HOST}
             - PRIVACY_SERVICE_PORT=80
+            - EXPORTS_SERVICE_ADDRESS=${EXPORTS_SERVICE_HOST}
+            - EXPORTS_SERVICE_PORT=80
             - SCHEDULING_SERVICE_ADDRESS=${SCHEDULING_SERVICE_HOST}
             - SCHEDULING_SERVICE_PORT=80
             - CONFIGURATION_SERVICE_ADDRESS=${CONFIGURATION_SERVICE_HOST}
@@ -299,6 +301,22 @@ services:
             - PORT=80
             - PRIVACY_MODULE_ENABLED=true
             - OTEL_SERVICE_NAME=spark-privacy-service
+
+    exports-service:
+        ports:
+            - "${EXPORTS_SERVICE_PORT}:80"
+        healthcheck:
+            test: [ "CMD", "curl", "-f", "http://localhost:80/healthz/liveness" ]
+            start_period: 30s
+            interval: 15s
+            timeout: 5s
+            retries: 3
+        env_file:
+            - ".env"
+        environment:
+            - PORT=80
+            - EXPORTS_MODULE_ENABLED=true
+            - OTEL_SERVICE_NAME=spark-exports-service
 
     scheduling-service:
         ports:

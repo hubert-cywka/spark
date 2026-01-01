@@ -22,7 +22,7 @@ export class EntriesDataExportProvider implements IDataExportProvider {
         const globalStart = dayjs(scope.dateRange.from);
         let currentPeriodStart = globalStart;
 
-        while (!globalEnd.isAfter(currentPeriodStart)) {
+        while (!currentPeriodStart.isAfter(globalEnd)) {
             const currentYearEnd = currentPeriodStart.endOf("year");
             const effectiveFrom = globalStart.isAfter(currentPeriodStart) ? globalStart : currentPeriodStart;
             const effectiveTo = globalEnd.isBefore(currentYearEnd) ? globalEnd : currentYearEnd;

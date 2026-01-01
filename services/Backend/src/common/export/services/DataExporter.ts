@@ -7,9 +7,9 @@ import { DataExportAttachmentPathBuilder } from "@/common/export/services/DataEx
 import { type IDataExporter } from "@/common/export/services/IDataExporter";
 import { type IDataExportProvider, DataExportProvidersToken } from "@/common/export/services/IDataExportProvider";
 import { DataExportBatch } from "@/common/export/types/DataExportBatch";
+import { ExportAttachmentStage } from "@/common/export/types/ExportAttachmentStage";
 import { type IObjectStorage, ObjectStorageToken } from "@/common/s3/services/IObjectStorage";
 import { type ICsvParser, CsvParserToken } from "@/common/services/interfaces/ICsvParser";
-import { ExportAttachmentKind } from "@/modules/privacy/entities/ExportAttachmentManifest.entity";
 
 @Injectable()
 export class DataExporter implements IDataExporter {
@@ -48,7 +48,7 @@ export class DataExporter implements IDataExporter {
                 key: this.buildAttachmentKey(exportId, batchScope, page),
                 path: filePath,
                 scopes: [batchScope],
-                kind: ExportAttachmentKind.TEMPORARY,
+                stage: ExportAttachmentStage.PARTIAL,
                 metadata: {
                     checksum,
                     part: page,
@@ -69,7 +69,7 @@ export class DataExporter implements IDataExporter {
                     key: manifest.key,
                     path: manifest.path,
                     scopes: manifest.scopes,
-                    kind: manifest.kind,
+                    stage: manifest.stage,
                     metadata: {
                         part: manifest.metadata.part,
                         checksum: manifest.metadata.checksum,

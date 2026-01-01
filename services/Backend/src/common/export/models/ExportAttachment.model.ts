@@ -1,11 +1,11 @@
 import { DataExportScope } from "@/common/export/models/DataExportScope";
-import { ExportAttachmentKind } from "@/modules/privacy/entities/ExportAttachmentManifest.entity";
+import { ExportAttachmentStage } from "@/common/export/types/ExportAttachmentStage";
 
 export type ExportAttachmentManifest = {
     key: string;
     path: string;
     scopes: DataExportScope[];
-    kind: ExportAttachmentKind;
+    stage: ExportAttachmentStage;
     metadata: {
         checksum: string;
         part: number;

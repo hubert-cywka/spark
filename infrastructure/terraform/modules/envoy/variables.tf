@@ -50,6 +50,10 @@ variable "privacy_service_name" {
   type = string
 }
 
+variable "exports_service_name" {
+  type = string
+}
+
 variable "scheduling_service_name" {
   type = string
 }

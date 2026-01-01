@@ -93,6 +93,15 @@ resource "kubernetes_deployment_v1" "envoy" {
           }
 
           env {
+            name  = "EXPORTS_SERVICE_ADDRESS"
+            value = "${var.exports_service_name}.${var.namespace}.svc.cluster.local"
+          }
+          env {
+            name  = "EXPORTS_SERVICE_PORT"
+            value = var.backend_port
+          }
+
+          env {
             name  = "SCHEDULING_SERVICE_ADDRESS"
             value = "${var.scheduling_service_name}.${var.namespace}.svc.cluster.local"
           }

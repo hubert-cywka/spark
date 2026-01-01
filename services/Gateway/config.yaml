@@ -235,7 +235,7 @@ static_resources:
                                         -   match:
                                               prefix: /api/export
                                             route:
-                                              cluster: privacy
+                                              cluster: exports
                                             typed_per_filter_config:
                                                 envoy.filters.http.local_ratelimit: *export_rate_limit
 
@@ -357,6 +357,21 @@ static_resources:
                         socket_address:
                           address: '${PRIVACY_SERVICE_ADDRESS}'
                           port_value: '${PRIVACY_SERVICE_PORT}'
+
+        - name: exports
+          connect_timeout: 5s
+          type: STRICT_DNS
+          dns_lookup_family: V4_ONLY
+          lb_policy: ROUND_ROBIN
+          load_assignment:
+            cluster_name: exports
+            endpoints:
+              - lb_endpoints:
+                  - endpoint:
+                      address:
+                        socket_address:
+                          address: '${EXPORTS_SERVICE_ADDRESS}'
+                          port_value: '${EXPORTS_SERVICE_PORT}'
                           
         - name: configuration
           connect_timeout: 5s

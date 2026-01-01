@@ -238,6 +238,21 @@ services:
             - cache
             - pooler
             - s3
+    
+    exports-service:
+        build:
+            context: ../../services/Backend
+            dockerfile: Dockerfile
+        restart: always
+        networks:
+            - services_network
+        depends_on:
+            - kafka-broker-1
+            - kafka-broker-2
+            - kafka-broker-3
+            - cache
+            - pooler
+            - s3
 
     scheduling-service:
         build:

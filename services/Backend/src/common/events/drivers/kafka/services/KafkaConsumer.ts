@@ -18,7 +18,7 @@ export class KafkaConsumer implements IEventConsumer {
     public async listen(labels: IntegrationEventLabel[], onEventsReceived: OnEventsReceivedHandler): Promise<void> {
         const topics = [...new Set(labels.map((event) => event.topic))];
 
-        await this.consumer.subscribe({ topics, fromBeginning: true });
+        await this.consumer.subscribe({ topics, fromBeginning: false });
         this.logger.log({ topics }, "Subscribed to topics.");
 
         await this.consumer.run({
