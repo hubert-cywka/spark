@@ -112,8 +112,10 @@ export class S3ObjectStorage implements IObjectStorage {
                 })
             );
 
-            if (response.Errors && response.Errors.length > 0) {
-                const failedKeys = response.Errors.map((e) => e.Key ?? "unknown");
+            const errors = response.Errors?.filter((e) => e.Code !== "NoSuchKey") ?? [];
+
+            if (errors.length > 0) {
+                const failedKeys = errors.map((e) => e.Key ?? "unknown");
                 throw new ObjectDeleteFailedError(failedKeys);
             }
         }
