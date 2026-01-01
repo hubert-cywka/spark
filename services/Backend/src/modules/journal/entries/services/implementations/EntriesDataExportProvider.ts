@@ -18,24 +18,25 @@ export class EntriesDataExportProvider implements IDataExportProvider {
     }
 
     public async *getDataStream(tenantId: string, scope: DataExportScope): AsyncIterable<DataExportBatch> {
-        let currentMonthStart = dayjs(scope.dateRange.from).startOf("month");
         const globalEnd = dayjs(scope.dateRange.to);
+        const globalStart = dayjs(scope.dateRange.from);
+        let currentPeriodStart = globalStart;
 
-        while (currentMonthStart.isBefore(globalEnd) || currentMonthStart.isSame(globalEnd)) {
-            const currentMonthEnd = currentMonthStart.endOf("month");
-
-            const effectiveTo = globalEnd.isBefore(currentMonthEnd) ? globalEnd : currentMonthEnd;
+        while (!currentPeriodStart.isAfter(globalEnd)) {
+            const currentYearEnd = currentPeriodStart.endOf("year");
+            const effectiveFrom = globalStart.isAfter(currentPeriodStart) ? globalStart : currentPeriodStart;
+            const effectiveTo = globalEnd.isBefore(currentYearEnd) ? globalEnd : currentYearEnd;
 
             const batchScope: DataExportScope = {
                 domain: scope.domain,
                 dateRange: {
-                    from: formatToISODateString(currentMonthStart.toDate()),
+                    from: formatToISODateString(effectiveFrom.toDate()),
                     to: formatToISODateString(effectiveTo.toDate()),
                 },
             };
 
             yield* this.getBatchStream(tenantId, batchScope);
-            currentMonthStart = currentMonthStart.add(1, "month");
+            currentPeriodStart = currentYearEnd.add(1, "day").startOf("year");
         }
     }
 
@@ -47,7 +48,7 @@ export class EntriesDataExportProvider implements IDataExportProvider {
         let hasMore = true;
 
         while (hasMore) {
-            const entries = await this.entryService.findAll(
+            const entries = await this.entryService.findAllDetailed(
                 tenantId,
                 { cursor: nextCursor, take, order: Order.ASC },
                 { from: batchScope.dateRange.from, to: batchScope.dateRange.to }
@@ -56,7 +57,7 @@ export class EntriesDataExportProvider implements IDataExportProvider {
             hasMore = entries.meta.hasNextPage;
             nextCursor = entries.meta.nextCursor;
 
-            // Yield even if there is no data. Optimize later.
+            // Yield even if there is no data. TODO: Optimize later.
             yield {
                 batch: entries.data,
                 batchScope,

@@ -105,6 +105,11 @@ variable "PRIVACY_DATABASE_NAME" {
   type = string
 }
 
+variable "EXPORTS_DATABASE_NAME" {
+  type = string
+}
+
+
 variable "MAIL_DATABASE_NAME" {
   type = string
 }

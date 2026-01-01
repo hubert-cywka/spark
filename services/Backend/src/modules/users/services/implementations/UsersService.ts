@@ -24,7 +24,7 @@ export class UsersService implements IUsersService {
         private readonly publisher: IUserEventsPublisher
     ) {}
 
-    public async findOneById(id: string): Promise<User> {
+    public async getById(id: string): Promise<User> {
         const user = await this.getRepository().findOne({ where: { id } });
 
         if (!user) {
@@ -72,7 +72,7 @@ export class UsersService implements IUsersService {
     }
 
     public async requestRemovalById(id: string): Promise<void> {
-        const result = await this.findOneById(id);
+        const result = await this.getById(id);
 
         await this.publisher.onDataRemovalRequested(result.id, {
             account: {

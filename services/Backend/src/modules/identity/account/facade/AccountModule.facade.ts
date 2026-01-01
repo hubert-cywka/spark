@@ -36,11 +36,11 @@ export class AccountModuleFacade implements IAccountModuleFacade {
         return account;
     }
 
-    public async findFederatedAccount(providerAccountId: string, providerId: FederatedAccountProvider) {
-        return await this.federatedAccountService.findByExternalIdentity(providerAccountId, providerId);
+    public async getFederatedAccount(providerAccountId: string, providerId: FederatedAccountProvider) {
+        return await this.federatedAccountService.getByExternalIdentity(providerAccountId, providerId);
     }
 
-    public async findManagedAccount(email: string, password: string) {
-        return await this.managedAccountService.findActivatedByCredentials(email, password);
+    public async getManagedAccount(email: string, password: string) {
+        return await this.managedAccountService.getActivatedByCredentials(email, password);
     }
 }

@@ -45,7 +45,7 @@ export class AuthenticationService implements IAuthenticationService {
     }
 
     public async loginWithCredentials({ email, password }: Credentials): Promise<ExtendedAuthenticationResult> {
-        const account = await this.accountModule.findManagedAccount(email, password);
+        const account = await this.accountModule.getManagedAccount(email, password);
         return await this.createAuthenticationResult(account, this.scopesService.getByAccountId(account.id), { includeRefreshToken: true });
     }
 
@@ -54,7 +54,7 @@ export class AuthenticationService implements IAuthenticationService {
     }
 
     public async loginWithExternalIdentity(identity: ExternalIdentity): Promise<ExtendedAuthenticationResult> {
-        const account = await this.accountModule.findFederatedAccount(identity.id, identity.providerId);
+        const account = await this.accountModule.getFederatedAccount(identity.id, identity.providerId);
         return await this.createAuthenticationResult(account, this.scopesService.getByAccountId(account.id), { includeRefreshToken: true });
     }
 

@@ -6,12 +6,13 @@ import { LoggerModule } from "nestjs-pino";
 import { CacheModule } from "@/common/cache/Cache.module";
 import { IntegrationEventsModule } from "@/common/events";
 import { AccessTokenStrategy } from "@/common/guards/AccessToken.strategy";
+import { ObjectStorageModule } from "@/common/objectStorage/ObjectStorage.module";
 import { ServiceToServiceModule } from "@/common/s2s/ServiceToService.module";
-import { ObjectStorageModule } from "@/common/s3/ObjectStorage.module";
 import { AppConfig } from "@/config/configuration";
 import { logger, loggerOptions } from "@/lib/logger";
 import { AlertsModule } from "@/modules/alerts/Alerts.module";
 import { ConfigurationModule } from "@/modules/configuration/Configuration.module";
+import { ExportsModule } from "@/modules/exports/Exports.module";
 import { GlobalModule } from "@/modules/global/Global.module";
 import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
 import { IdentityModule } from "@/modules/identity/Identity.module";
@@ -30,6 +31,7 @@ const PLUGGABLE_MODULES_MAP = {
     ALERTS_MODULE_ENABLED: AlertsModule,
     USERS_MODULE_ENABLED: UsersModule,
     PRIVACY_MODULE_ENABLED: PrivacyModule,
+    EXPORTS_MODULE_ENABLED: ExportsModule,
     MAIL_MODULE_ENABLED: MailModule,
 };
 

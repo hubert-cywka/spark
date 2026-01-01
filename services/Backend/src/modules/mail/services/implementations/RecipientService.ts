@@ -35,7 +35,7 @@ export class RecipientService implements IRecipientService {
         return this.recipientMapper.fromEntityToModel(result);
     }
 
-    public async find(id: string): Promise<Recipient> {
+    public async getById(id: string): Promise<Recipient> {
         const repository = this.getRepository();
         const recipient = await repository.findOne({ where: { id } });
 

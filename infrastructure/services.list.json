@@ -54,6 +54,10 @@
         "port": 5200,
         "detachable": true
     },
+    "exports-service": {
+        "port": 5200,
+        "detachable": true
+    },
     "mail-service": {
         "port": 5200,
         "detachable": true

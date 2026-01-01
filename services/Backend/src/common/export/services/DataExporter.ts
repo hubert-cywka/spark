@@ -3,11 +3,12 @@ import { Inject, Injectable } from "@nestjs/common";
 import { type IEventPublisher, DataExportBatchReadyEvent, EventPublisherToken } from "@/common/events";
 import { DataExportScope } from "@/common/export/models/DataExportScope";
 import { ExportAttachmentManifest } from "@/common/export/models/ExportAttachment.model";
+import { DataExportAttachmentPathBuilder } from "@/common/export/services/DataExportAttachmentPathBuilder";
 import { type IDataExporter } from "@/common/export/services/IDataExporter";
 import { type IDataExportProvider, DataExportProvidersToken } from "@/common/export/services/IDataExportProvider";
 import { DataExportBatch } from "@/common/export/types/DataExportBatch";
-import { type IObjectStorage, ObjectStorageToken } from "@/common/s3/services/IObjectStorage";
-import { type IChecksumCalculator, ChecksumCalculatorToken } from "@/common/services/interfaces/IChecksumCalculator";
+import { ExportAttachmentStage } from "@/common/export/types/ExportAttachmentStage";
+import { type IObjectStorage, ObjectStorageToken } from "@/common/objectStorage/services/IObjectStorage";
 import { type ICsvParser, CsvParserToken } from "@/common/services/interfaces/ICsvParser";
 
 @Injectable()
@@ -19,8 +20,6 @@ export class DataExporter implements IDataExporter {
         private readonly publisher: IEventPublisher,
         @Inject(CsvParserToken)
         private readonly parser: ICsvParser,
-        @Inject(ChecksumCalculatorToken)
-        private readonly checksumCalculator: IChecksumCalculator,
         @Inject(ObjectStorageToken)
         private readonly objectStorage: IObjectStorage
     ) {}
@@ -41,20 +40,22 @@ export class DataExporter implements IDataExporter {
     private async processExport(tenantId: string, exportId: string, data: AsyncIterable<DataExportBatch>) {
         for await (const { batch, batchScope, page, hasMore } of data) {
             const fileContent = this.parser.toBuffer(batch);
-            const fileChecksum = await this.checksumCalculator.fromBuffer(fileContent);
+            const filePath = this.buildAttachmentPath(exportId, batchScope, page);
+
+            const { checksum } = await this.objectStorage.upload(filePath, fileContent, "text/csv");
 
             const manifest = {
-                scope: batchScope,
                 key: this.buildAttachmentKey(exportId, batchScope, page),
-                path: this.buildAttachmentPath(exportId, batchScope, page),
+                path: filePath,
+                scopes: [batchScope],
+                stage: ExportAttachmentStage.TEMPORARY,
                 metadata: {
-                    checksum: fileChecksum,
+                    checksum,
                     part: page,
                     nextPart: hasMore ? page + 1 : null,
                 },
             };
 
-            await this.objectStorage.upload(manifest.path, fileContent);
             await this.publishDataExportBatchReadyEvent(tenantId, exportId, manifest);
         }
     }
@@ -67,7 +68,8 @@ export class DataExporter implements IDataExporter {
                 attachment: {
                     key: manifest.key,
                     path: manifest.path,
-                    scope: manifest.scope,
+                    scopes: manifest.scopes,
+                    stage: manifest.stage,
                     metadata: {
                         part: manifest.metadata.part,
                         checksum: manifest.metadata.checksum,
@@ -83,6 +85,6 @@ export class DataExporter implements IDataExporter {
     }
 
     private buildAttachmentPath(exportId: string, scope: DataExportScope, page: number) {
-        return `export/${exportId}/${scope.domain}/${scope.dateRange.from}_${scope.dateRange.to}/page-${page}.csv`;
+        return DataExportAttachmentPathBuilder.forExport(exportId).setScope(scope).setFilename(`page-${page}.csv`).build();
     }
 }

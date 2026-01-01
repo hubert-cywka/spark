@@ -17,11 +17,12 @@ import { DailyModule } from "@/modules/journal/daily/Daily.module";
 import { EntriesModule } from "@/modules/journal/entries/Entries.module";
 import { EntriesDataExportProvider } from "@/modules/journal/entries/services/implementations/EntriesDataExportProvider";
 import { GoalsModule } from "@/modules/journal/goals/Goals.module";
+import { GoalsDataExportProvider } from "@/modules/journal/goals/services/implementations/GoalsDataExportProvider";
 import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.module";
 
 @Module({
     providers: [
-        ...provideDataExporter([EntriesDataExportProvider]),
+        ...provideDataExporter([EntriesDataExportProvider, GoalsDataExportProvider]),
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,

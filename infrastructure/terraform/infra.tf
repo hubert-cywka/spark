@@ -48,6 +48,7 @@ module "gateway" {
   users_service_name         = module.users-service.service_name
   alerts_service_name        = module.alerts-service.service_name
   privacy_service_name       = module.privacy-service.service_name
+  exports_service_name       = module.exports-service.service_name
   mail_service_name          = module.mail-service.service_name
   frontend_service_name      = module.frontend.service_name
   scheduling_service_name    = module.scheduling-service.service_name

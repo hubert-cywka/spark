@@ -1,5 +1,6 @@
 import { IntegrationEvent, IntegrationEvents } from "@/common/events";
 import { DataExportScope } from "@/common/export/models/DataExportScope";
+import { ExportAttachmentStage } from "@/common/export/types/ExportAttachmentStage";
 
 export type DataExportBatchReadyEventPayload = {
     tenant: {
@@ -11,7 +12,8 @@ export type DataExportBatchReadyEventPayload = {
     attachment: {
         key: string;
         path: string;
-        scope: DataExportScope;
+        scopes: DataExportScope[];
+        stage: ExportAttachmentStage;
         metadata: {
             checksum: string;
             part: number;

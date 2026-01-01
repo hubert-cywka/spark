@@ -30,7 +30,6 @@ export const Cookie = createParamDecorator(async (options: CookieDecoratorOption
     }
 
     if (options.signed) {
-        // TODO: Fastify should unsign the cookie automatically
         const { value, valid } = request.unsignCookie(cookieValue);
 
         if (!valid) {

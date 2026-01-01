@@ -49,7 +49,7 @@ export class GoalController {
     @AccessScopes("read:goal")
     public async getGoalById(@Param("id", new ParseUUIDPipe()) goalId: string, @AuthenticatedUserContext() author: User) {
         try {
-            const result = await this.goalService.findOneById(author.id, goalId);
+            const result = await this.goalService.getById(author.id, goalId);
             return this.goalMapper.fromModelToDto(result);
         } catch (err) {
             whenError(err).is(EntityNotFoundError).throw(new NotFoundException()).elseRethrow();

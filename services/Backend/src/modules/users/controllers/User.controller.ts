@@ -21,7 +21,7 @@ export class UserController {
     @AccessScopes("read:account")
     public async getMyself(@AuthenticatedUserContext() user: User) {
         try {
-            const result = await this.usersService.findOneById(user.id);
+            const result = await this.usersService.getById(user.id);
             return this.userMapper.fromModelToDto(result);
         } catch (e) {
             whenError(e).is(EntityNotFoundError).throw(new NotFoundException()).elseRethrow();
