@@ -74,7 +74,7 @@ export class DailyController {
     @AccessScopes("read:daily")
     public async getDailyById(@Param("id", new ParseUUIDPipe()) dailyId: string, @AuthenticatedUserContext() author: User) {
         try {
-            const result = await this.dailyProvider.findOneById(author.id, dailyId);
+            const result = await this.dailyProvider.getById(author.id, dailyId);
             return this.dailyMapper.fromModelToDto(result);
         } catch (err) {
             whenError(err).is(EntityNotFoundError).throw(new NotFoundException()).elseRethrow();

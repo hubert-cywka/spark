@@ -11,7 +11,7 @@ export class EmailLookup implements IEmailLookup {
     ) {}
 
     public async findByRecipientId(id: string): Promise<string> {
-        const recipient = await this.recipientService.find(id);
+        const recipient = await this.recipientService.getById(id);
         return recipient.email;
     }
 }

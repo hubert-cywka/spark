@@ -7,6 +7,6 @@ export const DailyProviderToken = Symbol("DailyProviderToken");
 
 export interface IDailyProvider {
     findAllByDateRange(authorId: string, from: ISODateString, to: ISODateString, pageOptions: PageOptions): Promise<Paginated<Daily>>;
-    findOneById(authorId: string, dailyId: string): Promise<Daily>;
+    getById(authorId: string, dailyId: string): Promise<Daily>;
     existsById(authorId: string, dailyId: string): Promise<boolean>;
 }

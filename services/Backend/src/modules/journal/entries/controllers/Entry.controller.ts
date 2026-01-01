@@ -59,7 +59,7 @@ export class EntryController {
     @UseGuards(AccessGuard)
     @AccessScopes("read:entry")
     public async getEntriesMetrics(@Query() filters: FindEntriesInsightsDto, @AuthenticatedUserContext() user: User) {
-        const result = await this.insightsService.findMetricsByDateRange(user.id, filters.from, filters.to);
+        const result = await this.insightsService.getMetricsByDateRange(user.id, filters.from, filters.to);
         return plainToInstance(EntriesMetricsDto, {
             ...result,
             dailyRange: { to: filters.to, from: filters.from },
@@ -74,7 +74,7 @@ export class EntryController {
         @AuthenticatedUserContext() user: User,
         @Timezone() timezone: string
     ) {
-        const result = await this.insightsService.findLoggingHistogram(user.id, filters.from, filters.to, timezone);
+        const result = await this.insightsService.getLoggingHistogram(user.id, filters.from, filters.to, timezone);
         return plainToInstance(EntryLoggingHistogramDto, {
             days: result,
             dailyRange: { to: filters.to, from: filters.from },

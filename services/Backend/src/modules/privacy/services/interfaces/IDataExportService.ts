@@ -8,7 +8,7 @@ export const DataExportServiceToken = Symbol("DataExportService");
 export interface IDataExportService {
     getActiveById(tenantId: string, exportId: string): Promise<DataExport>;
     getCompletedById(tenantId: string, exportId: string): Promise<DataExport>;
-    getAll(tenantId: string, pageOptions: PageOptions): Promise<Paginated<DataExport>>;
+    findAll(tenantId: string, pageOptions: PageOptions): Promise<Paginated<DataExport>>;
 
     createExportEntry(tenantId: string, scopes: DataExportScope[]): Promise<DataExport>;
     markExportAsCancelled(tenantId: string, exportId: string): Promise<void>;

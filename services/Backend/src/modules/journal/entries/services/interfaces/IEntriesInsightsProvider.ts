@@ -3,6 +3,6 @@ import { EntriesInsights } from "@/modules/journal/entries/models/EntriesInsight
 export const EntriesInsightsProviderToken = Symbol("EntriesInsightsProvider");
 
 export interface IEntriesInsightsProvider {
-    findMetricsByDateRange(authorId: string, from: string, to: string): Promise<EntriesInsights>;
-    findLoggingHistogram(authorId: string, from: string, to: string, timezone: string): Promise<EntryLoggingHistogram>;
+    getMetricsByDateRange(authorId: string, from: string, to: string): Promise<EntriesInsights>;
+    getLoggingHistogram(authorId: string, from: string, to: string, timezone: string): Promise<EntryLoggingHistogram>;
 }

@@ -5,8 +5,8 @@ export const AccountModuleFacadeToken = Symbol("AccountModuleFacade");
 
 export interface IAccountModuleFacade {
     createFederatedAccount(providerAccountId: string, providerId: FederatedAccountProvider, email: string): Promise<Account>;
-    findFederatedAccount(providerAccountId: string, providerId: FederatedAccountProvider): Promise<Account>;
+    getFederatedAccount(providerAccountId: string, providerId: FederatedAccountProvider): Promise<Account>;
 
     createManagedAccount(email: string, password: string, clientRedirectUrl: string): Promise<Account>;
-    findManagedAccount(email: string, password: string): Promise<Account>;
+    getManagedAccount(email: string, password: string): Promise<Account>;
 }

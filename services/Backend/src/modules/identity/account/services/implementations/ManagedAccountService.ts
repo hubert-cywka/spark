@@ -48,7 +48,7 @@ export class ManagedAccountService implements IManagedAccountService {
         this.accountActivationTokenService = singleUseTokenServiceFactory.create("accountActivation");
     }
 
-    public async findActivatedByCredentials(email: string, password: string): Promise<Account> {
+    public async getActivatedByCredentials(email: string, password: string): Promise<Account> {
         if (!this.fakePasswordHash) {
             this.fakePasswordHash = await this.generateFakePasswordHash();
         }

@@ -42,7 +42,7 @@ export class DailyProvider implements IDailyProvider {
         return createPage(mappedDailies, pageOptions.take, paginationKeys);
     }
 
-    public async findOneById(authorId: string, dailyId: string): Promise<Daily> {
+    public async getById(authorId: string, dailyId: string): Promise<Daily> {
         const daily = await this.getRepository().findOne({
             where: { id: dailyId, author: { id: authorId } },
         });

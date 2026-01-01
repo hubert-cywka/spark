@@ -20,12 +20,12 @@ export class ExportAttachmentManifestService implements IExportAttachmentManifes
         private readonly mapper: IExportAttachmentManifestMapper
     ) {}
 
-    public async getTemporaryManifestsByExportId(exportId: string) {
+    public async findTemporaryManifestsByExportId(exportId: string) {
         const dataExports = await this.getRepository().find({ where: { dataExportId: exportId, kind: ExportAttachmentKind.TEMPORARY } });
         return this.mapper.fromEntityToModelBulk(dataExports);
     }
 
-    public async getFinalManifestByExportId(exportId: string) {
+    public async findFinalManifestByExportId(exportId: string) {
         const dataExport = await this.getRepository().findOne({ where: { dataExportId: exportId, kind: ExportAttachmentKind.FINAL } });
 
         if (!dataExport) {

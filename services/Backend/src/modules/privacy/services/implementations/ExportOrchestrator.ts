@@ -60,7 +60,7 @@ export class ExportOrchestrator implements IExportOrchestrator {
     async checkpoint(tenantId: string, exportId: string, attachmentManifest: ExportAttachmentManifest) {
         const exportToCheckpoint = await this.dataExportService.getActiveById(tenantId, exportId);
         await this.checkpointAttachment(exportId, attachmentManifest);
-        const manifests = await this.exportAttachmentService.getTemporaryManifestsByExportId(exportId);
+        const manifests = await this.exportAttachmentService.findTemporaryManifestsByExportId(exportId);
 
         if (!this.isExportCompleted(exportToCheckpoint.targetScopes, manifests)) {
             this.logger.log({ exportId }, "Export checkpoint completed. Attachments still missing.");
@@ -75,7 +75,7 @@ export class ExportOrchestrator implements IExportOrchestrator {
 
     // TODO: Write to yourself?
     private async cleanup(exportId: string) {
-        const manifests = await this.exportAttachmentService.getTemporaryManifestsByExportId(exportId);
+        const manifests = await this.exportAttachmentService.findTemporaryManifestsByExportId(exportId);
         await this.removeTemporaryAttachments(manifests);
         await this.removeTemporaryAttachmentsManifests(manifests);
         this.logger.log({ exportId }, "Temporary export attachments cleaned up.");

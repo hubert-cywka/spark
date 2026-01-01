@@ -12,7 +12,7 @@ export class EntriesInsightsProvider implements IEntriesInsightsProvider {
         private readonly repository: Repository<EntryEntity>
     ) {}
 
-    public async findMetricsByDateRange(authorId: string, from: string, to: string): Promise<EntriesInsights> {
+    public async getMetricsByDateRange(authorId: string, from: string, to: string): Promise<EntriesInsights> {
         const result = await this.getRepository()
             .createQueryBuilder("entry")
             .innerJoin("entry.daily", "daily")
@@ -40,7 +40,7 @@ export class EntriesInsightsProvider implements IEntriesInsightsProvider {
         };
     }
 
-    public async findLoggingHistogram(authorId: string, from: string, to: string, timezone: string): Promise<EntryLoggingHistogram> {
+    public async getLoggingHistogram(authorId: string, from: string, to: string, timezone: string): Promise<EntryLoggingHistogram> {
         const histogramResult = await this.getRepository()
             .createQueryBuilder("entry")
             .innerJoin("entry.daily", "daily")

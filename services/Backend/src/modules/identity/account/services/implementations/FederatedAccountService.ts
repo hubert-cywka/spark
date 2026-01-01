@@ -31,7 +31,7 @@ export class FederatedAccountService implements IFederatedAccountService {
         private readonly publisher: IAccountEventsPublisher
     ) {}
 
-    public async findByExternalIdentity(providerAccountId: string, providerId: FederatedAccountProvider): Promise<Account> {
+    public async getByExternalIdentity(providerAccountId: string, providerId: FederatedAccountProvider): Promise<Account> {
         const account = await this.getRepository().findOne({
             where: {
                 providerAccountId,

@@ -65,7 +65,7 @@ export class GoalService implements IGoalService {
         return createPage(mappedResult, pageOptions.take, paginationKeys);
     }
 
-    public async findOneById(authorId: string, goalId: string): Promise<Goal> {
+    public async getById(authorId: string, goalId: string): Promise<Goal> {
         const queryBuilder = this.getRepository()
             .createQueryBuilder("goal")
             .where("goal.id = :goalId", { goalId })

@@ -31,7 +31,7 @@ export class DataExportService implements IDataExportService {
         private readonly dbLockService: IDatabaseLockService
     ) {}
 
-    public async getAll(tenantId: string, pageOptions: PageOptions) {
+    public async findAll(tenantId: string, pageOptions: PageOptions) {
         const queryBuilder = this.getRepository().createQueryBuilder("export").where("export.tenantId = :tenantId", { tenantId });
 
         const paginationKeys = createPaginationKeys(["startedAt", "id"]);
