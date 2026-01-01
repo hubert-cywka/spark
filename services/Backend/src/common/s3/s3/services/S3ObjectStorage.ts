@@ -15,52 +15,18 @@ import Bottleneck from "bottleneck";
 import { type S3, InjectS3 } from "nestjs-s3";
 import { PassThrough, Readable } from "node:stream";
 
+import { ObjectBodyEmptyError } from "@/common/s3/errors/ObjectBodyEmpty.error";
+import { ObjectDeleteFailedError } from "@/common/s3/errors/ObjectDeleteFailedError.error";
+import { ObjectDownloadFailedError } from "@/common/s3/errors/ObjectDownloadFailed.error";
+import { ObjectETagEmptyError } from "@/common/s3/errors/ObjectETagEmpty.error";
+import { ObjectUploadFailedError } from "@/common/s3/errors/ObjectUploadFailed.error";
+import { ObjectZipFailedError } from "@/common/s3/errors/ObjectZipFailed.error";
 import { type IObjectStorage, ObjectManifest } from "@/common/s3/services/IObjectStorage";
 
-// TODO: TTL
-// TODO: Don't overwrite if checksum is the same?
 // TODO: Clean up
 
 const CHUNK_SIZE = 1000;
 const CONCURRENT_FILES = 5;
-
-export class ObjectStorageError extends Error {}
-
-export class ObjectZipFailedError extends ObjectStorageError {
-    public constructor(path: string) {
-        super(`Failed to zip file: ${path}.`);
-    }
-}
-
-export class ObjectUploadFailedError extends ObjectStorageError {
-    public constructor(path: string) {
-        super(`Failed to upload file: ${path}.`);
-    }
-}
-
-export class ObjectDownloadFailedError extends ObjectStorageError {
-    public constructor(path: string) {
-        super(`Failed to download file: ${path}.`);
-    }
-}
-
-export class ObjectBodyEmptyError extends ObjectStorageError {
-    public constructor() {
-        super();
-    }
-}
-
-export class ObjectETagEmptyError extends ObjectStorageError {
-    public constructor() {
-        super();
-    }
-}
-
-export class ObjectDeleteFailedError extends ObjectStorageError {
-    public constructor(paths: string[]) {
-        super(`Failed to delete files: ${paths.join(", ")}.`);
-    }
-}
 
 @Injectable()
 export class S3ObjectStorage implements IObjectStorage {

@@ -1,7 +1,6 @@
 import { Provider } from "@nestjs/common";
 
 import { IntegrationEvents } from "@/common/events";
-import { DataExportCancelledEventHandler } from "@/common/export/events/DataExportCancelledEvent.handler";
 import { DataExportStartedEventHandler } from "@/common/export/events/DataExportStartedEvent.handler";
 import { DataExporter } from "@/common/export/services/DataExporter";
 import { DataExporterToken } from "@/common/export/services/IDataExporter";
@@ -20,16 +19,12 @@ export const provideDataExporter = (dataExportProviders: UseFactoryArgs): Provid
         useClass: DataExportStartedEventHandler,
     },
     {
-        provide: DataExportCancelledEventHandler,
-        useClass: DataExportCancelledEventHandler,
-    },
-    {
         provide: DataExportProvidersToken,
         useFactory: (...providers: IDataExportProvider[]) => providers,
         inject: dataExportProviders,
     },
 ];
 
-export const getDataExportEventHandlers = () => [DataExportStartedEventHandler, DataExportCancelledEventHandler];
+export const getDataExportEventHandlers = () => [DataExportStartedEventHandler];
 
-export const getDataExportEventTopics = () => [IntegrationEvents.export.started, IntegrationEvents.export.cancelled];
+export const getDataExportEventTopics = () => [IntegrationEvents.export.started];

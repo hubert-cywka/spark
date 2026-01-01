@@ -4,7 +4,7 @@ import { Transactional } from "typeorm-transactional";
 import { type IDatabaseLockService, DatabaseLockServiceToken } from "@/common/database/services/IDatabaseLockService";
 import { DataExportScope } from "@/common/export/models/DataExportScope";
 import { type ExportAttachmentManifest } from "@/common/export/models/ExportAttachment.model";
-import { DataExportPathBuilder } from "@/common/export/services/DataExportPathBuilder";
+import { DataExportAttachmentPathBuilder } from "@/common/export/services/DataExportAttachmentPathBuilder";
 import { type IObjectStorage, ObjectStorageToken } from "@/common/s3/services/IObjectStorage";
 import { ExportAttachmentKind } from "@/modules/privacy/entities/ExportAttachmentManifest.entity";
 import { PRIVACY_MODULE_DATA_SOURCE } from "@/modules/privacy/infrastructure/database/constants";
@@ -20,8 +20,7 @@ import {
 import { type IExportOrchestrator } from "@/modules/privacy/services/interfaces/IExportOrchestrator";
 import { type IExportScopeCalculator, ExportScopeCalculatorToken } from "@/modules/privacy/services/interfaces/IExportScopeCalculator";
 
-// TODO: Complete 'cancelled' flow - e.g., remove attachments, or ask other modules to remove them. No need to
-//  cancel in-flight exports.
+// TODO: Remove orphaned or expired attachments.
 @Injectable()
 export class ExportOrchestrator implements IExportOrchestrator {
     private readonly logger = new Logger(ExportOrchestrator.name);
@@ -54,7 +53,17 @@ export class ExportOrchestrator implements IExportOrchestrator {
         await this.publisher.onExportCancelled(tenantId, exportId);
     }
 
-    // TODO: Don't accept attachments if scope is fully covered
+    // 1. Acquire the lock, so no one else can update the export in the meantime (including attachments management).
+    // 2. Check if the export is still active. If not, throw an error (it's implicit).
+    // 3. Add an attachment.
+    // 4. Check if the export can be completed. If not, finish early.
+    // 5. Otherwise, we can finalize the export. Start by merging the attachments into a single one.
+    //    - This operation needs to be idempotent. If the attachments were already merged, do not do anything.
+    // 6. As soon as attachments are ready, mark the export as completed and enqueue an event.
+    // 7. Once the enqueued event is processed, all old attachments will be removed.
+    //    - We delay the cleanup, so we can finish this transaction faster. Concurrent updates of the export should
+    //    be pretty rare, as checkpoints are sequential, and only cancellations can be concurrent (with the possibility
+    //    of 1 simultaneous checkpoint too). Locking prevents any inconsistencies, but it creates contention.
     @Transactional({ connectionName: PRIVACY_MODULE_DATA_SOURCE })
     async checkpoint(tenantId: string, exportId: string, attachmentManifest: ExportAttachmentManifest) {
         await this.acquireLockForExportUpdate(exportId);
@@ -91,8 +100,8 @@ export class ExportOrchestrator implements IExportOrchestrator {
     }
 
     private async mergeAttachments(exportId: string, manifests: ExportAttachmentManifest[]) {
-        const attachmentsToMergePathPrefix = DataExportPathBuilder.forExport(exportId).build();
-        const finalAttachmentPath = DataExportPathBuilder.forExport(exportId).setFilename("final.zip").build();
+        const attachmentsToMergePathPrefix = DataExportAttachmentPathBuilder.forExport(exportId).build();
+        const finalAttachmentPath = DataExportAttachmentPathBuilder.forExport(exportId).setFilename("final.zip").build();
 
         const exists = await this.objectStorage.exists(finalAttachmentPath);
         if (exists) {

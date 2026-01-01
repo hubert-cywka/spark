@@ -2,7 +2,7 @@ import { DataExportScope } from "@/common/export/models/DataExportScope";
 import { DataExportScopeDomain } from "@/common/export/types/DataExportScopeDomain";
 import { ISODateStringRange } from "@/types/Date";
 
-export class DataExportPathBuilder {
+export class DataExportAttachmentPathBuilder {
     private exportId?: string;
     private domain?: DataExportScopeDomain;
     private dateRange?: ISODateStringRange;
@@ -10,8 +10,8 @@ export class DataExportPathBuilder {
 
     private constructor() {}
 
-    public static forExport(exportId: string): DataExportPathBuilder {
-        const builder = new DataExportPathBuilder();
+    public static forExport(exportId: string): DataExportAttachmentPathBuilder {
+        const builder = new DataExportAttachmentPathBuilder();
 
         builder.setExportId(exportId);
         return builder;

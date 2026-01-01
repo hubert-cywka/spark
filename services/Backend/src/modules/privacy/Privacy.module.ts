@@ -24,7 +24,6 @@ import {
     type IIntegrationEventsSubscriber,
     IntegrationEventsSubscriberToken,
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
-import { DataExportCancelledEventHandler } from "@/common/export/events/DataExportCancelledEvent.handler";
 import { fromHours } from "@/common/utils/timeUtils";
 import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
 import {
@@ -37,6 +36,7 @@ import { DataPurgePlanEntity } from "@/modules/privacy/entities/DataPurgePlan.en
 import { ExportAttachmentManifestEntity } from "@/modules/privacy/entities/ExportAttachmentManifest.entity";
 import { TenantEntity } from "@/modules/privacy/entities/Tenant.entity";
 import { DataExportBatchReadyEventHandler } from "@/modules/privacy/events/DataExportBatchReadyEvent.handler";
+import { DataExportCancelledEventHandler } from "@/modules/privacy/events/DataExportCancelledEvent.handler";
 import { DataExportCompletedEventHandler } from "@/modules/privacy/events/DataExportCompletedEvent.handler";
 import { PurgeJobTriggeredEventHandler } from "@/modules/privacy/events/PurgeJobTriggeredEvent.handler";
 import { TenantCreatedEventHandler } from "@/modules/privacy/events/TenantCreatedEvent.handler";
@@ -228,6 +228,8 @@ export class PrivacyModule implements OnModuleInit {
             IntegrationEvents.account.removal.requested,
             IntegrationEvents.purge.triggered,
             IntegrationEvents.export.batch.ready,
+            IntegrationEvents.export.cancelled,
+            IntegrationEvents.export.completed,
         ]);
 
         void this.eventPublisher.enqueueMany([

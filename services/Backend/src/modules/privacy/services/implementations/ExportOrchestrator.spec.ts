@@ -33,7 +33,7 @@ import { DataExportServiceToken } from "@/modules/privacy/services/interfaces/ID
 import { ExportAttachmentManifestServiceToken } from "@/modules/privacy/services/interfaces/IExportAttachmentManifestService";
 import { ExportScopeCalculatorToken } from "@/modules/privacy/services/interfaces/IExportScopeCalculator";
 
-// TODO: Clean up.
+// TODO: Clean up and update.
 describe("ExportOrchestrator", () => {
     const TEST_ID = "export_orchestrator_integration";
     const DATABASE_NAME = `__${TEST_ID}_${Date.now()}`;

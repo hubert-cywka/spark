@@ -105,9 +105,15 @@ export class ExportScopeCalculator implements IExportScopeCalculator {
     }
 
     private isSequenceComplete(parts: Set<number>, hasEnd: boolean): boolean {
-        if (!hasEnd) return false;
+        if (!hasEnd) {
+            return false;
+        }
+
         const sortedParts = Array.from(parts).sort((a, b) => a - b);
-        if (sortedParts[0] !== 1) return false;
+
+        if (sortedParts[0] !== 1) {
+            return false;
+        }
 
         for (let i = 0; i < sortedParts.length - 1; i++) {
             if (sortedParts[i + 1] !== sortedParts[i] + 1) {
