@@ -8,22 +8,22 @@ REGION="garage"
 
 # --- Kubernetes configuration ---
 
-#MODE="k8s"
-#EXEC_CMD="kubectl exec -n $NAMESPACE"
-#NAMESPACE=""
-#REPLICAS=1
+MODE="k8s"
+EXEC_CMD="kubectl exec"
+NAMESPACE="spark"
+REPLICAS=1
 
 # --- Docker configuration ---
 
-MODE="docker"
-EXEC_CMD="docker exec"
-REPLICAS=1
-SERVICE_NAME="docker-s3"
+#MODE="docker"
+#EXEC_CMD="docker exec"
+#REPLICAS=1
+#SERVICE_NAME="docker-s3"
 
 
 run_on_node0() {
     if [ "$MODE" == "k8s" ]; then
-        $EXEC_CMD garage-0 -- garage "$@"
+        MSYS_NO_PATHCONV=1 $EXEC_CMD garage-0 -n $NAMESPACE -- /garage "$@"
     else
         MSYS_NO_PATHCONV=1 $EXEC_CMD ${SERVICE_NAME}-1 /garage "$@"
     fi
@@ -47,7 +47,7 @@ NODE_IDS=$(run_on_node0 status | grep -E "^[0-9a-f]" | awk '{print $1}')
 
 for ID in $NODE_IDS; do
     echo "Assigning role to node $ID."
-    run_on_node0 layout assign "$ID" --zone "$REGION" --capacity 100
+    run_on_node0 layout assign "$ID" --zone "$REGION" --capacity 1G
 done
 
 echo "3. Applying configuration."

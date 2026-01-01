@@ -50,6 +50,7 @@ module "journal-service" {
     module.database,
     module.cache,
     module.kafka_cluster,
+    module.s3,
     helm_release.keda
   ]
 
@@ -118,6 +119,7 @@ module "mail-service" {
   depends_on = [
     module.database,
     module.cache,
+    module.s3,
     module.kafka_cluster
   ]
 
@@ -180,6 +182,7 @@ module "identity-service" {
   depends_on = [
     module.database,
     module.cache,
+    module.s3,
     module.kafka_cluster
   ]
 
@@ -247,6 +250,7 @@ module "privacy-service" {
   depends_on = [
     module.database,
     module.cache,
+    module.s3,
     module.kafka_cluster
   ]
 
@@ -306,6 +310,7 @@ module "exports-service" {
   depends_on = [
     module.database,
     module.cache,
+    module.s3,
     module.kafka_cluster
   ]
 
@@ -365,6 +370,7 @@ module "scheduling-service" {
   depends_on = [
     module.database,
     module.cache,
+    module.s3,
     module.kafka_cluster
   ]
 
@@ -424,6 +430,7 @@ module "configuration-service" {
   depends_on = [
     module.database,
     module.cache,
+    module.s3,
     module.kafka_cluster
   ]
 
@@ -483,6 +490,7 @@ module "users-service" {
   depends_on = [
     module.database,
     module.cache,
+    module.s3,
     module.kafka_cluster
   ]
 
@@ -542,6 +550,7 @@ module "alerts-service" {
   depends_on = [
     module.database,
     module.cache,
+    module.s3,
     module.kafka_cluster
   ]
 

@@ -27,4 +27,4 @@ export const enableEventLoopMonitor = () => {
     monitor = createEventLoopMonitor();
 };
 
-export const disableEventLoopMonitor = () => monitor.stop();
+export const disableEventLoopMonitor = () => monitor?.stop();

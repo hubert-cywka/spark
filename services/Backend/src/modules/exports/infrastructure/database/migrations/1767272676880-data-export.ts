@@ -7,7 +7,7 @@ export class DataExport1767272676880 implements MigrationInterface {
         await queryRunner.query(
             'CREATE TABLE "tenant" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "PK_da8c6efd67bb301e810e56ac139" PRIMARY KEY ("id"))'
         );
-        await queryRunner.query("CREATE TYPE \"public\".\"export_attachment_manifest_stage_enum\" AS ENUM('Partial', 'Final')");
+        await queryRunner.query("CREATE TYPE \"public\".\"export_attachment_manifest_stage_enum\" AS ENUM('temporary', 'final')");
         await queryRunner.query(
             'CREATE TABLE "export_attachment_manifest" ("key" character varying NOT NULL, "path" character varying NOT NULL, "part" integer NOT NULL, "nextPart" integer, "stage" "public"."export_attachment_manifest_stage_enum" NOT NULL, "checksum" character varying NOT NULL, "scopes" jsonb NOT NULL, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "tenantId" uuid NOT NULL, "dataExportId" uuid NOT NULL, CONSTRAINT "PK_7269ec9bfba5d5ad28ebf0a0a77" PRIMARY KEY ("key"))'
         );
