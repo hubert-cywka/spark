@@ -5,6 +5,7 @@ import { GoalEntryLinkController } from "@/modules/journal/goals/controllers/Goa
 import { GoalMapper } from "@/modules/journal/goals/mappers/Goal.mapper";
 import { GoalMapperToken } from "@/modules/journal/goals/mappers/IGoal.mapper";
 import { GoalEntryLinkService } from "@/modules/journal/goals/services/implementations/GoalEntryLinkService";
+import { GoalsDataExportProvider } from "@/modules/journal/goals/services/implementations/GoalsDataExportProvider";
 import { GoalService } from "@/modules/journal/goals/services/implementations/GoalService";
 import { GoalEntryLinkServiceToken } from "@/modules/journal/goals/services/interfaces/IGoalEntryLinkService";
 import { GoalServiceToken } from "@/modules/journal/goals/services/interfaces/IGoalService";
@@ -25,7 +26,12 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
             provide: GoalEntryLinkServiceToken,
             useClass: GoalEntryLinkService,
         },
+        {
+            provide: GoalsDataExportProvider,
+            useClass: GoalsDataExportProvider,
+        },
     ],
     controllers: [GoalController, GoalEntryLinkController],
+    exports: [GoalsDataExportProvider],
 })
 export class GoalsModule {}

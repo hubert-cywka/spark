@@ -26,7 +26,7 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
             useClass: EntriesInsightsProvider,
         },
     ],
-    exports: [EntriesDataExportProvider],
     controllers: [EntryController, DailyEntryController],
+    exports: [EntriesDataExportProvider],
 })
 export class EntriesModule {}

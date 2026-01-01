@@ -26,7 +26,7 @@ export class GoalService implements IGoalService {
     public async findAll(
         authorId: string,
         pageOptions: PageOptions,
-        { entries, excludeEntries, name, withProgress }: GoalFilters = {}
+        { entries, excludeEntries, name, withProgress, from, to }: GoalFilters = {}
     ): Promise<Paginated<Goal>> {
         const queryBuilder = this.getRepository().createQueryBuilder("goal").where("goal.authorId = :authorId", { authorId });
 
@@ -58,6 +58,16 @@ export class GoalService implements IGoalService {
             queryBuilder.andWhere("goal.name ILIKE :name", {
                 name: `%${name}%`,
             });
+        }
+
+        if (from) {
+            const startOfDay = `${from} 00:00:00.000`;
+            queryBuilder.andWhere("goal.createdAt >= :from", { from: startOfDay });
+        }
+
+        if (to) {
+            const endOfDay = `${to} 23:59:59.999`;
+            queryBuilder.andWhere("goal.createdAt <= :to", { to: endOfDay });
         }
 
         const result = await queryBuilder.getMany();

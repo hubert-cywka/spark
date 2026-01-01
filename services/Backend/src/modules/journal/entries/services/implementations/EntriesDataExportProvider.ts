@@ -48,7 +48,7 @@ export class EntriesDataExportProvider implements IDataExportProvider {
         let hasMore = true;
 
         while (hasMore) {
-            const entries = await this.entryService.findAll(
+            const entries = await this.entryService.findAllDetailed(
                 tenantId,
                 { cursor: nextCursor, take, order: Order.ASC },
                 { from: batchScope.dateRange.from, to: batchScope.dateRange.to }
