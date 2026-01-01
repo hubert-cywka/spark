@@ -67,7 +67,8 @@
         "resend": "4.7.0",
         "rxjs": "7.8.1",
         "typeorm": "0.3.28",
-        "typeorm-transactional": "0.5.0"
+        "typeorm-transactional": "0.5.0",
+        "unzipper": "0.12.3"
     },
     "devDependencies": {
         "@compodoc/compodoc": "^1.1.26",
@@ -84,6 +85,7 @@
         "@types/nodemailer": "6.4.16",
         "@types/passport-jwt": "4.0.1",
         "@types/pg": "8.11.10",
+        "@types/unzipper": "0.10.11",
         "@typescript-eslint/eslint-plugin": "8.13.0",
         "@typescript-eslint/parser": "8.13.0",
         "cross-env": "^10.1.0",
