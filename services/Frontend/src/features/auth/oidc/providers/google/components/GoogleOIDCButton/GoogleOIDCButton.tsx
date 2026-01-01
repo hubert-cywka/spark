@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import GoogleLogo from "./assets/google-logo.svg";
 
 import { Button } from "@/components/Button/Button";
+import { useLoginEvents } from "@/features/auth/hooks";
 import { useLoginWithOIDC } from "@/features/auth/hooks/oidc/useLoginWithOIDC";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
@@ -13,10 +14,15 @@ export const GoogleOIDCButton = () => {
     const t = useTranslate();
     const router = useRouter();
     const { mutateAsync: getAuthURL, isPending, isSuccess } = useLoginWithOIDC();
+    const { onLoginError } = useLoginEvents();
 
     const loginWithGoogle = async () => {
-        const { url } = await getAuthURL("google");
-        router.push(url);
+        try {
+            const { url } = await getAuthURL("google");
+            router.push(url);
+        } catch (error) {
+            onLoginError(error);
+        }
     };
 
     return (

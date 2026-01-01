@@ -7,7 +7,8 @@ import { ButtonProps } from "./types/Button";
 
 import styles from "./styles/Button.module.scss";
 
-// TODO: Add loading indicator
+import { Spinner } from "@/components/Spinner";
+
 export const Button = ({
     children,
     isLoading = false,
@@ -22,7 +23,8 @@ export const Button = ({
     return (
         <BaseButton
             {...rest}
-            isDisabled={isDisabled || isLoading}
+            isPending={isLoading}
+            isDisabled={isDisabled}
             className={clsx(className, styles.button)}
             data-variant={variant}
             data-size={size}
@@ -30,7 +32,7 @@ export const Button = ({
             <>
                 {leftDecorator}
                 {children}
-                {rightDecorator}
+                {isLoading ? <Spinner size="1" /> : rightDecorator}
             </>
         </BaseButton>
     );
