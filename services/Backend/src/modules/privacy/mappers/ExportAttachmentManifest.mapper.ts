@@ -16,7 +16,8 @@ export class ExportAttachmentManifestMapper
         return {
             key: entity.key,
             path: entity.path,
-            scope: this.unwrapScope(entity.scope),
+            kind: entity.kind,
+            scopes: this.unwrapScopes(entity.scopes),
             metadata: {
                 part: entity.part,
                 nextPart: entity.nextPart,
@@ -30,17 +31,17 @@ export class ExportAttachmentManifestMapper
             key: model.key,
             path: model.path,
             checksum: model.metadata.checksum,
-            scope: this.unwrapScope(model.scope),
+            scopes: this.unwrapScopes(model.scopes),
         } as ExportAttachmentManifestDto);
     };
 
-    private unwrapScope(scope: DataExportScope | DataExportScopeDto) {
-        return {
+    private unwrapScopes(scopes: DataExportScope[] | DataExportScopeDto[]) {
+        return scopes.map((scope: DataExportScopeDto) => ({
             domain: scope.domain,
             dateRange: {
                 from: scope.dateRange.from,
                 to: scope.dateRange.to,
             },
-        };
+        }));
     }
 }

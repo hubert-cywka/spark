@@ -4,6 +4,7 @@ import utc from "dayjs/plugin/utc.js";
 import { DataExportScope } from "@/common/export/models/DataExportScope";
 import { ExportAttachmentManifest } from "@/common/export/models/ExportAttachment.model";
 import { DataExportScopeDomain } from "@/common/export/types/DataExportScopeDomain";
+import { ExportAttachmentKind } from "@/modules/privacy/entities/ExportAttachmentManifest.entity";
 import { ExportScopeCalculator } from "@/modules/privacy/services/implementations/ExportScopeCalculator";
 
 dayjs.extend(utc);
@@ -108,7 +109,8 @@ describe("ExportScopeCalculator", () => {
                 {
                     key: "k1",
                     path: "p1",
-                    scope: { domain: MAIN_DOMAIN, dateRange: { from: "2024-01-10", to: "2024-01-31" } },
+                    kind: ExportAttachmentKind.TEMPORARY,
+                    scopes: [{ domain: MAIN_DOMAIN, dateRange: { from: "2024-01-10", to: "2024-01-31" } }],
                     metadata: { checksum: "c1", part: 1, nextPart: null },
                 },
             ];
@@ -124,7 +126,8 @@ describe("ExportScopeCalculator", () => {
                 {
                     key: "k1",
                     path: "p1",
-                    scope: { domain: MAIN_DOMAIN, dateRange: { from: "2025-01-10", to: "2025-01-20" } },
+                    kind: ExportAttachmentKind.TEMPORARY,
+                    scopes: [{ domain: MAIN_DOMAIN, dateRange: { from: "2025-01-10", to: "2025-01-20" } }],
                     metadata: { checksum: "c1", part: 1, nextPart: null },
                 },
             ];
@@ -143,7 +146,8 @@ describe("ExportScopeCalculator", () => {
                 {
                     key: "k1",
                     path: "p1",
-                    scope: { domain: MAIN_DOMAIN, dateRange: { from: "2025-01-10", to: "2025-01-20" } },
+                    kind: ExportAttachmentKind.TEMPORARY,
+                    scopes: [{ domain: MAIN_DOMAIN, dateRange: { from: "2025-01-10", to: "2025-01-20" } }],
                     metadata: { checksum: "c1", part: 1, nextPart: null },
                 },
             ];
@@ -171,13 +175,15 @@ describe("ExportScopeCalculator", () => {
                 {
                     key: "k1",
                     path: "p1",
-                    scope: { domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-10" } },
+                    kind: ExportAttachmentKind.TEMPORARY,
+                    scopes: [{ domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-10" } }],
                     metadata: { checksum: "c1", part: 1, nextPart: 2 },
                 },
                 {
                     key: "k3",
                     path: "p3",
-                    scope: { domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-10" } },
+                    kind: ExportAttachmentKind.TEMPORARY,
+                    scopes: [{ domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-10" } }],
                     metadata: { checksum: "c3", part: 3, nextPart: null },
                 },
             ];
@@ -193,13 +199,15 @@ describe("ExportScopeCalculator", () => {
                 {
                     key: "k1",
                     path: "p1",
-                    scope: { domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-01" } },
+                    kind: ExportAttachmentKind.TEMPORARY,
+                    scopes: [{ domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-01" } }],
                     metadata: { checksum: "c1", part: 1, nextPart: 2 },
                 },
                 {
                     key: "k1",
                     path: "p1",
-                    scope: { domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-01" } },
+                    kind: ExportAttachmentKind.TEMPORARY,
+                    scopes: [{ domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-01" } }],
                     metadata: { checksum: "c1", part: 3, nextPart: null },
                 },
             ];
@@ -215,13 +223,15 @@ describe("ExportScopeCalculator", () => {
                 {
                     key: "k1",
                     path: "p1",
-                    scope: { domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-01" } },
+                    kind: ExportAttachmentKind.TEMPORARY,
+                    scopes: [{ domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-01" } }],
                     metadata: { checksum: "c1", part: 1, nextPart: 2 },
                 },
                 {
                     key: "k2",
                     path: "p2",
-                    scope: { domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-01" } },
+                    kind: ExportAttachmentKind.TEMPORARY,
+                    scopes: [{ domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-01" } }],
                     metadata: { checksum: "c2", part: 2, nextPart: 3 },
                 },
             ];
@@ -237,13 +247,15 @@ describe("ExportScopeCalculator", () => {
                 {
                     key: "k1",
                     path: "p1",
-                    scope: { domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-01" } },
+                    kind: ExportAttachmentKind.TEMPORARY,
+                    scopes: [{ domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-01" } }],
                     metadata: { checksum: "c1", part: 1, nextPart: 2 },
                 },
                 {
                     key: "k2",
                     path: "p2",
-                    scope: { domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-01" } },
+                    kind: ExportAttachmentKind.TEMPORARY,
+                    scopes: [{ domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-01" } }],
                     metadata: { checksum: "c2", part: 2, nextPart: null },
                 },
             ];
@@ -259,13 +271,15 @@ describe("ExportScopeCalculator", () => {
                 {
                     key: "k1",
                     path: "p1",
-                    scope: { domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-01" } },
+                    kind: ExportAttachmentKind.TEMPORARY,
+                    scopes: [{ domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-01" } }],
                     metadata: { checksum: "c1", part: 1, nextPart: 2 },
                 },
                 {
                     key: "k3",
                     path: "p3",
-                    scope: { domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-01" } },
+                    kind: ExportAttachmentKind.TEMPORARY,
+                    scopes: [{ domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-01" } }],
                     metadata: { checksum: "c3", part: 3, nextPart: null },
                 },
             ];
@@ -281,13 +295,15 @@ describe("ExportScopeCalculator", () => {
                 {
                     key: "k1",
                     path: "p1",
-                    scope: { domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-01" } },
+                    kind: ExportAttachmentKind.TEMPORARY,
+                    scopes: [{ domain: MAIN_DOMAIN, dateRange: { from: "2025-01-01", to: "2025-01-01" } }],
                     metadata: { checksum: "c1", part: 1, nextPart: null },
                 },
                 {
                     key: "k2",
                     path: "p2",
-                    scope: { domain: MAIN_DOMAIN, dateRange: { from: "2025-01-02", to: "2025-01-02" } },
+                    kind: ExportAttachmentKind.TEMPORARY,
+                    scopes: [{ domain: MAIN_DOMAIN, dateRange: { from: "2025-01-02", to: "2025-01-02" } }],
                     metadata: { checksum: "c2", part: 1, nextPart: 2 },
                 },
             ];

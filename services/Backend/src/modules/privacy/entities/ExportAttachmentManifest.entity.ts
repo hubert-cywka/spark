@@ -4,6 +4,11 @@ import { type DataExportScope } from "@/common/export/models/DataExportScope";
 import { DataExportEntity } from "@/modules/privacy/entities/DataExport.entity";
 import { TenantEntity } from "@/modules/privacy/entities/Tenant.entity";
 
+export enum ExportAttachmentKind {
+    TEMPORARY = "Temporary",
+    FINAL = "Final",
+}
+
 @Entity("export_attachment_manifest")
 export class ExportAttachmentManifestEntity {
     @PrimaryColumn({ type: "varchar" })
@@ -18,11 +23,14 @@ export class ExportAttachmentManifestEntity {
     @Column({ type: "int", nullable: true })
     nextPart!: number | null;
 
+    @Column({ type: "enum", enum: ExportAttachmentKind })
+    kind!: ExportAttachmentKind;
+
     @Column({ type: "varchar" })
     checksum!: string;
 
     @Column({ type: "jsonb" })
-    scope!: DataExportScope;
+    scopes!: DataExportScope[];
 
     @CreateDateColumn({ type: "timestamptz" })
     createdAt!: Date;

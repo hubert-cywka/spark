@@ -13,5 +13,5 @@ export class ExportAttachmentManifestDto {
     readonly checksum!: string;
 
     @IsArray()
-    readonly scope!: DataExportScopeDto;
+    readonly scopes!: DataExportScopeDto[];
 }

@@ -40,12 +40,14 @@ export class DataExportController {
 
     @Get(":exportId/files")
     @UseGuards(AccessGuard)
+    // TODO: Download zip directly
     async download(@Param("exportId") exportId: string, @Res() response: FastifyReply, @AuthenticatedUserContext() tenant: User) {
         try {
             const dataExport = await this.service.getCompletedById(tenant.id, exportId);
 
-            const pathPrefix = DataExportPathBuilder.forExport(exportId).build();
-            const stream = await this.objectStorage.zipToStream(pathPrefix);
+            // TODO: Get destination path from manifest
+            const destinationPath = DataExportPathBuilder.forExport(exportId).setFilename("final.zip").build();
+            const stream = await this.objectStorage.download(destinationPath);
 
             response.header("Content-Type", "application/zip");
             response.header("Content-Disposition", `attachment; filename="export-${dataExport.id}.zip"`);

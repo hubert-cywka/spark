@@ -1,9 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { In, Repository } from "typeorm";
 
 import { type ExportAttachmentManifest } from "@/common/export/models/ExportAttachment.model";
-import { ExportAttachmentManifestEntity } from "@/modules/privacy/entities/ExportAttachmentManifest.entity";
+import { ExportAttachmentKind, ExportAttachmentManifestEntity } from "@/modules/privacy/entities/ExportAttachmentManifest.entity";
 import { PRIVACY_MODULE_DATA_SOURCE } from "@/modules/privacy/infrastructure/database/constants";
 import {
     type IExportAttachmentManifestMapper,
@@ -20,9 +20,19 @@ export class ExportAttachmentManifestService implements IExportAttachmentManifes
         private readonly mapper: IExportAttachmentManifestMapper
     ) {}
 
-    public async getAllManifestsByExportId(exportId: string) {
-        const dataExports = await this.getRepository().find({ where: { dataExportId: exportId } });
+    public async getTemporaryManifestsByExportId(exportId: string) {
+        const dataExports = await this.getRepository().find({ where: { dataExportId: exportId, kind: ExportAttachmentKind.TEMPORARY } });
         return this.mapper.fromEntityToModelBulk(dataExports);
+    }
+
+    public async getFinalManifestByExportId(exportId: string) {
+        const dataExport = await this.getRepository().findOne({ where: { dataExportId: exportId, kind: ExportAttachmentKind.FINAL } });
+
+        if (!dataExport) {
+            return null;
+        }
+
+        return this.mapper.fromEntityToModel(dataExport);
     }
 
     // It's possible that we will store some duplicate attachments, e.g., covering the same export scope. And we are
@@ -32,13 +42,19 @@ export class ExportAttachmentManifestService implements IExportAttachmentManifes
             dataExport: {
                 id: exportId,
             },
+            kind: attachment.kind,
             key: attachment.key,
             path: attachment.path,
-            scope: attachment.scope,
+            scopes: attachment.scopes,
             part: attachment.metadata.part,
             nextPart: attachment.metadata.nextPart,
             checksum: attachment.metadata.checksum,
         });
+    }
+
+    public async deleteAttachmentManifests(attachmentManifests: ExportAttachmentManifest[]) {
+        const keys = attachmentManifests.map((manifest) => manifest.key);
+        await this.getRepository().delete({ key: In(keys) });
     }
 
     private getRepository(): Repository<ExportAttachmentManifestEntity> {

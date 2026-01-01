@@ -3,7 +3,10 @@ import { Transactional } from "typeorm-transactional";
 
 import { DataExportScope } from "@/common/export/models/DataExportScope";
 import { type ExportAttachmentManifest } from "@/common/export/models/ExportAttachment.model";
+import { DataExportPathBuilder } from "@/common/export/services/DataExportPathBuilder";
+import { type IObjectStorage, ObjectStorageToken } from "@/common/s3/services/IObjectStorage";
 import { formatToISODateString } from "@/common/utils/dateUtils";
+import { ExportAttachmentKind } from "@/modules/privacy/entities/ExportAttachmentManifest.entity";
 import { PRIVACY_MODULE_DATA_SOURCE } from "@/modules/privacy/infrastructure/database/constants";
 import {
     type IDataExportEventsPublisher,
@@ -17,7 +20,6 @@ import {
 import { type IExportOrchestrator } from "@/modules/privacy/services/interfaces/IExportOrchestrator";
 import { type IExportScopeCalculator, ExportScopeCalculatorToken } from "@/modules/privacy/services/interfaces/IExportScopeCalculator";
 
-// TODO: Complete 'completed' flow - e.g., aggregate attachments, send them to the user.
 // TODO: Complete 'cancelled' flow - e.g., remove attachments, or ask other modules to remove them. No need to
 //  cancel in-flight exports.
 @Injectable()
@@ -32,7 +34,9 @@ export class ExportOrchestrator implements IExportOrchestrator {
         @Inject(ExportAttachmentManifestServiceToken)
         private readonly exportAttachmentService: IExportAttachmentManifestService,
         @Inject(ExportScopeCalculatorToken)
-        private readonly scopeCalculator: IExportScopeCalculator
+        private readonly scopeCalculator: IExportScopeCalculator,
+        @Inject(ObjectStorageToken)
+        private readonly objectStorage: IObjectStorage
     ) {}
 
     @Transactional({ connectionName: PRIVACY_MODULE_DATA_SOURCE })
@@ -51,30 +55,76 @@ export class ExportOrchestrator implements IExportOrchestrator {
         await this.publisher.onExportCancelled(tenantId, exportId);
     }
 
+    // TODO: Don't accept attachments if scope is fully covered
     @Transactional({ connectionName: PRIVACY_MODULE_DATA_SOURCE })
     async checkpoint(tenantId: string, exportId: string, attachmentManifest: ExportAttachmentManifest) {
         const exportToCheckpoint = await this.dataExportService.getActiveById(tenantId, exportId);
-
         await this.checkpointAttachment(exportId, attachmentManifest);
-        const missingScopes = await this.findMissingScopes(exportId, exportToCheckpoint.targetScopes);
-        const isExportCompleted = !missingScopes.length;
+        const manifests = await this.exportAttachmentService.getTemporaryManifestsByExportId(exportId);
 
-        if (!isExportCompleted) {
-            this.logger.log({ exportId, missingScopes }, "Export checkpoint completed. Attachments still missing.");
+        if (!this.isExportCompleted(exportToCheckpoint.targetScopes, manifests)) {
+            this.logger.log({ exportId }, "Export checkpoint completed. Attachments still missing.");
             return;
         }
 
+        await this.compactAttachments(exportId, manifests);
         await this.dataExportService.markExportAsCompleted(tenantId, exportId);
         await this.publisher.onExportCompleted(tenantId, exportId);
         this.logger.log({ exportId }, "Export checkpoint completed. All attachments ready.");
     }
 
-    private async checkpointAttachment(exportId: string, attachmentManifest: ExportAttachmentManifest) {
-        await this.exportAttachmentService.storeAttachmentManifest(exportId, attachmentManifest);
+    // TODO: Write to yourself?
+    private async cleanup(exportId: string) {
+        const manifests = await this.exportAttachmentService.getTemporaryManifestsByExportId(exportId);
+        await this.removeTemporaryAttachments(manifests);
+        await this.removeTemporaryAttachmentsManifests(manifests);
+        this.logger.log({ exportId }, "Temporary export attachments cleaned up.");
     }
 
-    private async findMissingScopes(exportId: string, targetScopes: DataExportScope[]) {
-        const manifests = await this.exportAttachmentService.getAllManifestsByExportId(exportId);
-        return this.scopeCalculator.findMissingScopes(targetScopes, manifests);
+    private isExportCompleted(targetScopes: DataExportScope[], manifests: ExportAttachmentManifest[]) {
+        const missingScopes = this.scopeCalculator.findMissingScopes(targetScopes, manifests);
+        return !missingScopes.length;
+    }
+
+    private async compactAttachments(exportId: string, manifests: ExportAttachmentManifest[]) {
+        const attachmentsToMergePathPrefix = DataExportPathBuilder.forExport(exportId).build();
+        const finalAttachmentPath = DataExportPathBuilder.forExport(exportId).setFilename("final.zip").build();
+
+        const exists = await this.objectStorage.exists(finalAttachmentPath);
+        if (exists) {
+            this.logger.warn({ exportId, path: finalAttachmentPath }, "File already exists, won't merge attachments.");
+            return;
+        }
+
+        const { checksum } = await this.objectStorage.zipToStorage(attachmentsToMergePathPrefix, finalAttachmentPath);
+        const scopes = manifests.flatMap((manifest) => manifest.scopes);
+        const mergedScopes = this.scopeCalculator.mergeScopes(scopes);
+
+        const finalManifest = {
+            key: `${exportId}-final`,
+            path: finalAttachmentPath,
+            scopes: mergedScopes,
+            kind: ExportAttachmentKind.FINAL,
+            metadata: {
+                checksum,
+                part: 1,
+                nextPart: null,
+            },
+        };
+
+        await this.checkpointAttachment(exportId, finalManifest);
+    }
+
+    private async checkpointAttachment(exportId: string, manifest: ExportAttachmentManifest) {
+        await this.exportAttachmentService.storeAttachmentManifest(exportId, manifest);
+    }
+
+    private async removeTemporaryAttachments(manifests: ExportAttachmentManifest[]) {
+        const paths = manifests.map((manifest) => manifest.path);
+        await this.objectStorage.delete(paths);
+    }
+
+    private async removeTemporaryAttachmentsManifests(manifests: ExportAttachmentManifest[]) {
+        await this.exportAttachmentService.deleteAttachmentManifests(manifests);
     }
 }

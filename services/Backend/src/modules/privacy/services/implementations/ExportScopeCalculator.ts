@@ -72,29 +72,36 @@ export class ExportScopeCalculator implements IExportScopeCalculator {
     private filterCompletedManifests(manifests: ExportAttachmentManifest[]): DataExportScope[] {
         const grouped = manifests.reduce(
             (acc, manifest) => {
-                const key = `${manifest.scope.domain}|${manifest.scope.dateRange.from}|${manifest.scope.dateRange.to}`;
+                const key = this.generateScopeKey(manifest.scopes);
+
                 if (!acc[key]) {
-                    acc[key] = { scope: manifest.scope, parts: new Set<number>(), hasEnd: false };
+                    acc[key] = {
+                        scopes: manifest.scopes,
+                        parts: new Set<number>(),
+                        hasEnd: false,
+                    };
                 }
+
                 acc[key].parts.add(manifest.metadata.part);
                 if (manifest.metadata.nextPart === null) {
                     acc[key].hasEnd = true;
                 }
+
                 return acc;
             },
-            {} as Record<string, { scope: DataExportScope; parts: Set<number>; hasEnd: boolean }>
+            {} as Record<string, { scopes: DataExportScope[]; parts: Set<number>; hasEnd: boolean }>
         );
 
-        const completedScopes: DataExportScope[] = [];
+        return Object.values(grouped)
+            .filter((entry) => this.isSequenceComplete(entry.parts, entry.hasEnd))
+            .flatMap((entry) => entry.scopes);
+    }
 
-        for (const key in grouped) {
-            const entry = grouped[key];
-            if (this.isSequenceComplete(entry.parts, entry.hasEnd)) {
-                completedScopes.push(entry.scope);
-            }
-        }
-
-        return completedScopes;
+    private generateScopeKey(scopes: DataExportScope[]): string {
+        return scopes
+            .map((s) => `${s.domain}|${s.dateRange.from}|${s.dateRange.to}`)
+            .sort()
+            .join("::");
     }
 
     private isSequenceComplete(parts: Set<number>, hasEnd: boolean): boolean {

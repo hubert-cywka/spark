@@ -3,6 +3,9 @@ import { ExportAttachmentManifest } from "@/common/export/models/ExportAttachmen
 export const ExportAttachmentManifestServiceToken = Symbol("ExportAttachmentManifestServiceToken");
 
 export interface IExportAttachmentManifestService {
-    getAllManifestsByExportId(exportId: string): Promise<ExportAttachmentManifest[]>;
+    getTemporaryManifestsByExportId(exportId: string): Promise<ExportAttachmentManifest[]>;
+    getFinalManifestByExportId(exportId: string): Promise<ExportAttachmentManifest | null>;
+
     storeAttachmentManifest(exportId: string, attachmentManifest: ExportAttachmentManifest): Promise<void>;
+    deleteAttachmentManifests(attachmentManifests: ExportAttachmentManifest[]): Promise<void>;
 }
