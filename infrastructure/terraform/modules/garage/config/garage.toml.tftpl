@@ -5,11 +5,10 @@ db_engine = "sqlite"
 replication_factor = ${replication_factor}
 
 rpc_bind_addr = "[::]:3901"
-rpc_public_addr = "$${POD_NAME}.${service_name}.${namespace}.svc.cluster.local:3901"
 rpc_secret = "${rpc_secret}"
 
 [s3_api]
-s3_region = "${region}"
+s3_region = "${s3_region}"
 api_bind_addr = "[::]:3900"
 root_domain = "${s3_root_domain}"
 

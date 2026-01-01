@@ -58,6 +58,11 @@ resource "kubernetes_stateful_set_v1" "garage" {
             }
           }
 
+          env {
+            name  = "GARAGE_RPC_PUBLIC_ADDR"
+            value = "$(POD_NAME).garage.${var.namespace}.svc.cluster.local:3901"
+          }
+
           port {
             name           = "s3-api"
             container_port = 3900
