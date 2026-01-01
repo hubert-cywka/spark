@@ -21,7 +21,8 @@ import { ObjectDownloadFailedError } from "@/common/objectStorage/errors/ObjectD
 import { ObjectETagEmptyError } from "@/common/objectStorage/errors/ObjectETagEmpty.error";
 import { ObjectUploadFailedError } from "@/common/objectStorage/errors/ObjectUploadFailed.error";
 import { ObjectZipFailedError } from "@/common/objectStorage/errors/ObjectZipFailed.error";
-import { type IObjectStorage, ObjectManifest } from "@/common/objectStorage/services/IObjectStorage";
+import { type IObjectStorage } from "@/common/objectStorage/services/IObjectStorage";
+import { ObjectManifest } from "@/common/objectStorage/types/ObjectManifest";
 
 // TODO: Clean up
 

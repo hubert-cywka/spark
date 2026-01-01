@@ -1,3 +1,5 @@
+import { ObjectManifest } from "@/common/objectStorage/types/ObjectManifest";
+
 export const ObjectStorageToken = Symbol("ObjectStorageToken");
 
 export interface IObjectStorage {
@@ -10,8 +12,3 @@ export interface IObjectStorage {
     zipToStream(pathPrefix: string): Promise<NodeJS.ReadableStream>;
     zipToStorage(pathPrefix: string, destinationPath: string): Promise<ObjectManifest>;
 }
-
-export type ObjectManifest = {
-    path: string;
-    checksum: string;
-};

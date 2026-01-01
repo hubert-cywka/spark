@@ -1,4 +1,4 @@
 export enum ExportAttachmentStage {
-    PARTIAL = "Partial",
-    FINAL = "Final",
+    TEMPORARY = "temporary",
+    FINAL = "final",
 }

@@ -48,7 +48,7 @@ export class DataExporter implements IDataExporter {
                 key: this.buildAttachmentKey(exportId, batchScope, page),
                 path: filePath,
                 scopes: [batchScope],
-                stage: ExportAttachmentStage.PARTIAL,
+                stage: ExportAttachmentStage.TEMPORARY,
                 metadata: {
                     checksum,
                     part: page,

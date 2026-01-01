@@ -305,7 +305,7 @@ describe("ExportOrchestrator", () => {
             scopes,
             key: `irrelevant_${id}_${part}`,
             path: `irrelevant/${id}/${part}`,
-            stage: ExportAttachmentStage.PARTIAL,
+            stage: ExportAttachmentStage.TEMPORARY,
             metadata: { checksum: "irrelevant", part, nextPart },
         };
     };
