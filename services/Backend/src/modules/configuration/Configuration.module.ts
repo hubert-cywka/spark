@@ -7,9 +7,7 @@ import { CONFIGURATION_MODULE_DATA_SOURCE } from "./infrastructure/database/cons
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEvents, IntegrationEventsModule } from "@/common/events";
-import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
-import { InboxAndOutboxSequenceNumber1753291628862 } from "@/common/events/migrations/1753291628862-inbox-and-outbox-sequence-number";
-import { InboxAndOutboxSplitTopicAndSubject1753291628863 } from "@/common/events/migrations/1753291628863-inbox-and-outbox-split-topic-and-subject";
+import { getIntegrationEventsMigrations } from "@/common/events/migrations";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -77,9 +75,7 @@ import {
                 host: configService.getOrThrow<string>("modules.configuration.database.host"),
                 database: configService.getOrThrow<string>("modules.configuration.database.name"),
                 migrations: [
-                    InboxAndOutbox1749299050551,
-                    InboxAndOutboxSequenceNumber1753291628862,
-                    InboxAndOutboxSplitTopicAndSubject1753291628863,
+                    ...getIntegrationEventsMigrations(),
                     InitConfigurationModule1765016363086,
                     AddFeatureFlagsTable1765020949930,
                     AddIndicesToFfTable1765022076178,

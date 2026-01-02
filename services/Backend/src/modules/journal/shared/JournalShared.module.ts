@@ -5,9 +5,7 @@ import { DataSource } from "typeorm";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import { IntegrationEventsModule } from "@/common/events";
-import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
-import { InboxAndOutboxSequenceNumber1753291628862 } from "@/common/events/migrations/1753291628862-inbox-and-outbox-sequence-number";
-import { InboxAndOutboxSplitTopicAndSubject1753291628863 } from "@/common/events/migrations/1753291628863-inbox-and-outbox-split-topic-and-subject";
+import { getIntegrationEventsMigrations } from "@/common/events/migrations";
 import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
 import {
     type IHealthCheckProbesRegistry,
@@ -32,12 +30,7 @@ import { RegenerateMigrations1749289925550 } from "@/modules/journal/infrastruct
                 password: configService.getOrThrow<string>("modules.journal.database.password"),
                 host: configService.getOrThrow<string>("modules.journal.database.host"),
                 database: configService.getOrThrow<string>("modules.journal.database.name"),
-                migrations: [
-                    RegenerateMigrations1749289925550,
-                    InboxAndOutbox1749299050551,
-                    InboxAndOutboxSequenceNumber1753291628862,
-                    InboxAndOutboxSplitTopicAndSubject1753291628863,
-                ],
+                migrations: [...getIntegrationEventsMigrations(), RegenerateMigrations1749289925550],
             }),
             inject: [ConfigService],
         }),

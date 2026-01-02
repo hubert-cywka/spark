@@ -13,9 +13,7 @@ import {
     IntegrationEventsModule,
     IntervalJobScheduleUpdatedEvent,
 } from "@/common/events";
-import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
-import { InboxAndOutboxSequenceNumber1753291628862 } from "@/common/events/migrations/1753291628862-inbox-and-outbox-sequence-number";
-import { InboxAndOutboxSplitTopicAndSubject1753291628863 } from "@/common/events/migrations/1753291628863-inbox-and-outbox-split-topic-and-subject";
+import { getIntegrationEventsMigrations } from "@/common/events/migrations";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -100,13 +98,7 @@ import {
                 password: configService.getOrThrow<string>("modules.alerts.database.password"),
                 host: configService.getOrThrow<string>("modules.alerts.database.host"),
                 database: configService.getOrThrow<string>("modules.alerts.database.name"),
-                migrations: [
-                    RegenerateMigrations1749289896371,
-                    InboxAndOutbox1749299050551,
-                    AddTimestamps1752925853545,
-                    InboxAndOutboxSequenceNumber1753291628862,
-                    InboxAndOutboxSplitTopicAndSubject1753291628863,
-                ],
+                migrations: [...getIntegrationEventsMigrations(), RegenerateMigrations1749289896371, AddTimestamps1752925853545],
             }),
             inject: [ConfigService],
         }),
