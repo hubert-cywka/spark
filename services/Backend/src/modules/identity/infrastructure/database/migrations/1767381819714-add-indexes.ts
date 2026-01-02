@@ -23,7 +23,6 @@ export class AddIndexes1767381819714 implements MigrationInterface {
             'CREATE INDEX "idx_refresh_token_owner_active" ON "refresh_token" ("ownerId") WHERE "invalidatedAt" IS NULL'
         );
         await queryRunner.query('CREATE INDEX "idx_refresh_token_hash" ON "refresh_token" ("hashedValue") ');
-        await queryRunner.query('CREATE INDEX "idx_account_status" ON "account" ("id") WHERE "suspendedAt" IS NULL');
         await queryRunner.query('CREATE UNIQUE INDEX "idx_account_provider_identity" ON "account" ("providerId", "providerAccountId") ');
         await queryRunner.query('CREATE INDEX "idx_account_email" ON "account" ("email") ');
         await queryRunner.query(
@@ -49,7 +48,6 @@ export class AddIndexes1767381819714 implements MigrationInterface {
         await queryRunner.query('DROP INDEX "public"."idx_2fa_active_methods"');
         await queryRunner.query('DROP INDEX "public"."idx_account_email"');
         await queryRunner.query('DROP INDEX "public"."idx_account_provider_identity"');
-        await queryRunner.query('DROP INDEX "public"."idx_account_status"');
         await queryRunner.query('DROP INDEX "public"."idx_refresh_token_hash"');
         await queryRunner.query('DROP INDEX "public"."idx_refresh_token_owner_active"');
         await queryRunner.query('DROP INDEX "public"."idx_refresh_token_expiry"');

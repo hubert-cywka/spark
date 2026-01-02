@@ -21,7 +21,6 @@ import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/R
 @TableInheritance({ column: { type: "varchar", name: "type" } })
 @Index("idx_account_email", ["email"])
 @Index("idx_account_provider_identity", ["providerId", "providerAccountId"], { unique: true })
-@Index("idx_account_status", ["id"], { where: '"suspendedAt" IS NULL' })
 export class BaseAccountEntity {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
