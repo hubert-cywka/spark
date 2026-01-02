@@ -5,9 +5,7 @@ import { DataSource } from "typeorm";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import { IntegrationEventsModule } from "@/common/events";
-import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
-import { InboxAndOutboxSequenceNumber1753291628862 } from "@/common/events/migrations/1753291628862-inbox-and-outbox-sequence-number";
-import { InboxAndOutboxSplitTopicAndSubject1753291628863 } from "@/common/events/migrations/1753291628863-inbox-and-outbox-split-topic-and-subject";
+import { getIntegrationEventsMigrations } from "@/common/events/migrations";
 import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
 import {
     type IHealthCheckProbesRegistry,
@@ -21,6 +19,7 @@ import { SingleUseTokenEntity } from "@/modules/identity/account/entities/Single
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 import { RegenerateMigrations1749289911264 } from "@/modules/identity/infrastructure/database/migrations/1749289911264-regenerate-migrations";
+import { AddIndexes1767381819714 } from "@/modules/identity/infrastructure/database/migrations/1767381819714-add-indexes";
 
 @Module({
     imports: [
@@ -33,12 +32,7 @@ import { RegenerateMigrations1749289911264 } from "@/modules/identity/infrastruc
                 password: configService.getOrThrow<string>("modules.identity.database.password"),
                 host: configService.getOrThrow<string>("modules.identity.database.host"),
                 database: configService.getOrThrow<string>("modules.identity.database.name"),
-                migrations: [
-                    RegenerateMigrations1749289911264,
-                    InboxAndOutbox1749299050551,
-                    InboxAndOutboxSequenceNumber1753291628862,
-                    InboxAndOutboxSplitTopicAndSubject1753291628863,
-                ],
+                migrations: [...getIntegrationEventsMigrations(), RegenerateMigrations1749289911264, AddIndexes1767381819714],
             }),
             inject: [ConfigService],
         }),

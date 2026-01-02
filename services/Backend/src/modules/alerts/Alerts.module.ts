@@ -13,9 +13,7 @@ import {
     IntegrationEventsModule,
     IntervalJobScheduleUpdatedEvent,
 } from "@/common/events";
-import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
-import { InboxAndOutboxSequenceNumber1753291628862 } from "@/common/events/migrations/1753291628862-inbox-and-outbox-sequence-number";
-import { InboxAndOutboxSplitTopicAndSubject1753291628863 } from "@/common/events/migrations/1753291628863-inbox-and-outbox-split-topic-and-subject";
+import { getIntegrationEventsMigrations } from "@/common/events/migrations";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -34,6 +32,7 @@ import { RecipientRemovedEventHandler } from "@/modules/alerts/events/RecipientR
 import { ALERTS_MODULE_DATA_SOURCE } from "@/modules/alerts/infrastructure/database/constants";
 import { RegenerateMigrations1749289896371 } from "@/modules/alerts/infrastructure/database/migrations/1749289896371-regenerate-migrations";
 import { AddTimestamps1752925853545 } from "@/modules/alerts/infrastructure/database/migrations/1752925853545-AddTimestamps";
+import { AddIndexes1767381756398 } from "@/modules/alerts/infrastructure/database/migrations/1767381756398-add-indexes";
 import { AlertMapper } from "@/modules/alerts/mappers/Alert.mapper";
 import { AlertMapperToken } from "@/modules/alerts/mappers/IAlert.mapper";
 import { RecipientMapperToken } from "@/modules/alerts/mappers/IRecipient.mapper";
@@ -101,11 +100,10 @@ import {
                 host: configService.getOrThrow<string>("modules.alerts.database.host"),
                 database: configService.getOrThrow<string>("modules.alerts.database.name"),
                 migrations: [
+                    ...getIntegrationEventsMigrations(),
                     RegenerateMigrations1749289896371,
-                    InboxAndOutbox1749299050551,
                     AddTimestamps1752925853545,
-                    InboxAndOutboxSequenceNumber1753291628862,
-                    InboxAndOutboxSplitTopicAndSubject1753291628863,
+                    AddIndexes1767381756398,
                 ],
             }),
             inject: [ConfigService],

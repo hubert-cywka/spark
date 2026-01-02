@@ -30,8 +30,10 @@ export class AuthorService implements IAuthorService {
             throw new AuthorAlreadyExistsError();
         }
 
-        const result = await repository.save({ id });
-        return this.authorMapper.fromEntityToModel(result);
+        const result = await this.getRepository().createQueryBuilder().insert().into(AuthorEntity).values({ id }).returning("*").execute();
+
+        const author = result.raw[0] as AuthorEntity;
+        return this.authorMapper.fromEntityToModel(author);
     }
 
     @Transactional({ connectionName: JOURNAL_MODULE_DATA_SOURCE })
@@ -44,7 +46,7 @@ export class AuthorService implements IAuthorService {
             throw new AuthorNotFoundError();
         }
 
-        await repository.remove([author]);
+        await repository.delete({ id: author.id });
     }
 
     private getRepository(): Repository<AuthorEntity> {

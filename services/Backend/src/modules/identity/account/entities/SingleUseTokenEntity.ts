@@ -4,7 +4,9 @@ import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccou
 import type { SingleUseTokenType } from "@/modules/identity/account/types/SingleUseToken";
 
 @Entity("single_use_token")
-@Index(["value"])
+@Index("idx_token_value_type_unique", ["value", "type"], { unique: true })
+@Index("idx_token_invalidation", ["ownerId", "type"], { where: '"invalidatedAt" IS NULL' })
+@Index("idx_token_expiry", ["expiresAt"])
 export class SingleUseTokenEntity {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
@@ -31,4 +33,7 @@ export class SingleUseTokenEntity {
         onDelete: "CASCADE",
     })
     owner!: Relation<BaseAccountEntity>;
+
+    @Column({ type: "uuid" })
+    ownerId!: string;
 }

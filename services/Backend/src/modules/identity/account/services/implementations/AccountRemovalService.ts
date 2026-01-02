@@ -33,7 +33,7 @@ export class AccountRemovalService implements IAccountRemovalService {
             throw new AccountNotFoundError();
         }
 
-        await repository.remove([account]);
+        await repository.delete({ id: account.id });
     }
 
     @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })
@@ -46,7 +46,7 @@ export class AccountRemovalService implements IAccountRemovalService {
             throw new AccountNotFoundError();
         }
 
-        await repository.save({ ...account, suspendedAt: new Date() });
+        await repository.update({ id: account.id }, { suspendedAt: new Date() });
         await this.publisher.onAccountSuspended(id);
     }
 

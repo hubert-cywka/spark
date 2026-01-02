@@ -3,6 +3,7 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    Index,
     OneToMany,
     PrimaryGeneratedColumn,
     TableInheritance,
@@ -18,6 +19,8 @@ import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/R
 // are very few differences between different account types.
 @Entity("account")
 @TableInheritance({ column: { type: "varchar", name: "type" } })
+@Index("idx_account_email", ["email"])
+@Index("idx_account_provider_identity", ["providerId", "providerAccountId"], { unique: true })
 export class BaseAccountEntity {
     @PrimaryGeneratedColumn("uuid")
     id!: string;

@@ -49,7 +49,7 @@ export abstract class BaseSingleUseTokenService implements ISingleUseTokenServic
         }
 
         const now = dayjs().toDate();
-        await this.getRepository().save({ ...tokenEntity, usedAt: now });
+        await this.getRepository().update({ id: tokenEntity.id }, { usedAt: now });
 
         return { ownerId: tokenEntity.owner.id };
     }
@@ -59,7 +59,7 @@ export abstract class BaseSingleUseTokenService implements ISingleUseTokenServic
         const expiresAt = dayjs().add(this.EXPIRATION_TIME, "seconds");
 
         const hashedValue = await this.hashToken(token);
-        await this.getRepository().save({
+        await this.getRepository().insert({
             owner: { id: ownerId },
             type,
             value: hashedValue,

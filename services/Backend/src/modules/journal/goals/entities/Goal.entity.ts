@@ -4,6 +4,7 @@ import {
     CreateDateColumn,
     DeleteDateColumn,
     Entity,
+    Index,
     JoinTable,
     ManyToMany,
     ManyToOne,
@@ -15,6 +16,9 @@ import { AuthorEntity } from "@/modules/journal/authors/entities/Author.entity";
 import { EntryEntity } from "@/modules/journal/entries/entities/Entry.entity";
 
 @Entity("goal")
+@Index("idx_goal_pagination", ["authorId", "createdAt", "id"], { where: '"deletedAt" IS NULL' })
+@Index("idx_goal_name", ["authorId", "name"], { where: '"deletedAt" IS NULL' })
+@Index("idx_goal_deadline", ["authorId", "deadline"], { where: '"deletedAt" IS NULL' })
 export class GoalEntity {
     @PrimaryGeneratedColumn("uuid")
     id!: string;

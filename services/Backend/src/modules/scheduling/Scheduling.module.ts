@@ -7,9 +7,7 @@ import { SCHEDULING_MODULE_DATA_SOURCE } from "./infrastructure/database/constan
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEvents, IntegrationEventsModule } from "@/common/events";
-import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
-import { InboxAndOutboxSequenceNumber1753291628862 } from "@/common/events/migrations/1753291628862-inbox-and-outbox-sequence-number";
-import { InboxAndOutboxSplitTopicAndSubject1753291628863 } from "@/common/events/migrations/1753291628863-inbox-and-outbox-split-topic-and-subject";
+import { getIntegrationEventsMigrations } from "@/common/events/migrations";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -27,6 +25,7 @@ import { JobExecutionEntity } from "@/modules/scheduling/entities/JobExecution.e
 import { JobScheduleEntity } from "@/modules/scheduling/entities/JobScheduleEntity";
 import { IntervalJobScheduleUpdatedEventHandler } from "@/modules/scheduling/events/IntervalJobScheduleUpdatedEvent.handler";
 import { InitSchedulingModule1764101420518 } from "@/modules/scheduling/infrastructure/database/migrations/1764101420518-init-scheduling-module";
+import { AddIndexes1767381858935 } from "@/modules/scheduling/infrastructure/database/migrations/1767381858935-add-indexes";
 import { JobExecutionsPurgeService } from "@/modules/scheduling/services/implementations/JobExecutionsPurgeService";
 import { JobScheduleConfigurationService } from "@/modules/scheduling/services/implementations/JobScheduleConfigurationService";
 import { JobScheduler } from "@/modules/scheduling/services/implementations/JobScheduler";
@@ -68,12 +67,7 @@ import { JobSchedulerToken } from "@/modules/scheduling/services/interfaces/IJob
                 password: configService.getOrThrow<string>("modules.scheduling.database.password"),
                 host: configService.getOrThrow<string>("modules.scheduling.database.host"),
                 database: configService.getOrThrow<string>("modules.scheduling.database.name"),
-                migrations: [
-                    InboxAndOutbox1749299050551,
-                    InboxAndOutboxSequenceNumber1753291628862,
-                    InboxAndOutboxSplitTopicAndSubject1753291628863,
-                    InitSchedulingModule1764101420518,
-                ],
+                migrations: [...getIntegrationEventsMigrations(), InitSchedulingModule1764101420518, AddIndexes1767381858935],
             }),
             inject: [ConfigService],
         }),

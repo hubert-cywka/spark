@@ -130,9 +130,9 @@ export class AlertService implements IAlertService {
         return result.raw[0] as AlertEntity;
     }
 
-    private async refreshNextTriggerAt(alert: AlertEntity): Promise<AlertEntity> {
-        alert.nextTriggerAt = this.alertScheduler.scheduleNextTrigger(alert.time, alert.daysOfWeek);
-        return this.getRepository().save(alert);
+    private async refreshNextTriggerAt(alert: AlertEntity) {
+        const nextTriggerAt = this.alertScheduler.scheduleNextTrigger(alert.time, alert.daysOfWeek);
+        await this.getRepository().update({ id: alert.id }, { nextTriggerAt });
     }
 
     private async assertEligibilityToCreate(recipientId: string): Promise<void> {

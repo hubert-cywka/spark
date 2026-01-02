@@ -91,7 +91,7 @@ export class UsersService implements IUsersService {
             throw new UserNotFoundError();
         }
 
-        await repository.remove([user]);
+        await repository.delete({ id: user.id });
     }
 
     private getRepository(): Repository<UserEntity> {

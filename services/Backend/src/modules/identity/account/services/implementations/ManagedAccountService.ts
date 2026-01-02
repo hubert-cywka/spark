@@ -139,11 +139,7 @@ export class ManagedAccountService implements IManagedAccountService {
         }
 
         const hashedPassword = await this.hashPassword(password);
-        await this.getRepository().save({
-            ...account,
-            passwordResetToken: null,
-            password: hashedPassword,
-        });
+        await this.getRepository().update({ id: ownerId }, { password: hashedPassword });
 
         await this.publisher.onPasswordUpdated(account.id);
     }
@@ -161,10 +157,7 @@ export class ManagedAccountService implements IManagedAccountService {
         }
 
         this.assertEligibilityForActivation(account);
-        await this.getRepository().save({
-            id: ownerId,
-            activatedAt: new Date(),
-        });
+        await this.getRepository().update({ id: ownerId }, { activatedAt: new Date() });
 
         await this.publisher.onAccountActivated(account.id, account.email);
     }

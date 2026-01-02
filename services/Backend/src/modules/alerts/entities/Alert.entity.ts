@@ -4,6 +4,7 @@ import {
     CreateDateColumn,
     DeleteDateColumn,
     Entity,
+    Index,
     ManyToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
@@ -13,6 +14,10 @@ import { RecipientEntity } from "@/modules/alerts/entities/Recipient.entity";
 import { UTCDay } from "@/modules/alerts/types/UTCDay";
 
 @Entity("alert")
+@Index("idx_alert_recipient_lookup", ["recipientId", "createdAt"])
+@Index("idx_alert_triggering", ["nextTriggerAt", "enabled"], {
+    where: '"nextTriggerAt" IS NOT NULL AND "deletedAt" IS NULL',
+})
 export class AlertEntity {
     @PrimaryGeneratedColumn("uuid")
     id!: string;

@@ -3,7 +3,9 @@ import { type Relation, Column, CreateDateColumn, Entity, Index, ManyToOne, Prim
 import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccountEntity";
 
 @Entity("refresh_token")
-@Index(["hashedValue"])
+@Index("idx_refresh_token_hash", ["hashedValue"])
+@Index("idx_refresh_token_owner_active", ["ownerId"], { where: '"invalidatedAt" IS NULL' })
+@Index("idx_refresh_token_expiry", ["expiresAt"])
 export class RefreshTokenEntity {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
@@ -24,4 +26,7 @@ export class RefreshTokenEntity {
         onDelete: "CASCADE",
     })
     owner!: Relation<BaseAccountEntity>;
+
+    @Column({ type: "uuid" })
+    ownerId!: string;
 }

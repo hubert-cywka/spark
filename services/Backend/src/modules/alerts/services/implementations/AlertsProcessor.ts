@@ -54,10 +54,11 @@ export class AlertsProcessor implements IAlertsProcessor {
         const recipientIds = alerts.map((alert) => alert.recipient.id);
         await this.alertPublisher.onRemindersTriggered(recipientIds);
 
-        const publishedAlerts = alerts.map((alert) => {
-            return { ...alert, nextTriggerAt: this.alertScheduler.scheduleNextTrigger(alert.time, alert.daysOfWeek) };
-        });
+        const values = alerts.map((alert) => ({
+            id: alert.id,
+            nextTriggerAt: this.alertScheduler.scheduleNextTrigger(alert.time, alert.daysOfWeek),
+        }));
 
-        await this.repository.save(publishedAlerts);
+        await this.repository.createQueryBuilder().insert().into(AlertEntity).values(values).orUpdate(["nextTriggerAt"], ["id"]).execute();
     }
 }

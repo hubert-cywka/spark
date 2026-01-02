@@ -31,8 +31,16 @@ export class RecipientService implements IRecipientService {
             throw new RecipientAlreadyExistsError();
         }
 
-        const result = await repository.save({ id, email });
-        return this.recipientMapper.fromEntityToModel(result);
+        const result = await this.getRepository()
+            .createQueryBuilder()
+            .insert()
+            .into(RecipientEntity)
+            .values({ id })
+            .returning("*")
+            .execute();
+
+        const recipient = result.raw[0] as RecipientEntity;
+        return this.recipientMapper.fromEntityToModel(recipient);
     }
 
     public async getById(id: string): Promise<Recipient> {
@@ -57,7 +65,7 @@ export class RecipientService implements IRecipientService {
             throw new RecipientNotFoundError();
         }
 
-        await repository.remove([recipient]);
+        await repository.delete({ id: recipient.id });
     }
 
     private getRepository(): Repository<RecipientEntity> {

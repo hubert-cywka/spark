@@ -13,9 +13,7 @@ import {
     IntegrationEventsModule,
     IntervalJobScheduleUpdatedEvent,
 } from "@/common/events";
-import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
-import { InboxAndOutboxSequenceNumber1753291628862 } from "@/common/events/migrations/1753291628862-inbox-and-outbox-sequence-number";
-import { InboxAndOutboxSplitTopicAndSubject1753291628863 } from "@/common/events/migrations/1753291628863-inbox-and-outbox-split-topic-and-subject";
+import { getIntegrationEventsMigrations } from "@/common/events/migrations";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -39,6 +37,7 @@ import { TenantRemovedEventHandler } from "@/modules/privacy/events/TenantRemove
 import { PRIVACY_MODULE_DATA_SOURCE } from "@/modules/privacy/infrastructure/database/constants";
 import { RegenerateMigrations1749289951431 } from "@/modules/privacy/infrastructure/database/migrations/1749289951431-regenerate-migrations";
 import { AddTimestamps1752925879790 } from "@/modules/privacy/infrastructure/database/migrations/1752925879790-AddTimestamps";
+import { AddIndexes1767381872552 } from "@/modules/privacy/infrastructure/database/migrations/1767381872552-add-indexes";
 import { TenantMapperToken } from "@/modules/privacy/mappers/ITenant.mapper";
 import { TenantMapper } from "@/modules/privacy/mappers/Tenant.mapper";
 import { DataPurgeEventsPublisher } from "@/modules/privacy/services/implementations/DataPurgeEventsPublisher";
@@ -98,11 +97,10 @@ import { TenantServiceToken } from "@/modules/privacy/services/interfaces/ITenan
                 host: configService.getOrThrow<string>("modules.privacy.database.host"),
                 database: configService.getOrThrow<string>("modules.privacy.database.name"),
                 migrations: [
+                    ...getIntegrationEventsMigrations(),
                     RegenerateMigrations1749289951431,
-                    InboxAndOutbox1749299050551,
                     AddTimestamps1752925879790,
-                    InboxAndOutboxSequenceNumber1753291628862,
-                    InboxAndOutboxSplitTopicAndSubject1753291628863,
+                    AddIndexes1767381872552,
                 ],
             }),
             inject: [ConfigService],

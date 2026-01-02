@@ -17,8 +17,16 @@ export class JobScheduleConfigurationService implements IJobScheduleConfiguratio
     ) {}
 
     public async upsert(id: string, interval: number, callback: JobCallback): Promise<void> {
-        const repository = this.getRepository();
-        await repository.save({ id, interval, callbackTopic: callback.topic, callbackSubject: callback.subject });
+        await this.getRepository().upsert(
+            {
+                id,
+                interval,
+                callbackTopic: callback.topic,
+                callbackSubject: callback.subject,
+            },
+            ["id"]
+        );
+
         this.logger.log({ id, interval, callback }, "Job schedule configuration updated.");
     }
 

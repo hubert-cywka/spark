@@ -31,8 +31,10 @@ export class TenantService implements ITenantService {
             throw new TenantAlreadyExistsError();
         }
 
-        const result = await repository.save({ id });
-        return this.tenantMapper.fromEntityToModel(result);
+        const result = await this.getRepository().createQueryBuilder().insert().into(TenantEntity).values({ id }).returning("*").execute();
+
+        const tenant = result.raw[0] as TenantEntity;
+        return this.tenantMapper.fromEntityToModel(tenant);
     }
 
     @Transactional({ connectionName: EXPORTS_MODULE_DATA_SOURCE })
@@ -45,7 +47,7 @@ export class TenantService implements ITenantService {
             throw new TenantNotFoundError();
         }
 
-        await repository.remove([tenant]);
+        await repository.delete({ id: tenant.id });
     }
 
     private getRepository(): Repository<TenantEntity> {
