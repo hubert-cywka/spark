@@ -19,6 +19,7 @@ import { SingleUseTokenEntity } from "@/modules/identity/account/entities/Single
 import { RefreshTokenEntity } from "@/modules/identity/authentication/entities/RefreshToken.entity";
 import { IDENTITY_MODULE_DATA_SOURCE } from "@/modules/identity/infrastructure/database/constants";
 import { RegenerateMigrations1749289911264 } from "@/modules/identity/infrastructure/database/migrations/1749289911264-regenerate-migrations";
+import { AddIndexes1767381819714 } from "@/modules/identity/infrastructure/database/migrations/1767381819714-add-indexes";
 
 @Module({
     imports: [
@@ -31,7 +32,7 @@ import { RegenerateMigrations1749289911264 } from "@/modules/identity/infrastruc
                 password: configService.getOrThrow<string>("modules.identity.database.password"),
                 host: configService.getOrThrow<string>("modules.identity.database.host"),
                 database: configService.getOrThrow<string>("modules.identity.database.name"),
-                migrations: [...getIntegrationEventsMigrations(), RegenerateMigrations1749289911264],
+                migrations: [...getIntegrationEventsMigrations(), RegenerateMigrations1749289911264, AddIndexes1767381819714],
             }),
             inject: [ConfigService],
         }),

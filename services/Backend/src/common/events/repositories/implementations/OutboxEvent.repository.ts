@@ -13,10 +13,6 @@ export class OutboxEventRepository extends IntegrationEventRepository<OutboxEven
         super(repository);
     }
 
-    public async save(input: OutboxEventInput): Promise<OutboxEventEntity> {
-        return await this.repository.save(input);
-    }
-
     public async saveManyAndSkipDuplicates(inputs: OutboxEventInput[]): Promise<OutboxEventEntity[]> {
         const result = await this.repository.createQueryBuilder("events").insert().values(inputs).orIgnore().execute();
         return result.raw as OutboxEventEntity[];

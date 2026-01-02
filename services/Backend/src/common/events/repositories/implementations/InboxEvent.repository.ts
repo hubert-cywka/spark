@@ -15,10 +15,6 @@ export class InboxEventRepository extends IntegrationEventRepository<InboxEventE
         super(repository);
     }
 
-    public async save(input: InboxEventInput): Promise<InboxEventEntity> {
-        return await this.repository.save(input);
-    }
-
     public async saveManyAndSkipDuplicates(inputs: InboxEventInput[]): Promise<InboxEventEntity[]> {
         const result = await this.repository.createQueryBuilder("events").insert().values(inputs).orIgnore().execute();
         return result.raw as InboxEventEntity[];

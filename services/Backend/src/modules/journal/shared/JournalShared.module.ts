@@ -17,6 +17,7 @@ import { EntryEntity } from "@/modules/journal/entries/entities/Entry.entity";
 import { GoalEntity } from "@/modules/journal/goals/entities/Goal.entity";
 import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
 import { RegenerateMigrations1749289925550 } from "@/modules/journal/infrastructure/database/migrations/1749289925550-regenerate-migrations";
+import { AddIndexes1767381735359 } from "@/modules/journal/infrastructure/database/migrations/1767381735359-add-indexes";
 
 @Module({
     providers: [],
@@ -30,7 +31,7 @@ import { RegenerateMigrations1749289925550 } from "@/modules/journal/infrastruct
                 password: configService.getOrThrow<string>("modules.journal.database.password"),
                 host: configService.getOrThrow<string>("modules.journal.database.host"),
                 database: configService.getOrThrow<string>("modules.journal.database.name"),
-                migrations: [...getIntegrationEventsMigrations(), RegenerateMigrations1749289925550],
+                migrations: [...getIntegrationEventsMigrations(), RegenerateMigrations1749289925550, AddIndexes1767381735359],
             }),
             inject: [ConfigService],
         }),

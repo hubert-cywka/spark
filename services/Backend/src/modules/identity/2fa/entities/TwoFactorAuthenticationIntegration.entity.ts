@@ -1,4 +1,4 @@
-import { type Relation, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { type Relation, Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 import { TwoFactorAuthenticationMethod } from "@/modules/identity/2fa/types/TwoFactorAuthenticationMethod";
 import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccountEntity";
@@ -6,6 +6,8 @@ import { BaseAccountEntity } from "@/modules/identity/account/entities/BaseAccou
 const DEFAULT_CODE_TTL = 30;
 
 @Entity("two_factor_authentication_integration")
+@Index("idx_2fa_user_method", ["ownerId", "method"])
+@Index("idx_2fa_active_methods", ["ownerId"], { where: '"enabledAt" IS NOT NULL' })
 export class TwoFactorAuthenticationIntegrationEntity {
     @PrimaryGeneratedColumn("uuid")
     id!: string;

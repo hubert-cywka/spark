@@ -32,6 +32,7 @@ import { RecipientRemovedEventHandler } from "@/modules/alerts/events/RecipientR
 import { ALERTS_MODULE_DATA_SOURCE } from "@/modules/alerts/infrastructure/database/constants";
 import { RegenerateMigrations1749289896371 } from "@/modules/alerts/infrastructure/database/migrations/1749289896371-regenerate-migrations";
 import { AddTimestamps1752925853545 } from "@/modules/alerts/infrastructure/database/migrations/1752925853545-AddTimestamps";
+import { AddIndexes1767381756398 } from "@/modules/alerts/infrastructure/database/migrations/1767381756398-add-indexes";
 import { AlertMapper } from "@/modules/alerts/mappers/Alert.mapper";
 import { AlertMapperToken } from "@/modules/alerts/mappers/IAlert.mapper";
 import { RecipientMapperToken } from "@/modules/alerts/mappers/IRecipient.mapper";
@@ -98,7 +99,12 @@ import {
                 password: configService.getOrThrow<string>("modules.alerts.database.password"),
                 host: configService.getOrThrow<string>("modules.alerts.database.host"),
                 database: configService.getOrThrow<string>("modules.alerts.database.name"),
-                migrations: [...getIntegrationEventsMigrations(), RegenerateMigrations1749289896371, AddTimestamps1752925853545],
+                migrations: [
+                    ...getIntegrationEventsMigrations(),
+                    RegenerateMigrations1749289896371,
+                    AddTimestamps1752925853545,
+                    AddIndexes1767381756398,
+                ],
             }),
             inject: [ConfigService],
         }),

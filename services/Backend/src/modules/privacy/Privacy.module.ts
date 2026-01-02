@@ -37,6 +37,7 @@ import { TenantRemovedEventHandler } from "@/modules/privacy/events/TenantRemove
 import { PRIVACY_MODULE_DATA_SOURCE } from "@/modules/privacy/infrastructure/database/constants";
 import { RegenerateMigrations1749289951431 } from "@/modules/privacy/infrastructure/database/migrations/1749289951431-regenerate-migrations";
 import { AddTimestamps1752925879790 } from "@/modules/privacy/infrastructure/database/migrations/1752925879790-AddTimestamps";
+import { AddIndexes1767381872552 } from "@/modules/privacy/infrastructure/database/migrations/1767381872552-add-indexes";
 import { TenantMapperToken } from "@/modules/privacy/mappers/ITenant.mapper";
 import { TenantMapper } from "@/modules/privacy/mappers/Tenant.mapper";
 import { DataPurgeEventsPublisher } from "@/modules/privacy/services/implementations/DataPurgeEventsPublisher";
@@ -95,7 +96,12 @@ import { TenantServiceToken } from "@/modules/privacy/services/interfaces/ITenan
                 password: configService.getOrThrow<string>("modules.privacy.database.password"),
                 host: configService.getOrThrow<string>("modules.privacy.database.host"),
                 database: configService.getOrThrow<string>("modules.privacy.database.name"),
-                migrations: [...getIntegrationEventsMigrations(), RegenerateMigrations1749289951431, AddTimestamps1752925879790],
+                migrations: [
+                    ...getIntegrationEventsMigrations(),
+                    RegenerateMigrations1749289951431,
+                    AddTimestamps1752925879790,
+                    AddIndexes1767381872552,
+                ],
             }),
             inject: [ConfigService],
         }),

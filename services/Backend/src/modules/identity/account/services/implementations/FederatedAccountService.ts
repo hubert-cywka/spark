@@ -114,15 +114,23 @@ export class FederatedAccountService implements IFederatedAccountService {
     @Transactional({ connectionName: IDENTITY_MODULE_DATA_SOURCE })
     public async activateByInternalId(id: string): Promise<void> {
         const repository = this.getRepository();
-        const account = await repository.findOne({ where: { id } });
 
-        if (!account) {
-            this.logger.warn({ accountId: id }, "Couldn't find account.");
+        const result = await repository
+            .createQueryBuilder()
+            .update(FederatedAccountEntity)
+            .set({ activatedAt: new Date() })
+            .where("id = :id AND activatedAt IS NULL", { id })
+            .returning(["id", "email"])
+            .execute();
+
+        const updatedAccount = result.raw[0];
+
+        if (!updatedAccount) {
+            this.logger.warn({ accountId: id }, "Account not found or already activated.");
             throw new AccountNotFoundError();
         }
 
-        await repository.save({ ...account, activatedAt: new Date() });
-        await this.publisher.onAccountActivated(account.id, account.email);
+        await this.publisher.onAccountActivated(updatedAccount.id, updatedAccount.email);
     }
 
     private getRepository(): Repository<FederatedAccountEntity> {

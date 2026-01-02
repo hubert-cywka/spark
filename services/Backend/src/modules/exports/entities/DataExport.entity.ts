@@ -1,10 +1,21 @@
-import { type Relation, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+    type Relation,
+    Column,
+    CreateDateColumn,
+    Entity,
+    Index,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+} from "typeorm";
 
 import { DataExportScope } from "@/common/export/models/DataExportScope";
 import { ExportAttachmentManifestEntity } from "@/modules/exports/entities/ExportAttachmentManifest.entity";
 import { TenantEntity } from "@/modules/exports/entities/Tenant.entity";
 
 @Entity("data_export")
+@Index("idx_data_export_active", ["tenantId"], { where: '"cancelledAt" IS NULL AND "completedAt" IS NULL' })
 export class DataExportEntity {
     @PrimaryGeneratedColumn("uuid")
     id!: string;

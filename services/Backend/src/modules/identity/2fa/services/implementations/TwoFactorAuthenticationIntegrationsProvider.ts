@@ -37,7 +37,7 @@ export class TwoFactorAuthenticationIntegrationsProvider implements ITwoFactorAu
         const repository = this.getRepository();
         const { encryptedSecret } = await this.secretManager.generateSecret();
 
-        await repository.save({
+        await repository.insert({
             owner: { id: accountId },
             method: TwoFactorAuthenticationMethod.EMAIL,
             enabledAt: new Date(),

@@ -36,7 +36,7 @@ export class RefreshTokenService implements IRefreshTokenService {
         });
 
         const hashedValue = await this.hashToken(token);
-        await this.getRepository().save({
+        await this.getRepository().insert({
             owner: { id: payload.account.id },
             hashedValue,
             expiresAt,
@@ -76,23 +76,12 @@ export class RefreshTokenService implements IRefreshTokenService {
     public async invalidate(token: string): Promise<void>;
     public async invalidate(token: RefreshTokenEntity): Promise<void>;
     public async invalidate(token: RefreshTokenEntity | string): Promise<void> {
-        const now = dayjs().toDate();
+        const now = new Date();
+        const repository = this.getRepository();
 
-        if (token instanceof RefreshTokenEntity) {
-            await this.getRepository().save({
-                ...token,
-                invalidatedAt: now,
-            });
-        } else {
-            const hashedValue = await this.hashToken(token);
-            await this.getRepository().update(
-                {
-                    hashedValue,
-                    invalidatedAt: IsNull(),
-                },
-                { invalidatedAt: now }
-            );
-        }
+        const criteria = token instanceof RefreshTokenEntity ? { id: token.id } : { hashedValue: await this.hashToken(token) };
+
+        await repository.update({ ...criteria, invalidatedAt: IsNull() }, { invalidatedAt: now });
     }
 
     public async invalidateAllByOwnerId(ownerId: string): Promise<void> {

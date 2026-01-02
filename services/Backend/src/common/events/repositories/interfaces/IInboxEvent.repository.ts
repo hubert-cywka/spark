@@ -22,7 +22,6 @@ export type InboxEventInput = Pick<
 
 export interface IInboxEventRepository extends IIntegrationEventRepository<InboxEventEntity> {
     exists(id: string): Promise<boolean>;
-    save(fields: InboxEventInput): Promise<InboxEventEntity>;
     saveManyAndSkipDuplicates(fields: InboxEventInput[]): Promise<InboxEventEntity[]>;
 
     update(events: InboxEventEntity[]): Promise<void>;

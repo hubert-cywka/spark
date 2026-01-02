@@ -66,7 +66,7 @@ export class FeatureFlagService implements IFeatureFlagService {
         }
 
         await this.dbLockService.acquireTransactionLock(this.getUpdateFeatureFlagLockId(flag.key));
-        await repository.remove([flag]);
+        await repository.delete({ id: flag.id });
         await this.invalidateCache(flag.key);
         this.logger.debug({ id }, "Feature flag removed.");
     }

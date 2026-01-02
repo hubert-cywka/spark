@@ -25,6 +25,7 @@ import { JobExecutionEntity } from "@/modules/scheduling/entities/JobExecution.e
 import { JobScheduleEntity } from "@/modules/scheduling/entities/JobScheduleEntity";
 import { IntervalJobScheduleUpdatedEventHandler } from "@/modules/scheduling/events/IntervalJobScheduleUpdatedEvent.handler";
 import { InitSchedulingModule1764101420518 } from "@/modules/scheduling/infrastructure/database/migrations/1764101420518-init-scheduling-module";
+import { AddIndexes1767381858935 } from "@/modules/scheduling/infrastructure/database/migrations/1767381858935-add-indexes";
 import { JobExecutionsPurgeService } from "@/modules/scheduling/services/implementations/JobExecutionsPurgeService";
 import { JobScheduleConfigurationService } from "@/modules/scheduling/services/implementations/JobScheduleConfigurationService";
 import { JobScheduler } from "@/modules/scheduling/services/implementations/JobScheduler";
@@ -66,7 +67,7 @@ import { JobSchedulerToken } from "@/modules/scheduling/services/interfaces/IJob
                 password: configService.getOrThrow<string>("modules.scheduling.database.password"),
                 host: configService.getOrThrow<string>("modules.scheduling.database.host"),
                 database: configService.getOrThrow<string>("modules.scheduling.database.name"),
-                migrations: [...getIntegrationEventsMigrations(), InitSchedulingModule1764101420518],
+                migrations: [...getIntegrationEventsMigrations(), InitSchedulingModule1764101420518, AddIndexes1767381858935],
             }),
             inject: [ConfigService],
         }),

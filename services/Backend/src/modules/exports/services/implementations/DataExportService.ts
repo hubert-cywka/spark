@@ -86,12 +86,12 @@ export class DataExportService implements IDataExportService {
 
     public async markExportAsCancelled(tenantId: string, exportId: string) {
         await this.getActiveById(tenantId, exportId);
-        await this.getRepository().save({ id: exportId, cancelledAt: new Date() });
+        await this.getRepository().update({ id: exportId }, { cancelledAt: new Date() });
     }
 
     public async markExportAsCompleted(tenantId: string, exportId: string) {
         await this.getActiveById(tenantId, exportId);
-        await this.getRepository().save({ id: exportId, completedAt: new Date() });
+        await this.getRepository().update({ id: exportId }, { completedAt: new Date() });
     }
 
     private async getAnyById(tenantId: string, exportId: string) {

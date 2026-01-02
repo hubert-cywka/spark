@@ -15,7 +15,6 @@ export type OutboxEventInput = Pick<
 >;
 
 export interface IOutboxEventRepository extends IIntegrationEventRepository<OutboxEventEntity> {
-    save(fields: OutboxEventInput): Promise<OutboxEventEntity>;
     saveManyAndSkipDuplicates(fields: OutboxEventInput[]): Promise<OutboxEventEntity[]>;
 
     markAsProcessed(ids: string[]): Promise<void>;

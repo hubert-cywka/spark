@@ -46,10 +46,14 @@ export class JobScheduler implements IJobScheduler {
     }
 
     private async recordExecutions(jobIds: string[]): Promise<void> {
-        const repository = this.getExecutionRepository();
         const executedAt = new Date();
-        const executions = jobIds.map((jobId) => ({ jobId, executedAt }));
-        await repository.save(executions);
+
+        const executions = jobIds.map((jobId) => ({
+            jobId,
+            executedAt,
+        }));
+
+        await this.getExecutionRepository().insert(executions);
     }
 
     private async getPendingJobs(): Promise<JobScheduleEntity[]> {

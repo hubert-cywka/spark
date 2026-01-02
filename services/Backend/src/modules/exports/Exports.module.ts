@@ -25,6 +25,7 @@ import { TenantCreatedEventHandler } from "@/modules/exports/events/TenantCreate
 import { TenantRemovedEventHandler } from "@/modules/exports/events/TenantRemovedEvent.handler";
 import { EXPORTS_MODULE_DATA_SOURCE } from "@/modules/exports/infrastructure/database/constants";
 import { DataExport1767272676880 } from "@/modules/exports/infrastructure/database/migrations/1767272676880-data-export";
+import { AddIndexes1767381710806 } from "@/modules/exports/infrastructure/database/migrations/1767381710806-add-indexes";
 import { DataExportMapper } from "@/modules/exports/mappers/DataExport.mapper";
 import { ExportAttachmentManifestMapper } from "@/modules/exports/mappers/ExportAttachmentManifest.mapper";
 import { DataExportMapperToken } from "@/modules/exports/mappers/IDataExport.mapper";
@@ -123,7 +124,7 @@ import {
                 password: configService.getOrThrow<string>("modules.exports.database.password"),
                 host: configService.getOrThrow<string>("modules.exports.database.host"),
                 database: configService.getOrThrow<string>("modules.exports.database.name"),
-                migrations: [...getIntegrationEventsMigrations(), DataExport1767272676880],
+                migrations: [...getIntegrationEventsMigrations(), DataExport1767272676880, AddIndexes1767381710806],
             }),
             inject: [ConfigService],
         }),

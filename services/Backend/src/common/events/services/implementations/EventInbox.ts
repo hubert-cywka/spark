@@ -29,24 +29,7 @@ export class EventInbox implements IEventInbox {
     }
 
     public async enqueue(event: IntegrationEvent): Promise<void> {
-        await runInTransaction(
-            async () => {
-                const exists = await this.repository.exists(event.getId());
-
-                if (exists) {
-                    this.logger.log(event, "Event already in inbox.");
-                    return;
-                }
-
-                await this.repository.save(this.mapEventToInput(event));
-                this.logger.log(event, "Event added to inbox.");
-
-                runOnTransactionCommit(async () => {
-                    this.onEventEnqueued(event);
-                });
-            },
-            { connectionName: this.connectionName }
-        );
+        await this.enqueueMany([event]);
     }
 
     public async enqueueMany(events: IntegrationEvent[]): Promise<void> {

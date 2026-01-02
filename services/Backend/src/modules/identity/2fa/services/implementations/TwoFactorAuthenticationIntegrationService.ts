@@ -122,7 +122,7 @@ export abstract class TwoFactorAuthenticationIntegrationService implements ITwoF
         }
 
         const repository = this.getRepository();
-        await repository.save({ ...method, enabledAt: new Date() });
+        await repository.update({ id: method.id }, { enabledAt: new Date() });
 
         return true;
     }
@@ -153,7 +153,7 @@ export abstract class TwoFactorAuthenticationIntegrationService implements ITwoF
         const repository = this.getRepository();
         const { encryptedSecret, decryptedSecret } = await this.secretManager.generateSecret();
 
-        await repository.save({
+        await repository.insert({
             id: methodId,
             ownerId,
             secret: encryptedSecret,
