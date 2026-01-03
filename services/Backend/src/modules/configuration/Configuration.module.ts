@@ -24,6 +24,7 @@ import { TenantRemovedEventHandler } from "@/modules/configuration/events/Tenant
 import { InitConfigurationModule1765016363086 } from "@/modules/configuration/infrastructure/database/migrations/1765016363086-init-configuration-module";
 import { AddFeatureFlagsTable1765020949930 } from "@/modules/configuration/infrastructure/database/migrations/1765020949930-add-feature-flags-table";
 import { AddIndicesToFfTable1765022076178 } from "@/modules/configuration/infrastructure/database/migrations/1765022076178-add-indices-to-ff-table";
+import { ImproveIndexes1767428493762 } from "@/modules/configuration/infrastructure/database/migrations/1767428493762-improve-indexes";
 import { FeatureFlagMapper } from "@/modules/configuration/mappers/FeatureFlag.mapper";
 import { FeatureFlagMapperToken } from "@/modules/configuration/mappers/IFeatureFlag.mapper";
 import { TenantMapperToken } from "@/modules/configuration/mappers/ITenant.mapper";
@@ -79,6 +80,7 @@ import {
                     InitConfigurationModule1765016363086,
                     AddFeatureFlagsTable1765020949930,
                     AddIndicesToFfTable1765022076178,
+                    ImproveIndexes1767428493762,
                 ],
             }),
             inject: [ConfigService],

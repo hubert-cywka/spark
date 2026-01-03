@@ -6,17 +6,14 @@ import {
     Index,
     ManyToOne,
     PrimaryGeneratedColumn,
-    Unique,
     UpdateDateColumn,
 } from "typeorm";
 
 import { TenantEntity } from "@/modules/configuration/entities/Tenant.entity";
 
 @Entity("feature_flag")
-@Unique(["key", "tenantId"])
-@Index("IDX_FEATURE_FLAG_KEY", ["key"])
-@Index("IDX_FEATURE_FLAG_TENANT_ID", ["tenantId"])
-@Index("IDX_FEATURE_FLAG_KEY_TENANT_ID", ["key", "tenantId"])
+@Index("idx_feature_flag_tenant_id", ["tenantId"])
+@Index("idx_feature_flag_key_tenant_id", ["key", "tenantId"], { unique: true })
 export class FeatureFlagEntity {
     @PrimaryGeneratedColumn("uuid")
     id!: string;

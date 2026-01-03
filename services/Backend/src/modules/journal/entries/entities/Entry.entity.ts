@@ -17,8 +17,6 @@ import { GoalEntity } from "@/modules/journal/goals/entities/Goal.entity";
 
 @Entity("entry")
 @Index("idx_entry_pagination", ["authorId", "createdAt", "id"], { where: '"deletedAt" IS NULL' })
-@Index("idx_entry_is_completed", ["authorId", "isCompleted"], { where: '"deletedAt" IS NULL' })
-@Index("idx_entry_is_featured", ["authorId", "isFeatured"], { where: '"deletedAt" IS NULL' })
 @Index("idx_entry_daily", ["authorId", "dailyId"], { where: '"deletedAt" IS NULL' })
 export class EntryEntity {
     @PrimaryGeneratedColumn("uuid")

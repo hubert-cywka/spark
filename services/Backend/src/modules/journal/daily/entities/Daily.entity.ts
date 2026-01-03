@@ -16,8 +16,7 @@ import { EntryEntity } from "@/modules/journal/entries/entities/Entry.entity";
 import { type ISODateString } from "@/types/Date";
 
 @Entity("daily")
-@Index("idx_daily_author_date", ["authorId", "date"])
-@Index("idx_daily_active_author", ["authorId"], { where: '"deletedAt" IS NULL' })
+@Index("idx_daily_author_date", ["authorId", "date"], { where: '"deletedAt" IS NULL' })
 export class DailyEntity {
     @PrimaryGeneratedColumn("uuid")
     id!: string;

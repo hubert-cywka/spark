@@ -7,6 +7,7 @@ import { TenantEntity } from "@/modules/exports/entities/Tenant.entity";
 
 @Entity("export_attachment_manifest")
 @Index("idx_manifest_lookup", ["tenantId", "dataExportId", "stage"])
+@Index("idx_manifest_export", ["dataExportId"])
 export class ExportAttachmentManifestEntity {
     @PrimaryColumn({ type: "varchar" })
     key!: string;
