@@ -1,13 +1,4 @@
-import {
-    type Relation,
-    Column,
-    CreateDateColumn,
-    Entity,
-    Index,
-    ManyToOne,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn,
-} from "typeorm";
+import { type Relation, Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 import { TenantEntity } from "@/modules/configuration/entities/Tenant.entity";
 
