@@ -1,3 +1,14 @@
+resource "kubernetes_config_map_v1" "postgres_config" {
+  metadata {
+    name      = "postgres-config"
+    namespace = var.namespace
+  }
+
+  data = {
+    "postgresql.conf" = templatefile("${path.module}/config/postgresql.conf.tftpl", {})
+  }
+}
+
 resource "kubernetes_deployment_v1" "postgres" {
   metadata {
     name      = "postgres"
@@ -24,6 +35,7 @@ resource "kubernetes_deployment_v1" "postgres" {
         container {
           name  = "postgres"
           image = "postgres:${var.postgresql_image_tag}"
+          args  = ["-c", "config_file=/etc/postgresql/postgresql.conf"]
 
           liveness_probe {
             exec {
@@ -77,11 +89,26 @@ resource "kubernetes_deployment_v1" "postgres" {
             name  = "POSTGRES_DB"
             value = var.database_name
           }
+
+          volume_mount {
+            name       = "config"
+            mount_path = "/etc/postgresql"
+            read_only  = true
+          }
+
           volume_mount {
             mount_path = "/var/lib/postgresql/data"
             name       = "postgres-storage"
           }
         }
+
+        volume {
+          name = "config"
+          config_map {
+            name = kubernetes_config_map_v1.postgres_config.metadata[0].name
+          }
+        }
+
         volume {
           name = "postgres-storage"
           persistent_volume_claim {

@@ -1,4 +1,3 @@
-
 resource "kubernetes_ingress_v1" "ingress" {
   metadata {
     name      = "codename-ingress"
@@ -43,16 +42,16 @@ module "gateway" {
   frontend_port       = var.FRONTEND_PORT
   allowed_origins     = var.ALLOWED_ORIGINS
 
-  identity_service_name      = module.identity-service.service_name
-  journal_service_name       = module.journal-service.service_name
-  users_service_name         = module.users-service.service_name
-  alerts_service_name        = module.alerts-service.service_name
-  privacy_service_name       = module.privacy-service.service_name
-  exports_service_name       = module.exports-service.service_name
-  mail_service_name          = module.mail-service.service_name
   frontend_service_name      = module.frontend.service_name
-  scheduling_service_name    = module.scheduling-service.service_name
-  configuration_service_name = module.configuration-service.service_name
+  identity_service_name      = local.identity_service_name
+  journal_service_name       = local.journal_service_name
+  users_service_name         = local.users_service_name
+  alerts_service_name        = local.alerts_service_name
+  privacy_service_name       = local.privacy_service_name
+  exports_service_name       = local.exports_service_name
+  mail_service_name          = local.mail_service_name
+  scheduling_service_name    = local.scheduling_service_name
+  configuration_service_name = local.configuration_service_name
 }
 
 module "database" {
