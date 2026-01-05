@@ -68,6 +68,8 @@ services:
             - "5432:5432"
         volumes:
             - postgres:/var/lib/postgresql/data
+            - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+        command: -c config_file=/etc/postgresql/postgresql.conf
 
     pooler:
         environment:
