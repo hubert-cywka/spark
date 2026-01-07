@@ -26,12 +26,20 @@ export class GoalService implements IGoalService {
     public async findAll(
         authorId: string,
         pageOptions: PageOptions,
-        { entries, excludeEntries, name, withProgress, from, to }: GoalFilters = {}
+        { entries, excludeEntries, name, withProgress, updatedAfter, updatedBefore }: GoalFilters = {}
     ): Promise<Paginated<Goal>> {
         const queryBuilder = this.getRepository().createQueryBuilder("goal").where("goal.authorId = :authorId", { authorId });
 
         const paginationKeys = createPaginationKeys(["createdAt", "id"]);
         applyCursorBasedPagination(queryBuilder, pageOptions, paginationKeys);
+
+        if (updatedAfter) {
+            queryBuilder.andWhere("goal.updatedAt >= :updatedAfter", { updatedAfter });
+        }
+
+        if (updatedBefore) {
+            queryBuilder.andWhere("goal.updatedAt <= :updatedBefore", { updatedBefore });
+        }
 
         if (withProgress) {
             queryBuilder
@@ -58,16 +66,6 @@ export class GoalService implements IGoalService {
             queryBuilder.andWhere("goal.name ILIKE :name", {
                 name: `%${name}%`,
             });
-        }
-
-        if (from) {
-            const startOfDay = `${from} 00:00:00.000`;
-            queryBuilder.andWhere("goal.createdAt >= :from", { from: startOfDay });
-        }
-
-        if (to) {
-            const endOfDay = `${to} 23:59:59.999`;
-            queryBuilder.andWhere("goal.createdAt <= :to", { to: endOfDay });
         }
 
         const result = await queryBuilder.getMany();

@@ -25,13 +25,15 @@ export class EntriesDataExportProvider implements IDataExportProvider {
         const filters = {
             from: formatToISODateString(scope.dateRange.from),
             to: formatToISODateString(scope.dateRange.to),
+            withGoals: true,
+            withDaily: true,
         };
 
         let from = scope.dateRange.from;
         let to = scope.dateRange.to;
 
         while (hasMore) {
-            const entries = await this.entryService.findAllDetailed(tenantId, { cursor: nextCursor, take, order: Order.ASC }, filters);
+            const entries = await this.entryService.findAll(tenantId, { cursor: nextCursor, take, order: Order.ASC }, filters);
             const lastEntry = entries.data[entries.data.length - 1];
 
             nextCursor = entries.meta.nextCursor;

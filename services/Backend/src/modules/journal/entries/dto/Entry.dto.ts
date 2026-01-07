@@ -1,4 +1,6 @@
-import { IsBoolean, IsDateString, IsString, IsUUID } from "class-validator";
+import { IsArray, IsBoolean, IsDateString, IsObject, IsOptional, IsString, IsUUID } from "class-validator";
+
+import { ISODateString } from "@/types/Date";
 
 export class EntryDto {
     @IsUUID("4")
@@ -24,4 +26,13 @@ export class EntryDto {
 
     @IsDateString()
     updatedAt!: string;
+
+    @IsOptional()
+    @IsDateString()
+    daily?: ISODateString;
+
+    @IsOptional()
+    @IsArray()
+    @IsObject({ each: true })
+    goals?: { id: string; name: string }[];
 }
