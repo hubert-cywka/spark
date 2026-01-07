@@ -1,8 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { type IEventPublisher, DataExportBatchReadyEvent, EventPublisherToken } from "@/common/events";
-import { type IObjectStorage, ObjectStorageToken } from "@/common/objectStorage/services/IObjectStorage";
+import { getObjectStorageToken } from "@/common/objectStorage/services/IObjectStorage";
+import { type IObjectStorage } from "@/common/objectStorage/services/IObjectStorage";
 import { type ICsvParser, CsvParserToken } from "@/common/services/interfaces/ICsvParser";
+import { EXPORTS_OBJECT_STORAGE_KEY } from "@/modules/exports/shared/constants/objectStorage";
 import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
 import { ExportAttachmentManifest } from "@/modules/exports/shared/models/ExportAttachment.model";
 import { DataExportAttachmentPathBuilder } from "@/modules/exports/shared/services/DataExportAttachmentPathBuilder";
@@ -20,7 +22,7 @@ export class DataExporter implements IDataExporter {
         private readonly publisher: IEventPublisher,
         @Inject(CsvParserToken)
         private readonly parser: ICsvParser,
-        @Inject(ObjectStorageToken)
+        @Inject(getObjectStorageToken(EXPORTS_OBJECT_STORAGE_KEY))
         private readonly objectStorage: IObjectStorage
     ) {}
 

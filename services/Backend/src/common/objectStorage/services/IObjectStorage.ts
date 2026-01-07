@@ -1,6 +1,6 @@
 import { ObjectManifest } from "@/common/objectStorage/types/ObjectManifest";
 
-export const ObjectStorageToken = Symbol("ObjectStorageToken");
+export const getObjectStorageToken = (key: string) => `ObjectStorage:${key}`;
 
 export interface IObjectStorage {
     exists(path: string): Promise<boolean>;

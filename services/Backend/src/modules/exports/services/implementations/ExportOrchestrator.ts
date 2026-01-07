@@ -2,7 +2,8 @@ import { Inject, Injectable, Logger } from "@nestjs/common";
 import { Transactional } from "typeorm-transactional";
 
 import { type IDatabaseLockService, DatabaseLockServiceToken } from "@/common/database/services/IDatabaseLockService";
-import { type IObjectStorage, ObjectStorageToken } from "@/common/objectStorage/services/IObjectStorage";
+import { getObjectStorageToken } from "@/common/objectStorage/services/IObjectStorage";
+import { type IObjectStorage } from "@/common/objectStorage/services/IObjectStorage";
 import { EXPORTS_MODULE_DATA_SOURCE } from "@/modules/exports/infrastructure/database/constants";
 import {
     type IDataExportEventsPublisher,
@@ -15,6 +16,7 @@ import {
 } from "@/modules/exports/services/interfaces/IExportAttachmentManifestService";
 import { type IExportOrchestrator } from "@/modules/exports/services/interfaces/IExportOrchestrator";
 import { type IExportScopeCalculator, ExportScopeCalculatorToken } from "@/modules/exports/services/interfaces/IExportScopeCalculator";
+import { EXPORTS_OBJECT_STORAGE_KEY } from "@/modules/exports/shared/constants/objectStorage";
 import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
 import { type ExportAttachmentManifest } from "@/modules/exports/shared/models/ExportAttachment.model";
 import { DataExportAttachmentPathBuilder } from "@/modules/exports/shared/services/DataExportAttachmentPathBuilder";
@@ -34,7 +36,7 @@ export class ExportOrchestrator implements IExportOrchestrator {
         private readonly attachmentService: IExportAttachmentManifestService,
         @Inject(ExportScopeCalculatorToken)
         private readonly scopeCalculator: IExportScopeCalculator,
-        @Inject(ObjectStorageToken)
+        @Inject(getObjectStorageToken(EXPORTS_OBJECT_STORAGE_KEY))
         private readonly objectStorage: IObjectStorage,
         @Inject(DatabaseLockServiceToken)
         private readonly dbLockService: IDatabaseLockService

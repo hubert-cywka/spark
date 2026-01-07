@@ -1,13 +1,13 @@
 import { DynamicModule, Module } from "@nestjs/common";
-import { S3Module } from "nestjs-s3";
+import { getS3ConnectionToken, S3, S3Module } from "nestjs-s3";
 
 import { S3ObjectStorage } from "@/common/objectStorage/s3/services/S3ObjectStorage";
 import { S3ObjectStorageAdmin } from "@/common/objectStorage/s3/services/S3ObjectStorageAdmin";
-import { ObjectStorageToken } from "@/common/objectStorage/services/IObjectStorage";
+import { getObjectStorageToken } from "@/common/objectStorage/services/IObjectStorage";
 import { ObjectStorageAdminToken } from "@/common/objectStorage/services/IObjectStorageAdmin";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 
-type ObjectStorageModuleOptions = {
+type ObjectStorageModuleForRootOptions = {
     credentials: {
         accessKeyId: string;
         secretAccessKey: string;
@@ -16,10 +16,41 @@ type ObjectStorageModuleOptions = {
     endpoint: string;
 };
 
+type ObjectStorageModuleForBucketOptions = {
+    bucket: {
+        name: string;
+    };
+};
+
 @Module({})
 export class ObjectStorageModule {
+    public static registerStorageAsync(
+        key: string,
+        options: {
+            useFactory: UseFactory<ObjectStorageModuleForBucketOptions>;
+            inject?: UseFactoryArgs;
+            global?: boolean;
+        }
+    ): DynamicModule {
+        return {
+            module: ObjectStorageModule,
+            providers: [
+                {
+                    provide: getObjectStorageToken(key),
+                    useFactory: async (s3: S3, ...args: UseFactoryArgs) => {
+                        const { bucket } = await options.useFactory(...args);
+                        return new S3ObjectStorage(s3, bucket.name);
+                    },
+                    inject: [getS3ConnectionToken(""), ...(options.inject || [])],
+                },
+            ],
+            exports: [getObjectStorageToken(key)],
+            global: options.global,
+        };
+    }
+
     static forRootAsync(options: {
-        useFactory: UseFactory<ObjectStorageModuleOptions>;
+        useFactory: UseFactory<ObjectStorageModuleForRootOptions>;
         inject?: UseFactoryArgs;
         global?: boolean;
     }): DynamicModule {
@@ -48,15 +79,11 @@ export class ObjectStorageModule {
             ],
             providers: [
                 {
-                    provide: ObjectStorageToken,
-                    useClass: S3ObjectStorage,
-                },
-                {
                     provide: ObjectStorageAdminToken,
                     useClass: S3ObjectStorageAdmin,
                 },
             ],
-            exports: [S3Module, ObjectStorageToken, ObjectStorageAdminToken],
+            exports: [S3Module, ObjectStorageAdminToken],
         };
     }
 }
