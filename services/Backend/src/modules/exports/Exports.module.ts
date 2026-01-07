@@ -29,9 +29,7 @@ import { DataExportEntity } from "@/modules/exports/entities/DataExport.entity";
 import { ExportAttachmentManifestEntity } from "@/modules/exports/entities/ExportAttachmentManifest.entity";
 import { TenantEntity } from "@/modules/exports/entities/Tenant.entity";
 import { DataExportBatchReadyEventHandler } from "@/modules/exports/events/DataExportBatchReadyEvent.handler";
-import { DataExportCancelledEventHandler } from "@/modules/exports/events/DataExportCancelledEvent.handler";
 import { DataExportCleanupTriggeredEventHandler } from "@/modules/exports/events/DataExportCleanupTriggeredEvent.handler";
-import { DataExportCompletedEventHandler } from "@/modules/exports/events/DataExportCompletedEvent.handler";
 import { TenantCreatedEventHandler } from "@/modules/exports/events/TenantCreatedEvent.handler";
 import { TenantRemovedEventHandler } from "@/modules/exports/events/TenantRemovedEvent.handler";
 import { EXPORTS_MODULE_DATA_SOURCE } from "@/modules/exports/infrastructure/database/constants";
@@ -81,16 +79,8 @@ import {
             useClass: DataExportBatchReadyEventHandler,
         },
         {
-            provide: DataExportCompletedEventHandler,
-            useClass: DataExportCompletedEventHandler,
-        },
-        {
             provide: DataExportCleanupTriggeredEventHandler,
             useClass: DataExportCleanupTriggeredEventHandler,
-        },
-        {
-            provide: DataExportCancelledEventHandler,
-            useClass: DataExportCancelledEventHandler,
         },
         {
             provide: DataExportEventsPublisherToken,
@@ -127,8 +117,6 @@ import {
                 TenantCreatedEventHandler,
                 TenantRemovedEventHandler,
                 DataExportBatchReadyEventHandler,
-                DataExportCompletedEventHandler,
-                DataExportCancelledEventHandler,
                 DataExportCleanupTriggeredEventHandler,
             ],
         },
@@ -215,8 +203,6 @@ export class ExportsModule implements OnModuleInit {
             IntegrationEvents.account.created,
             IntegrationEvents.account.removal.completed,
             IntegrationEvents.export.batch.ready,
-            IntegrationEvents.export.cancelled,
-            IntegrationEvents.export.completed,
             IntegrationEvents.export.cleanup.triggered,
         ]);
     }
