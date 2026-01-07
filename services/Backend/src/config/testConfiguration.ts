@@ -97,6 +97,10 @@ export const TestConfig = () => ({
                 host: process.env.DATABASE_HOST,
                 name: process.env.EXPORTS_DATABASE_NAME,
             },
+
+            expiration: {
+                ttlInDays: 7,
+            },
         },
 
         configuration: {

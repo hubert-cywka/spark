@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
 import dayjs from "dayjs";
-import { IsNull, LessThanOrEqual, Repository } from "typeorm";
+import { IsNull, LessThanOrEqual, MoreThan, Repository } from "typeorm";
 import { Transactional } from "typeorm-transactional";
 
 import { type IDatabaseLockService, DatabaseLockServiceToken } from "@/common/database/services/IDatabaseLockService";
@@ -117,7 +117,7 @@ export class DataExportService implements IDataExportService {
     }
 
     private async getAnyById(tenantId: string, exportId: string) {
-        const dataExport = await this.getRepository().findOne({ where: { tenantId, id: exportId } });
+        const dataExport = await this.getRepository().findOne({ where: { tenantId, id: exportId, validUntil: MoreThan(new Date()) } });
 
         if (!dataExport) {
             this.logger.warn({ tenantId, exportId }, "Export not found");
@@ -128,7 +128,9 @@ export class DataExportService implements IDataExportService {
     }
 
     private async getActive(tenantId: string) {
-        const dataExport = await this.getRepository().findOne({ where: { tenantId, cancelledAt: IsNull(), completedAt: IsNull() } });
+        const dataExport = await this.getRepository().findOne({
+            where: { tenantId, cancelledAt: IsNull(), completedAt: IsNull(), validUntil: MoreThan(new Date()) },
+        });
 
         if (!dataExport) {
             return null;
