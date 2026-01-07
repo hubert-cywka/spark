@@ -1,9 +1,10 @@
 import { ExportAttachmentManifest } from "@/common/export/models/ExportAttachment.model";
+import { ExportAttachmentStage } from "@/common/export/types/ExportAttachmentStage";
 
 export const ExportAttachmentManifestServiceToken = Symbol("ExportAttachmentManifestServiceToken");
 
 export interface IExportAttachmentManifestService {
-    findTemporaryManifestsByExportId(tenantId: string, exportId: string): Promise<ExportAttachmentManifest[]>;
+    findManifestsByExportId(tenantId: string, exportId: string, stage?: ExportAttachmentStage): Promise<ExportAttachmentManifest[]>;
     getFinalManifestByExportId(tenantId: string, exportId: string): Promise<ExportAttachmentManifest>;
 
     storeAttachmentManifest(tenantId: string, exportId: string, attachmentManifest: ExportAttachmentManifest): Promise<void>;

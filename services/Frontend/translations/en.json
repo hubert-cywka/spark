@@ -598,7 +598,7 @@
         "list": {
             "header": "Showing up to 5 most recent exports:",
             "error": "Failed to load the list of data exports. Try again later.",
-            "noData": "You have not requested any data export yet.",
+            "noData": "You don't have any recent data exports.",
             "buttons": {
                 "cancel": {
                     "label": "Cancel active export"
@@ -611,7 +611,8 @@
                 }
             },
             "item": {
-                "startedAt": "Started at: {date}"
+                "startedAt": "Started at: {date}",
+                "validUntil": "Expires at: {date}"
             }
         },
         "start": {

@@ -15,6 +15,9 @@ export class DataExportDto {
     readonly startedAt!: Date;
 
     @IsDate()
+    readonly validUntil!: Date;
+
+    @IsDate()
     @IsNullable()
     readonly cancelledAt!: Date | null;
 

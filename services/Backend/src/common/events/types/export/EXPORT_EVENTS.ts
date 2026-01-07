@@ -9,4 +9,7 @@ export const EXPORT_EVENTS = {
     batch: {
         ready: label("batch.ready"),
     },
+    cleanup: {
+        triggered: label("cleanup.triggered"),
+    },
 };

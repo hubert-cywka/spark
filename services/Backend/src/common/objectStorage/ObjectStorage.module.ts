@@ -2,7 +2,9 @@ import { DynamicModule, Module } from "@nestjs/common";
 import { S3Module } from "nestjs-s3";
 
 import { S3ObjectStorage } from "@/common/objectStorage/s3/services/S3ObjectStorage";
+import { S3ObjectStorageAdmin } from "@/common/objectStorage/s3/services/S3ObjectStorageAdmin";
 import { ObjectStorageToken } from "@/common/objectStorage/services/IObjectStorage";
+import { ObjectStorageAdminToken } from "@/common/objectStorage/services/IObjectStorageAdmin";
 import { UseFactory, UseFactoryArgs } from "@/types/UseFactory";
 
 type ObjectStorageModuleOptions = {
@@ -49,8 +51,12 @@ export class ObjectStorageModule {
                     provide: ObjectStorageToken,
                     useClass: S3ObjectStorage,
                 },
+                {
+                    provide: ObjectStorageAdminToken,
+                    useClass: S3ObjectStorageAdmin,
+                },
             ],
-            exports: [S3Module, ObjectStorageToken],
+            exports: [S3Module, ObjectStorageToken, ObjectStorageAdminToken],
         };
     }
 }

@@ -20,7 +20,6 @@ import {
 import { type IExportOrchestrator } from "@/modules/exports/services/interfaces/IExportOrchestrator";
 import { type IExportScopeCalculator, ExportScopeCalculatorToken } from "@/modules/exports/services/interfaces/IExportScopeCalculator";
 
-// TODO: Remove orphaned or expired attachments.
 @Injectable()
 export class ExportOrchestrator implements IExportOrchestrator {
     private readonly logger = new Logger(ExportOrchestrator.name);
@@ -70,7 +69,7 @@ export class ExportOrchestrator implements IExportOrchestrator {
         const exportToCheckpoint = await this.dataExportService.getActiveById(tenantId, exportId);
 
         await this.checkpointAttachment(tenantId, exportId, attachmentManifest);
-        const manifests = await this.attachmentService.findTemporaryManifestsByExportId(tenantId, exportId);
+        const manifests = await this.attachmentService.findManifestsByExportId(tenantId, exportId, ExportAttachmentStage.TEMPORARY);
 
         if (!this.isExportCompleted(exportToCheckpoint.targetScopes, manifests)) {
             this.logger.log({ exportId }, "Export checkpoint completed. Attachments still missing.");
@@ -84,14 +83,15 @@ export class ExportOrchestrator implements IExportOrchestrator {
     }
 
     @Transactional({ connectionName: EXPORTS_MODULE_DATA_SOURCE })
-    public async cleanup(tenantId: string, exportId: string) {
+    public async cleanup(tenantId: string, exportId: string, stage?: ExportAttachmentStage) {
         await this.acquireLockForExportUpdate(exportId);
-        const manifests = await this.attachmentService.findTemporaryManifestsByExportId(tenantId, exportId);
-        const paths = manifests.map((manifest) => manifest.path);
 
+        const manifests = await this.attachmentService.findManifestsByExportId(tenantId, exportId, stage);
+        const paths = manifests.map((manifest) => manifest.path);
         await this.objectStorage.delete(paths);
         await this.attachmentService.deleteAttachmentManifests(manifests);
-        this.logger.log({ exportId }, "Temporary export attachments cleaned up.");
+
+        this.logger.log({ exportId, stage }, "Export attachments cleaned up.");
     }
 
     private isExportCompleted(targetScopes: DataExportScope[], manifests: ExportAttachmentManifest[]) {

@@ -79,7 +79,7 @@ module "backend" {
     "S3_ACCESS_KEY_ID"                          = var.S3_ACCESS_KEY_ID
     "S3_SECRET_ACCESS_KEY"                      = var.S3_SECRET_ACCESS_KEY
     "S3_REGION"                                 = var.S3_REGION
-    "S3_BUCKET_NAME"                            = var.S3_BUCKET_NAME
+    "S3_EXPORTS_BUCKET_NAME"                    = var.S3_EXPORTS_BUCKET_NAME
     "S3_ENDPOINT"                               = module.s3.s3_endpoint
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
@@ -159,7 +159,7 @@ module "journal-service" {
     "S3_ACCESS_KEY_ID"                          = var.S3_ACCESS_KEY_ID
     "S3_SECRET_ACCESS_KEY"                      = var.S3_SECRET_ACCESS_KEY
     "S3_REGION"                                 = var.S3_REGION
-    "S3_BUCKET_NAME"                            = var.S3_BUCKET_NAME
+    "S3_EXPORTS_BUCKET_NAME"                    = var.S3_EXPORTS_BUCKET_NAME
     "S3_ENDPOINT"                               = module.s3.s3_endpoint
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
@@ -220,7 +220,7 @@ module "mail-service" {
     "S3_ACCESS_KEY_ID"                          = var.S3_ACCESS_KEY_ID
     "S3_SECRET_ACCESS_KEY"                      = var.S3_SECRET_ACCESS_KEY
     "S3_REGION"                                 = var.S3_REGION
-    "S3_BUCKET_NAME"                            = var.S3_BUCKET_NAME
+    "S3_EXPORTS_BUCKET_NAME"                    = var.S3_EXPORTS_BUCKET_NAME
     "S3_ENDPOINT"                               = module.s3.s3_endpoint
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
@@ -285,7 +285,7 @@ module "identity-service" {
     "S3_ACCESS_KEY_ID"                           = var.S3_ACCESS_KEY_ID
     "S3_SECRET_ACCESS_KEY"                       = var.S3_SECRET_ACCESS_KEY
     "S3_REGION"                                  = var.S3_REGION
-    "S3_BUCKET_NAME"                             = var.S3_BUCKET_NAME
+    "S3_EXPORTS_BUCKET_NAME"                     = var.S3_EXPORTS_BUCKET_NAME
     "S3_ENDPOINT"                                = module.s3.s3_endpoint
     "PUBSUB_BROKERS"                             = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"      = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
@@ -353,7 +353,7 @@ module "privacy-service" {
     "S3_ACCESS_KEY_ID"                          = var.S3_ACCESS_KEY_ID
     "S3_SECRET_ACCESS_KEY"                      = var.S3_SECRET_ACCESS_KEY
     "S3_REGION"                                 = var.S3_REGION
-    "S3_BUCKET_NAME"                            = var.S3_BUCKET_NAME
+    "S3_EXPORTS_BUCKET_NAME"                    = var.S3_EXPORTS_BUCKET_NAME
     "S3_ENDPOINT"                               = module.s3.s3_endpoint
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
@@ -414,7 +414,7 @@ module "exports-service" {
     "S3_ACCESS_KEY_ID"                          = var.S3_ACCESS_KEY_ID
     "S3_SECRET_ACCESS_KEY"                      = var.S3_SECRET_ACCESS_KEY
     "S3_REGION"                                 = var.S3_REGION
-    "S3_BUCKET_NAME"                            = var.S3_BUCKET_NAME
+    "S3_EXPORTS_BUCKET_NAME"                    = var.S3_EXPORTS_BUCKET_NAME
     "S3_ENDPOINT"                               = module.s3.s3_endpoint
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
@@ -475,7 +475,7 @@ module "scheduling-service" {
     "S3_ACCESS_KEY_ID"                          = var.S3_ACCESS_KEY_ID
     "S3_SECRET_ACCESS_KEY"                      = var.S3_SECRET_ACCESS_KEY
     "S3_REGION"                                 = var.S3_REGION
-    "S3_BUCKET_NAME"                            = var.S3_BUCKET_NAME
+    "S3_EXPORTS_BUCKET_NAME"                    = var.S3_EXPORTS_BUCKET_NAME
     "S3_ENDPOINT"                               = module.s3.s3_endpoint
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
@@ -536,7 +536,7 @@ module "configuration-service" {
     "S3_ACCESS_KEY_ID"                          = var.S3_ACCESS_KEY_ID
     "S3_SECRET_ACCESS_KEY"                      = var.S3_SECRET_ACCESS_KEY
     "S3_REGION"                                 = var.S3_REGION
-    "S3_BUCKET_NAME"                            = var.S3_BUCKET_NAME
+    "S3_EXPORTS_BUCKET_NAME"                    = var.S3_EXPORTS_BUCKET_NAME
     "S3_ENDPOINT"                               = module.s3.s3_endpoint
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
@@ -597,7 +597,7 @@ module "users-service" {
     "S3_ACCESS_KEY_ID"                          = var.S3_ACCESS_KEY_ID
     "S3_SECRET_ACCESS_KEY"                      = var.S3_SECRET_ACCESS_KEY
     "S3_REGION"                                 = var.S3_REGION
-    "S3_BUCKET_NAME"                            = var.S3_BUCKET_NAME
+    "S3_EXPORTS_BUCKET_NAME"                    = var.S3_EXPORTS_BUCKET_NAME
     "S3_ENDPOINT"                               = module.s3.s3_endpoint
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
@@ -658,7 +658,7 @@ module "alerts-service" {
     "S3_ACCESS_KEY_ID"                          = var.S3_ACCESS_KEY_ID
     "S3_SECRET_ACCESS_KEY"                      = var.S3_SECRET_ACCESS_KEY
     "S3_REGION"                                 = var.S3_REGION
-    "S3_BUCKET_NAME"                            = var.S3_BUCKET_NAME
+    "S3_EXPORTS_BUCKET_NAME"                    = var.S3_EXPORTS_BUCKET_NAME
     "S3_ENDPOINT"                               = module.s3.s3_endpoint
     "PUBSUB_BROKERS"                            = module.kafka_cluster.brokers
     "PUBSUB_CONSUMER_CONCURRENT_PARTITIONS"     = var.PUBSUB_CONSUMER_CONCURRENT_PARTITIONS
