@@ -6,4 +6,5 @@ export type EntryDto = {
     isCompleted: boolean;
     isFeatured: boolean;
     createdAt: string;
+    updatedAt: string;
 };

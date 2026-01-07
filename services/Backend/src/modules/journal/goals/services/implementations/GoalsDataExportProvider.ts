@@ -5,7 +5,6 @@ import { type IDataExportProvider } from "@/common/export/services/IDataExportPr
 import { DataExportBatch } from "@/common/export/types/DataExportBatch";
 import { DataExportScopeDomain } from "@/common/export/types/DataExportScopeDomain";
 import { Order } from "@/common/pagination/types/Order";
-import { formatToISODateString } from "@/common/utils/dateUtils";
 import { type IGoalService, GoalServiceToken } from "@/modules/journal/goals/services/interfaces/IGoalService";
 
 @Injectable()
@@ -22,8 +21,8 @@ export class GoalsDataExportProvider implements IDataExportProvider {
         let hasMore = true;
 
         const filters = {
-            from: formatToISODateString(scope.dateRange.from),
-            to: formatToISODateString(scope.dateRange.to),
+            updatedAfter: scope.dateRange.from,
+            updatedBefore: scope.dateRange.to,
             withProgress: true,
         };
 

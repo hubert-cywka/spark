@@ -20,7 +20,11 @@ export const ExportScopesList = ({ scopes, onRemoveScope }: ExportScopesListProp
                     <span className={styles.domain}>{t(`exports.common.scope.domains.${scope.domain}`)}</span>
 
                     <span className={styles.timeframe}>
-                        , {t("exports.common.scope.timeframe", { from: scope.dateRange.from, to: scope.dateRange.to })}
+                        ,{" "}
+                        {t("exports.common.scope.timeframe", {
+                            from: scope.dateRange.from.toLocaleDateString(),
+                            to: scope.dateRange.to.toLocaleDateString(),
+                        })}
                     </span>
 
                     <div className={styles.actions}>

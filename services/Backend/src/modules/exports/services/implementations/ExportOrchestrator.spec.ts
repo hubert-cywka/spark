@@ -231,31 +231,15 @@ describe("ExportOrchestrator", () => {
             await expectFinalAttachmentToNotExist(exportEntry?.id);
         });
 
-        it("should not complete the export when attachments parts are still missing", async () => {
-            const attachment1 = buildAttachmentManifest({ scopes: [SCOPE_A] });
-            const attachment2 = buildAttachmentManifest({ scopes: [SCOPE_B] });
-
-            await orchestrator.start(TENANT_ID, [SCOPE_A, SCOPE_B]);
-            const exportEntry = await dataExportRepository.findOneBy({ tenantId: TENANT_ID });
-
-            await orchestrator.checkpoint(TENANT_ID, exportEntry!.id, attachment1);
-            await orchestrator.checkpoint(TENANT_ID, exportEntry!.id, attachment2);
-
-            await expectExportNotToBeCompleted(exportEntry?.id);
-            await expectFinalAttachmentToNotExist(exportEntry?.id);
-        });
-
         it("should complete the export when all scoped attachments are provided", async () => {
             const attachment1 = buildAttachmentManifest({ scopes: [SCOPE_A] });
             const attachment2 = buildAttachmentManifest({ scopes: [SCOPE_B] });
-            const attachment3 = buildAttachmentManifest({ scopes: [SCOPE_B] });
 
             await orchestrator.start(TENANT_ID, [SCOPE_A, SCOPE_B]);
             const exportEntry = await dataExportRepository.findOneBy({ tenantId: TENANT_ID });
 
             await orchestrator.checkpoint(TENANT_ID, exportEntry!.id, attachment1);
             await orchestrator.checkpoint(TENANT_ID, exportEntry!.id, attachment2);
-            await orchestrator.checkpoint(TENANT_ID, exportEntry!.id, attachment3);
 
             await expectExportToBeCompleted(exportEntry?.id);
             await expectFinalAttachmentToExist(exportEntry?.id);

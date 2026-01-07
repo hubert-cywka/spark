@@ -2,6 +2,9 @@
 
 .list {
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$spacing-300;
 
   .row {
     padding: tokens.$spacing-400;

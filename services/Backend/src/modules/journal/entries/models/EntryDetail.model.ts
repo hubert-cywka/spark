@@ -1,10 +1,9 @@
-export type Entry = {
+export type EntryDetail = {
     id: string;
-    authorId: string;
-    dailyId: string;
+    daily: string;
     content: string;
     isCompleted: boolean;
     isFeatured: boolean;
+    goals: string[];
     createdAt: Date;
-    updatedAt: Date;
 };

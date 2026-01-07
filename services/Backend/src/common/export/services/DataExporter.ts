@@ -53,14 +53,9 @@ export class DataExporter implements IDataExporter {
                 },
             };
 
-            await this.checkpoint(tenantId, exportId, manifest);
             await this.publishDataExportBatchReadyEvent(tenantId, exportId, manifest);
         }
     }
-
-    // TODO: Save "exportedUntil"
-    // TODO: Checkpointing will also allow us to cancel exports
-    private async checkpoint(tenantId: string, exportId: string, manifest: ExportAttachmentManifest) {}
 
     private async publishDataExportBatchReadyEvent(tenantId: string, exportId: string, manifest: ExportAttachmentManifest): Promise<void> {
         await this.publisher.enqueue(

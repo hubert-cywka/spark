@@ -14,7 +14,7 @@ import { apiClient } from "@/lib/apiClient/apiClient";
 const PAGE_SIZE = 100;
 
 export class EntriesService {
-    public static async getPage(cursor: PageCursor, { from, to, goals, featured, completed }: EntriesQueryFilters = {}) {
+    public static async getPage(cursor: PageCursor, { from, to, goals, featured, completed, content }: EntriesQueryFilters = {}) {
         const searchParams = new URLSearchParams({
             order: "DESC",
             take: String(PAGE_SIZE),
@@ -30,6 +30,10 @@ export class EntriesService {
 
         if (to) {
             searchParams.append("to", to);
+        }
+
+        if (content) {
+            searchParams.append("content", content);
         }
 
         if (goals) {
@@ -120,6 +124,7 @@ export class EntriesService {
             isCompleted: dto.isCompleted,
             isFeatured: dto.isFeatured,
             createdAt: new Date(dto.createdAt),
+            updatedAt: new Date(dto.updatedAt),
         };
     }
 

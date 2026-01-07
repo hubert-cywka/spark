@@ -6,4 +6,5 @@ export type EntriesQueryFilters = {
     to?: ISODateString;
     featured?: boolean;
     completed?: boolean;
+    content?: string;
 };

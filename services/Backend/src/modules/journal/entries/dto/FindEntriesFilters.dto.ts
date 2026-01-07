@@ -43,14 +43,4 @@ export class FindEntriesFiltersDto {
     @IsOptional()
     @IsString()
     readonly content?: string;
-
-    @IsOptional()
-    @IsBoolean()
-    @Type(() => Boolean)
-    readonly withGoals?: boolean;
-
-    @IsOptional()
-    @IsBoolean()
-    @Type(() => Boolean)
-    readonly withDaily?: boolean;
 }

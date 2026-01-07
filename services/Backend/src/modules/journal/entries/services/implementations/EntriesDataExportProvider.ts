@@ -5,10 +5,8 @@ import { type IDataExportProvider } from "@/common/export/services/IDataExportPr
 import { DataExportBatch } from "@/common/export/types/DataExportBatch";
 import { DataExportScopeDomain } from "@/common/export/types/DataExportScopeDomain";
 import { Order } from "@/common/pagination/types/Order";
-import { formatToISODateString } from "@/common/utils/dateUtils";
 import { type IEntryService, EntryServiceToken } from "@/modules/journal/entries/services/interfaces/IEntryService";
 
-// TODO: Entries are not sorted by createdAt
 @Injectable()
 export class EntriesDataExportProvider implements IDataExportProvider {
     constructor(@Inject(EntryServiceToken) private readonly entryService: IEntryService) {}
@@ -23,17 +21,15 @@ export class EntriesDataExportProvider implements IDataExportProvider {
         let hasMore = true;
 
         const filters = {
-            from: formatToISODateString(scope.dateRange.from),
-            to: formatToISODateString(scope.dateRange.to),
-            withGoals: true,
-            withDaily: true,
+            updatedAfter: scope.dateRange.from,
+            updatedBefore: scope.dateRange.to,
         };
 
         let from = scope.dateRange.from;
         let to = scope.dateRange.to;
 
         while (hasMore) {
-            const entries = await this.entryService.findAll(tenantId, { cursor: nextCursor, take, order: Order.ASC }, filters);
+            const entries = await this.entryService.findAllDetailed(tenantId, { cursor: nextCursor, take, order: Order.ASC }, filters);
             const lastEntry = entries.data[entries.data.length - 1];
 
             nextCursor = entries.meta.nextCursor;
