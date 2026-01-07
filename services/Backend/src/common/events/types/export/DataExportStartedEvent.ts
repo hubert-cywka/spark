@@ -1,5 +1,6 @@
 import { IntegrationEvent, IntegrationEvents } from "@/common/events";
-import { DataExportScope } from "@/common/export/models/DataExportScope";
+import { DataExportScopeDomain } from "@/common/export/types/DataExportScopeDomain";
+import { DateStringRange } from "@/types/Date";
 
 export type DataExportStartedEventPayload = {
     tenant: {
@@ -7,7 +8,10 @@ export type DataExportStartedEventPayload = {
     };
     export: {
         id: string;
-        scopes: DataExportScope[];
+        scopes: {
+            domain: DataExportScopeDomain;
+            dateRange: DateStringRange;
+        }[];
     };
 };
 

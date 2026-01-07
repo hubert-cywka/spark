@@ -1,6 +1,7 @@
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
+import dayjs from "dayjs";
 import { randomUUID } from "node:crypto";
 import { Repository } from "typeorm";
 import { initializeTransactionalContext } from "typeorm-transactional";
@@ -43,17 +44,17 @@ describe("ExportOrchestrator", () => {
 
     const SCOPE_A: DataExportScope = {
         domain: "users" as DataExportScopeDomain,
-        dateRange: { from: "2025-01-01", to: "2025-05-30" },
+        dateRange: { from: dayjs("2025-01-01").toDate(), to: dayjs("2025-01-01").toDate() },
     };
 
     const SCOPE_B: DataExportScope = {
         domain: "invoices" as DataExportScopeDomain,
-        dateRange: { from: "2025-01-01", to: "2025-12-30" },
+        dateRange: { from: dayjs("2025-01-01").toDate(), to: dayjs("2025-12-30").toDate() },
     };
 
     const PARTIAL_SCOPE_B: DataExportScope = {
         domain: "invoices" as DataExportScopeDomain,
-        dateRange: { from: "2025-01-01", to: "2025-03-30" },
+        dateRange: { from: dayjs("2025-01-01").toDate(), to: dayjs("2025-03-30").toDate() },
     };
 
     let app: TestingModule;
@@ -180,12 +181,12 @@ describe("ExportOrchestrator", () => {
         });
 
         it("should throw when trying to checkpoint non-existent export", async () => {
-            const attachment = buildAttachmentManifest({ scopes: [SCOPE_A], part: 1, nextPart: null });
+            const attachment = buildAttachmentManifest({ scopes: [SCOPE_A] });
             await expect(orchestrator.checkpoint(TENANT_ID, "non-existent-uuid", attachment)).rejects.toThrow();
         });
 
         it("should throw when trying to checkpoint already cancelled export", async () => {
-            const attachment = buildAttachmentManifest({ scopes: [SCOPE_A], part: 1, nextPart: null });
+            const attachment = buildAttachmentManifest({ scopes: [SCOPE_A] });
 
             await orchestrator.start(TENANT_ID, [SCOPE_A, SCOPE_B]);
             const entry = await dataExportRepository.findOneBy({ tenantId: TENANT_ID });
@@ -195,7 +196,7 @@ describe("ExportOrchestrator", () => {
         });
 
         it("should throw when trying to checkpoint already completed export", async () => {
-            const attachment = buildAttachmentManifest({ scopes: [SCOPE_A], part: 1, nextPart: null });
+            const attachment = buildAttachmentManifest({ scopes: [SCOPE_A] });
 
             await orchestrator.start(TENANT_ID, [SCOPE_A, SCOPE_B]);
             const entry = await dataExportRepository.findOneBy({ tenantId: TENANT_ID });
@@ -205,7 +206,7 @@ describe("ExportOrchestrator", () => {
         });
 
         it("should not complete the export when not all attachments are provided", async () => {
-            const attachment = buildAttachmentManifest({ scopes: [SCOPE_A], part: 1, nextPart: null });
+            const attachment = buildAttachmentManifest({ scopes: [SCOPE_A] });
 
             await orchestrator.start(TENANT_ID, [SCOPE_A, SCOPE_B]);
             const exportEntry = await dataExportRepository.findOneBy({ tenantId: TENANT_ID });
@@ -217,8 +218,8 @@ describe("ExportOrchestrator", () => {
         });
 
         it("should not complete the export when attachments cover scope only partially", async () => {
-            const attachment1 = buildAttachmentManifest({ scopes: [SCOPE_A], part: 1, nextPart: null });
-            const attachment2 = buildAttachmentManifest({ scopes: [PARTIAL_SCOPE_B], part: 1, nextPart: null });
+            const attachment1 = buildAttachmentManifest({ scopes: [SCOPE_A] });
+            const attachment2 = buildAttachmentManifest({ scopes: [PARTIAL_SCOPE_B] });
 
             await orchestrator.start(TENANT_ID, [SCOPE_A, SCOPE_B]);
             const exportEntry = await dataExportRepository.findOneBy({ tenantId: TENANT_ID });
@@ -231,8 +232,8 @@ describe("ExportOrchestrator", () => {
         });
 
         it("should not complete the export when attachments parts are still missing", async () => {
-            const attachment1 = buildAttachmentManifest({ scopes: [SCOPE_A], part: 1, nextPart: null });
-            const attachment2 = buildAttachmentManifest({ scopes: [SCOPE_B], part: 1, nextPart: 2 });
+            const attachment1 = buildAttachmentManifest({ scopes: [SCOPE_A] });
+            const attachment2 = buildAttachmentManifest({ scopes: [SCOPE_B] });
 
             await orchestrator.start(TENANT_ID, [SCOPE_A, SCOPE_B]);
             const exportEntry = await dataExportRepository.findOneBy({ tenantId: TENANT_ID });
@@ -245,9 +246,9 @@ describe("ExportOrchestrator", () => {
         });
 
         it("should complete the export when all scoped attachments are provided", async () => {
-            const attachment1 = buildAttachmentManifest({ scopes: [SCOPE_A], part: 1, nextPart: null });
-            const attachment2 = buildAttachmentManifest({ scopes: [SCOPE_B], part: 1, nextPart: 2 });
-            const attachment3 = buildAttachmentManifest({ scopes: [SCOPE_B], part: 2, nextPart: null });
+            const attachment1 = buildAttachmentManifest({ scopes: [SCOPE_A] });
+            const attachment2 = buildAttachmentManifest({ scopes: [SCOPE_B] });
+            const attachment3 = buildAttachmentManifest({ scopes: [SCOPE_B] });
 
             await orchestrator.start(TENANT_ID, [SCOPE_A, SCOPE_B]);
             const exportEntry = await dataExportRepository.findOneBy({ tenantId: TENANT_ID });
@@ -297,19 +298,15 @@ describe("ExportOrchestrator", () => {
         await objectStorage.delete(paths);
     };
 
-    const buildAttachmentManifest = ({
-        part,
-        nextPart,
-        scopes,
-    }: Pick<ExportAttachmentManifest, "scopes"> & Pick<ExportAttachmentManifest["metadata"], "part" | "nextPart">) => {
-        const id = scopes.map((scope) => `${scope.domain}_${scope.dateRange.from}_${scope.dateRange.to}`).join("___");
+    const buildAttachmentManifest = ({ scopes }: Pick<ExportAttachmentManifest, "scopes">) => {
+        const key = scopes.map((scope) => `${scope.domain}_${scope.dateRange.from}_${scope.dateRange.to}`).join("___");
 
         return {
             scopes,
-            key: `irrelevant_${id}_${part}`,
-            path: `irrelevant/${id}/${part}`,
+            key: `irrelevant_${key}`,
+            path: `irrelevant/${key}`,
             stage: ExportAttachmentStage.TEMPORARY,
-            metadata: { checksum: "irrelevant", part, nextPart },
+            metadata: { checksum: "irrelevant" },
         };
     };
 

@@ -1,4 +1,7 @@
-import { ISODateStringRange } from "@/types/ISODateString";
+type DateRange = {
+    from: Date;
+    to: Date;
+};
 
 export type DataExportStatus = "pending" | "cancelled" | "completed";
 
@@ -6,7 +9,7 @@ export type DataExportScopeDomain = "entries" | "goals";
 
 export type DataExportScope = {
     domain: DataExportScopeDomain;
-    dateRange: ISODateStringRange;
+    dateRange: DateRange;
 };
 
 export type DataExportEntry = {

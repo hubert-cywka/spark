@@ -4,6 +4,7 @@ import { DataExportCancelledEvent, DataExportStartedEvent } from "@/common/event
 import { type IEventPublisher, EventPublisherToken } from "@/common/events/services/interfaces/IEventPublisher";
 import { DataExportCompletedEvent } from "@/common/events/types/export/DataExportCompletedEvent";
 import { DataExportScope } from "@/common/export/models/DataExportScope";
+import { stringifyDateRange } from "@/common/utils/dateUtils";
 import { type IDataExportEventsPublisher } from "@/modules/exports/services/interfaces/IDataExportEventsPublisher";
 
 @Injectable()
@@ -21,7 +22,10 @@ export class DataExportEventsPublisher implements IDataExportEventsPublisher {
                 },
                 export: {
                     id: exportId,
-                    scopes,
+                    scopes: scopes.map((scope) => ({
+                        domain: scope.domain,
+                        dateRange: stringifyDateRange(scope.dateRange),
+                    })),
                 },
             })
         );

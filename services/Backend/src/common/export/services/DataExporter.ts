@@ -24,7 +24,7 @@ export class DataExporter implements IDataExporter {
         private readonly objectStorage: IObjectStorage
     ) {}
 
-    async exportTenantData(tenantId: string, exportId: string, scopes: DataExportScope[]): Promise<void> {
+    public async exportTenantData(tenantId: string, exportId: string, scopes: DataExportScope[]): Promise<void> {
         for (const scope of scopes) {
             const provider = this.providers.find((p) => p.supports(scope));
 
@@ -38,27 +38,29 @@ export class DataExporter implements IDataExporter {
     }
 
     private async processExport(tenantId: string, exportId: string, data: AsyncIterable<DataExportBatch>) {
-        for await (const { batch, batchScope, page, hasMore } of data) {
+        for await (const { batch, batchScope } of data) {
             const fileContent = this.parser.toBuffer(batch);
-            const filePath = this.buildAttachmentPath(exportId, batchScope, page);
-
+            const filePath = this.buildAttachmentPath(exportId, batchScope);
             const { checksum } = await this.objectStorage.upload(filePath, fileContent, "text/csv");
 
             const manifest = {
-                key: this.buildAttachmentKey(exportId, batchScope, page),
+                key: this.buildAttachmentKey(exportId, batchScope),
                 path: filePath,
                 scopes: [batchScope],
                 stage: ExportAttachmentStage.TEMPORARY,
                 metadata: {
                     checksum,
-                    part: page,
-                    nextPart: hasMore ? page + 1 : null,
                 },
             };
 
+            await this.checkpoint(tenantId, exportId, manifest);
             await this.publishDataExportBatchReadyEvent(tenantId, exportId, manifest);
         }
     }
+
+    // TODO: Save "exportedUntil"
+    // TODO: Checkpointing will also allow us to cancel exports
+    private async checkpoint(tenantId: string, exportId: string, manifest: ExportAttachmentManifest) {}
 
     private async publishDataExportBatchReadyEvent(tenantId: string, exportId: string, manifest: ExportAttachmentManifest): Promise<void> {
         await this.publisher.enqueue(
@@ -71,20 +73,18 @@ export class DataExporter implements IDataExporter {
                     scopes: manifest.scopes,
                     stage: manifest.stage,
                     metadata: {
-                        part: manifest.metadata.part,
                         checksum: manifest.metadata.checksum,
-                        nextPart: manifest.metadata.nextPart,
                     },
                 },
             })
         );
     }
 
-    private buildAttachmentKey(exportId: string, scope: DataExportScope, page: number) {
-        return `${exportId}__${scope.domain}__${scope.dateRange.from}_${scope.dateRange.to}__page-${page}`;
+    private buildAttachmentKey(exportId: string, scope: DataExportScope) {
+        return `${exportId}__${scope.domain}__${scope.dateRange.from.toISOString()}_${scope.dateRange.to.toISOString()}`;
     }
 
-    private buildAttachmentPath(exportId: string, scope: DataExportScope, page: number) {
-        return DataExportAttachmentPathBuilder.forExport(exportId).setScope(scope).setFilename(`page-${page}.csv`).build();
+    private buildAttachmentPath(exportId: string, scope: DataExportScope) {
+        return DataExportAttachmentPathBuilder.forExport(exportId).setScope(scope).setFilename("data.csv").build();
     }
 }

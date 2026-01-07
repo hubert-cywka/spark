@@ -118,11 +118,7 @@ export class ExportOrchestrator implements IExportOrchestrator {
             path: finalAttachmentPath,
             scopes: mergedScopes,
             stage: ExportAttachmentStage.FINAL,
-            metadata: {
-                checksum,
-                part: 1,
-                nextPart: null,
-            },
+            metadata: { checksum },
         };
 
         await this.checkpointAttachment(tenantId, exportId, finalManifest);

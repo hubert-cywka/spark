@@ -16,8 +16,6 @@ export type DataExportBatchReadyEventPayload = {
         stage: ExportAttachmentStage;
         metadata: {
             checksum: string;
-            part: number;
-            nextPart: number | null;
         };
     };
 };

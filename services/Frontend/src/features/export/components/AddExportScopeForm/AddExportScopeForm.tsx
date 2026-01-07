@@ -1,4 +1,5 @@
 import { useState } from "react";
+import dayjs from "dayjs";
 
 import styles from "./styles/AddExportScopeForm.module.scss";
 
@@ -43,7 +44,13 @@ export const AddExportScopeForm = ({ scopes, onAddScope }: AddExportScopeFormPro
             return;
         }
 
-        onAddScope({ domain: selectedDomain, dateRange: selectedRange });
+        onAddScope({
+            domain: selectedDomain,
+            dateRange: {
+                from: dayjs(selectedRange.from).startOf("day").toDate(),
+                to: dayjs(selectedRange.to).endOf("day").toDate(),
+            },
+        });
         resetFields();
     };
 

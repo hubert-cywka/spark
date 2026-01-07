@@ -8,7 +8,5 @@ export type ExportAttachmentManifest = {
     stage: ExportAttachmentStage;
     metadata: {
         checksum: string;
-        part: number;
-        nextPart: number | null;
     };
 };

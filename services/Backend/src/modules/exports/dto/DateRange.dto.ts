@@ -1,14 +1,9 @@
-import { IsDateString } from "class-validator";
-
-import { IsDateOnly } from "@/lib/validation";
-import type { ISODateString } from "@/types/Date";
+import { IsISOTime } from "@/lib/validation/decorators/IsISOTime.decorator";
 
 export class DateRangeDto {
-    @IsDateOnly()
-    @IsDateString({ strict: true })
-    readonly from!: ISODateString;
+    @IsISOTime()
+    readonly from!: Date;
 
-    @IsDateOnly()
-    @IsDateString({ strict: true })
-    readonly to!: ISODateString;
+    @IsISOTime()
+    readonly to!: Date;
 }

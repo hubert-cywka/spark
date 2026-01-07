@@ -55,7 +55,7 @@ export class AlertsProcessor implements IAlertsProcessor {
         await this.alertPublisher.onRemindersTriggered(recipientIds);
 
         const values = alerts.map((alert) => ({
-            id: alert.id,
+            ...alert,
             nextTriggerAt: this.alertScheduler.scheduleNextTrigger(alert.time, alert.daysOfWeek),
         }));
 

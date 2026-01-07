@@ -54,8 +54,6 @@ export class ExportAttachmentManifestService implements IExportAttachmentManifes
             key: attachment.key,
             path: attachment.path,
             scopes: attachment.scopes,
-            part: attachment.metadata.part,
-            nextPart: attachment.metadata.nextPart,
             checksum: attachment.metadata.checksum,
         });
     }
