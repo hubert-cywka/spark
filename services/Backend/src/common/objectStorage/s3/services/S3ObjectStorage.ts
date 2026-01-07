@@ -24,8 +24,6 @@ import { ObjectZipFailedError } from "@/common/objectStorage/errors/ObjectZipFai
 import { type IObjectStorage } from "@/common/objectStorage/services/IObjectStorage";
 import { ObjectManifest } from "@/common/objectStorage/types/ObjectManifest";
 
-// TODO: Clean up
-
 const CHUNK_SIZE = 1000;
 const CONCURRENT_FILES = 5;
 
@@ -39,7 +37,8 @@ export class S3ObjectStorage implements IObjectStorage {
         @InjectS3() private readonly s3: S3,
         @Inject(ConfigService) private readonly configService: ConfigService
     ) {
-        this.bucketName = this.configService.getOrThrow<string>("s3.bucket.name");
+        // TODO: Make separate objects for each bucket
+        this.bucketName = this.configService.getOrThrow<string>("s3.buckets.exports.name");
     }
 
     public async exists(path: string): Promise<boolean> {

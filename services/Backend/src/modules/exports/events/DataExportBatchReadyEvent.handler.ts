@@ -23,8 +23,9 @@ export class DataExportBatchReadyEventHandler implements IInboxEventHandler {
         try {
             await this.orchestrator.checkpoint(payload.tenant.id, payload.export.id, payload.attachment);
         } catch (error) {
-            // When export is already completed/canceled, ignore the exception. The event couldn't be processed anyway.
-            // There will be an additional mechanism to ensure correctness.
+            // When export is already completed/canceled, ignore the exception. The event wouldn't be processed anyway.
+            // This will create an orphaned attachment in the object storage, which we won't have a manifest for.
+            // That's not an issue, though, because all objects have a specified TTL and will be deleted eventually.
             whenError(error).is(EntityConflictError).ignore().elseRethrow();
         }
     }

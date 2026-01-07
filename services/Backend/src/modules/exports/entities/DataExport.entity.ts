@@ -15,7 +15,7 @@ import { ExportAttachmentManifestEntity } from "@/modules/exports/entities/Expor
 import { TenantEntity } from "@/modules/exports/entities/Tenant.entity";
 
 @Entity("data_export")
-@Index("idx_data_export_active", ["tenantId"], { where: '"cancelledAt" IS NULL AND "completedAt" IS NULL' })
+@Index("idx_data_export", ["tenantId", "validUntil"])
 export class DataExportEntity {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
@@ -28,6 +28,9 @@ export class DataExportEntity {
 
     @Column({ type: "timestamptz", nullable: true })
     completedAt!: Date | null;
+
+    @Column({ type: "timestamptz" })
+    validUntil!: Date;
 
     @CreateDateColumn({ type: "timestamptz" })
     startedAt!: Date;

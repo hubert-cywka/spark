@@ -1,6 +1,8 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
-import { IsNull, Repository } from "typeorm";
+import dayjs from "dayjs";
+import { IsNull, LessThanOrEqual, MoreThan, Repository } from "typeorm";
 import { Transactional } from "typeorm-transactional";
 
 import { type IDatabaseLockService, DatabaseLockServiceToken } from "@/common/database/services/IDatabaseLockService";
@@ -31,11 +33,16 @@ export class DataExportService implements IDataExportService {
         @Inject(DatabaseLockServiceToken)
         private readonly dbLockService: IDatabaseLockService,
         @Inject(ExportScopeCalculatorToken)
-        private readonly scopeCalculator: IExportScopeCalculator
+        private readonly scopeCalculator: IExportScopeCalculator,
+        @Inject(ConfigService)
+        private readonly configService: ConfigService
     ) {}
 
-    public async findAll(tenantId: string, pageOptions: PageOptions) {
-        const queryBuilder = this.getRepository().createQueryBuilder("export").where("export.tenantId = :tenantId", { tenantId });
+    public async findAllValid(tenantId: string, pageOptions: PageOptions) {
+        const queryBuilder = this.getRepository()
+            .createQueryBuilder("export")
+            .where("export.tenantId = :tenantId", { tenantId })
+            .andWhere("export.validUntil > :now", { now: new Date() });
 
         const paginationKeys = createPaginationKeys(["startedAt", "id"]);
         applyCursorBasedPagination(queryBuilder, pageOptions, paginationKeys);
@@ -61,6 +68,9 @@ export class DataExportService implements IDataExportService {
 
     @Transactional({ connectionName: EXPORTS_MODULE_DATA_SOURCE })
     public async createExportEntry(tenantId: string, targetScopes: DataExportScope[]) {
+        const ttl = this.configService.getOrThrow<number>("modules.exports.expiration.ttlInDays");
+        const validUntil = dayjs().add(ttl, "day").toDate();
+
         const now = new Date();
         const mergedScopes = this.scopeCalculator.mergeScopes(targetScopes);
         const trimmedScopes = this.scopeCalculator.trimScopesAfter(mergedScopes, now);
@@ -75,6 +85,7 @@ export class DataExportService implements IDataExportService {
             .values({
                 tenantId,
                 targetScopes: trimmedScopes,
+                validUntil,
             })
             .returning("*")
             .execute();
@@ -84,17 +95,29 @@ export class DataExportService implements IDataExportService {
     }
 
     public async markExportAsCancelled(tenantId: string, exportId: string) {
-        await this.getActiveById(tenantId, exportId);
+        const dataExport = await this.getAnyById(tenantId, exportId);
+        this.assertExportIsActive(tenantId, dataExport);
         await this.getRepository().update({ id: exportId }, { cancelledAt: new Date() });
     }
 
     public async markExportAsCompleted(tenantId: string, exportId: string) {
-        await this.getActiveById(tenantId, exportId);
+        const dataExport = await this.getAnyById(tenantId, exportId);
+        this.assertExportIsActive(tenantId, dataExport);
         await this.getRepository().update({ id: exportId }, { completedAt: new Date() });
     }
 
+    // We don't have to remove attachments manually. There is a TTL configured for the whole bucket, so every file
+    // will be deleted eventually.
+    public async deleteExpired() {
+        await this.getRepository().delete({
+            validUntil: LessThanOrEqual(new Date()),
+        });
+
+        this.logger.log("Expired exports deleted.");
+    }
+
     private async getAnyById(tenantId: string, exportId: string) {
-        const dataExport = await this.getRepository().findOne({ where: { tenantId, id: exportId } });
+        const dataExport = await this.getRepository().findOne({ where: { tenantId, id: exportId, validUntil: MoreThan(new Date()) } });
 
         if (!dataExport) {
             this.logger.warn({ tenantId, exportId }, "Export not found");
@@ -105,7 +128,9 @@ export class DataExportService implements IDataExportService {
     }
 
     private async getActive(tenantId: string) {
-        const dataExport = await this.getRepository().findOne({ where: { tenantId, cancelledAt: IsNull(), completedAt: IsNull() } });
+        const dataExport = await this.getRepository().findOne({
+            where: { tenantId, cancelledAt: IsNull(), completedAt: IsNull(), validUntil: MoreThan(new Date()) },
+        });
 
         if (!dataExport) {
             return null;
@@ -132,12 +157,12 @@ export class DataExportService implements IDataExportService {
 
     private assertExportIsActive(tenantId: string, dataExport: DataExport) {
         if (dataExport.cancelledAt) {
-            this.logger.warn({ tenantId, exportId: dataExport.id }, "Export already cancelled, cannot complete.");
+            this.logger.warn({ tenantId, exportId: dataExport.id }, "Export already cancelled.");
             throw new DataExportAlreadyCancelledError();
         }
 
         if (dataExport.completedAt) {
-            this.logger.warn({ tenantId, exportId: dataExport.id }, "Export already completed, cannot complete.");
+            this.logger.warn({ tenantId, exportId: dataExport.id }, "Export already completed.");
             throw new DataExportAlreadyCompletedError();
         }
     }

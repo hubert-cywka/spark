@@ -4,7 +4,15 @@ import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEvents, IntegrationEventsModule } from "@/common/events";
+import {
+    type IEventPublisher,
+    type IInboxEventHandler,
+    EventPublisherToken,
+    InboxEventHandlersToken,
+    IntegrationEvents,
+    IntegrationEventsModule,
+    IntervalJobScheduleUpdatedEvent,
+} from "@/common/events";
 import { getIntegrationEventsMigrations } from "@/common/events/migrations";
 import {
     type IIntegrationEventsJobsOrchestrator,
@@ -14,12 +22,15 @@ import {
     type IIntegrationEventsSubscriber,
     IntegrationEventsSubscriberToken,
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
+import { type IObjectStorageAdmin, ObjectStorageAdminToken } from "@/common/objectStorage/services/IObjectStorageAdmin";
+import { fromHours } from "@/common/utils/timeUtils";
 import { DataExportController } from "@/modules/exports/controllers/DataExport.controller";
 import { DataExportEntity } from "@/modules/exports/entities/DataExport.entity";
 import { ExportAttachmentManifestEntity } from "@/modules/exports/entities/ExportAttachmentManifest.entity";
 import { TenantEntity } from "@/modules/exports/entities/Tenant.entity";
 import { DataExportBatchReadyEventHandler } from "@/modules/exports/events/DataExportBatchReadyEvent.handler";
 import { DataExportCancelledEventHandler } from "@/modules/exports/events/DataExportCancelledEvent.handler";
+import { DataExportCleanupTriggeredEventHandler } from "@/modules/exports/events/DataExportCleanupTriggeredEvent.handler";
 import { DataExportCompletedEventHandler } from "@/modules/exports/events/DataExportCompletedEvent.handler";
 import { TenantCreatedEventHandler } from "@/modules/exports/events/TenantCreatedEvent.handler";
 import { TenantRemovedEventHandler } from "@/modules/exports/events/TenantRemovedEvent.handler";
@@ -28,6 +39,7 @@ import { DataExport1767272676880 } from "@/modules/exports/infrastructure/databa
 import { AddIndexes1767381710806 } from "@/modules/exports/infrastructure/database/migrations/1767381710806-add-indexes";
 import { ImproveIndexes1767428478163 } from "@/modules/exports/infrastructure/database/migrations/1767428478163-improve-indexes";
 import { SimplifyAttachments1767733325359 } from "@/modules/exports/infrastructure/database/migrations/1767733325359-simplify-attachments";
+import { AddValidUntilTimestamp1767790372799 } from "@/modules/exports/infrastructure/database/migrations/1767790372799-add-valid-until-timestamp";
 import { DataExportMapper } from "@/modules/exports/mappers/DataExport.mapper";
 import { ExportAttachmentManifestMapper } from "@/modules/exports/mappers/ExportAttachmentManifest.mapper";
 import { DataExportMapperToken } from "@/modules/exports/mappers/IDataExport.mapper";
@@ -73,6 +85,10 @@ import {
             useClass: DataExportCompletedEventHandler,
         },
         {
+            provide: DataExportCleanupTriggeredEventHandler,
+            useClass: DataExportCleanupTriggeredEventHandler,
+        },
+        {
             provide: DataExportCancelledEventHandler,
             useClass: DataExportCancelledEventHandler,
         },
@@ -113,6 +129,7 @@ import {
                 DataExportBatchReadyEventHandler,
                 DataExportCompletedEventHandler,
                 DataExportCancelledEventHandler,
+                DataExportCleanupTriggeredEventHandler,
             ],
         },
     ],
@@ -132,6 +149,7 @@ import {
                     AddIndexes1767381710806,
                     ImproveIndexes1767428478163,
                     SimplifyAttachments1767733325359,
+                    AddValidUntilTimestamp1767790372799,
                 ],
             }),
             inject: [ConfigService],
@@ -167,23 +185,55 @@ export class ExportsModule implements OnModuleInit {
         @InjectDataSource(EXPORTS_MODULE_DATA_SOURCE)
         private readonly dataSource: DataSource,
         @Inject(HealthCheckProbesRegistryToken)
-        private readonly healthCheckProbesService: IHealthCheckProbesRegistry
+        private readonly healthCheckProbesService: IHealthCheckProbesRegistry,
+        @Inject(EventPublisherToken)
+        private readonly eventPublisher: IEventPublisher,
+        @Inject(ObjectStorageAdminToken)
+        private readonly objectStorageAdmin: IObjectStorageAdmin,
+        @Inject(ConfigService)
+        private readonly configService: ConfigService
     ) {}
 
     public onModuleInit() {
-        this.healthCheckProbesService.registerDatabaseConnectionProbe(`database_${EXPORTS_MODULE_DATA_SOURCE}`, this.dataSource);
+        this.initHealthChecks();
+        void this.initIntegrationEvents();
+        void this.initSchedulerJobs();
+        void this.initObjectStorage();
+    }
 
+    private initHealthChecks() {
+        this.healthCheckProbesService.registerDatabaseConnectionProbe(`database_${EXPORTS_MODULE_DATA_SOURCE}`, this.dataSource);
+    }
+
+    private async initIntegrationEvents() {
         this.orchestrator.startProcessingInbox(this.handlers);
         this.orchestrator.startProcessingOutbox();
         this.orchestrator.startClearingInbox();
         this.orchestrator.startClearingOutbox();
 
-        void this.subscriber.listen([
+        await this.subscriber.listen([
             IntegrationEvents.account.created,
             IntegrationEvents.account.removal.completed,
             IntegrationEvents.export.batch.ready,
             IntegrationEvents.export.cancelled,
             IntegrationEvents.export.completed,
+            IntegrationEvents.export.cleanup.triggered,
         ]);
+    }
+
+    private async initSchedulerJobs() {
+        await this.eventPublisher.enqueueMany([
+            new IntervalJobScheduleUpdatedEvent({
+                id: "exports_cleanup",
+                interval: fromHours(1),
+                callback: IntegrationEvents.export.cleanup.triggered,
+            }),
+        ]);
+    }
+
+    private async initObjectStorage() {
+        const bucketName = this.configService.getOrThrow<string>("s3.buckets.exports.name");
+        const ttl = this.configService.getOrThrow<number>("modules.exports.expiration.ttlInDays");
+        await this.objectStorageAdmin.setBucketTTL(ttl, bucketName);
     }
 }

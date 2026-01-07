@@ -4,6 +4,7 @@ export type DataExport = {
     id: string;
     targetScopes: DataExportScope[];
     startedAt: Date;
+    validUntil: Date;
     cancelledAt: Date | null;
     completedAt: Date | null;
 };

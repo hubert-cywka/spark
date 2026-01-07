@@ -24,9 +24,9 @@ export class ExportAttachmentManifestService implements IExportAttachmentManifes
         private readonly mapper: IExportAttachmentManifestMapper
     ) {}
 
-    public async findTemporaryManifestsByExportId(tenantId: string, exportId: string) {
+    public async findManifestsByExportId(tenantId: string, exportId: string, stage?: ExportAttachmentStage) {
         const dataExports = await this.getRepository().find({
-            where: { tenantId, dataExportId: exportId, stage: ExportAttachmentStage.TEMPORARY },
+            where: { tenantId, dataExportId: exportId, stage },
         });
         return this.mapper.fromEntityToModelBulk(dataExports);
     }

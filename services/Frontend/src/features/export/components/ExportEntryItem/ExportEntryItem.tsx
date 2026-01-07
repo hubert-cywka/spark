@@ -53,7 +53,7 @@ export const ExportEntryItem = ({ entry }: ExportEntryItemProps) => {
             <div className={styles.content}>
                 <div className={styles.info}>
                     <DataExportStatusBadge status={entry.status} />
-                    <p className={styles.timestamp}>{t("exports.list.item.startedAt", { date: entry.startedAt.toLocaleString() })}</p>
+                    <p className={styles.timestamp}>{t("exports.list.item.validUntil", { date: entry.validUntil.toLocaleString() })}</p>
                 </div>
 
                 {entry.status === "pending" && (

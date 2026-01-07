@@ -16,5 +16,6 @@ export type DataExportEntry = {
     id: string;
     targetScopes: DataExportScope[];
     startedAt: Date;
+    validUntil: Date;
     status: DataExportStatus;
 };

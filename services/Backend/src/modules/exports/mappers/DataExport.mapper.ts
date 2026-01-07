@@ -13,6 +13,7 @@ export class DataExportMapper extends BaseModelDTOEntityMapper<DataExport, DataE
         return {
             id: entity.id,
             targetScopes: entity.targetScopes.map(this.unwrapScope),
+            validUntil: entity.validUntil,
             startedAt: entity.startedAt,
             completedAt: entity.completedAt,
             cancelledAt: entity.cancelledAt,
@@ -23,6 +24,7 @@ export class DataExportMapper extends BaseModelDTOEntityMapper<DataExport, DataE
         return plainToInstance(DataExportDto, {
             id: model.id,
             targetScopes: model.targetScopes.map(this.unwrapScope),
+            validUntil: model.validUntil,
             startedAt: model.startedAt,
             completedAt: model.completedAt,
             cancelledAt: model.cancelledAt,

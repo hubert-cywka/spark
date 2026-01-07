@@ -65,7 +65,7 @@ export class DataExportController {
     @Get()
     @UseGuards(AccessGuard)
     public async getAll(@Query() pageOptions: PageOptionsDto, @AuthenticatedUserContext() tenant: User) {
-        const exports = await this.exportService.findAll(tenant.id, pageOptions);
+        const exports = await this.exportService.findAllValid(tenant.id, pageOptions);
         return this.mapper.fromModelToDtoPage(exports);
     }
 

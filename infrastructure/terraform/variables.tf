@@ -281,6 +281,6 @@ variable "S3_METRICS_TOKEN" {
   sensitive = true
 }
 
-variable "S3_BUCKET_NAME" {
+variable "S3_EXPORTS_BUCKET_NAME" {
   type = string
 }

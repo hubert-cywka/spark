@@ -66,8 +66,10 @@ export const TestConfig = () => ({
         region: process.env.S3_REGION,
         accessKeyId: process.env.S3_ACCESS_KEY_ID,
         secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-        bucket: {
-            name: process.env.S3_BUCKET_NAME,
+        buckets: {
+            exports: {
+                name: process.env.S3_EXPORTS_BUCKET_NAME,
+            },
         },
     },
 
@@ -94,6 +96,10 @@ export const TestConfig = () => ({
                 password: process.env.DATABASE_PASSWORD,
                 host: process.env.DATABASE_HOST,
                 name: process.env.EXPORTS_DATABASE_NAME,
+            },
+
+            expiration: {
+                ttlInDays: 7,
             },
         },
 

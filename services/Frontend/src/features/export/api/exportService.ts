@@ -45,6 +45,7 @@ export class ExportService {
                     to: new Date(scope.dateRange.to),
                 },
             })),
+            validUntil: new Date(dto.validUntil),
             startedAt: new Date(dto.startedAt),
             status: ExportService.getStatus(dto),
         };
