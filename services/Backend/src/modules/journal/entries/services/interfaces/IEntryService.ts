@@ -7,6 +7,7 @@ import { type EntryFilters } from "@/modules/journal/entries/models/EntryFilters
 export const EntryServiceToken = Symbol("EntryService");
 
 export interface IEntryService {
+    // TODO: Get rid of EntryDetail
     findAll(authorId: string, pageOptions: PageOptions, filters?: EntryFilters): Promise<Paginated<Entry>>;
     findAllDetailed(authorId: string, pageOptions: PageOptions, filters: EntryFilters): Promise<Paginated<EntryDetail>>;
 

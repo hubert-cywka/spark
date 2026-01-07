@@ -24,6 +24,7 @@ export class DataExporter implements IDataExporter {
         private readonly objectStorage: IObjectStorage
     ) {}
 
+    // TODO: Idempotency - start from the last checkpoint
     public async exportTenantData(tenantId: string, exportId: string, scopes: DataExportScope[]): Promise<void> {
         for (const scope of scopes) {
             const provider = this.providers.find((p) => p.supports(scope));
