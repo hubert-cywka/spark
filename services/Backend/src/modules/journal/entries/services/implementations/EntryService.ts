@@ -13,7 +13,6 @@ import { type IEntryMapper, EntryMapperToken } from "@/modules/journal/entries/m
 import { type IEntryDetailMapper, EntryDetailMapperToken } from "@/modules/journal/entries/mappers/IEntryDetail.mapper";
 import { type Entry } from "@/modules/journal/entries/models/Entry.model";
 import { EntryDetail } from "@/modules/journal/entries/models/EntryDetail.model";
-import { EntryDetailFilters } from "@/modules/journal/entries/models/EntryDetailFilters.model";
 import { type EntryFilters } from "@/modules/journal/entries/models/EntryFilters.model";
 import { type IEntryService } from "@/modules/journal/entries/services/interfaces/IEntryService";
 import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
@@ -32,21 +31,35 @@ export class EntryService implements IEntryService {
     public async findAll(
         authorId: string,
         pageOptions: PageOptions,
-        { from, to, goals, featured, completed }: EntryFilters = {}
+        { from, to, content, completed, featured, goals, updatedBefore, updatedAfter }: EntryFilters = {}
     ): Promise<Paginated<Entry>> {
-        const queryBuilder = this.getRepository().createQueryBuilder("entry");
-
-        queryBuilder.innerJoinAndSelect("entry.daily", "daily").where("entry.authorId = :authorId", { authorId });
+        const queryBuilder = this.getRepository().createQueryBuilder("entry").where("entry.authorId = :authorId", { authorId });
 
         const paginationKeys = createPaginationKeys(["createdAt", "id"]);
         applyCursorBasedPagination(queryBuilder, pageOptions, paginationKeys);
 
-        if (from) {
-            queryBuilder.andWhere("daily.date >= :from", { from });
+        if (from || to) {
+            queryBuilder.innerJoin("entry.daily", "daily");
+
+            if (from) {
+                queryBuilder.andWhere("daily.date >= :from", { from });
+            }
+
+            if (to) {
+                queryBuilder.andWhere("daily.date <= :to", { to });
+            }
         }
 
-        if (to) {
-            queryBuilder.andWhere("daily.date <= :to", { to });
+        if (goals) {
+            queryBuilder.leftJoin("entry.goals", "goal").andWhere("goal.id IN (:...goals)", { goals });
+        }
+
+        if (updatedAfter) {
+            queryBuilder.andWhere("entry.updatedAt >= :updatedAfter", { updatedAfter });
+        }
+
+        if (updatedBefore) {
+            queryBuilder.andWhere("entry.updatedAt <= :updatedBefore", { updatedBefore });
         }
 
         if (featured !== undefined) {
@@ -54,13 +67,11 @@ export class EntryService implements IEntryService {
         }
 
         if (completed !== undefined) {
-            queryBuilder.andWhere("entry.isCompleted = :completed", {
-                completed,
-            });
+            queryBuilder.andWhere("entry.isCompleted = :completed", { completed });
         }
 
-        if (goals) {
-            queryBuilder.innerJoin("entry.goals", "goal").andWhere("goal.id IN (:...goals)", { goals });
+        if (content) {
+            queryBuilder.andWhere("entry.content ILIKE '%' || :content || '%'", { content });
         }
 
         const entries = await queryBuilder.getMany();
@@ -71,41 +82,48 @@ export class EntryService implements IEntryService {
     public async findAllDetailed(
         authorId: string,
         pageOptions: PageOptions,
-        { from, to, goals, featured, completed, content }: EntryDetailFilters
+        { from, to, content, completed, featured, goals, updatedBefore, updatedAfter }: EntryFilters = {}
     ): Promise<Paginated<EntryDetail>> {
-        const queryBuilder = this.getRepository().createQueryBuilder("entry");
-
-        queryBuilder
-            .innerJoinAndSelect("entry.daily", "daily")
-            .leftJoinAndSelect("entry.goals", "goal")
-            .where("entry.authorId = :authorId", { authorId })
-            .andWhere("daily.date >= :from", { from })
-            .andWhere("daily.date <= :to", { to });
+        const queryBuilder = this.getRepository().createQueryBuilder("entry").where("entry.authorId = :authorId", { authorId });
 
         const paginationKeys = createPaginationKeys(["createdAt", "id"]);
-        applyCursorBasedPagination(queryBuilder, pageOptions, paginationKeys);
+        applyCursorBasedPagination(queryBuilder, pageOptions, paginationKeys)
+            .innerJoinAndSelect("entry.daily", "daily")
+            .leftJoinAndSelect("entry.goals", "goal");
 
-        if (featured !== undefined) {
-            queryBuilder.andWhere("entry.isFeatured = :featured", { featured });
+        if (from) {
+            queryBuilder.andWhere("daily.date >= :from", { from });
         }
 
-        if (completed !== undefined) {
-            queryBuilder.andWhere("entry.isCompleted = :completed", {
-                completed,
-            });
-        }
-
-        // TODO: Consider using pg_trgm
-        if (content) {
-            queryBuilder.andWhere("entry.content ILIKE '%' || :content || '%'", { content });
+        if (to) {
+            queryBuilder.andWhere("daily.date <= :to", { to });
         }
 
         if (goals) {
             queryBuilder.andWhere("goal.id IN (:...goals)", { goals });
         }
 
-        const entries = await queryBuilder.getMany();
+        if (updatedAfter) {
+            queryBuilder.andWhere("entry.updatedAt >= :updatedAfter", { updatedAfter });
+        }
 
+        if (updatedBefore) {
+            queryBuilder.andWhere("entry.updatedAt <= :updatedBefore", { updatedBefore });
+        }
+
+        if (featured !== undefined) {
+            queryBuilder.andWhere("entry.isFeatured = :featured", { featured });
+        }
+
+        if (completed !== undefined) {
+            queryBuilder.andWhere("entry.isCompleted = :completed", { completed });
+        }
+
+        if (content) {
+            queryBuilder.andWhere("entry.content ILIKE '%' || :content || '%'", { content });
+        }
+
+        const entries = await queryBuilder.getMany();
         const mappedEntries = this.entryDetailMapper.fromEntityToModelBulk(entries);
         return createPage(mappedEntries, pageOptions.take, paginationKeys);
     }
@@ -113,7 +131,7 @@ export class EntryService implements IEntryService {
     public async create(
         authorId: string,
         dailyId: string,
-        { isCompleted, content, isFeatured }: Pick<Entry, "content" | "isFeatured" | "isCompleted">
+        { content, isCompleted, isFeatured }: Pick<Entry, "content" | "isFeatured" | "isCompleted">
     ): Promise<Entry> {
         await this.assertDailyExists(authorId, dailyId);
 
@@ -161,7 +179,12 @@ export class EntryService implements IEntryService {
         }
     }
 
-    public async update(authorId: string, dailyId: string, entryId: string, partialEntry: Partial<Entry>): Promise<Entry> {
+    public async update(
+        authorId: string,
+        dailyId: string,
+        entryId: string,
+        partialEntry: Pick<Entry, "isFeatured" | "isCompleted" | "content">
+    ): Promise<Entry> {
         const result = await this.getRepository()
             .createQueryBuilder()
             .update(EntryEntity)

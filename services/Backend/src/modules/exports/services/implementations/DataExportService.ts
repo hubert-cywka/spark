@@ -7,7 +7,6 @@ import { type IDatabaseLockService, DatabaseLockServiceToken } from "@/common/da
 import { DataExportScope } from "@/common/export/models/DataExportScope";
 import { applyCursorBasedPagination, createPage, createPaginationKeys } from "@/common/pagination/pagination";
 import { PageOptions } from "@/common/pagination/types/PageOptions";
-import { formatToISODateString } from "@/common/utils/dateUtils";
 import { DataExportEntity } from "@/modules/exports/entities/DataExport.entity";
 import { AnotherDataExportActiveError } from "@/modules/exports/errors/AnotherDataExportActiveError";
 import { DataExportAlreadyCancelledError } from "@/modules/exports/errors/DataExportAlreadyCancelled.error";
@@ -62,9 +61,9 @@ export class DataExportService implements IDataExportService {
 
     @Transactional({ connectionName: EXPORTS_MODULE_DATA_SOURCE })
     public async createExportEntry(tenantId: string, targetScopes: DataExportScope[]) {
-        const today = formatToISODateString(new Date());
+        const now = new Date();
         const mergedScopes = this.scopeCalculator.mergeScopes(targetScopes);
-        const trimmedScopes = this.scopeCalculator.trimScopesAfter(mergedScopes, today);
+        const trimmedScopes = this.scopeCalculator.trimScopesAfter(mergedScopes, now);
 
         await this.acquireLockForCreate(tenantId);
         await this.assertCanCreateExportEntry(tenantId);

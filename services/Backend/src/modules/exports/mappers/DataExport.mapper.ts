@@ -33,8 +33,8 @@ export class DataExportMapper extends BaseModelDTOEntityMapper<DataExport, DataE
         return {
             domain: scope.domain,
             dateRange: {
-                from: scope.dateRange.from,
-                to: scope.dateRange.to,
+                from: new Date(scope.dateRange.from),
+                to: new Date(scope.dateRange.to),
             },
         };
     }

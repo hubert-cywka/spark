@@ -15,12 +15,6 @@ export class ExportAttachmentManifestEntity {
     @Column({ type: "varchar" })
     path!: string;
 
-    @Column({ type: "int" })
-    part!: number;
-
-    @Column({ type: "int", nullable: true })
-    nextPart!: number | null;
-
     @Column({ type: "enum", enum: ExportAttachmentStage })
     stage!: ExportAttachmentStage;
 

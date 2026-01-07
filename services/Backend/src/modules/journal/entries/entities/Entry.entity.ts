@@ -40,7 +40,7 @@ export class EntryEntity {
     @DeleteDateColumn({ type: "timestamptz", nullable: true })
     deletedAt!: Date | null;
 
-    @ManyToOne((type) => AuthorEntity, (author) => author.dailies, {
+    @ManyToOne((type) => AuthorEntity, (author) => author.entries, {
         onDelete: "CASCADE",
     })
     author!: Relation<AuthorEntity>;

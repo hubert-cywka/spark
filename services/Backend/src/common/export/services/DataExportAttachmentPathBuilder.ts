@@ -1,11 +1,11 @@
 import { DataExportScope } from "@/common/export/models/DataExportScope";
 import { DataExportScopeDomain } from "@/common/export/types/DataExportScopeDomain";
-import { ISODateStringRange } from "@/types/Date";
+import { DateRange } from "@/types/Date";
 
 export class DataExportAttachmentPathBuilder {
     private exportId?: string;
     private domain?: DataExportScopeDomain;
-    private dateRange?: ISODateStringRange;
+    private dateRange?: DateRange;
     private filename?: string;
 
     private constructor() {}
@@ -46,7 +46,7 @@ export class DataExportAttachmentPathBuilder {
 
         if (this.dateRange) {
             const { from, to } = this.dateRange;
-            parts.push(`${from}_${to}`);
+            parts.push(`${from.toISOString()}_${to.toISOString()}`);
         }
 
         if (this.filename) {

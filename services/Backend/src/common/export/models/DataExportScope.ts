@@ -1,7 +1,7 @@
 import { DataExportScopeDomain } from "@/common/export/types/DataExportScopeDomain";
-import { ISODateStringRange } from "@/types/Date";
+import { DateRange } from "@/types/Date";
 
 export type DataExportScope = {
     domain: DataExportScopeDomain;
-    dateRange: ISODateStringRange;
+    dateRange: DateRange;
 };

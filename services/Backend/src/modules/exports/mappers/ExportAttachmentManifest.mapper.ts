@@ -19,8 +19,6 @@ export class ExportAttachmentManifestMapper
             stage: entity.stage,
             scopes: this.unwrapScopes(entity.scopes),
             metadata: {
-                part: entity.part,
-                nextPart: entity.nextPart,
                 checksum: entity.checksum,
             },
         };
@@ -36,7 +34,7 @@ export class ExportAttachmentManifestMapper
     };
 
     private unwrapScopes(scopes: DataExportScope[] | DataExportScopeDto[]) {
-        return scopes.map((scope: DataExportScopeDto) => ({
+        return scopes.map((scope) => ({
             domain: scope.domain,
             dateRange: {
                 from: scope.dateRange.from,

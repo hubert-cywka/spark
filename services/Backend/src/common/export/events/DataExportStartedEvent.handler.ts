@@ -3,6 +3,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { type IInboxEventHandler, DataExportStartedEventPayload, IntegrationEvent, IntegrationEvents } from "@/common/events";
 import { IntegrationEventSubject } from "@/common/events/types";
 import { type IDataExporter, DataExporterToken } from "@/common/export/services/IDataExporter";
+import { hydrateDateRange } from "@/common/utils/dateUtils";
 
 @Injectable()
 export class DataExportStartedEventHandler implements IInboxEventHandler {
@@ -17,6 +18,12 @@ export class DataExportStartedEventHandler implements IInboxEventHandler {
 
     public async handle(event: IntegrationEvent): Promise<void> {
         const payload = event.getPayload() as DataExportStartedEventPayload;
-        await this.exporter.exportTenantData(payload.tenant.id, payload.export.id, payload.export.scopes);
+
+        const scopes = payload.export.scopes.map((s) => ({
+            domain: s.domain,
+            dateRange: hydrateDateRange(s.dateRange),
+        }));
+
+        await this.exporter.exportTenantData(payload.tenant.id, payload.export.id, scopes);
     }
 }

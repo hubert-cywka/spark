@@ -27,6 +27,7 @@ import { EXPORTS_MODULE_DATA_SOURCE } from "@/modules/exports/infrastructure/dat
 import { DataExport1767272676880 } from "@/modules/exports/infrastructure/database/migrations/1767272676880-data-export";
 import { AddIndexes1767381710806 } from "@/modules/exports/infrastructure/database/migrations/1767381710806-add-indexes";
 import { ImproveIndexes1767428478163 } from "@/modules/exports/infrastructure/database/migrations/1767428478163-improve-indexes";
+import { SimplifyAttachments1767733325359 } from "@/modules/exports/infrastructure/database/migrations/1767733325359-simplify-attachments";
 import { DataExportMapper } from "@/modules/exports/mappers/DataExport.mapper";
 import { ExportAttachmentManifestMapper } from "@/modules/exports/mappers/ExportAttachmentManifest.mapper";
 import { DataExportMapperToken } from "@/modules/exports/mappers/IDataExport.mapper";
@@ -130,6 +131,7 @@ import {
                     DataExport1767272676880,
                     AddIndexes1767381710806,
                     ImproveIndexes1767428478163,
+                    SimplifyAttachments1767733325359,
                 ],
             }),
             inject: [ConfigService],

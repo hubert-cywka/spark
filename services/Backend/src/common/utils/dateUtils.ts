@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 
-import { type ISODateStringRange, ISODateString } from "@/types/Date";
+import { type ISODateStringRange, DateRange, DateStringRange, ISODateString } from "@/types/Date";
 
 export const isOutsideDateRange = (dateRange: ISODateStringRange, timezone: string = "UTC") => {
     const nowTimezoneAdjusted = dayjs().tz(timezone);
@@ -16,4 +16,18 @@ export const formatToISODateString = (date: Date): ISODateString => {
     const dd = String(date.getDate()).padStart(2, "0");
 
     return `${yyyy}-${mm}-${dd}`;
+};
+
+export const stringifyDateRange = (dateRange: DateRange) => {
+    return {
+        from: dateRange.from.toISOString(),
+        to: dateRange.to.toISOString(),
+    };
+};
+
+export const hydrateDateRange = (dateRange: DateStringRange) => {
+    return {
+        from: new Date(dateRange.from),
+        to: new Date(dateRange.to),
+    };
 };

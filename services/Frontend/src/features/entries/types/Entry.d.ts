@@ -8,6 +8,7 @@ export type Entry = {
     content: string;
     isCompleted: boolean;
     isFeatured: boolean;
+    updatedAt: Date;
     createdAt: Date;
 };
 

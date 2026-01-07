@@ -38,7 +38,13 @@ export class ExportService {
     private static mapDtoToExportEntry(dto: DataExportEntryDto): DataExportEntry {
         return {
             id: dto.id,
-            targetScopes: dto.targetScopes,
+            targetScopes: dto.targetScopes.map((scope) => ({
+                domain: scope.domain,
+                dateRange: {
+                    from: new Date(scope.dateRange.from),
+                    to: new Date(scope.dateRange.to),
+                },
+            })),
             startedAt: new Date(dto.startedAt),
             status: ExportService.getStatus(dto),
         };

@@ -3,15 +3,13 @@ import dayjs from "dayjs";
 
 import { DataExportScope } from "@/common/export/models/DataExportScope";
 import { ExportAttachmentManifest } from "@/common/export/models/ExportAttachment.model";
-import { formatToISODateString } from "@/common/utils/dateUtils";
 import { IExportScopeCalculator } from "@/modules/exports/services/interfaces/IExportScopeCalculator";
-import { ISODateString, ISODateStringRange } from "@/types/Date";
+import { DateRange } from "@/types/Date";
 
-// TODO: Refactor
 @Injectable()
 export class ExportScopeCalculator implements IExportScopeCalculator {
     public findMissingScopes(requiredScopes: DataExportScope[], manifests: ExportAttachmentManifest[]): DataExportScope[] {
-        const completedScopes = this.filterCompletedManifests(manifests);
+        const completedScopes = manifests.flatMap((manifest) => manifest.scopes);
         const existingMerged = this.mergeScopes(completedScopes);
         const requiredMerged = this.mergeScopes(requiredScopes);
 
@@ -30,7 +28,7 @@ export class ExportScopeCalculator implements IExportScopeCalculator {
         return this.mergeScopes(missingScopes);
     }
 
-    public trimScopesAfter(scopes: DataExportScope[], cutoffDate: ISODateString): DataExportScope[] {
+    public trimScopesAfter(scopes: DataExportScope[], cutoffDate: Date): DataExportScope[] {
         const cutoff = dayjs(cutoffDate);
         const trimmedScopes: DataExportScope[] = [];
 
@@ -69,60 +67,6 @@ export class ExportScopeCalculator implements IExportScopeCalculator {
         return mergedResults;
     }
 
-    private filterCompletedManifests(manifests: ExportAttachmentManifest[]): DataExportScope[] {
-        const grouped = manifests.reduce(
-            (acc, manifest) => {
-                const key = this.generateScopeKey(manifest.scopes);
-
-                if (!acc[key]) {
-                    acc[key] = {
-                        scopes: manifest.scopes,
-                        parts: new Set<number>(),
-                        hasEnd: false,
-                    };
-                }
-
-                acc[key].parts.add(manifest.metadata.part);
-                if (manifest.metadata.nextPart === null) {
-                    acc[key].hasEnd = true;
-                }
-
-                return acc;
-            },
-            {} as Record<string, { scopes: DataExportScope[]; parts: Set<number>; hasEnd: boolean }>
-        );
-
-        return Object.values(grouped)
-            .filter((entry) => this.isSequenceComplete(entry.parts, entry.hasEnd))
-            .flatMap((entry) => entry.scopes);
-    }
-
-    private generateScopeKey(scopes: DataExportScope[]): string {
-        return scopes
-            .map((s) => `${s.domain}|${s.dateRange.from}|${s.dateRange.to}`)
-            .sort()
-            .join("::");
-    }
-
-    private isSequenceComplete(parts: Set<number>, hasEnd: boolean): boolean {
-        if (!hasEnd) {
-            return false;
-        }
-
-        const sortedParts = Array.from(parts).sort((a, b) => a - b);
-
-        if (sortedParts[0] !== 1) {
-            return false;
-        }
-
-        for (let i = 0; i < sortedParts.length - 1; i++) {
-            if (sortedParts[i + 1] !== sortedParts[i] + 1) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     private mergeDomainRanges(domainScopes: DataExportScope[]): DataExportScope[] {
         const sorted = this.sortScopesChronologically(domainScopes);
         const merged: DataExportScope[] = [this.cloneScope(sorted[0])];
@@ -141,8 +85,8 @@ export class ExportScopeCalculator implements IExportScopeCalculator {
         return merged;
     }
 
-    private calculateDateGaps(required: ISODateStringRange, existing: ISODateStringRange[]): ISODateStringRange[] {
-        let gaps: ISODateStringRange[] = [required];
+    private calculateDateGaps(required: DateRange, existing: DateRange[]): DateRange[] {
+        let gaps: DateRange[] = [required];
 
         for (const filled of existing) {
             gaps = gaps.flatMap((gap) => this.excludeRange(gap, filled));
@@ -151,8 +95,8 @@ export class ExportScopeCalculator implements IExportScopeCalculator {
         return gaps;
     }
 
-    private excludeRange(target: ISODateStringRange, toExclude: ISODateStringRange): ISODateStringRange[] {
-        const result: ISODateStringRange[] = [];
+    private excludeRange(target: DateRange, toExclude: DateRange): DateRange[] {
+        const result: DateRange[] = [];
         const targetFrom = dayjs(target.from);
         const targetTo = dayjs(target.to);
         const excludeFrom = dayjs(toExclude.from);
@@ -165,13 +109,13 @@ export class ExportScopeCalculator implements IExportScopeCalculator {
         if (excludeFrom.isAfter(targetFrom)) {
             result.push({
                 from: target.from,
-                to: formatToISODateString(excludeFrom.subtract(1, "day").toDate()),
+                to: excludeFrom.subtract(1, "day").toDate(),
             });
         }
 
         if (excludeTo.isBefore(targetTo)) {
             result.push({
-                from: formatToISODateString(excludeTo.add(1, "day").toDate()),
+                from: excludeTo.add(1, "day").toDate(),
                 to: target.to,
             });
         }
@@ -193,13 +137,13 @@ export class ExportScopeCalculator implements IExportScopeCalculator {
         return [...scopes].sort((a, b) => dayjs(a.dateRange.from).valueOf() - dayjs(b.dateRange.from).valueOf());
     }
 
-    private areRangesTouchingOrOverlapping(r1: ISODateStringRange, r2: ISODateStringRange): boolean {
+    private areRangesTouchingOrOverlapping(r1: DateRange, r2: DateRange): boolean {
         const endOfFirst = dayjs(r1.to).add(1, "day");
         const startOfSecond = dayjs(r2.from);
         return startOfSecond.isBefore(endOfFirst) || startOfSecond.isSame(endOfFirst);
     }
 
-    private getLatestDate(d1: ISODateString, d2: ISODateString): ISODateString {
+    private getLatestDate(d1: Date, d2: Date): Date {
         return dayjs(d1).isAfter(dayjs(d2)) ? d1 : d2;
     }
 

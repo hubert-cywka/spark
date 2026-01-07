@@ -82,7 +82,8 @@ export const ExportEntryItem = ({ entry }: ExportEntryItemProps) => {
             <ul className={styles.scopeList}>
                 {entry.targetScopes.map(({ domain, dateRange }) => (
                     <li key={domain}>
-                        <strong>{t(`exports.common.scope.domains.${domain}`)}</strong>, from {dateRange.from}, to {dateRange.to}
+                        <strong>{t(`exports.common.scope.domains.${domain}`)}</strong>, from {dateRange.from.toLocaleDateString()}, to{" "}
+                        {dateRange.to.toLocaleDateString()}
                     </li>
                 ))}
             </ul>

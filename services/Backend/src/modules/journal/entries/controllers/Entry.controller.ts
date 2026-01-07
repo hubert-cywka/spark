@@ -10,7 +10,6 @@ import { EntriesMetricsDto } from "@/modules/journal/entries/dto/EntriesMetrics.
 import { EntryLoggingHistogramDto } from "@/modules/journal/entries/dto/EntryLoggingHistogram.dto";
 import { FindEntriesFiltersDto } from "@/modules/journal/entries/dto/FindEntriesFilters.dto";
 import { FindEntriesInsightsDto } from "@/modules/journal/entries/dto/FindEntriesInsights.dto";
-import { FindEntryDetailsFiltersDto } from "@/modules/journal/entries/dto/FindEntryDetailsFilters.dto";
 import { type IEntryMapper, EntryMapperToken } from "@/modules/journal/entries/mappers/IEntry.mapper";
 import { type IEntryDetailMapper, EntryDetailMapperToken } from "@/modules/journal/entries/mappers/IEntryDetail.mapper";
 import {
@@ -47,7 +46,7 @@ export class EntryController {
     @UseGuards(AccessGuard)
     @AccessScopes("read:entry")
     public async getEntriesDetailed(
-        @Query() filters: FindEntryDetailsFiltersDto,
+        @Query() filters: FindEntriesFiltersDto,
         @Query() pageOptions: PageOptionsDto,
         @AuthenticatedUserContext() user: User
     ) {

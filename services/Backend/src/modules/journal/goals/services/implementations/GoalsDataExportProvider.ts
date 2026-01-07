@@ -17,29 +17,37 @@ export class GoalsDataExportProvider implements IDataExportProvider {
 
     public async *getDataStream(tenantId: string, scope: DataExportScope): AsyncIterable<DataExportBatch> {
         const take = 1000;
-        let page = 1;
-
         let nextCursor: string | null = null;
         let hasMore = true;
 
-        while (hasMore) {
-            const goals = await this.goalService.findAll(
-                tenantId,
-                { cursor: nextCursor, take, order: Order.ASC },
-                { from: scope.dateRange.from, to: scope.dateRange.to, withProgress: true }
-            );
+        const filters = {
+            updatedAfter: scope.dateRange.from,
+            updatedBefore: scope.dateRange.to,
+            withProgress: true,
+        };
 
-            hasMore = goals.meta.hasNextPage;
+        let from = scope.dateRange.from;
+        let to = scope.dateRange.to;
+
+        while (hasMore) {
+            const goals = await this.goalService.findAll(tenantId, { cursor: nextCursor, take, order: Order.ASC }, filters);
+            const lastGoal = goals.data[goals.data.length - 1];
             nextCursor = goals.meta.nextCursor;
+            hasMore = goals.meta.hasNextPage;
+            to = hasMore ? lastGoal.createdAt : scope.dateRange.to;
 
             yield {
                 batch: goals.data,
-                batchScope: scope,
-                page,
-                hasMore,
+                batchScope: {
+                    domain: scope.domain,
+                    dateRange: {
+                        from,
+                        to,
+                    },
+                },
             };
 
-            page++;
+            from = to;
         }
     }
 }
