@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import dayjs from "dayjs";
 
-import { DataExportScope } from "@/common/export/models/DataExportScope";
-import { ExportAttachmentManifest } from "@/common/export/models/ExportAttachment.model";
 import { IExportScopeCalculator } from "@/modules/exports/services/interfaces/IExportScopeCalculator";
+import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
+import { ExportAttachmentManifest } from "@/modules/exports/shared/models/ExportAttachment.model";
 import { DateRange } from "@/types/Date";
 
 @Injectable()

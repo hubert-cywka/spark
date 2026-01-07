@@ -1,9 +1,9 @@
 import { type Relation, Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
 
-import { type DataExportScope } from "@/common/export/models/DataExportScope";
-import { ExportAttachmentStage } from "@/common/export/types/ExportAttachmentStage";
 import { DataExportEntity } from "@/modules/exports/entities/DataExport.entity";
 import { TenantEntity } from "@/modules/exports/entities/Tenant.entity";
+import { type DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
+import { ExportAttachmentStage } from "@/modules/exports/shared/types/ExportAttachmentStage";
 
 @Entity("export_attachment_manifest")
 @Index("idx_manifest_lookup", ["tenantId", "dataExportId", "stage"])

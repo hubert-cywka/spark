@@ -1,5 +1,5 @@
-import { DataExportScope } from "@/common/export/models/DataExportScope";
-import { DataExportBatch } from "@/common/export/types/DataExportBatch";
+import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
+import { DataExportBatch } from "@/modules/exports/shared/types/DataExportBatch";
 
 export const DataExportProvidersToken = Symbol("DataExportProvidersToken");
 export const DataExportProviderToken = Symbol("DataExportProviderToken");

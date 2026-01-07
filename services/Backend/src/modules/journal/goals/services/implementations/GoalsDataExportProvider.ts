@@ -1,10 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { DataExportScope } from "@/common/export/models/DataExportScope";
-import { type IDataExportProvider } from "@/common/export/services/IDataExportProvider";
-import { DataExportBatch } from "@/common/export/types/DataExportBatch";
-import { DataExportScopeDomain } from "@/common/export/types/DataExportScopeDomain";
 import { Order } from "@/common/pagination/types/Order";
+import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
+import { type IDataExportProvider } from "@/modules/exports/shared/services/IDataExportProvider";
+import { DataExportBatch } from "@/modules/exports/shared/types/DataExportBatch";
+import { DataExportScopeDomain } from "@/modules/exports/shared/types/DataExportScopeDomain";
 import { type IGoalService, GoalServiceToken } from "@/modules/journal/goals/services/interfaces/IGoalService";
 
 @Injectable()

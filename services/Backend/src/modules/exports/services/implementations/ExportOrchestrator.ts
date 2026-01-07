@@ -2,10 +2,6 @@ import { Inject, Injectable, Logger } from "@nestjs/common";
 import { Transactional } from "typeorm-transactional";
 
 import { type IDatabaseLockService, DatabaseLockServiceToken } from "@/common/database/services/IDatabaseLockService";
-import { DataExportScope } from "@/common/export/models/DataExportScope";
-import { type ExportAttachmentManifest } from "@/common/export/models/ExportAttachment.model";
-import { DataExportAttachmentPathBuilder } from "@/common/export/services/DataExportAttachmentPathBuilder";
-import { ExportAttachmentStage } from "@/common/export/types/ExportAttachmentStage";
 import { type IObjectStorage, ObjectStorageToken } from "@/common/objectStorage/services/IObjectStorage";
 import { EXPORTS_MODULE_DATA_SOURCE } from "@/modules/exports/infrastructure/database/constants";
 import {
@@ -19,6 +15,10 @@ import {
 } from "@/modules/exports/services/interfaces/IExportAttachmentManifestService";
 import { type IExportOrchestrator } from "@/modules/exports/services/interfaces/IExportOrchestrator";
 import { type IExportScopeCalculator, ExportScopeCalculatorToken } from "@/modules/exports/services/interfaces/IExportScopeCalculator";
+import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
+import { type ExportAttachmentManifest } from "@/modules/exports/shared/models/ExportAttachment.model";
+import { DataExportAttachmentPathBuilder } from "@/modules/exports/shared/services/DataExportAttachmentPathBuilder";
+import { ExportAttachmentStage } from "@/modules/exports/shared/types/ExportAttachmentStage";
 
 // We don't delete old attachments or manifests because they have (rather short) TTL anyway
 @Injectable()

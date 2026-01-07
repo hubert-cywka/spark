@@ -1,4 +1,4 @@
-import { Inject, Module, OnModuleInit } from "@nestjs/common";
+import { Inject, Module, OnModuleInit, Provider } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
@@ -56,11 +56,16 @@ import { ExportAttachmentManifestServiceToken } from "@/modules/exports/services
 import { ExportOrchestratorToken } from "@/modules/exports/services/interfaces/IExportOrchestrator";
 import { ExportScopeCalculatorToken } from "@/modules/exports/services/interfaces/IExportScopeCalculator";
 import { TenantServiceToken } from "@/modules/exports/services/interfaces/ITenantService";
+import { DataExportStartedEventHandler } from "@/modules/exports/shared/events/DataExportStartedEvent.handler";
+import { DataExporter } from "@/modules/exports/shared/services/DataExporter";
+import { DataExporterToken } from "@/modules/exports/shared/services/IDataExporter";
+import { type IDataExportProvider, DataExportProvidersToken } from "@/modules/exports/shared/services/IDataExportProvider";
 import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
 import {
     type IHealthCheckProbesRegistry,
     HealthCheckProbesRegistryToken,
 } from "@/modules/healthcheck/services/interfaces/IHealthCheckProbesRegistry";
+import { UseFactoryArgs } from "@/types/UseFactory";
 
 @Module({
     providers: [
@@ -181,6 +186,32 @@ export class ExportsModule implements OnModuleInit {
         @Inject(ConfigService)
         private readonly configService: ConfigService
     ) {}
+
+    public static getProvidersForExporter(dataExportProviders: UseFactoryArgs): Provider[] {
+        return [
+            {
+                provide: DataExporterToken,
+                useClass: DataExporter,
+            },
+            {
+                provide: DataExportStartedEventHandler,
+                useClass: DataExportStartedEventHandler,
+            },
+            {
+                provide: DataExportProvidersToken,
+                useFactory: (...providers: IDataExportProvider[]) => providers,
+                inject: dataExportProviders,
+            },
+        ];
+    }
+
+    public static getEventHandlersForExporter() {
+        return [DataExportStartedEventHandler];
+    }
+
+    public static getEventTopicsForExporter() {
+        return [IntegrationEvents.export.started];
+    }
 
     public onModuleInit() {
         this.initHealthChecks();

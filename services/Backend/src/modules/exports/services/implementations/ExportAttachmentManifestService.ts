@@ -2,8 +2,6 @@ import { Inject, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { In, Repository } from "typeorm";
 
-import { type ExportAttachmentManifest } from "@/common/export/models/ExportAttachment.model";
-import { ExportAttachmentStage } from "@/common/export/types/ExportAttachmentStage";
 import { ExportAttachmentManifestEntity } from "@/modules/exports/entities/ExportAttachmentManifest.entity";
 import { ExportManifestNotFoundError } from "@/modules/exports/errors/ExportManifestNotFound.error";
 import { EXPORTS_MODULE_DATA_SOURCE } from "@/modules/exports/infrastructure/database/constants";
@@ -12,6 +10,8 @@ import {
     ExportAttachmentManifestMapperToken,
 } from "@/modules/exports/mappers/IExportAttachmentManifest.mapper";
 import { type IExportAttachmentManifestService } from "@/modules/exports/services/interfaces/IExportAttachmentManifestService";
+import { type ExportAttachmentManifest } from "@/modules/exports/shared/models/ExportAttachment.model";
+import { ExportAttachmentStage } from "@/modules/exports/shared/types/ExportAttachmentStage";
 
 @Injectable()
 export class ExportAttachmentManifestService implements IExportAttachmentManifestService {

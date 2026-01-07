@@ -1,6 +1,6 @@
 import { IntegrationEvent, IntegrationEvents } from "@/common/events";
-import { DataExportScope } from "@/common/export/models/DataExportScope";
-import { ExportAttachmentStage } from "@/common/export/types/ExportAttachmentStage";
+import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
+import { ExportAttachmentStage } from "@/modules/exports/shared/types/ExportAttachmentStage";
 
 export type DataExportBatchReadyEventPayload = {
     tenant: {

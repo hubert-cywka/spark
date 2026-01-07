@@ -1,12 +1,12 @@
 import { plainToInstance } from "class-transformer";
 
-import { DataExportScope } from "@/common/export/models/DataExportScope";
 import { BaseModelDTOEntityMapper } from "@/common/mappers/BaseModelDTOEntity.mapper";
 import { DataExportDto } from "@/modules/exports/dto/DataExport.dto";
 import { DataExportScopeDto } from "@/modules/exports/dto/DataExportScope.dto";
 import { DataExportEntity } from "@/modules/exports/entities/DataExport.entity";
 import { type IDataExportMapper } from "@/modules/exports/mappers/IDataExport.mapper";
 import { DataExport } from "@/modules/exports/models/DataExport.model";
+import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
 
 export class DataExportMapper extends BaseModelDTOEntityMapper<DataExport, DataExportDto, DataExportEntity> implements IDataExportMapper {
     fromEntityToModel = (entity: DataExportEntity): DataExport => {

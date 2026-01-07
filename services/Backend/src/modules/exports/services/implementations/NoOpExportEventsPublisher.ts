@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
-import { DataExportScope } from "@/common/export/models/DataExportScope";
 import type { IDataExportEventsPublisher } from "@/modules/exports/services/interfaces/IDataExportEventsPublisher";
+import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
 
 @Injectable()
 export class NoOpExportEventsPublisher implements IDataExportEventsPublisher {

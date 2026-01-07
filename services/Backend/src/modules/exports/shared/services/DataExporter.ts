@@ -1,15 +1,15 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { type IEventPublisher, DataExportBatchReadyEvent, EventPublisherToken } from "@/common/events";
-import { DataExportScope } from "@/common/export/models/DataExportScope";
-import { ExportAttachmentManifest } from "@/common/export/models/ExportAttachment.model";
-import { DataExportAttachmentPathBuilder } from "@/common/export/services/DataExportAttachmentPathBuilder";
-import { type IDataExporter } from "@/common/export/services/IDataExporter";
-import { type IDataExportProvider, DataExportProvidersToken } from "@/common/export/services/IDataExportProvider";
-import { DataExportBatch } from "@/common/export/types/DataExportBatch";
-import { ExportAttachmentStage } from "@/common/export/types/ExportAttachmentStage";
 import { type IObjectStorage, ObjectStorageToken } from "@/common/objectStorage/services/IObjectStorage";
 import { type ICsvParser, CsvParserToken } from "@/common/services/interfaces/ICsvParser";
+import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
+import { ExportAttachmentManifest } from "@/modules/exports/shared/models/ExportAttachment.model";
+import { DataExportAttachmentPathBuilder } from "@/modules/exports/shared/services/DataExportAttachmentPathBuilder";
+import { type IDataExporter } from "@/modules/exports/shared/services/IDataExporter";
+import { type IDataExportProvider, DataExportProvidersToken } from "@/modules/exports/shared/services/IDataExportProvider";
+import { DataExportBatch } from "@/modules/exports/shared/types/DataExportBatch";
+import { ExportAttachmentStage } from "@/modules/exports/shared/types/ExportAttachmentStage";
 
 @Injectable()
 export class DataExporter implements IDataExporter {

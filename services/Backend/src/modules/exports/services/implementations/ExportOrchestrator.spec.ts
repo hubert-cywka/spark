@@ -7,10 +7,6 @@ import { Repository } from "typeorm";
 import { initializeTransactionalContext } from "typeorm-transactional";
 
 import { DatabaseModule } from "@/common/database/Database.module";
-import { DataExportScope } from "@/common/export/models/DataExportScope";
-import { ExportAttachmentManifest } from "@/common/export/models/ExportAttachment.model";
-import { DataExportScopeDomain } from "@/common/export/types/DataExportScopeDomain";
-import { ExportAttachmentStage } from "@/common/export/types/ExportAttachmentStage";
 import { ObjectStorageModule } from "@/common/objectStorage/ObjectStorage.module";
 import { type IObjectStorage, ObjectStorageToken } from "@/common/objectStorage/services/IObjectStorage";
 import { DBConnectionOptions, dropDatabase } from "@/common/utils/databaseUtils";
@@ -36,6 +32,10 @@ import { DataExportEventsPublisherToken } from "@/modules/exports/services/inter
 import { DataExportServiceToken } from "@/modules/exports/services/interfaces/IDataExportService";
 import { ExportAttachmentManifestServiceToken } from "@/modules/exports/services/interfaces/IExportAttachmentManifestService";
 import { ExportScopeCalculatorToken } from "@/modules/exports/services/interfaces/IExportScopeCalculator";
+import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
+import { ExportAttachmentManifest } from "@/modules/exports/shared/models/ExportAttachment.model";
+import { DataExportScopeDomain } from "@/modules/exports/shared/types/DataExportScopeDomain";
+import { ExportAttachmentStage } from "@/modules/exports/shared/types/ExportAttachmentStage";
 
 describe("ExportOrchestrator", () => {
     const TEST_ID = "export_orchestrator_integration";

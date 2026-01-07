@@ -1,5 +1,5 @@
-import { DataExportScope } from "@/common/export/models/DataExportScope";
-import { ExportAttachmentManifest } from "@/common/export/models/ExportAttachment.model";
+import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
+import { ExportAttachmentManifest } from "@/modules/exports/shared/models/ExportAttachment.model";
 
 export const ExportOrchestratorToken = Symbol("ExportOrchestrator");
 

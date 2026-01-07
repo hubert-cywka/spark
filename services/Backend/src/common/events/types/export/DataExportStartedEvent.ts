@@ -1,5 +1,5 @@
 import { IntegrationEvent, IntegrationEvents } from "@/common/events";
-import { DataExportScopeDomain } from "@/common/export/types/DataExportScopeDomain";
+import { DataExportScopeDomain } from "@/modules/exports/shared/types/DataExportScopeDomain";
 import { DateStringRange } from "@/types/Date";
 
 export type DataExportStartedEventPayload = {

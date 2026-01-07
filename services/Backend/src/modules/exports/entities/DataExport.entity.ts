@@ -10,9 +10,9 @@ import {
     UpdateDateColumn,
 } from "typeorm";
 
-import { DataExportScope } from "@/common/export/models/DataExportScope";
 import { ExportAttachmentManifestEntity } from "@/modules/exports/entities/ExportAttachmentManifest.entity";
 import { TenantEntity } from "@/modules/exports/entities/Tenant.entity";
+import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
 
 @Entity("data_export")
 @Index("idx_data_export", ["tenantId", "validUntil"])
