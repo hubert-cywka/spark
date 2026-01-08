@@ -9,4 +9,6 @@ export type EntryFilters = {
     content?: string;
     updatedAfter?: Date;
     updatedBefore?: Date;
+    includeGoals?: boolean;
+    includeDaily?: boolean;
 };

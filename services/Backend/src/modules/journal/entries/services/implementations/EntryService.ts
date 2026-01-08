@@ -1,6 +1,6 @@
 import { Inject, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Repository, SelectQueryBuilder } from "typeorm";
 
 import { applyCursorBasedPagination, createPage, createPaginationKeys } from "@/common/pagination/pagination";
 import { type PageOptions } from "@/common/pagination/types/PageOptions";
@@ -10,9 +10,7 @@ import { EntryEntity } from "@/modules/journal/entries/entities/Entry.entity";
 import { EntryDailyNotFoundError } from "@/modules/journal/entries/errors/EntryDailyNotFoundError";
 import { EntryNotFoundError } from "@/modules/journal/entries/errors/EntryNotFound.error";
 import { type IEntryMapper, EntryMapperToken } from "@/modules/journal/entries/mappers/IEntry.mapper";
-import { type IEntryDetailMapper, EntryDetailMapperToken } from "@/modules/journal/entries/mappers/IEntryDetail.mapper";
 import { type Entry } from "@/modules/journal/entries/models/Entry.model";
-import { EntryDetail } from "@/modules/journal/entries/models/EntryDetail.model";
 import { type EntryFilters } from "@/modules/journal/entries/models/EntryFilters.model";
 import { type IEntryService } from "@/modules/journal/entries/services/interfaces/IEntryService";
 import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
@@ -24,108 +22,22 @@ export class EntryService implements IEntryService {
         @InjectRepository(EntryEntity, JOURNAL_MODULE_DATA_SOURCE)
         private readonly repository: Repository<EntryEntity>,
         @Inject(EntryMapperToken) private readonly entryMapper: IEntryMapper,
-        @Inject(EntryDetailMapperToken) private readonly entryDetailMapper: IEntryDetailMapper,
         @Inject(DailyProviderToken) private readonly dailyProvider: IDailyProvider
     ) {}
 
-    public async findAll(
-        authorId: string,
-        pageOptions: PageOptions,
-        { from, to, content, completed, featured, goals, updatedBefore, updatedAfter }: EntryFilters = {}
-    ): Promise<Paginated<Entry>> {
+    public async findAll(authorId: string, pageOptions: PageOptions, filters: EntryFilters = {}): Promise<Paginated<Entry>> {
         const queryBuilder = this.getRepository().createQueryBuilder("entry").where("entry.authorId = :authorId", { authorId });
 
         const paginationKeys = createPaginationKeys(["createdAt", "id"]);
         applyCursorBasedPagination(queryBuilder, pageOptions, paginationKeys);
 
-        if (from || to) {
-            queryBuilder.innerJoin("entry.daily", "daily");
-
-            if (from) {
-                queryBuilder.andWhere("daily.date >= :from", { from });
-            }
-
-            if (to) {
-                queryBuilder.andWhere("daily.date <= :to", { to });
-            }
-        }
-
-        if (goals) {
-            queryBuilder.leftJoin("entry.goals", "goal").andWhere("goal.id IN (:...goals)", { goals });
-        }
-
-        if (updatedAfter) {
-            queryBuilder.andWhere("entry.updatedAt >= :updatedAfter", { updatedAfter });
-        }
-
-        if (updatedBefore) {
-            queryBuilder.andWhere("entry.updatedAt <= :updatedBefore", { updatedBefore });
-        }
-
-        if (featured !== undefined) {
-            queryBuilder.andWhere("entry.isFeatured = :featured", { featured });
-        }
-
-        if (completed !== undefined) {
-            queryBuilder.andWhere("entry.isCompleted = :completed", { completed });
-        }
-
-        if (content) {
-            queryBuilder.andWhere("entry.content ILIKE '%' || :content || '%'", { content });
-        }
+        this.applyDailyFilters(queryBuilder, filters);
+        this.applyGoalFilters(queryBuilder, filters);
+        this.applyScalarFilters(queryBuilder, filters);
 
         const entries = await queryBuilder.getMany();
         const page = createPage(entries, pageOptions.take, paginationKeys);
         return this.entryMapper.fromEntityToModelPaginated(page);
-    }
-
-    public async findAllDetailed(
-        authorId: string,
-        pageOptions: PageOptions,
-        { from, to, content, completed, featured, goals, updatedBefore, updatedAfter }: EntryFilters = {}
-    ): Promise<Paginated<EntryDetail>> {
-        const queryBuilder = this.getRepository().createQueryBuilder("entry").where("entry.authorId = :authorId", { authorId });
-
-        const paginationKeys = createPaginationKeys(["createdAt", "id"]);
-        applyCursorBasedPagination(queryBuilder, pageOptions, paginationKeys)
-            .innerJoinAndSelect("entry.daily", "daily")
-            .leftJoinAndSelect("entry.goals", "goal");
-
-        if (from) {
-            queryBuilder.andWhere("daily.date >= :from", { from });
-        }
-
-        if (to) {
-            queryBuilder.andWhere("daily.date <= :to", { to });
-        }
-
-        if (goals) {
-            queryBuilder.andWhere("goal.id IN (:...goals)", { goals });
-        }
-
-        if (updatedAfter) {
-            queryBuilder.andWhere("entry.updatedAt >= :updatedAfter", { updatedAfter });
-        }
-
-        if (updatedBefore) {
-            queryBuilder.andWhere("entry.updatedAt <= :updatedBefore", { updatedBefore });
-        }
-
-        if (featured !== undefined) {
-            queryBuilder.andWhere("entry.isFeatured = :featured", { featured });
-        }
-
-        if (completed !== undefined) {
-            queryBuilder.andWhere("entry.isCompleted = :completed", { completed });
-        }
-
-        if (content) {
-            queryBuilder.andWhere("entry.content ILIKE '%' || :content || '%'", { content });
-        }
-
-        const entries = await queryBuilder.getMany();
-        const page = createPage(entries, pageOptions.take, paginationKeys);
-        return this.entryDetailMapper.fromEntityToModelPaginated(page);
     }
 
     public async create(
@@ -203,6 +115,65 @@ export class EntryService implements IEntryService {
         }
 
         return this.entryMapper.fromEntityToModel(updatedEntity);
+    }
+
+    private applyScalarFilters(
+        qb: SelectQueryBuilder<EntryEntity>,
+        { updatedBefore, updatedAfter, content, featured, completed }: Partial<EntryFilters>
+    ) {
+        if (updatedAfter) {
+            qb.andWhere("entry.updatedAt >= :updatedAfter", { updatedAfter });
+        }
+
+        if (updatedBefore) {
+            qb.andWhere("entry.updatedAt <= :updatedBefore", { updatedBefore });
+        }
+
+        if (content) {
+            qb.andWhere("entry.content ILIKE '%' || :content || '%'", { content });
+        }
+
+        if (featured !== undefined) {
+            qb.andWhere("entry.isFeatured = :featured", { featured });
+        }
+
+        if (completed !== undefined) {
+            qb.andWhere("entry.isCompleted = :completed", { completed });
+        }
+
+        return qb;
+    }
+
+    private applyDailyFilters(qb: SelectQueryBuilder<EntryEntity>, { from, to, includeDaily }: Partial<EntryFilters>) {
+        if (includeDaily) {
+            qb.innerJoinAndSelect("entry.daily", "daily");
+        } else if (from || to) {
+            qb.innerJoin("entry.daily", "daily");
+        }
+
+        if (from) {
+            qb.andWhere("daily.date >= :from", { from });
+        }
+
+        if (to) {
+            qb.andWhere("daily.date <= :to", { to });
+        }
+
+        return qb;
+    }
+
+    private applyGoalFilters(qb: SelectQueryBuilder<EntryEntity>, { goals, includeGoals }: Partial<EntryFilters>) {
+        if (includeGoals) {
+            qb.leftJoinAndSelect("entry.goals", "goal");
+        } else if (goals?.length) {
+            qb.leftJoin("entry.goals", "goal");
+        }
+
+        if (goals?.length) {
+            qb.andWhere("goal.id IN (:...goals)", { goals });
+        }
+
+        return qb;
     }
 
     private async assertDailyExists(authorId: string, dailyId: string): Promise<void> {

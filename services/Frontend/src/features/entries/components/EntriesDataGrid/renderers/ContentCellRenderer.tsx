@@ -4,7 +4,7 @@ import styles from "./styles/ContentCellRenderer.module.scss";
 
 import { Tooltip } from "@/components/Tooltip";
 import { FormattedEntryContent } from "@/features/entries/components/FormattedEntryContent";
-import { EntryDetail } from "@/features/entries/types/Entry";
+import { DetailedEntry } from "@/features/entries/types/Entry";
 
 type ContentCellValueRendererProps = {
     value: string;
@@ -18,7 +18,7 @@ const ContentCellValueRenderer = ({ value }: ContentCellValueRendererProps) => {
     );
 };
 
-export const ContentCellRenderer = ({ row }: RenderCellProps<EntryDetail>) => {
+export const ContentCellRenderer = ({ row }: RenderCellProps<DetailedEntry>) => {
     return (
         <div className={styles.container}>
             <ContentCellValueRenderer value={row.content} />

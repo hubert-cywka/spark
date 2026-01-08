@@ -7,4 +7,7 @@ export type Entry = {
     isFeatured: boolean;
     createdAt: Date;
     updatedAt: Date;
+
+    daily?: string;
+    goals?: string[];
 };
