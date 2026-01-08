@@ -2,8 +2,8 @@ import { Inject, Injectable } from "@nestjs/common";
 
 import { type IInboxEventHandler, DataExportStartedEventPayload, IntegrationEvent, IntegrationEvents } from "@/common/events";
 import { IntegrationEventSubject } from "@/common/events/types";
-import { type IDataExporter, DataExporterToken } from "@/common/export/services/IDataExporter";
 import { hydrateDateRange } from "@/common/utils/dateUtils";
+import { type IDataExporter, DataExporterToken } from "@/modules/exports/shared/services/IDataExporter";
 
 @Injectable()
 export class DataExportStartedEventHandler implements IInboxEventHandler {

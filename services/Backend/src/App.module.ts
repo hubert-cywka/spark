@@ -13,6 +13,7 @@ import { logger, loggerOptions } from "@/lib/logger";
 import { AlertsModule } from "@/modules/alerts/Alerts.module";
 import { ConfigurationModule } from "@/modules/configuration/Configuration.module";
 import { ExportsModule } from "@/modules/exports/Exports.module";
+import { EXPORTS_OBJECT_STORAGE_KEY } from "@/modules/exports/shared/constants/objectStorage";
 import { GlobalModule } from "@/modules/global/Global.module";
 import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
 import { IdentityModule } from "@/modules/identity/Identity.module";
@@ -79,6 +80,15 @@ const getAppBaseImports = (): ModuleImport[] => {
                 },
                 region: configService.getOrThrow<string>("s3.region"),
                 endpoint: configService.getOrThrow<string>("s3.endpoint"),
+            }),
+            inject: [ConfigService],
+            global: true,
+        }),
+        ObjectStorageModule.registerStorageAsync(EXPORTS_OBJECT_STORAGE_KEY, {
+            useFactory: (configService: ConfigService) => ({
+                bucket: {
+                    name: configService.getOrThrow<string>("s3.buckets.exports.name"),
+                },
             }),
             inject: [ConfigService],
             global: true,

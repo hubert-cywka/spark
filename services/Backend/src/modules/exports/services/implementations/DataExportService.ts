@@ -6,7 +6,6 @@ import { IsNull, LessThanOrEqual, MoreThan, Repository } from "typeorm";
 import { Transactional } from "typeorm-transactional";
 
 import { type IDatabaseLockService, DatabaseLockServiceToken } from "@/common/database/services/IDatabaseLockService";
-import { DataExportScope } from "@/common/export/models/DataExportScope";
 import { applyCursorBasedPagination, createPage, createPaginationKeys } from "@/common/pagination/pagination";
 import { PageOptions } from "@/common/pagination/types/PageOptions";
 import { DataExportEntity } from "@/modules/exports/entities/DataExport.entity";
@@ -20,6 +19,7 @@ import { type IDataExportMapper, DataExportMapperToken } from "@/modules/exports
 import { DataExport } from "@/modules/exports/models/DataExport.model";
 import { type IDataExportService } from "@/modules/exports/services/interfaces/IDataExportService";
 import { type IExportScopeCalculator, ExportScopeCalculatorToken } from "@/modules/exports/services/interfaces/IExportScopeCalculator";
+import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
 
 @Injectable()
 export class DataExportService implements IDataExportService {
@@ -48,8 +48,8 @@ export class DataExportService implements IDataExportService {
         applyCursorBasedPagination(queryBuilder, pageOptions, paginationKeys);
 
         const dataExports = await queryBuilder.getMany();
-        const mappedExports = this.mapper.fromEntityToModelBulk(dataExports);
-        return createPage(mappedExports, pageOptions.take, paginationKeys);
+        const page = createPage(dataExports, pageOptions.take, paginationKeys);
+        return this.mapper.fromEntityToModelPaginated(page);
     }
 
     // We could simply add a more specific WHERE clause, but in this case it's important to differentiate between a

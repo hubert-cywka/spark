@@ -1,5 +1,5 @@
-import { ExportAttachmentManifest } from "@/common/export/models/ExportAttachment.model";
-import { ExportAttachmentStage } from "@/common/export/types/ExportAttachmentStage";
+import { ExportAttachmentManifest } from "@/modules/exports/shared/models/ExportAttachment.model";
+import { ExportAttachmentStage } from "@/modules/exports/shared/types/ExportAttachmentStage";
 
 export const ExportAttachmentManifestServiceToken = Symbol("ExportAttachmentManifestServiceToken");
 

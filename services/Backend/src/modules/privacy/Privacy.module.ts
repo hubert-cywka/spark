@@ -13,7 +13,6 @@ import {
     IntegrationEventsModule,
     IntervalJobScheduleUpdatedEvent,
 } from "@/common/events";
-import { getIntegrationEventsMigrations } from "@/common/events/migrations";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -38,6 +37,8 @@ import { PRIVACY_MODULE_DATA_SOURCE } from "@/modules/privacy/infrastructure/dat
 import { RegenerateMigrations1749289951431 } from "@/modules/privacy/infrastructure/database/migrations/1749289951431-regenerate-migrations";
 import { AddTimestamps1752925879790 } from "@/modules/privacy/infrastructure/database/migrations/1752925879790-AddTimestamps";
 import { AddIndexes1767381872552 } from "@/modules/privacy/infrastructure/database/migrations/1767381872552-add-indexes";
+import { TimestampsPrecisionPrivacy1767888120139 } from "@/modules/privacy/infrastructure/database/migrations/1767888120139-timestamps-precision-privacy";
+import { MoreTimestampsPrecisionPrivacy1767888499695 } from "@/modules/privacy/infrastructure/database/migrations/1767888499695-more-timestamps-precision-privacy";
 import { TenantMapperToken } from "@/modules/privacy/mappers/ITenant.mapper";
 import { TenantMapper } from "@/modules/privacy/mappers/Tenant.mapper";
 import { DataPurgeEventsPublisher } from "@/modules/privacy/services/implementations/DataPurgeEventsPublisher";
@@ -97,10 +98,12 @@ import { TenantServiceToken } from "@/modules/privacy/services/interfaces/ITenan
                 host: configService.getOrThrow<string>("modules.privacy.database.host"),
                 database: configService.getOrThrow<string>("modules.privacy.database.name"),
                 migrations: [
-                    ...getIntegrationEventsMigrations(),
+                    ...IntegrationEventsModule.getMigrations(),
                     RegenerateMigrations1749289951431,
                     AddTimestamps1752925879790,
                     AddIndexes1767381872552,
+                    TimestampsPrecisionPrivacy1767888120139,
+                    MoreTimestampsPrecisionPrivacy1767888499695,
                 ],
             }),
             inject: [ConfigService],

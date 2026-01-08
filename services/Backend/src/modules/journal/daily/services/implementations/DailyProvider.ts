@@ -38,8 +38,8 @@ export class DailyProvider implements IDailyProvider {
         applyCursorBasedPagination(queryBuilder, pageOptions, paginationKeys);
 
         const dailies = await queryBuilder.getMany();
-        const mappedDailies = this.dailyMapper.fromEntityToModelBulk(dailies);
-        return createPage(mappedDailies, pageOptions.take, paginationKeys);
+        const page = createPage(dailies, pageOptions.take, paginationKeys);
+        return this.dailyMapper.fromEntityToModelPaginated(page);
     }
 
     public async getById(authorId: string, dailyId: string): Promise<Daily> {

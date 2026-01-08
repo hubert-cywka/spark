@@ -9,7 +9,7 @@ import {
     type IIntegrationEventsSubscriber,
     IntegrationEventsSubscriberToken,
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
-import { getDataExportEventHandlers, getDataExportEventTopics, provideDataExporter } from "@/common/export/provideDataExporter";
+import { ExportsModule } from "@/modules/exports/Exports.module";
 import { AuthorsModule } from "@/modules/journal/authors/Authors.module";
 import { AccountCreatedEventHandler } from "@/modules/journal/authors/events/AccountCreatedEvent.handler";
 import { AuthorRemovedEventHandler } from "@/modules/journal/authors/events/AuthorRemovedEvent.handler";
@@ -18,18 +18,29 @@ import { EntriesModule } from "@/modules/journal/entries/Entries.module";
 import { EntriesDataExportProvider } from "@/modules/journal/entries/services/implementations/EntriesDataExportProvider";
 import { GoalsModule } from "@/modules/journal/goals/Goals.module";
 import { GoalsDataExportProvider } from "@/modules/journal/goals/services/implementations/GoalsDataExportProvider";
+import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
 import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.module";
 
 @Module({
     providers: [
-        ...provideDataExporter([EntriesDataExportProvider, GoalsDataExportProvider]),
         {
             provide: InboxEventHandlersToken,
             useFactory: (...handlers: IInboxEventHandler[]) => handlers,
-            inject: [AccountCreatedEventHandler, AuthorRemovedEventHandler, ...getDataExportEventHandlers()],
+            inject: [AccountCreatedEventHandler, AuthorRemovedEventHandler, ...ExportsModule.getEventHandlersForExporter()],
         },
     ],
-    imports: [JournalSharedModule, AuthorsModule, DailyModule, GoalsModule, EntriesModule],
+    imports: [
+        JournalSharedModule,
+        AuthorsModule,
+        DailyModule,
+        GoalsModule,
+        EntriesModule,
+        ExportsModule.forFeature({
+            connectionName: JOURNAL_MODULE_DATA_SOURCE,
+            providers: [EntriesDataExportProvider, GoalsDataExportProvider],
+            imports: [EntriesModule, GoalsModule, JournalSharedModule],
+        }),
+    ],
     exports: [],
     controllers: [],
 })
@@ -52,7 +63,7 @@ export class JournalModule implements OnModuleInit {
         void this.subscriber.listen([
             IntegrationEvents.account.created,
             IntegrationEvents.account.removal.completed,
-            ...getDataExportEventTopics(),
+            ...ExportsModule.getEventTopicsForExporter(),
         ]);
     }
 }

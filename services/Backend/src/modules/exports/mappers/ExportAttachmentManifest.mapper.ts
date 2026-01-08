@@ -1,12 +1,12 @@
 import { plainToInstance } from "class-transformer";
 
-import { DataExportScope } from "@/common/export/models/DataExportScope";
-import { ExportAttachmentManifest } from "@/common/export/models/ExportAttachment.model";
 import { BaseModelDTOEntityMapper } from "@/common/mappers/BaseModelDTOEntity.mapper";
 import { DataExportScopeDto } from "@/modules/exports/dto/DataExportScope.dto";
 import { ExportAttachmentManifestDto } from "@/modules/exports/dto/ExportAttachmentManifest.dto";
 import { ExportAttachmentManifestEntity } from "@/modules/exports/entities/ExportAttachmentManifest.entity";
 import { type IExportAttachmentManifestMapper } from "@/modules/exports/mappers/IExportAttachmentManifest.mapper";
+import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
+import { ExportAttachmentManifest } from "@/modules/exports/shared/models/ExportAttachment.model";
 
 export class ExportAttachmentManifestMapper
     extends BaseModelDTOEntityMapper<ExportAttachmentManifest, ExportAttachmentManifestDto, ExportAttachmentManifestEntity>

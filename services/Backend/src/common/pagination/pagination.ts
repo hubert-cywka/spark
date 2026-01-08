@@ -6,10 +6,29 @@ import { PageOptions } from "@/common/pagination/types/PageOptions";
 type CursorValues = Record<string, unknown>;
 
 export const createPage = <T extends object>(data: T[], take: number, paginationKeys: (keyof T & string)[]) => {
-    const meta = getPageMeta(data, take, paginationKeys);
+    const hasNextPage = data.length > take;
+    let nextCursor: string | null = null;
+
+    const visibleData = data.slice(0, take);
+
+    if (hasNextPage) {
+        const lastVisibleItem = data[visibleData.length - 1];
+        const cursorValues: CursorValues = {};
+
+        for (const key of paginationKeys) {
+            cursorValues[key] = lastVisibleItem[key];
+        }
+
+        nextCursor = encodeCursor(cursorValues);
+    }
+
+    const meta = {
+        nextCursor,
+        hasNextPage,
+    };
 
     return {
-        data: data.slice(0, take),
+        data: visibleData,
         meta: meta,
     };
 };
@@ -20,14 +39,12 @@ export const createPaginationKeys = <T extends object>(paginationKeys: (keyof T 
 
 export const applyCursorBasedPagination = <T extends object>(
     queryBuilder: SelectQueryBuilder<T>,
-    pageOptions: PageOptions,
+    { order, take, cursor }: PageOptions,
     paginationKeys: (keyof T & string)[],
     alias: string = queryBuilder.alias
 ): SelectQueryBuilder<T> => {
-    const order = pageOptions.order || Order.DESC;
-
-    if (pageOptions.cursor) {
-        const cursorData = decodeCursor(pageOptions.cursor);
+    if (cursor) {
+        const cursorData = decodeCursor(cursor);
         const operator = order === Order.ASC ? ">" : "<";
 
         queryBuilder.andWhere(
@@ -37,33 +54,12 @@ export const applyCursorBasedPagination = <T extends object>(
         );
     }
 
-    paginationKeys.forEach((key) => {
+    for (const key of paginationKeys) {
         queryBuilder.addOrderBy(`${alias}.${key}`, order);
-    });
-
-    queryBuilder.take(pageOptions.take + 1);
-
-    return queryBuilder;
-};
-
-const getPageMeta = <T extends object>(data: T[], take: number, paginationKeys: (keyof T & string)[]) => {
-    const hasNextPage = data.length > take;
-
-    if (!hasNextPage) {
-        return { nextCursor: null, hasNextPage: false };
     }
 
-    const lastVisibleItem = data[take - 1];
-
-    const cursorValues: CursorValues = {};
-    paginationKeys.forEach((key) => {
-        cursorValues[key] = lastVisibleItem[key];
-    });
-
-    return {
-        nextCursor: encodeCursor(cursorValues),
-        hasNextPage: true,
-    };
+    queryBuilder.take(take + 1);
+    return queryBuilder;
 };
 
 const buildDynamicCursorCondition = (
@@ -73,16 +69,18 @@ const buildDynamicCursorCondition = (
     operator: ">" | "<",
     alias: string
 ) => {
-    keys.forEach((key, index) => {
-        qb.orWhere(
-            new Brackets((subQb) => {
-                for (let i = 0; i < index; i++) {
-                    subQb.andWhere(`${alias}.${keys[i]} = :val_${keys[i]}`, { [`val_${keys[i]}`]: values[keys[i]] });
-                }
-                subQb.andWhere(`${alias}.${key} ${operator} :val_${key}`, { [`val_${key}`]: values[key] });
-            })
-        );
-    });
+    qb.orWhere(
+        new Brackets((outerQb) => {
+            let prefix = "";
+            const params: CursorValues = {};
+
+            for (const key of keys) {
+                params[key] = values[key];
+                outerQb.orWhere(`${prefix}${alias}.${key} ${operator} :${key}`, params);
+                prefix += `${alias}.${key} = :${key} AND `;
+            }
+        })
+    );
 };
 
 const encodeCursor = (values: CursorValues): string => {

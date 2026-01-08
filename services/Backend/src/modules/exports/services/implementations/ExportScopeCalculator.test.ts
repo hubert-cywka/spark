@@ -1,11 +1,11 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc.js";
 
-import { DataExportScope } from "@/common/export/models/DataExportScope";
-import { ExportAttachmentManifest } from "@/common/export/models/ExportAttachment.model";
-import { DataExportScopeDomain } from "@/common/export/types/DataExportScopeDomain";
-import { ExportAttachmentStage } from "@/common/export/types/ExportAttachmentStage";
 import { ExportScopeCalculator } from "@/modules/exports/services/implementations/ExportScopeCalculator";
+import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
+import { ExportAttachmentManifest } from "@/modules/exports/shared/models/ExportAttachment.model";
+import { DataExportScopeDomain } from "@/modules/exports/shared/types/DataExportScopeDomain";
+import { ExportAttachmentStage } from "@/modules/exports/shared/types/ExportAttachmentStage";
 
 dayjs.extend(utc);
 

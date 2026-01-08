@@ -13,7 +13,6 @@ import {
     IntegrationEventsModule,
     IntervalJobScheduleUpdatedEvent,
 } from "@/common/events";
-import { getIntegrationEventsMigrations } from "@/common/events/migrations";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -33,6 +32,8 @@ import { ALERTS_MODULE_DATA_SOURCE } from "@/modules/alerts/infrastructure/datab
 import { RegenerateMigrations1749289896371 } from "@/modules/alerts/infrastructure/database/migrations/1749289896371-regenerate-migrations";
 import { AddTimestamps1752925853545 } from "@/modules/alerts/infrastructure/database/migrations/1752925853545-AddTimestamps";
 import { AddIndexes1767381756398 } from "@/modules/alerts/infrastructure/database/migrations/1767381756398-add-indexes";
+import { TimestampsPrecisionAlerts1767888108814 } from "@/modules/alerts/infrastructure/database/migrations/1767888108814-timestamps-precision-alerts";
+import { MoreTimestampsPrecisionAlerts1767888489727 } from "@/modules/alerts/infrastructure/database/migrations/1767888489727-more-timestamps-precision-alerts";
 import { AlertMapper } from "@/modules/alerts/mappers/Alert.mapper";
 import { AlertMapperToken } from "@/modules/alerts/mappers/IAlert.mapper";
 import { RecipientMapperToken } from "@/modules/alerts/mappers/IRecipient.mapper";
@@ -100,10 +101,12 @@ import {
                 host: configService.getOrThrow<string>("modules.alerts.database.host"),
                 database: configService.getOrThrow<string>("modules.alerts.database.name"),
                 migrations: [
-                    ...getIntegrationEventsMigrations(),
+                    ...IntegrationEventsModule.getMigrations(),
                     RegenerateMigrations1749289896371,
                     AddTimestamps1752925853545,
                     AddIndexes1767381756398,
+                    TimestampsPrecisionAlerts1767888108814,
+                    MoreTimestampsPrecisionAlerts1767888489727,
                 ],
             }),
             inject: [ConfigService],

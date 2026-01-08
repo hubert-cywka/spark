@@ -20,7 +20,8 @@ import { EntityConflictError } from "@/common/errors/EntityConflict.error";
 import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
 import { AccessGuard } from "@/common/guards/Access.guard";
-import { type IObjectStorage, ObjectStorageToken } from "@/common/objectStorage/services/IObjectStorage";
+import { getObjectStorageToken } from "@/common/objectStorage/services/IObjectStorage";
+import { type IObjectStorage } from "@/common/objectStorage/services/IObjectStorage";
 import { PageOptionsDto } from "@/common/pagination/dto/PageOptions.dto";
 import { StartDataExportDto } from "@/modules/exports/dto/StartDataExport.dto";
 import { type IDataExportMapper, DataExportMapperToken } from "@/modules/exports/mappers/IDataExport.mapper";
@@ -30,6 +31,7 @@ import {
     ExportAttachmentManifestServiceToken,
 } from "@/modules/exports/services/interfaces/IExportAttachmentManifestService";
 import { type IExportOrchestrator, ExportOrchestratorToken } from "@/modules/exports/services/interfaces/IExportOrchestrator";
+import { EXPORTS_OBJECT_STORAGE_KEY } from "@/modules/exports/shared/constants/objectStorage";
 import type { User } from "@/types/User";
 
 @Controller("export")
@@ -39,7 +41,7 @@ export class DataExportController {
         @Inject(DataExportServiceToken) private readonly exportService: IDataExportService,
         @Inject(ExportAttachmentManifestServiceToken) private readonly manifestService: IExportAttachmentManifestService,
         @Inject(DataExportMapperToken) private readonly mapper: IDataExportMapper,
-        @Inject(ObjectStorageToken) private readonly objectStorage: IObjectStorage
+        @Inject(getObjectStorageToken(EXPORTS_OBJECT_STORAGE_KEY)) private readonly objectStorage: IObjectStorage
     ) {}
 
     @Get(":exportId/files")

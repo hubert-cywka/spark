@@ -27,7 +27,7 @@ export class S3ObjectStorageAdmin implements IObjectStorageAdmin {
                 })
             );
 
-            this.logger.log({ ttl: `${days}d`, bucket }, "Lifecycle policy set");
+            this.logger.log({ ttl: `${days}d`, bucket }, "Object storage lifecycle policy set.");
         } catch (error: unknown) {
             this.logger.error(error, `Failed to set lifecycle policy for bucket ${bucket}.`);
             throw error;

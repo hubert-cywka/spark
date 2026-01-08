@@ -16,6 +16,7 @@ export class EntryDetailMapper extends BaseModelDTOEntityMapper<EntryDetail, Ent
             daily: entity.daily.date,
             goals: entity.goals.map((goal) => goal.name),
             createdAt: entity.createdAt,
+            updatedAt: entity.updatedAt,
         };
     }
 

@@ -1,7 +1,7 @@
-import { Inject, Module, OnModuleInit } from "@nestjs/common";
+import { DynamicModule, Inject, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { InjectDataSource } from "@nestjs/typeorm";
-import { DataSource } from "typeorm";
+import { getRepositoryToken, InjectDataSource, TypeOrmModule } from "@nestjs/typeorm";
+import { DataSource, Repository } from "typeorm";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import {
@@ -13,7 +13,6 @@ import {
     IntegrationEventsModule,
     IntervalJobScheduleUpdatedEvent,
 } from "@/common/events";
-import { getIntegrationEventsMigrations } from "@/common/events/migrations";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -22,16 +21,16 @@ import {
     type IIntegrationEventsSubscriber,
     IntegrationEventsSubscriberToken,
 } from "@/common/events/services/interfaces/IIntegrationEventsSubscriber";
+import { type IObjectStorage, getObjectStorageToken } from "@/common/objectStorage/services/IObjectStorage";
 import { type IObjectStorageAdmin, ObjectStorageAdminToken } from "@/common/objectStorage/services/IObjectStorageAdmin";
+import { type ICsvParser, CsvParserToken } from "@/common/services/interfaces/ICsvParser";
 import { fromHours } from "@/common/utils/timeUtils";
 import { DataExportController } from "@/modules/exports/controllers/DataExport.controller";
 import { DataExportEntity } from "@/modules/exports/entities/DataExport.entity";
 import { ExportAttachmentManifestEntity } from "@/modules/exports/entities/ExportAttachmentManifest.entity";
 import { TenantEntity } from "@/modules/exports/entities/Tenant.entity";
 import { DataExportBatchReadyEventHandler } from "@/modules/exports/events/DataExportBatchReadyEvent.handler";
-import { DataExportCancelledEventHandler } from "@/modules/exports/events/DataExportCancelledEvent.handler";
 import { DataExportCleanupTriggeredEventHandler } from "@/modules/exports/events/DataExportCleanupTriggeredEvent.handler";
-import { DataExportCompletedEventHandler } from "@/modules/exports/events/DataExportCompletedEvent.handler";
 import { TenantCreatedEventHandler } from "@/modules/exports/events/TenantCreatedEvent.handler";
 import { TenantRemovedEventHandler } from "@/modules/exports/events/TenantRemovedEvent.handler";
 import { EXPORTS_MODULE_DATA_SOURCE } from "@/modules/exports/infrastructure/database/constants";
@@ -40,6 +39,8 @@ import { AddIndexes1767381710806 } from "@/modules/exports/infrastructure/databa
 import { ImproveIndexes1767428478163 } from "@/modules/exports/infrastructure/database/migrations/1767428478163-improve-indexes";
 import { SimplifyAttachments1767733325359 } from "@/modules/exports/infrastructure/database/migrations/1767733325359-simplify-attachments";
 import { AddValidUntilTimestamp1767790372799 } from "@/modules/exports/infrastructure/database/migrations/1767790372799-add-valid-until-timestamp";
+import { TimestampsPrecisionExports1767888180480 } from "@/modules/exports/infrastructure/database/migrations/1767888180480-timestamps-precision-exports";
+import { MoreTimestampsPrecisionExports1767888501796 } from "@/modules/exports/infrastructure/database/migrations/1767888501796-more-timestamps-precision-exports";
 import { DataExportMapper } from "@/modules/exports/mappers/DataExport.mapper";
 import { ExportAttachmentManifestMapper } from "@/modules/exports/mappers/ExportAttachmentManifest.mapper";
 import { DataExportMapperToken } from "@/modules/exports/mappers/IDataExport.mapper";
@@ -58,11 +59,27 @@ import { ExportAttachmentManifestServiceToken } from "@/modules/exports/services
 import { ExportOrchestratorToken } from "@/modules/exports/services/interfaces/IExportOrchestrator";
 import { ExportScopeCalculatorToken } from "@/modules/exports/services/interfaces/IExportScopeCalculator";
 import { TenantServiceToken } from "@/modules/exports/services/interfaces/ITenantService";
+import { EXPORTS_OBJECT_STORAGE_KEY } from "@/modules/exports/shared/constants/objectStorage";
+import { ExportStatusEntity } from "@/modules/exports/shared/entities/ExportStatus.entity";
+import { DataExportStartedEventHandler } from "@/modules/exports/shared/events/DataExportStartedEvent.handler";
+import { AddExportStatus1767800772167 } from "@/modules/exports/shared/migrations/1767800772167-add-export-status";
+import { AddCursorToExportStatus1767810013954 } from "@/modules/exports/shared/migrations/1767810013954-add-cursor-to-export-status";
+import { AddTimestampsToExportStatus1767810389572 } from "@/modules/exports/shared/migrations/1767810389572-add-timestamps-to-export-status";
+import { DataExporter } from "@/modules/exports/shared/services/DataExporter";
+import { DataExporterToken } from "@/modules/exports/shared/services/IDataExporter";
+import { type IDataExportProvider, DataExportProvidersToken } from "@/modules/exports/shared/services/IDataExportProvider";
 import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
 import {
     type IHealthCheckProbesRegistry,
     HealthCheckProbesRegistryToken,
 } from "@/modules/healthcheck/services/interfaces/IHealthCheckProbesRegistry";
+import { UseFactoryArgs } from "@/types/UseFactory";
+
+export interface ExportsModuleForFeatureOptions {
+    connectionName: string;
+    providers: UseFactoryArgs;
+    imports: UseFactoryArgs;
+}
 
 @Module({
     providers: [
@@ -81,16 +98,8 @@ import {
             useClass: DataExportBatchReadyEventHandler,
         },
         {
-            provide: DataExportCompletedEventHandler,
-            useClass: DataExportCompletedEventHandler,
-        },
-        {
             provide: DataExportCleanupTriggeredEventHandler,
             useClass: DataExportCleanupTriggeredEventHandler,
-        },
-        {
-            provide: DataExportCancelledEventHandler,
-            useClass: DataExportCancelledEventHandler,
         },
         {
             provide: DataExportEventsPublisherToken,
@@ -127,8 +136,6 @@ import {
                 TenantCreatedEventHandler,
                 TenantRemovedEventHandler,
                 DataExportBatchReadyEventHandler,
-                DataExportCompletedEventHandler,
-                DataExportCancelledEventHandler,
                 DataExportCleanupTriggeredEventHandler,
             ],
         },
@@ -144,12 +151,14 @@ import {
                 host: configService.getOrThrow<string>("modules.exports.database.host"),
                 database: configService.getOrThrow<string>("modules.exports.database.name"),
                 migrations: [
-                    ...getIntegrationEventsMigrations(),
+                    ...IntegrationEventsModule.getMigrations(),
                     DataExport1767272676880,
                     AddIndexes1767381710806,
                     ImproveIndexes1767428478163,
                     SimplifyAttachments1767733325359,
                     AddValidUntilTimestamp1767790372799,
+                    TimestampsPrecisionExports1767888180480,
+                    MoreTimestampsPrecisionExports1767888501796,
                 ],
             }),
             inject: [ConfigService],
@@ -194,6 +203,56 @@ export class ExportsModule implements OnModuleInit {
         private readonly configService: ConfigService
     ) {}
 
+    public static forFeature(options: ExportsModuleForFeatureOptions): DynamicModule {
+        return {
+            module: ExportsSharedModule,
+            imports: [...options.imports, TypeOrmModule.forFeature([ExportStatusEntity], options.connectionName)],
+            providers: [
+                {
+                    provide: DataExporterToken,
+                    useFactory: (
+                        providers: IDataExportProvider[],
+                        publisher: IEventPublisher,
+                        parser: ICsvParser,
+                        objectStorage: IObjectStorage,
+                        repository: Repository<ExportStatusEntity>
+                    ) => {
+                        return new DataExporter(providers, publisher, parser, objectStorage, repository, options.connectionName);
+                    },
+                    inject: [
+                        DataExportProvidersToken,
+                        EventPublisherToken,
+                        CsvParserToken,
+                        getObjectStorageToken(EXPORTS_OBJECT_STORAGE_KEY),
+                        getRepositoryToken(ExportStatusEntity, options.connectionName),
+                    ],
+                },
+                {
+                    provide: DataExportStartedEventHandler,
+                    useClass: DataExportStartedEventHandler,
+                },
+                {
+                    provide: DataExportProvidersToken,
+                    useFactory: (...providers: IDataExportProvider[]) => providers,
+                    inject: options.providers,
+                },
+            ],
+            exports: [DataExporterToken, DataExportStartedEventHandler, TypeOrmModule],
+        };
+    }
+
+    public static getEventHandlersForExporter() {
+        return [DataExportStartedEventHandler];
+    }
+
+    public static getEventTopicsForExporter() {
+        return [IntegrationEvents.export.started];
+    }
+
+    public static getMigrationsForExporter() {
+        return [AddExportStatus1767800772167, AddCursorToExportStatus1767810013954, AddTimestampsToExportStatus1767810389572];
+    }
+
     public onModuleInit() {
         this.initHealthChecks();
         void this.initIntegrationEvents();
@@ -215,8 +274,6 @@ export class ExportsModule implements OnModuleInit {
             IntegrationEvents.account.created,
             IntegrationEvents.account.removal.completed,
             IntegrationEvents.export.batch.ready,
-            IntegrationEvents.export.cancelled,
-            IntegrationEvents.export.completed,
             IntegrationEvents.export.cleanup.triggered,
         ]);
     }
@@ -237,3 +294,5 @@ export class ExportsModule implements OnModuleInit {
         await this.objectStorageAdmin.setBucketTTL(ttl, bucketName);
     }
 }
+
+export class ExportsSharedModule {}

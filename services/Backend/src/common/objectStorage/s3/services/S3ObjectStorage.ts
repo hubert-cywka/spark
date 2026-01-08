@@ -8,8 +8,7 @@ import {
     S3ServiceException,
 } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
-import { Inject, Injectable, Logger } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+import { Injectable, Logger } from "@nestjs/common";
 import Archiver from "archiver";
 import Bottleneck from "bottleneck";
 import { type S3, InjectS3 } from "nestjs-s3";
@@ -31,15 +30,11 @@ const CONCURRENT_FILES = 5;
 export class S3ObjectStorage implements IObjectStorage {
     private readonly logger = new Logger(S3ObjectStorage.name);
     private readonly limiter = new Bottleneck({ maxConcurrent: CONCURRENT_FILES });
-    private readonly bucketName: string;
 
     constructor(
         @InjectS3() private readonly s3: S3,
-        @Inject(ConfigService) private readonly configService: ConfigService
-    ) {
-        // TODO: Make separate objects for each bucket
-        this.bucketName = this.configService.getOrThrow<string>("s3.buckets.exports.name");
-    }
+        private readonly bucketName: string
+    ) {}
 
     public async exists(path: string): Promise<boolean> {
         try {

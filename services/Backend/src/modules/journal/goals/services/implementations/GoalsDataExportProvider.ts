@@ -1,10 +1,11 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { DataExportScope } from "@/common/export/models/DataExportScope";
-import { type IDataExportProvider } from "@/common/export/services/IDataExportProvider";
-import { DataExportBatch } from "@/common/export/types/DataExportBatch";
-import { DataExportScopeDomain } from "@/common/export/types/DataExportScopeDomain";
 import { Order } from "@/common/pagination/types/Order";
+import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
+import { ExportStatus } from "@/modules/exports/shared/models/ExportStatus";
+import { type IDataExportProvider } from "@/modules/exports/shared/services/IDataExportProvider";
+import { DataExportBatch } from "@/modules/exports/shared/types/DataExportBatch";
+import { DataExportScopeDomain } from "@/modules/exports/shared/types/DataExportScopeDomain";
 import { type IGoalService, GoalServiceToken } from "@/modules/journal/goals/services/interfaces/IGoalService";
 
 @Injectable()
@@ -15,9 +16,13 @@ export class GoalsDataExportProvider implements IDataExportProvider {
         return scope.domain === DataExportScopeDomain.GOALS;
     }
 
-    public async *getDataStream(tenantId: string, scope: DataExportScope): AsyncIterable<DataExportBatch> {
+    public async *getDataStream(
+        tenantId: string,
+        scope: DataExportScope,
+        status: ExportStatus | null = null
+    ): AsyncIterable<DataExportBatch> {
         const take = 1000;
-        let nextCursor: string | null = null;
+        let nextCursor = status?.nextCursor;
         let hasMore = true;
 
         const filters = {
@@ -26,7 +31,7 @@ export class GoalsDataExportProvider implements IDataExportProvider {
             withProgress: true,
         };
 
-        let from = scope.dateRange.from;
+        let from = status?.exportedUntil ?? scope.dateRange.from;
         let to = scope.dateRange.to;
 
         while (hasMore) {
@@ -34,9 +39,10 @@ export class GoalsDataExportProvider implements IDataExportProvider {
             const lastGoal = goals.data[goals.data.length - 1];
             nextCursor = goals.meta.nextCursor;
             hasMore = goals.meta.hasNextPage;
-            to = hasMore ? lastGoal.createdAt : scope.dateRange.to;
+            to = hasMore ? lastGoal.updatedAt : scope.dateRange.to;
 
             yield {
+                nextCursor,
                 batch: goals.data,
                 batchScope: {
                     domain: scope.domain,

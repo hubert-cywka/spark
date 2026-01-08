@@ -24,13 +24,13 @@ export class DailyEntity {
     @Column({ type: "varchar" })
     date!: ISODateString;
 
-    @CreateDateColumn({ type: "timestamptz" })
+    @CreateDateColumn({ type: "timestamptz", precision: 3 })
     createdAt!: Date;
 
-    @UpdateDateColumn({ type: "timestamptz" })
+    @UpdateDateColumn({ type: "timestamptz", precision: 3 })
     updatedAt!: Date;
 
-    @DeleteDateColumn({ type: "timestamptz", nullable: true })
+    @DeleteDateColumn({ type: "timestamptz", precision: 3, nullable: true })
     deletedAt!: Date | null;
 
     @ManyToOne((type) => AuthorEntity, (author) => author.dailies, {

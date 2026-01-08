@@ -5,7 +5,6 @@ import { DataSource } from "typeorm";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEvents, IntegrationEventsModule } from "@/common/events";
-import { getIntegrationEventsMigrations } from "@/common/events/migrations";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -26,6 +25,7 @@ import { UserCreatedEventHandler } from "@/modules/users/events/UserCreatedEvent
 import { UserRemovedEventHandler } from "@/modules/users/events/UserRemovedEvent.handler";
 import { USERS_MODULE_DATA_SOURCE } from "@/modules/users/infrastructure/database/constants";
 import { RegenerateMigrations1749289881465 } from "@/modules/users/infrastructure/database/migrations/1749289881465-regenerate-migrations";
+import { TimestampsPrecisionUsers1767888115678 } from "@/modules/users/infrastructure/database/migrations/1767888115678-timestamps-precision-users";
 import { UserMapperToken } from "@/modules/users/mappers/IUser.mapper";
 import { UserMapper } from "@/modules/users/mappers/User.mapper";
 import { UserEventsPublisher } from "@/modules/users/services/implementations/UserEventsPublisher";
@@ -63,7 +63,11 @@ import { UsersServiceToken } from "@/modules/users/services/interfaces/IUsersSer
                 password: configService.getOrThrow<string>("modules.users.database.password"),
                 host: configService.getOrThrow<string>("modules.users.database.host"),
                 database: configService.getOrThrow<string>("modules.users.database.name"),
-                migrations: [...getIntegrationEventsMigrations(), RegenerateMigrations1749289881465],
+                migrations: [
+                    ...IntegrationEventsModule.getMigrations(),
+                    RegenerateMigrations1749289881465,
+                    TimestampsPrecisionUsers1767888115678,
+                ],
             }),
             inject: [ConfigService],
         }),

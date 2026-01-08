@@ -6,4 +6,5 @@ export type EntryDetail = {
     isFeatured: boolean;
     goals: string[];
     createdAt: Date;
+    updatedAt: Date;
 };

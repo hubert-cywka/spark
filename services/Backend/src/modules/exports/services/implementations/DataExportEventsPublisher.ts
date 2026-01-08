@@ -3,9 +3,9 @@ import { Inject, Injectable } from "@nestjs/common";
 import { DataExportCancelledEvent, DataExportStartedEvent } from "@/common/events";
 import { type IEventPublisher, EventPublisherToken } from "@/common/events/services/interfaces/IEventPublisher";
 import { DataExportCompletedEvent } from "@/common/events/types/export/DataExportCompletedEvent";
-import { DataExportScope } from "@/common/export/models/DataExportScope";
 import { stringifyDateRange } from "@/common/utils/dateUtils";
 import { type IDataExportEventsPublisher } from "@/modules/exports/services/interfaces/IDataExportEventsPublisher";
+import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
 
 @Injectable()
 export class DataExportEventsPublisher implements IDataExportEventsPublisher {

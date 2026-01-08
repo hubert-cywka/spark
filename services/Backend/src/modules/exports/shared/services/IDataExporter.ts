@@ -1,4 +1,4 @@
-import { DataExportScope } from "@/common/export/models/DataExportScope";
+import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
 
 export const DataExporterToken = Symbol("DataExporterToken");
 

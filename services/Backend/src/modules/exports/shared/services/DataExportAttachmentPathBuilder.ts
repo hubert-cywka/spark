@@ -1,5 +1,5 @@
-import { DataExportScope } from "@/common/export/models/DataExportScope";
-import { DataExportScopeDomain } from "@/common/export/types/DataExportScopeDomain";
+import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
+import { DataExportScopeDomain } from "@/modules/exports/shared/types/DataExportScopeDomain";
 import { DateRange } from "@/types/Date";
 
 export class DataExportAttachmentPathBuilder {

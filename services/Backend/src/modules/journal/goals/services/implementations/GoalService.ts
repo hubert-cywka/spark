@@ -69,8 +69,8 @@ export class GoalService implements IGoalService {
         }
 
         const result = await queryBuilder.getMany();
-        const mappedResult = this.goalMapper.fromEntityToModelBulk(result);
-        return createPage(mappedResult, pageOptions.take, paginationKeys);
+        const page = createPage(result, pageOptions.take, paginationKeys);
+        return this.goalMapper.fromEntityToModelPaginated(page);
     }
 
     public async getById(authorId: string, goalId: string): Promise<Goal> {

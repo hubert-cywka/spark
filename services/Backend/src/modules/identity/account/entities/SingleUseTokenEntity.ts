@@ -17,16 +17,16 @@ export class SingleUseTokenEntity {
     @Column({ type: "varchar" })
     type!: SingleUseTokenType;
 
-    @Column({ type: "timestamptz" })
+    @Column({ type: "timestamptz", precision: 3 })
     expiresAt!: Date;
 
-    @CreateDateColumn({ type: "timestamptz" })
+    @CreateDateColumn({ type: "timestamptz", precision: 3 })
     createdAt!: Date;
 
-    @Column({ type: "timestamptz", nullable: true })
+    @Column({ type: "timestamptz", precision: 3, nullable: true })
     invalidatedAt!: Date | null;
 
-    @Column({ type: "timestamptz", nullable: true })
+    @Column({ type: "timestamptz", precision: 3, nullable: true })
     usedAt!: Date | null;
 
     @ManyToOne((type) => BaseAccountEntity, (account) => account.singleUseTokens, {
