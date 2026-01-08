@@ -30,7 +30,7 @@ export const GoalsDashboard = () => {
         hasNextPage,
         isLoading,
     } = useGoals({
-        filters: { name: debouncedSearch, withProgress: true },
+        filters: { name: debouncedSearch, includeProgress: true },
     });
     const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
 

@@ -1,4 +1,4 @@
-import { IsBoolean, IsDateString, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsDateString, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 
 import { IsNullable } from "@/lib/validation";
 
@@ -18,10 +18,6 @@ export class GoalDto {
     @IsOptional()
     @IsNumber()
     targetProgress!: number;
-
-    @IsOptional()
-    @IsBoolean()
-    isTargetMet!: boolean;
 
     @IsDateString()
     @IsNullable()

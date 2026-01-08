@@ -25,7 +25,7 @@ export class GoalService implements IGoalService {
     public async findAll(
         authorId: string,
         pageOptions: PageOptions,
-        { entries, excludeEntries, name, withProgress, updatedAfter, updatedBefore }: GoalFilters = {}
+        { entries, excludeEntries, name, includeProgress, updatedAfter, updatedBefore }: GoalFilters = {}
     ): Promise<Paginated<Goal>> {
         const queryBuilder = this.getRepository().createQueryBuilder("goal").where("goal.authorId = :authorId", { authorId });
 
@@ -40,7 +40,7 @@ export class GoalService implements IGoalService {
             queryBuilder.andWhere("goal.updatedAt <= :updatedBefore", { updatedBefore });
         }
 
-        if (withProgress) {
+        if (includeProgress) {
             queryBuilder
                 .leftJoinAndSelect("goal.entries", "completedEntry", "completedEntry.isCompleted = true")
                 .addSelect(["completedEntry.id"]);

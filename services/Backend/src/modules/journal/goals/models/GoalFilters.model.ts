@@ -2,7 +2,7 @@ export type GoalFilters = {
     entries?: string[];
     name?: string;
     excludeEntries?: string[];
-    withProgress?: boolean;
+    includeProgress?: boolean;
     updatedAfter?: Date;
     updatedBefore?: Date;
 };
