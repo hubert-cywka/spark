@@ -7,7 +7,7 @@ import { Goal } from "@/features/goals/types/Goal";
 import { apiClient } from "@/lib/apiClient/apiClient";
 
 export class GoalsService {
-    public static async getPage(cursor: PageCursor, { entries, excludeEntries, name, pageSize, withProgress }: GoalsQueryFilters = {}) {
+    public static async getPage(cursor: PageCursor, { entries, excludeEntries, name, pageSize, includeProgress }: GoalsQueryFilters = {}) {
         const searchParams = new URLSearchParams({
             order: "DESC",
         });
@@ -16,8 +16,8 @@ export class GoalsService {
             searchParams.append("cursor", cursor);
         }
 
-        if (withProgress) {
-            searchParams.append("withProgress", "true");
+        if (includeProgress) {
+            searchParams.append("includeProgress", "true");
         }
 
         if (entries) {
@@ -60,7 +60,7 @@ export class GoalsService {
     }
 
     private static mapDtoToGoal(dto: GoalDto): Goal {
-        const isAccomplished = dto.isTargetMet ?? false;
+        const isAccomplished = dto.targetProgress ? dto.targetProgress >= dto.target : false;
         const isAfterDeadline = dto.deadline ? new Date() > new Date(dto.deadline) : false;
         const isExpired = isAfterDeadline ? !isAccomplished : false;
 

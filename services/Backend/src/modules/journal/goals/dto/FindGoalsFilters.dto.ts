@@ -23,5 +23,5 @@ export class FindGoalsFiltersDto {
     @IsOptional()
     @IsBoolean()
     @Type(() => Boolean)
-    readonly withProgress?: boolean;
+    readonly includeProgress?: boolean;
 }

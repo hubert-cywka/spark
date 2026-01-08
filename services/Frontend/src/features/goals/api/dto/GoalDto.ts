@@ -4,7 +4,6 @@ export type GoalDto = {
     name: string;
     target: number;
     targetProgress?: number;
-    isTargetMet?: boolean;
     deadline: string | null;
     createdAt: string;
     updatedAt: string;

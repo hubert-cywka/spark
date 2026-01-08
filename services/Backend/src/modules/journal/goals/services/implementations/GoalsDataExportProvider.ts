@@ -28,7 +28,7 @@ export class GoalsDataExportProvider implements IDataExportProvider {
         const filters = {
             updatedAfter: scope.dateRange.from,
             updatedBefore: scope.dateRange.to,
-            withProgress: true,
+            includeProgress: true,
         };
 
         let from = status?.exportedUntil ?? scope.dateRange.from;
