@@ -9,7 +9,6 @@ import { ItemLoader } from "@/components/ItemLoader/ItemLoader";
 import { DailyActivityChart } from "@/features/daily/components/DailyActivityChart/DailyActivityChart.tsx";
 import { DailyListHeader } from "@/features/daily/components/DailyList/components/DailyListHeader/DailyListHeader";
 import { NoDailiesMessage } from "@/features/daily/components/DailyList/components/NoDailiesMessage/NoDailiesMessage.tsx";
-import { useDailiesEvents } from "@/features/daily/components/DailyList/hooks/useDailiesEvents";
 import { useDailyDateRange } from "@/features/daily/components/DailyList/hooks/useDailyDateRange";
 import { useDailyEntriesEvents } from "@/features/daily/components/DailyList/hooks/useDailyEntriesEvents";
 import { useDailyEntriesPlaceholders } from "@/features/daily/components/DailyList/hooks/useDailyEntriesPlaceholders";
@@ -18,11 +17,11 @@ import { getEntryElementId, getEntryPlaceholderElementId } from "@/features/dail
 import { DayHeader } from "@/features/daily/components/DayHeader/DayHeader";
 import { DaySkeleton } from "@/features/daily/components/DaySkeleton";
 import { useDailyMetrics } from "@/features/daily/hooks/useDailyMetrics.ts";
-import { useGetDailiesByDateRange } from "@/features/daily/hooks/useGetDailiesByDateRange";
 import { formatToISODateString } from "@/features/daily/utils/dateUtils";
 import { DailyEntry, DailyEntryPlaceholder } from "@/features/entries/components/DailyEntry";
 import { EntryFiltersGroup } from "@/features/entries/components/EntryFiltersGroup";
 import { useGetDailyEntriesByDateRange } from "@/features/entries/hooks";
+import { ISODateString } from "@/types/ISODateString";
 import { onNextTick } from "@/utils/onNextTick.ts";
 
 // TODO: Improve UX of navigation between dailies
@@ -45,21 +44,12 @@ export const DailyList = () => {
     });
 
     const {
-        data: dailyData,
+        data: entries,
+        groupedData: entriesGroups,
+        isFetching: isFetchingEntries,
         hasNextPage,
         fetchNextPage,
-        isFetching,
-        queryKey,
-    } = useGetDailiesByDateRange({
-        filters: {
-            from: formatToISODateString(startDate),
-            to: formatToISODateString(endDate),
-        },
-    });
-
-    const dailies = useMemo(() => dailyData?.pages?.flatMap((page) => page.data) ?? [], [dailyData?.pages]);
-
-    const { data: entriesGroups, isFetching: isFetchingEntries } = useGetDailyEntriesByDateRange({
+    } = useGetDailyEntriesByDateRange({
         from: formatToISODateString(startDate),
         to: formatToISODateString(endDate),
         featured: filters.featured,
@@ -67,11 +57,10 @@ export const DailyList = () => {
         autoFetch: true,
     });
 
-    const { onCreateNewDaily, onUpdateDailyDate } = useDailiesEvents({
-        queryKey,
-        endDate,
-        startDate,
-    });
+    const dailies = useMemo(() => {
+        const allEntries = entries?.pages?.flatMap((page) => page.data) ?? [];
+        return Array.from(new Map(allEntries.map((entry) => [entry.date, { date: entry.date }])).values());
+    }, [entries?.pages]);
 
     const { onCreateEntry, onUpdateEntryContent, onDeleteEntry, onUpdateEntryStatus, onUpdateEntryIsFeatured } = useDailyEntriesEvents();
     const { placeholders, addPlaceholder, removePlaceholder } = useDailyEntriesPlaceholders();
@@ -82,8 +71,9 @@ export const DailyList = () => {
         onBottomReached: addPlaceholder,
     });
 
-    const onSavePlaceholder = async (dailyId: string, content: string) => {
-        const entry = await onCreateEntry(dailyId, {
+    const onSavePlaceholder = async (date: ISODateString, content: string) => {
+        const entry = await onCreateEntry({
+            date,
             content,
             isCompleted: filters.completed ?? false,
             isFeatured: filters.featured ?? false,
@@ -91,7 +81,7 @@ export const DailyList = () => {
 
         if (entry) {
             navigateByEntryId("input", entry.id);
-            removePlaceholder(dailyId);
+            removePlaceholder(date);
         }
     };
 
@@ -127,29 +117,23 @@ export const DailyList = () => {
 
     useEffect(
         function processPendingDailyNavigation() {
-            if (isFetching || isFetchingEntries || !targetDailyDateRef.current) {
+            if (isFetchingEntries || !targetDailyDateRef.current) {
                 return;
             }
 
             scrollToDaily(targetDailyDateRef.current);
         },
-        [isFetching, isFetchingEntries]
+        [isFetchingEntries]
     );
 
-    const createEntryDraft = (dailyId: string) => {
-        addPlaceholder(dailyId);
-        navigateToPlaceholderByGroup(dailyId);
+    const createEntryDraft = (date: string) => {
+        addPlaceholder(date);
+        navigateToPlaceholderByGroup(date);
     };
 
     return (
         <main className={styles.container} ref={containerRef}>
-            <DailyListHeader
-                onCreateNewDaily={onCreateNewDaily}
-                onNextTimeframe={setNext}
-                onPrevTimeframe={setPrev}
-                onReset={reset}
-                timeframeStart={startDate}
-            >
+            <DailyListHeader timeframeStart={startDate} onNextTimeframe={setNext} onPrevTimeframe={setPrev} onReset={reset}>
                 <EntryFiltersGroup withReset onFiltersChange={setFilters} />
             </DailyListHeader>
 
@@ -160,11 +144,11 @@ export const DailyList = () => {
             />
 
             {dailies.map((daily) => (
-                <section className={styles.day} key={daily.id} data-daily-date={daily.date}>
-                    <DayHeader daily={daily} onUpdateDate={onUpdateDailyDate} onCreateEntryDraft={() => createEntryDraft(daily.id)} />
+                <section className={styles.day} key={daily.date} data-daily-date={daily.date}>
+                    <DayHeader date={daily.date} onCreateEntryDraft={() => createEntryDraft(daily.date)} />
 
                     <ul className={styles.entries}>
-                        {entriesGroups[daily.id]?.map((entry, index) => (
+                        {entriesGroups[daily.date]?.map((entry, index) => (
                             <DailyEntry
                                 id={getEntryElementId(entry.id)}
                                 entry={entry}
@@ -173,29 +157,33 @@ export const DailyList = () => {
                                 onChangeStatus={onUpdateEntryStatus}
                                 onSaveContent={onUpdateEntryContent}
                                 onChangeIsFeatured={onUpdateEntryIsFeatured}
-                                onFocusColumn={(column: DailyEntryColumn) => navigateByIndex(column, daily.id, index)}
-                                onNavigateDown={(target) => navigateByIndex(target, daily.id, index + 1)}
-                                onNavigateUp={(target) => navigateByIndex(target, daily.id, index - 1)}
+                                onFocusColumn={(column: DailyEntryColumn) => navigateByIndex(column, daily.date, index)}
+                                onNavigateDown={(target) => navigateByIndex(target, daily.date, index + 1)}
+                                onNavigateUp={(target) => navigateByIndex(target, daily.date, index - 1)}
                             />
                         ))}
 
-                        {(!entriesGroups[daily.id]?.length || placeholders.includes(daily.id)) && (
+                        {(!entriesGroups[daily.date]?.length || placeholders.includes(daily.date)) && (
                             <DailyEntryPlaceholder
-                                id={getEntryPlaceholderElementId(daily.id)}
-                                onDelete={() => removePlaceholder(daily.id)}
-                                onSaveContent={(content) => onSavePlaceholder(daily.id, content)}
-                                onNavigateUp={() => navigateByIndex("input", daily.id, entriesGroups[daily.id]?.length - 1)}
+                                id={getEntryPlaceholderElementId(daily.date)}
+                                onDelete={() => removePlaceholder(daily.date)}
+                                onSaveContent={(content) => onSavePlaceholder(daily.date, content)}
+                                onNavigateUp={() => navigateByIndex("input", daily.date, entriesGroups[daily.date]?.length - 1)}
                             />
                         )}
                     </ul>
                 </section>
             ))}
 
-            <ItemLoader shouldLoadNext={hasNextPage} onLoadNext={fetchNextPage} isLoaderVisible={isFetching && dayjs().isAfter(startDate)}>
+            <ItemLoader
+                shouldLoadNext={hasNextPage}
+                onLoadNext={fetchNextPage}
+                isLoaderVisible={isFetchingEntries && dayjs().isAfter(startDate)}
+            >
                 <DaySkeleton count={3} />
             </ItemLoader>
 
-            {!dailies.length && !isFetching && <NoDailiesMessage onCreateNewDaily={onCreateNewDaily} timeframeStart={startDate} />}
+            {!dailies.length && !isFetchingEntries && <NoDailiesMessage onCreateNewDaily={() => ({})} timeframeStart={startDate} />}
         </main>
     );
 };

@@ -3,15 +3,15 @@ import { Pencil, Plus, Trash } from "lucide-react";
 import { IconButton } from "@/components/IconButton";
 import { PassiveTextInputPassiveModeActionsRenderProps } from "@/components/PassiveTextInput";
 import { DeleteDailyModal } from "@/features/daily/components/DeleteDailyModal/DeleteDailyModal";
-import { Daily } from "@/features/daily/types/Daily";
+import { ISODateString } from "@/types/ISODateString";
 
 type DayHeaderPassiveModeActionsRenderProps = {
-    daily: Daily;
+    date: ISODateString;
     onCreateEntryDraft: () => void;
 } & PassiveTextInputPassiveModeActionsRenderProps;
 
 export const DayHeaderPassiveModeActionsRender = ({
-    daily,
+    date,
     onStartEditMode,
     onCreateEntryDraft,
     translationFn,
@@ -35,7 +35,8 @@ export const DayHeaderPassiveModeActionsRender = ({
                 aria-label={translationFn("daily.day.actions.edit.label")}
             />
             <DeleteDailyModal
-                daily={daily}
+                date={date}
+                onDelete={() => {}}
                 trigger={({ onClick }) => (
                     <IconButton
                         variant="danger"

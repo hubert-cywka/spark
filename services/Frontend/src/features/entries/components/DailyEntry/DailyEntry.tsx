@@ -24,7 +24,7 @@ type DailyEntryProps = {
     onSaveContent: (entry: Entry, content: string) => void;
     onChangeStatus: (entry: Entry, status: boolean) => void;
     onChangeIsFeatured: (entry: Entry, isFeatured: boolean) => void;
-    onDelete: (dailyId: string, entryId: string) => void;
+    onDelete: (entryId: string) => void;
 };
 
 export const DailyEntry = ({
@@ -43,7 +43,7 @@ export const DailyEntry = ({
     return (
         <DailyEntryWrapper id={id}>
             <div className={styles.row}>
-                <DailyEntryContextMenu onDelete={() => onDelete(entry.dailyId, entry.id)}>
+                <DailyEntryContextMenu onDelete={() => onDelete(entry.id)}>
                     <DailyEntryContextMenuTrigger
                         column="actions"
                         onNavigateRight={() => onFocusColumn("checkbox")}
@@ -89,7 +89,7 @@ export const DailyEntry = ({
                     onNavigateDown={() => onNavigateDown("input")}
                     onNavigateLeft={() => onFocusColumn("goals")}
                     onSaveContent={(content) => onSaveContent(entry, content)}
-                    onDelete={() => onDelete(entry.dailyId, entry.id)}
+                    onDelete={() => onDelete(entry.id)}
                     placeholder={t("entries.placeholder")}
                 />
             </div>

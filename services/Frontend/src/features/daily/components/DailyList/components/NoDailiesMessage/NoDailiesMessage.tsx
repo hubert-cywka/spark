@@ -10,6 +10,7 @@ type NoDailiesMessageProps = {
     timeframeStart: Date;
 };
 
+// TODO: HC
 export const NoDailiesMessage = ({ onCreateNewDaily, timeframeStart }: NoDailiesMessageProps) => {
     const t = useTranslate();
     const locale = useLocale();

@@ -5,9 +5,7 @@ import { Repository, SelectQueryBuilder } from "typeorm";
 import { applyCursorBasedPagination, createPage, createPaginationKeys } from "@/common/pagination/pagination";
 import { type PageOptions } from "@/common/pagination/types/PageOptions";
 import { type Paginated } from "@/common/pagination/types/Paginated";
-import { type IDailyProvider, DailyProviderToken } from "@/modules/journal/daily/services/interfaces/IDailyProvider";
 import { EntryEntity } from "@/modules/journal/entries/entities/Entry.entity";
-import { EntryDailyNotFoundError } from "@/modules/journal/entries/errors/EntryDailyNotFoundError";
 import { EntryNotFoundError } from "@/modules/journal/entries/errors/EntryNotFound.error";
 import { type IEntryMapper, EntryMapperToken } from "@/modules/journal/entries/mappers/IEntry.mapper";
 import { type Entry } from "@/modules/journal/entries/models/Entry.model";
@@ -21,8 +19,7 @@ export class EntryService implements IEntryService {
     public constructor(
         @InjectRepository(EntryEntity, JOURNAL_MODULE_DATA_SOURCE)
         private readonly repository: Repository<EntryEntity>,
-        @Inject(EntryMapperToken) private readonly entryMapper: IEntryMapper,
-        @Inject(DailyProviderToken) private readonly dailyProvider: IDailyProvider
+        @Inject(EntryMapperToken) private readonly entryMapper: IEntryMapper
     ) {}
 
     public async findAll(authorId: string, pageOptions: PageOptions, filters: EntryFilters = {}): Promise<Paginated<Entry>> {
@@ -42,20 +39,17 @@ export class EntryService implements IEntryService {
 
     public async create(
         authorId: string,
-        dailyId: string,
-        { content, isCompleted, isFeatured }: Pick<Entry, "content" | "isFeatured" | "isCompleted">
+        { date, content, isCompleted, isFeatured }: Pick<Entry, "date" | "content" | "isFeatured" | "isCompleted">
     ): Promise<Entry> {
-        await this.assertDailyExists(authorId, dailyId);
-
         const result = await this.getRepository()
             .createQueryBuilder()
             .insert()
             .into(EntryEntity)
             .values({
+                date,
                 content,
                 isCompleted,
                 isFeatured,
-                daily: { id: dailyId },
                 author: { id: authorId },
             })
             .returning("*")
@@ -65,35 +59,32 @@ export class EntryService implements IEntryService {
         return this.entryMapper.fromEntityToModel(insertedEntity);
     }
 
-    public async deleteById(authorId: string, dailyId: string, entryId: string): Promise<void> {
+    public async deleteById(authorId: string, entryId: string): Promise<void> {
         const result = await this.getRepository().softDelete({
             id: entryId,
             author: { id: authorId },
-            daily: { id: dailyId },
         });
 
         if (!result.affected) {
-            this.logger.warn({ authorId, dailyId, entryId }, "Entry not found, cannot delete.");
+            this.logger.warn({ authorId, entryId }, "Entry not found, cannot delete.");
             throw new EntryNotFoundError();
         }
     }
 
-    public async restoreById(authorId: string, dailyId: string, entryId: string): Promise<void> {
+    public async restoreById(authorId: string, entryId: string): Promise<void> {
         const result = await this.getRepository().restore({
             id: entryId,
             author: { id: authorId },
-            daily: { id: dailyId },
         });
 
         if (!result.affected) {
-            this.logger.warn({ authorId, dailyId, entryId }, "Entry not found, cannot restore.");
+            this.logger.warn({ authorId, entryId }, "Entry not found, cannot restore.");
             throw new EntryNotFoundError();
         }
     }
 
     public async update(
         authorId: string,
-        dailyId: string,
         entryId: string,
         partialEntry: Pick<Entry, "isFeatured" | "isCompleted" | "content">
     ): Promise<Entry> {
@@ -103,14 +94,13 @@ export class EntryService implements IEntryService {
             .set(partialEntry)
             .where("id = :entryId", { entryId })
             .andWhere("author.id = :authorId", { authorId })
-            .andWhere("daily.id = :dailyId", { dailyId })
             .returning("*")
             .execute();
 
         const updatedEntity = result.raw[0];
 
         if (!updatedEntity) {
-            this.logger.warn({ authorId, dailyId, entryId }, "Entry not found, cannot update.");
+            this.logger.warn({ authorId, entryId }, "Entry not found, cannot update.");
             throw new EntryNotFoundError();
         }
 
@@ -144,19 +134,13 @@ export class EntryService implements IEntryService {
         return qb;
     }
 
-    private applyDailyFilters(qb: SelectQueryBuilder<EntryEntity>, { from, to, includeDaily }: Partial<EntryFilters>) {
-        if (includeDaily) {
-            qb.innerJoinAndSelect("entry.daily", "daily");
-        } else if (from || to) {
-            qb.innerJoin("entry.daily", "daily");
-        }
-
+    private applyDailyFilters(qb: SelectQueryBuilder<EntryEntity>, { from, to }: Partial<EntryFilters>) {
         if (from) {
-            qb.andWhere("daily.date >= :from", { from });
+            qb.andWhere("entry.date >= :from", { from });
         }
 
         if (to) {
-            qb.andWhere("daily.date <= :to", { to });
+            qb.andWhere("entry.date <= :to", { to });
         }
 
         return qb;
@@ -174,14 +158,6 @@ export class EntryService implements IEntryService {
         }
 
         return qb;
-    }
-
-    private async assertDailyExists(authorId: string, dailyId: string): Promise<void> {
-        const exists = await this.dailyProvider.existsById(authorId, dailyId);
-
-        if (!exists) {
-            throw new EntryDailyNotFoundError(dailyId);
-        }
     }
 
     private getRepository(): Repository<EntryEntity> {

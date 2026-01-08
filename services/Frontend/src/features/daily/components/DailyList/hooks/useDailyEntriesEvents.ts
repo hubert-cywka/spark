@@ -26,9 +26,9 @@ export const useDailyEntriesEvents = () => {
     const { mutateAsync: updateEntryIsFeatured } = useUpdateEntryIsFeatured();
     const { onUpdateEntryIsFeaturedError } = useUpdateEntryIsFeaturedEvents();
 
-    const onDeleteEntry = async (dailyId: string, entryId: string) => {
+    const onDeleteEntry = async (entryId: string) => {
         try {
-            return await deleteEntry({ entryId, dailyId });
+            return await deleteEntry({ entryId });
         } catch (err) {
             onDeleteEntryError(err);
         }
@@ -38,7 +38,6 @@ export const useDailyEntriesEvents = () => {
         try {
             return await updateEntryContent({
                 entryId: entry.id,
-                dailyId: entry.dailyId,
                 content: newContent,
             });
         } catch (err) {
@@ -50,7 +49,6 @@ export const useDailyEntriesEvents = () => {
         try {
             return await updateEntryStatus({
                 entryId: entry.id,
-                dailyId: entry.dailyId,
                 isCompleted: newStatus,
             });
         } catch (err) {
@@ -62,7 +60,6 @@ export const useDailyEntriesEvents = () => {
         try {
             return await updateEntryIsFeatured({
                 entryId: entry.id,
-                dailyId: entry.dailyId,
                 isFeatured,
             });
         } catch (err) {
@@ -70,9 +67,9 @@ export const useDailyEntriesEvents = () => {
         }
     };
 
-    const onCreateEntry = async (dailyId: string, entry: Pick<Entry, "content" | "isCompleted" | "isFeatured">) => {
+    const onCreateEntry = async (entry: Pick<Entry, "date" | "content" | "isCompleted" | "isFeatured">) => {
         try {
-            return await createEntry({ dailyId, ...entry });
+            return await createEntry(entry);
         } catch (err) {
             onCreateEntryError(err);
         }

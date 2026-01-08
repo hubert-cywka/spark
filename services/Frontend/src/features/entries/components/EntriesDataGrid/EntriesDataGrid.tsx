@@ -20,7 +20,7 @@ import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 import { denormalize } from "@/utils/tableUtils.ts";
 
 // TODO: Mention, that aggregating by "goals" may seemingly duplicate entries
-const GROUP_BY_COLUMNS: EntriesDataGridColumn[] = ["goals", "daily", "isFeatured", "isCompleted"];
+const GROUP_BY_COLUMNS: EntriesDataGridColumn[] = ["goals", "date", "isFeatured", "isCompleted"];
 
 // TODO: Semantic html
 // TODO: Filter by groups
@@ -37,7 +37,7 @@ export const EntriesDataGrid = () => {
 
     const { setFlags, flags, dateRange, setDateRange, content, setContent, debouncedContent } = useEntriesDataGridFilters();
     const { data, isLoading } = useEntries({
-        filters: { ...flags, ...dateRange, content: debouncedContent, includeGoals: true, includeDaily: true },
+        filters: { ...flags, ...dateRange, content: debouncedContent, includeGoals: true },
         autoFetch: true,
     });
 

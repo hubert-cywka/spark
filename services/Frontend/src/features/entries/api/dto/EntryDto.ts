@@ -2,7 +2,7 @@ import { ISODateString } from "@/types/ISODateString";
 
 export type EntryDto = {
     id: string;
-    dailyId: string;
+    date: ISODateString;
     authorId: string;
     content: string;
     isCompleted: boolean;
@@ -11,5 +11,4 @@ export type EntryDto = {
     updatedAt: string;
 
     goals?: string[];
-    daily?: ISODateString;
 };

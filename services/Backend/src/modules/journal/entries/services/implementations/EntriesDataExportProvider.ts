@@ -29,7 +29,6 @@ export class EntriesDataExportProvider implements IDataExportProvider {
             updatedAfter: scope.dateRange.from,
             updatedBefore: scope.dateRange.to,
             includeGoals: true,
-            includeDaily: true,
         };
 
         let from = status?.exportedUntil ?? scope.dateRange.from;

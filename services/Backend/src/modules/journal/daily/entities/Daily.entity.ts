@@ -1,18 +1,5 @@
-import {
-    type Relation,
-    Column,
-    CreateDateColumn,
-    DeleteDateColumn,
-    Entity,
-    Index,
-    ManyToOne,
-    OneToMany,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn,
-} from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
-import { AuthorEntity } from "@/modules/journal/authors/entities/Author.entity";
-import { EntryEntity } from "@/modules/journal/entries/entities/Entry.entity";
 import { type ISODateString } from "@/types/Date";
 
 @Entity("daily")
@@ -33,16 +20,6 @@ export class DailyEntity {
     @DeleteDateColumn({ type: "timestamptz", precision: 3, nullable: true })
     deletedAt!: Date | null;
 
-    @ManyToOne((type) => AuthorEntity, (author) => author.dailies, {
-        onDelete: "CASCADE",
-    })
-    author!: Relation<AuthorEntity>;
-
     @Column({ type: "uuid" })
     authorId!: string;
-
-    @OneToMany((type) => EntryEntity, (entry) => entry.daily, {
-        cascade: ["remove", "soft-remove"],
-    })
-    entries!: Relation<EntryEntity>[];
 }

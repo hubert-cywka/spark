@@ -674,9 +674,6 @@
                 "label": "Add new daily"
             }
         },
-        "createDailyButton": {
-            "label": "Add new daily"
-        },
         "filters": {
             "previousYear": "Go 12 months back",
             "nextYear": "Go 12 months forward",

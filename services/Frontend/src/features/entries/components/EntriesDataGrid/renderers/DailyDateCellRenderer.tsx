@@ -18,7 +18,7 @@ const DailyDateCellValueRenderer = ({ value }: DailyDateCellValueRendererProps) 
 export const DailyDateCellRenderer = ({ row }: RenderCellProps<DetailedEntry>) => {
     return (
         <div className={styles.container}>
-            <DailyDateCellValueRenderer value={row.daily} />
+            <DailyDateCellValueRenderer value={row.date} />
         </div>
     );
 };
@@ -26,7 +26,7 @@ export const DailyDateCellRenderer = ({ row }: RenderCellProps<DetailedEntry>) =
 export const DailyDateGroupCellRenderer = (p: RenderGroupCellProps<DetailedEntry>) => {
     return (
         <GroupCellRenderer {...p}>
-            <DailyDateCellValueRenderer value={p.row.childRows[0].daily} />
+            <DailyDateCellValueRenderer value={p.row.childRows[0].date} />
         </GroupCellRenderer>
     );
 };

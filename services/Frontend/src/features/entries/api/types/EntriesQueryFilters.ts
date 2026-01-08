@@ -8,5 +8,4 @@ export type EntriesQueryFilters = {
     completed?: boolean;
     content?: string;
     includeGoals?: boolean;
-    includeDaily?: boolean;
 };
