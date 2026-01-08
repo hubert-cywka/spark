@@ -1,24 +1,33 @@
 import { PageDto } from "@/api/dto/PageDto";
 import { PageCursor } from "@/api/types/PageCursor.ts";
 import { CreateEntryRequestDto } from "@/features/entries/api/dto/CreateEntryRequestDto";
-import { EntryDetailDto } from "@/features/entries/api/dto/EntryDetailDto.ts";
 import { EntryDto } from "@/features/entries/api/dto/EntryDto";
 import { UpdateEntryContentRequestDto } from "@/features/entries/api/dto/UpdateEntryContentRequestDto";
 import { UpdateEntryIsFeaturedRequestDto } from "@/features/entries/api/dto/UpdateEntryIsFeaturedRequestDto.ts";
 import { UpdateEntryStatusRequestDto } from "@/features/entries/api/dto/UpdateEntryStatusRequestDto";
-import { EntriesDetailsQueryFilters } from "@/features/entries/api/types/EntriesDetailsQueryFilters.ts";
 import { EntriesQueryFilters } from "@/features/entries/api/types/EntriesQueryFilters";
-import { Entry, EntryDetail } from "@/features/entries/types/Entry";
+import { Entry } from "@/features/entries/types/Entry";
 import { apiClient } from "@/lib/apiClient/apiClient";
 
 const PAGE_SIZE = 100;
 
 export class EntriesService {
-    public static async getPage(cursor: PageCursor, { from, to, goals, featured, completed, content }: EntriesQueryFilters = {}) {
+    public static async getPage(
+        cursor: PageCursor,
+        { from, to, goals, featured, completed, content, includeGoals, includeDaily }: EntriesQueryFilters = {}
+    ) {
         const searchParams = new URLSearchParams({
             order: "DESC",
             take: String(PAGE_SIZE),
         });
+
+        if (includeGoals) {
+            searchParams.append("includeGoals", "true");
+        }
+
+        if (includeDaily) {
+            searchParams.append("includeDaily", "true");
+        }
 
         if (cursor) {
             searchParams.append("cursor", cursor);
@@ -50,41 +59,6 @@ export class EntriesService {
 
         const { data } = await apiClient.get<PageDto<EntryDto>>(`/entry?${searchParams}`);
         return { ...data, data: data.data.map(EntriesService.mapDtoToEntry) };
-    }
-
-    public static async getDetailedPage(cursor: PageCursor, { from, to, goals, featured, completed, content }: EntriesDetailsQueryFilters) {
-        const searchParams = new URLSearchParams({
-            order: "DESC",
-            take: String(PAGE_SIZE),
-            from,
-            to,
-        });
-
-        if (cursor) {
-            searchParams.append("cursor", cursor);
-        }
-
-        if (content) {
-            searchParams.append("content", content);
-        }
-
-        if (goals) {
-            searchParams.append("goals", goals.join(","));
-        }
-
-        if (featured !== undefined) {
-            searchParams.append("featured", featured.toString());
-        }
-
-        if (completed !== undefined) {
-            searchParams.append("completed", completed.toString());
-        }
-
-        const { data } = await apiClient.get<PageDto<EntryDetailDto>>(`/entry/details?${searchParams}`);
-        return {
-            ...data,
-            data: data.data.map(EntriesService.mapDtoToEntryDetails),
-        };
     }
 
     public static async createOne({ dailyId, ...dto }: CreateEntryRequestDto & { dailyId: string }) {
@@ -125,17 +99,8 @@ export class EntriesService {
             isFeatured: dto.isFeatured,
             createdAt: new Date(dto.createdAt),
             updatedAt: new Date(dto.updatedAt),
-        };
-    }
-
-    private static mapDtoToEntryDetails(dto: EntryDetailDto): EntryDetail {
-        return {
-            id: dto.id,
-            content: dto.content,
-            isCompleted: dto.isCompleted,
-            isFeatured: dto.isFeatured,
-            goals: dto.goals,
             daily: dto.daily,
+            goals: dto.goals,
         };
     }
 }

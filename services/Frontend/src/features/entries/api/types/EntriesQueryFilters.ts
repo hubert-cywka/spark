@@ -7,4 +7,6 @@ export type EntriesQueryFilters = {
     featured?: boolean;
     completed?: boolean;
     content?: string;
+    includeGoals?: boolean;
+    includeDaily?: boolean;
 };

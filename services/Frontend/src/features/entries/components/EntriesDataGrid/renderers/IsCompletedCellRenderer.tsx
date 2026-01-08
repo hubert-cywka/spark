@@ -5,7 +5,7 @@ import styles from "./styles/IsCompletedCellRenderer.module.scss";
 
 import { Badge } from "@/components/Badge";
 import { GroupCellRenderer } from "@/components/DataGrid/renderers/GroupCellRenderer.tsx";
-import { EntryDetail } from "@/features/entries/types/Entry";
+import { DetailedEntry } from "@/features/entries/types/Entry";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
 type IsCompletedCellValueRendererProps = {
@@ -22,11 +22,11 @@ const IsCompletedCellValueRenderer = ({ value }: IsCompletedCellValueRendererPro
     );
 };
 
-export const IsCompletedCellRenderer = ({ row }: RenderCellProps<EntryDetail>) => {
+export const IsCompletedCellRenderer = ({ row }: RenderCellProps<DetailedEntry>) => {
     return <IsCompletedCellValueRenderer value={row.isCompleted} />;
 };
 
-export const IsCompletedGroupCellRenderer = (p: RenderGroupCellProps<EntryDetail>) => {
+export const IsCompletedGroupCellRenderer = (p: RenderGroupCellProps<DetailedEntry>) => {
     return (
         <GroupCellRenderer {...p}>
             <IsCompletedCellValueRenderer value={p.row.childRows[0].isCompleted} />

@@ -17,6 +17,9 @@ export class EntryMapper extends BaseModelDTOEntityMapper<Entry, EntryDto, Entry
             authorId: entity.authorId,
             createdAt: entity.createdAt,
             updatedAt: entity.updatedAt,
+
+            daily: entity.daily?.date,
+            goals: entity.goals?.map((goal) => goal.name),
         };
     }
 
@@ -30,6 +33,9 @@ export class EntryMapper extends BaseModelDTOEntityMapper<Entry, EntryDto, Entry
             authorId: model.authorId,
             createdAt: model.createdAt.toISOString(),
             updatedAt: model.updatedAt.toISOString(),
+
+            daily: model.daily,
+            goals: model.goals,
         });
     }
 }

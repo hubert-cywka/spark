@@ -10,15 +10,13 @@ export type Entry = {
     isFeatured: boolean;
     updatedAt: Date;
     createdAt: Date;
+    goals?: string[];
+    daily?: ISODateString;
 };
 
-export type EntryDetail = {
-    id: string;
-    daily: ISODateString;
-    content: string;
-    isCompleted: boolean;
-    isFeatured: boolean;
+export type DetailedEntry = Entry & {
     goals: string[];
+    daily: ISODateString;
 };
 
 export type EntriesMetrics = {

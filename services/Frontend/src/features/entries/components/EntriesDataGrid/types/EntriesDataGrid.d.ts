@@ -1,3 +1,3 @@
-import { EntryDetail } from "@/features/entries/types/Entry";
+import { DetailedEntry } from "@/features/entries/types/Entry";
 
-export type EntriesDataGridColumn = keyof EntryDetail;
+export type EntriesDataGridColumn = keyof DetailedEntry;

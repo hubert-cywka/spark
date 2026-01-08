@@ -1,3 +1,5 @@
+import { ISODateString } from "@/types/ISODateString";
+
 export type EntryDto = {
     id: string;
     dailyId: string;
@@ -7,4 +9,7 @@ export type EntryDto = {
     isFeatured: boolean;
     createdAt: string;
     updatedAt: string;
+
+    goals?: string[];
+    daily?: ISODateString;
 };

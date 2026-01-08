@@ -5,7 +5,6 @@ import { DailyService } from "@/features/daily/api/dailyService";
 import { Daily } from "@/features/daily/types/Daily";
 import { DailyInsightsQueryKeyFactory } from "@/features/daily/utils/dailyInsightsQueryKeyFactory.ts";
 import { DailyQueryKeyFactory } from "@/features/daily/utils/dailyQueryKeyFactory";
-import { EntriesQueryKeyFactory } from "@/features/entries/utils/entriesQueryKeyFactory.ts";
 import { useQueryCache } from "@/hooks/useQueryCache";
 
 const queryKey = DailyQueryKeyFactory.createForAll();
@@ -46,7 +45,6 @@ export const useUpdateDailyDate = () => {
         },
         onSuccess: async () => {
             void invalidate(DailyInsightsQueryKeyFactory.createForAll());
-            void invalidate(EntriesQueryKeyFactory.createForDetailed());
         },
     });
 };

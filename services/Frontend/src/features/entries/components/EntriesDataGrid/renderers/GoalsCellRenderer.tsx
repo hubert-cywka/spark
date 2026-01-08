@@ -4,7 +4,7 @@ import styles from "./styles/GoalsCellRenderer.module.scss";
 
 import { GroupCellRenderer } from "@/components/DataGrid/renderers/GroupCellRenderer.tsx";
 import { OverflowableText } from "@/components/OverflowableText";
-import { EntryDetail } from "@/features/entries/types/Entry";
+import { DetailedEntry } from "@/features/entries/types/Entry";
 
 // TODO: Better visualization
 type GoalsCellValueRendererProps = {
@@ -17,7 +17,7 @@ const GoalsCellValueRenderer = ({ value }: GoalsCellValueRendererProps) => {
     return <OverflowableText tooltip={tooltip}>{value.join(", ")}</OverflowableText>;
 };
 
-export const GoalsCellRenderer = ({ row }: RenderCellProps<EntryDetail>) => {
+export const GoalsCellRenderer = ({ row }: RenderCellProps<DetailedEntry>) => {
     return (
         <div className={styles.container}>
             <GoalsCellValueRenderer value={row.goals} />
@@ -25,7 +25,7 @@ export const GoalsCellRenderer = ({ row }: RenderCellProps<EntryDetail>) => {
     );
 };
 
-export const GoalsGroupCellRenderer = (p: RenderGroupCellProps<EntryDetail>) => {
+export const GoalsGroupCellRenderer = (p: RenderGroupCellProps<DetailedEntry>) => {
     return (
         <GroupCellRenderer {...p}>
             <GoalsCellValueRenderer value={[p.row.childRows[0].goals[0]]} />
