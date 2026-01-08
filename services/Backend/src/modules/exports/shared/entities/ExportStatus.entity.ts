@@ -24,10 +24,3 @@ export class ExportStatusEntity {
     @UpdateDateColumn({ type: "timestamptz", precision: 3 })
     updatedAt!: Date;
 }
-
-export type ExportStatus = {
-    exportId: string;
-    domain: string;
-    exportedUntil: Date | null;
-    nextCursor: string | null;
-};

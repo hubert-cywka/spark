@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { Order } from "@/common/pagination/types/Order";
-import { ExportStatus } from "@/modules/exports/shared/entities/ExportStatus.entity";
 import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
+import { ExportStatus } from "@/modules/exports/shared/models/ExportStatus";
 import { type IDataExportProvider } from "@/modules/exports/shared/services/IDataExportProvider";
 import { DataExportBatch } from "@/modules/exports/shared/types/DataExportBatch";
 import { DataExportScopeDomain } from "@/modules/exports/shared/types/DataExportScopeDomain";

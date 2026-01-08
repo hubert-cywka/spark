@@ -1,5 +1,5 @@
-import { ExportStatus } from "@/modules/exports/shared/entities/ExportStatus.entity";
 import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
+import { ExportStatus } from "@/modules/exports/shared/models/ExportStatus";
 import { DataExportBatch } from "@/modules/exports/shared/types/DataExportBatch";
 
 export const DataExportProvidersToken = Symbol("DataExportProvidersToken");
