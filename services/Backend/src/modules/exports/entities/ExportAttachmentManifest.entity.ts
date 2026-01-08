@@ -24,10 +24,10 @@ export class ExportAttachmentManifestEntity {
     @Column({ type: "jsonb" })
     scopes!: DataExportScope[];
 
-    @CreateDateColumn({ type: "timestamptz" })
+    @CreateDateColumn({ type: "timestamptz", precision: 3 })
     createdAt!: Date;
 
-    @UpdateDateColumn({ type: "timestamptz" })
+    @UpdateDateColumn({ type: "timestamptz", precision: 3 })
     updatedAt!: Date;
 
     @ManyToOne(() => TenantEntity, (tenant) => tenant.exportAttachmentManifests, { onDelete: "CASCADE" })

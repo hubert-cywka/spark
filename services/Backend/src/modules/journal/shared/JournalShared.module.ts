@@ -5,7 +5,7 @@ import { DataSource } from "typeorm";
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import { IntegrationEventsModule } from "@/common/events";
-import { getIntegrationEventsMigrations } from "@/common/events/migrations";
+import { ExportsModule } from "@/modules/exports/Exports.module";
 import { HealthCheckModule } from "@/modules/healthcheck/HealthCheck.module";
 import {
     type IHealthCheckProbesRegistry,
@@ -19,6 +19,7 @@ import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/dat
 import { RegenerateMigrations1749289925550 } from "@/modules/journal/infrastructure/database/migrations/1749289925550-regenerate-migrations";
 import { AddIndexes1767381735359 } from "@/modules/journal/infrastructure/database/migrations/1767381735359-add-indexes";
 import { ImproveIndexes1767428462687 } from "@/modules/journal/infrastructure/database/migrations/1767428462687-improve-indexes";
+import { TimestampsPrecisionJournal1767887791536 } from "@/modules/journal/infrastructure/database/migrations/1767887791536-timestamps-precision-journal";
 
 @Module({
     providers: [],
@@ -33,10 +34,12 @@ import { ImproveIndexes1767428462687 } from "@/modules/journal/infrastructure/da
                 host: configService.getOrThrow<string>("modules.journal.database.host"),
                 database: configService.getOrThrow<string>("modules.journal.database.name"),
                 migrations: [
-                    ...getIntegrationEventsMigrations(),
+                    ...IntegrationEventsModule.getMigrations(),
+                    ...ExportsModule.getMigrationsForExporter(),
                     RegenerateMigrations1749289925550,
                     AddIndexes1767381735359,
                     ImproveIndexes1767428462687,
+                    TimestampsPrecisionJournal1767887791536,
                 ],
             }),
             inject: [ConfigService],

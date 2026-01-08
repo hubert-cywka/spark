@@ -29,16 +29,16 @@ export class GoalEntity {
     @Column({ type: "smallint" })
     target!: number;
 
-    @Column({ type: "timestamptz", nullable: true })
+    @Column({ type: "timestamptz", precision: 3, nullable: true })
     deadline!: Date | null;
 
-    @CreateDateColumn({ type: "timestamptz" })
+    @CreateDateColumn({ type: "timestamptz", precision: 3 })
     createdAt!: Date;
 
-    @UpdateDateColumn({ type: "timestamptz" })
+    @UpdateDateColumn({ type: "timestamptz", precision: 3 })
     updatedAt!: Date;
 
-    @DeleteDateColumn({ type: "timestamptz", nullable: true })
+    @DeleteDateColumn({ type: "timestamptz", precision: 3, nullable: true })
     deletedAt!: Date | null;
 
     @ManyToOne((type) => AuthorEntity, (author) => author.goals, {

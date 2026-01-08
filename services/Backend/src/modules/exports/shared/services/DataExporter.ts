@@ -1,32 +1,31 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+import { Repository } from "typeorm";
+import { runInTransaction } from "typeorm-transactional";
 
-import { type IEventPublisher, DataExportBatchReadyEvent, EventPublisherToken } from "@/common/events";
-import { getObjectStorageToken } from "@/common/objectStorage/services/IObjectStorage";
+import { type IEventPublisher, DataExportBatchReadyEvent } from "@/common/events";
 import { type IObjectStorage } from "@/common/objectStorage/services/IObjectStorage";
-import { type ICsvParser, CsvParserToken } from "@/common/services/interfaces/ICsvParser";
-import { EXPORTS_OBJECT_STORAGE_KEY } from "@/modules/exports/shared/constants/objectStorage";
+import { type ICsvParser } from "@/common/services/interfaces/ICsvParser";
+import { ExportStatusEntity } from "@/modules/exports/shared/entities/ExportStatus.entity";
 import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
 import { ExportAttachmentManifest } from "@/modules/exports/shared/models/ExportAttachment.model";
 import { DataExportAttachmentPathBuilder } from "@/modules/exports/shared/services/DataExportAttachmentPathBuilder";
 import { type IDataExporter } from "@/modules/exports/shared/services/IDataExporter";
-import { type IDataExportProvider, DataExportProvidersToken } from "@/modules/exports/shared/services/IDataExportProvider";
+import { type IDataExportProvider } from "@/modules/exports/shared/services/IDataExportProvider";
 import { DataExportBatch } from "@/modules/exports/shared/types/DataExportBatch";
+import { DataExportScopeDomain } from "@/modules/exports/shared/types/DataExportScopeDomain";
 import { ExportAttachmentStage } from "@/modules/exports/shared/types/ExportAttachmentStage";
 
 @Injectable()
 export class DataExporter implements IDataExporter {
     constructor(
-        @Inject(DataExportProvidersToken)
         private readonly providers: IDataExportProvider[],
-        @Inject(EventPublisherToken)
         private readonly publisher: IEventPublisher,
-        @Inject(CsvParserToken)
         private readonly parser: ICsvParser,
-        @Inject(getObjectStorageToken(EXPORTS_OBJECT_STORAGE_KEY))
-        private readonly objectStorage: IObjectStorage
+        private readonly objectStorage: IObjectStorage,
+        private readonly repository: Repository<ExportStatusEntity>,
+        private readonly connectionName: string
     ) {}
 
-    // TODO: Idempotency - start from the last checkpoint
     public async exportTenantData(tenantId: string, exportId: string, scopes: DataExportScope[]): Promise<void> {
         for (const scope of scopes) {
             const provider = this.providers.find((p) => p.supports(scope));
@@ -35,17 +34,23 @@ export class DataExporter implements IDataExporter {
                 continue;
             }
 
-            const dataStream = provider.getDataStream(tenantId, scope);
+            const status = await this.getStatus(exportId, scope.domain);
+
+            if (status?.exportedUntil && status.exportedUntil >= scope.dateRange.to) {
+                continue;
+            }
+
+            const dataStream = provider.getDataStream(tenantId, scope, status);
             await this.processExport(tenantId, exportId, dataStream);
         }
     }
 
     private async processExport(tenantId: string, exportId: string, data: AsyncIterable<DataExportBatch>) {
-        for await (const { batch, batchScope } of data) {
+        for await (const { batch, batchScope, nextCursor } of data) {
             const fileContent = this.parser.toBuffer(batch);
             const filePath = this.buildAttachmentPath(exportId, batchScope);
-            const { checksum } = await this.objectStorage.upload(filePath, fileContent, "text/csv");
 
+            const { checksum } = await this.objectStorage.upload(filePath, fileContent, "text/csv");
             const manifest = {
                 key: this.buildAttachmentKey(exportId, batchScope),
                 path: filePath,
@@ -56,7 +61,13 @@ export class DataExporter implements IDataExporter {
                 },
             };
 
-            await this.publishDataExportBatchReadyEvent(tenantId, exportId, manifest);
+            await runInTransaction(
+                async () => {
+                    await this.publishDataExportBatchReadyEvent(tenantId, exportId, manifest);
+                    await this.checkpoint(exportId, batchScope, nextCursor);
+                },
+                { connectionName: this.connectionName }
+            );
         }
     }
 
@@ -84,5 +95,25 @@ export class DataExporter implements IDataExporter {
 
     private buildAttachmentPath(exportId: string, scope: DataExportScope) {
         return DataExportAttachmentPathBuilder.forExport(exportId).setScope(scope).setFilename("data.csv").build();
+    }
+
+    private async getStatus(exportId: string, domain: DataExportScopeDomain) {
+        return await this.getRepository().findOne({ where: { exportId, domain } });
+    }
+
+    private async checkpoint(exportId: string, scope: DataExportScope, nextCursor: string | null) {
+        const domain = scope.domain;
+        const exportedUntil = scope.dateRange.to;
+
+        await this.repository
+            .createQueryBuilder()
+            .insert()
+            .values({ exportId, domain, exportedUntil, nextCursor })
+            .orUpdate(["exportedUntil", "nextCursor"], ["exportId", "domain"])
+            .execute();
+    }
+
+    private getRepository(): Repository<ExportStatusEntity> {
+        return this.repository;
     }
 }

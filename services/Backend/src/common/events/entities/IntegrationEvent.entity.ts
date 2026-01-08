@@ -33,9 +33,9 @@ export class IntegrationEventEntity<T = string | object> {
     @Column({ type: "int", default: 0 })
     attempts!: number;
 
-    @Column({ type: "timestamptz" })
+    @Column({ type: "timestamptz", precision: 3 })
     createdAt!: Date;
 
-    @Column({ type: "timestamptz", nullable: true })
+    @Column({ type: "timestamptz", precision: 3, nullable: true })
     processedAt!: Date | null;
 }

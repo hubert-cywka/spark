@@ -10,6 +10,12 @@ import { InboxEventEntity } from "@/common/events/entities/InboxEvent.entity";
 import { InboxEventPartitionEntity } from "@/common/events/entities/InboxEventPartition.entity";
 import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { OutboxEventPartitionEntity } from "@/common/events/entities/OutboxEventPartition.entity";
+import { InboxAndOutbox1749299050551 } from "@/common/events/migrations/1749299050551-inbox-and-outbox";
+import { InboxAndOutboxSequenceNumber1753291628862 } from "@/common/events/migrations/1753291628862-inbox-and-outbox-sequence-number";
+import { InboxAndOutboxSplitTopicAndSubject1753291628863 } from "@/common/events/migrations/1753291628863-inbox-and-outbox-split-topic-and-subject";
+import { ImproveInboxOutboxIndexes1767377704017 } from "@/common/events/migrations/1767377704017-improve-inbox-outbox-indexes";
+import { TimestampsPrecisionOutbox1767887939996 } from "@/common/events/migrations/1767887939996-timestamps-precision-outbox";
+import { MoreTimestampsPrecisionOutbox1767888332310 } from "@/common/events/migrations/1767888332310-more-timestamps-precision-outbox";
 import { InboxEventRepository } from "@/common/events/repositories/implementations/InboxEvent.repository";
 import { InboxPartitionRepository } from "@/common/events/repositories/implementations/InboxPartition.repository";
 import { OutboxEventRepository } from "@/common/events/repositories/implementations/OutboxEvent.repository";
@@ -68,6 +74,17 @@ type IntegrationEventsModuleForFeatureDynamicOptions = {
 
 @Module({})
 export class IntegrationEventsModule {
+    public static getMigrations() {
+        return [
+            InboxAndOutbox1749299050551,
+            InboxAndOutboxSequenceNumber1753291628862,
+            InboxAndOutboxSplitTopicAndSubject1753291628863,
+            ImproveInboxOutboxIndexes1767377704017,
+            TimestampsPrecisionOutbox1767887939996,
+            MoreTimestampsPrecisionOutbox1767888332310,
+        ];
+    }
+
     static forRootAsync(options: {
         useFactory: UseFactory<IntegrationEventsModuleOptions<KafkaForFeatureOptions>>;
         inject?: UseFactoryArgs;

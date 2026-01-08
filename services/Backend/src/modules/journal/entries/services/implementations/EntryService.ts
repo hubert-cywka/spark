@@ -75,8 +75,8 @@ export class EntryService implements IEntryService {
         }
 
         const entries = await queryBuilder.getMany();
-        const mappedEntries = this.entryMapper.fromEntityToModelBulk(entries);
-        return createPage(mappedEntries, pageOptions.take, paginationKeys);
+        const page = createPage(entries, pageOptions.take, paginationKeys);
+        return this.entryMapper.fromEntityToModelPaginated(page);
     }
 
     public async findAllDetailed(
@@ -124,8 +124,8 @@ export class EntryService implements IEntryService {
         }
 
         const entries = await queryBuilder.getMany();
-        const mappedEntries = this.entryDetailMapper.fromEntityToModelBulk(entries);
-        return createPage(mappedEntries, pageOptions.take, paginationKeys);
+        const page = createPage(entries, pageOptions.take, paginationKeys);
+        return this.entryDetailMapper.fromEntityToModelPaginated(page);
     }
 
     public async create(

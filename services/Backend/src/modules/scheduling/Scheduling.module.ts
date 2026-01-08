@@ -7,7 +7,6 @@ import { SCHEDULING_MODULE_DATA_SOURCE } from "./infrastructure/database/constan
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEvents, IntegrationEventsModule } from "@/common/events";
-import { getIntegrationEventsMigrations } from "@/common/events/migrations";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -26,6 +25,7 @@ import { JobScheduleEntity } from "@/modules/scheduling/entities/JobScheduleEnti
 import { IntervalJobScheduleUpdatedEventHandler } from "@/modules/scheduling/events/IntervalJobScheduleUpdatedEvent.handler";
 import { InitSchedulingModule1764101420518 } from "@/modules/scheduling/infrastructure/database/migrations/1764101420518-init-scheduling-module";
 import { AddIndexes1767381858935 } from "@/modules/scheduling/infrastructure/database/migrations/1767381858935-add-indexes";
+import { TimestampsPrecisionScheduling1767888113429 } from "@/modules/scheduling/infrastructure/database/migrations/1767888113429-timestamps-precision-scheduling";
 import { JobExecutionsPurgeService } from "@/modules/scheduling/services/implementations/JobExecutionsPurgeService";
 import { JobScheduleConfigurationService } from "@/modules/scheduling/services/implementations/JobScheduleConfigurationService";
 import { JobScheduler } from "@/modules/scheduling/services/implementations/JobScheduler";
@@ -67,7 +67,12 @@ import { JobSchedulerToken } from "@/modules/scheduling/services/interfaces/IJob
                 password: configService.getOrThrow<string>("modules.scheduling.database.password"),
                 host: configService.getOrThrow<string>("modules.scheduling.database.host"),
                 database: configService.getOrThrow<string>("modules.scheduling.database.name"),
-                migrations: [...getIntegrationEventsMigrations(), InitSchedulingModule1764101420518, AddIndexes1767381858935],
+                migrations: [
+                    ...IntegrationEventsModule.getMigrations(),
+                    InitSchedulingModule1764101420518,
+                    AddIndexes1767381858935,
+                    TimestampsPrecisionScheduling1767888113429,
+                ],
             }),
             inject: [ConfigService],
         }),

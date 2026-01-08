@@ -4,9 +4,9 @@ export abstract class IntegrationEventPartitionEntity {
     @PrimaryColumn({ type: "int" })
     id!: number;
 
-    @Column({ type: "timestamptz" })
+    @Column({ type: "timestamptz", precision: 3 })
     staleAt!: Date;
 
-    @Column({ type: "timestamptz", nullable: true })
+    @Column({ type: "timestamptz", precision: 3, nullable: true })
     lastProcessedAt!: Date | null;
 }

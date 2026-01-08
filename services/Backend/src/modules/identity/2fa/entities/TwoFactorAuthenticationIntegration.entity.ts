@@ -21,13 +21,13 @@ export class TwoFactorAuthenticationIntegrationEntity {
     @Column({ type: "int", default: DEFAULT_CODE_TTL })
     totpTTL!: number;
 
-    @Column({ type: "timestamptz", nullable: true })
+    @Column({ type: "timestamptz", precision: 3, nullable: true })
     enabledAt!: Date | null;
 
-    @CreateDateColumn({ type: "timestamptz" })
+    @CreateDateColumn({ type: "timestamptz", precision: 3 })
     createdAt!: Date;
 
-    @UpdateDateColumn({ type: "timestamptz" })
+    @UpdateDateColumn({ type: "timestamptz", precision: 3 })
     updatedAt!: Date;
 
     @ManyToOne((type) => BaseAccountEntity, (user) => user.twoFactorAuthOptions, {

@@ -7,7 +7,6 @@ import { CONFIGURATION_MODULE_DATA_SOURCE } from "./infrastructure/database/cons
 
 import { DatabaseModule } from "@/common/database/Database.module";
 import { type IInboxEventHandler, InboxEventHandlersToken, IntegrationEvents, IntegrationEventsModule } from "@/common/events";
-import { getIntegrationEventsMigrations } from "@/common/events/migrations";
 import {
     type IIntegrationEventsJobsOrchestrator,
     IntegrationEventsJobsOrchestratorToken,
@@ -25,6 +24,7 @@ import { InitConfigurationModule1765016363086 } from "@/modules/configuration/in
 import { AddFeatureFlagsTable1765020949930 } from "@/modules/configuration/infrastructure/database/migrations/1765020949930-add-feature-flags-table";
 import { AddIndicesToFfTable1765022076178 } from "@/modules/configuration/infrastructure/database/migrations/1765022076178-add-indices-to-ff-table";
 import { ImproveIndexes1767428493762 } from "@/modules/configuration/infrastructure/database/migrations/1767428493762-improve-indexes";
+import { TimestampsPrecisionConfiguration1767888111175 } from "@/modules/configuration/infrastructure/database/migrations/1767888111175-timestamps-precision-configuration";
 import { FeatureFlagMapper } from "@/modules/configuration/mappers/FeatureFlag.mapper";
 import { FeatureFlagMapperToken } from "@/modules/configuration/mappers/IFeatureFlag.mapper";
 import { TenantMapperToken } from "@/modules/configuration/mappers/ITenant.mapper";
@@ -76,11 +76,12 @@ import {
                 host: configService.getOrThrow<string>("modules.configuration.database.host"),
                 database: configService.getOrThrow<string>("modules.configuration.database.name"),
                 migrations: [
-                    ...getIntegrationEventsMigrations(),
+                    ...IntegrationEventsModule.getMigrations(),
                     InitConfigurationModule1765016363086,
                     AddFeatureFlagsTable1765020949930,
                     AddIndicesToFfTable1765022076178,
                     ImproveIndexes1767428493762,
+                    TimestampsPrecisionConfiguration1767888111175,
                 ],
             }),
             inject: [ConfigService],

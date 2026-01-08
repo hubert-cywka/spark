@@ -7,9 +7,9 @@ import { IntegrationEventEntity } from "@/common/events/entities/IntegrationEven
 @Index("idx_inbox_blocked_lookup", ["partition", "processAfter", "attempts"], { where: '"processedAt" IS NULL' })
 @Index("idx_inbox_cleanup", ["processedAt"])
 export class InboxEventEntity<T = string | object> extends IntegrationEventEntity<T> {
-    @Column({ type: "timestamptz" })
+    @Column({ type: "timestamptz", precision: 3 })
     receivedAt!: Date;
 
-    @Column({ type: "timestamptz" })
+    @Column({ type: "timestamptz", precision: 3 })
     processAfter!: Date;
 }

@@ -16,6 +16,6 @@ export class JobExecutionEntity {
     @Column({ type: "varchar" })
     jobId!: string;
 
-    @Column({ type: "timestamptz" })
+    @Column({ type: "timestamptz", precision: 3 })
     executedAt!: Date;
 }

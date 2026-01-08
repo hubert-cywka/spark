@@ -23,19 +23,19 @@ export class DataExportEntity {
     @Column({ type: "jsonb" })
     targetScopes!: DataExportScope[];
 
-    @Column({ type: "timestamptz", nullable: true })
+    @Column({ type: "timestamptz", precision: 3, nullable: true })
     cancelledAt!: Date | null;
 
-    @Column({ type: "timestamptz", nullable: true })
+    @Column({ type: "timestamptz", precision: 3, nullable: true })
     completedAt!: Date | null;
 
-    @Column({ type: "timestamptz" })
+    @Column({ type: "timestamptz", precision: 3 })
     validUntil!: Date;
 
-    @CreateDateColumn({ type: "timestamptz" })
+    @CreateDateColumn({ type: "timestamptz", precision: 3 })
     startedAt!: Date;
 
-    @UpdateDateColumn({ type: "timestamptz" })
+    @UpdateDateColumn({ type: "timestamptz", precision: 3 })
     updatedAt!: Date;
 
     @ManyToOne(() => TenantEntity, (tenant) => tenant.dataExports, { onDelete: "CASCADE" })

@@ -11,9 +11,9 @@ export class UserEntity {
     @Column({ type: "boolean", default: false })
     isActivated!: boolean;
 
-    @CreateDateColumn({ type: "timestamptz" })
+    @CreateDateColumn({ type: "timestamptz", precision: 3 })
     createdAt!: Date;
 
-    @UpdateDateColumn({ type: "timestamptz" })
+    @UpdateDateColumn({ type: "timestamptz", precision: 3 })
     updatedAt!: Date;
 }

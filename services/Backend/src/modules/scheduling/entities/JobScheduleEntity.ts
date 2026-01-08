@@ -22,9 +22,9 @@ export class JobScheduleEntity {
     @Column("varchar")
     callbackSubject!: IntegrationEventSubject;
 
-    @CreateDateColumn({ type: "timestamptz" })
+    @CreateDateColumn({ type: "timestamptz", precision: 3 })
     createdAt!: Date;
 
-    @UpdateDateColumn({ type: "timestamptz" })
+    @UpdateDateColumn({ type: "timestamptz", precision: 3 })
     updatedAt!: Date;
 }

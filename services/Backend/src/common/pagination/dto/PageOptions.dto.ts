@@ -11,9 +11,9 @@ export class PageOptionsDto {
     @Type(() => Number)
     @IsInt()
     @Min(1)
-    @Max(100)
+    @Max(500)
     @IsOptional()
-    readonly take: number = 20;
+    readonly take: number = 100;
 
     @IsString()
     @IsOptional()

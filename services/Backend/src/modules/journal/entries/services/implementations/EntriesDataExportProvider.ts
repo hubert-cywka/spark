@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { Order } from "@/common/pagination/types/Order";
+import { ExportStatus } from "@/modules/exports/shared/entities/ExportStatus.entity";
 import { DataExportScope } from "@/modules/exports/shared/models/DataExportScope";
 import { type IDataExportProvider } from "@/modules/exports/shared/services/IDataExportProvider";
 import { DataExportBatch } from "@/modules/exports/shared/types/DataExportBatch";
@@ -15,9 +16,13 @@ export class EntriesDataExportProvider implements IDataExportProvider {
         return scope.domain === DataExportScopeDomain.ENTRIES;
     }
 
-    public async *getDataStream(tenantId: string, scope: DataExportScope): AsyncIterable<DataExportBatch> {
+    public async *getDataStream(
+        tenantId: string,
+        scope: DataExportScope,
+        status: ExportStatus | null = null
+    ): AsyncIterable<DataExportBatch> {
         const take = 1000;
-        let nextCursor: string | null = null;
+        let nextCursor = status?.nextCursor;
         let hasMore = true;
 
         const filters = {
@@ -25,7 +30,7 @@ export class EntriesDataExportProvider implements IDataExportProvider {
             updatedBefore: scope.dateRange.to,
         };
 
-        let from = scope.dateRange.from;
+        let from = status?.exportedUntil ?? scope.dateRange.from;
         let to = scope.dateRange.to;
 
         while (hasMore) {
@@ -34,9 +39,10 @@ export class EntriesDataExportProvider implements IDataExportProvider {
 
             nextCursor = entries.meta.nextCursor;
             hasMore = entries.meta.hasNextPage;
-            to = hasMore ? lastEntry.createdAt : scope.dateRange.to;
+            to = hasMore ? lastEntry.updatedAt : scope.dateRange.to;
 
             yield {
+                nextCursor,
                 batch: entries.data,
                 batchScope: {
                     domain: scope.domain,

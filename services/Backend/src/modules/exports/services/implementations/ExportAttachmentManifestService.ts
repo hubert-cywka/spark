@@ -47,15 +47,20 @@ export class ExportAttachmentManifestService implements IExportAttachmentManifes
     // It's possible that we will store some duplicate attachments, e.g., covering the same export scope. And we are
     // okay with it, it does not break anything, and the user can just discard the duplicate. It's also pretty rare.
     public async storeAttachmentManifest(tenantId: string, dataExportId: string, attachment: ExportAttachmentManifest) {
-        await this.getRepository().insert({
-            dataExportId,
-            tenantId,
-            stage: attachment.stage,
-            key: attachment.key,
-            path: attachment.path,
-            scopes: attachment.scopes,
-            checksum: attachment.metadata.checksum,
-        });
+        await this.getRepository()
+            .createQueryBuilder()
+            .insert()
+            .values({
+                dataExportId,
+                tenantId,
+                stage: attachment.stage,
+                key: attachment.key,
+                path: attachment.path,
+                scopes: attachment.scopes,
+                checksum: attachment.metadata.checksum,
+            })
+            .orUpdate(["path", "scopes", "checksum", "stage"], ["key"])
+            .execute();
     }
 
     public async deleteAttachmentManifests(attachmentManifests: ExportAttachmentManifest[]) {

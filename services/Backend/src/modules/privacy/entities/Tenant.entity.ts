@@ -7,10 +7,10 @@ export class TenantEntity {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
-    @CreateDateColumn({ type: "timestamptz" })
+    @CreateDateColumn({ type: "timestamptz", precision: 3 })
     createdAt!: Date;
 
-    @UpdateDateColumn({ type: "timestamptz" })
+    @UpdateDateColumn({ type: "timestamptz", precision: 3 })
     updatedAt!: Date;
 
     @OneToMany(() => DataPurgePlanEntity, (plan) => plan.tenant)

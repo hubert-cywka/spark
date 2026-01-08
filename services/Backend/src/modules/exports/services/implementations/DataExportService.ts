@@ -48,8 +48,8 @@ export class DataExportService implements IDataExportService {
         applyCursorBasedPagination(queryBuilder, pageOptions, paginationKeys);
 
         const dataExports = await queryBuilder.getMany();
-        const mappedExports = this.mapper.fromEntityToModelBulk(dataExports);
-        return createPage(mappedExports, pageOptions.take, paginationKeys);
+        const page = createPage(dataExports, pageOptions.take, paginationKeys);
+        return this.mapper.fromEntityToModelPaginated(page);
     }
 
     // We could simply add a more specific WHERE clause, but in this case it's important to differentiate between a
