@@ -12,4 +12,5 @@ export type DatePickerBaseProps = {
     error?: string;
     minimal?: boolean;
     className?: string;
+    autoFocus?: boolean;
 };

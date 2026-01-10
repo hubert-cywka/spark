@@ -20,6 +20,7 @@ type DateRangePickerProps = DatePickerBaseProps & {
 };
 
 export const DateRangePicker = ({
+    autoFocus,
     size = "2",
     label,
     value,
@@ -45,6 +46,7 @@ export const DateRangePicker = ({
 
     return (
         <BaseDateRangePicker
+            autoFocus={autoFocus}
             onChange={onChangeInternal}
             isInvalid={!!error}
             isRequired={required}

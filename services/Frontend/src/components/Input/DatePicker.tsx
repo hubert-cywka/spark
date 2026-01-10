@@ -19,7 +19,18 @@ type DatePickerProps = DatePickerBaseProps & {
     onChange?: (value: ISODateString) => void;
 };
 
-export const DatePicker = ({ size = "2", label, value, error, onChange, required, calendarProps, minimal, className }: DatePickerProps) => {
+export const DatePicker = ({
+    autoFocus,
+    size = "2",
+    label,
+    value,
+    error,
+    onChange,
+    required,
+    calendarProps,
+    minimal,
+    className,
+}: DatePickerProps) => {
     const t = useTranslate();
 
     const onChangeInternal = (value: DateValue | null) => {
@@ -32,6 +43,7 @@ export const DatePicker = ({ size = "2", label, value, error, onChange, required
 
     return (
         <BaseDatePicker
+            autoFocus={autoFocus}
             onChange={onChangeInternal}
             isInvalid={!!error}
             isRequired={required}

@@ -127,6 +127,14 @@ export const DailyList = () => {
         [entriesGroups, onUpdateEntries]
     );
 
+    const handleBatchDateUpdate = useCallback(
+        async (oldDate: ISODateString, newDate: ISODateString) => {
+            await handleBatchUpdate(oldDate, { date: newDate });
+            scrollToDaily(newDate);
+        },
+        [handleBatchUpdate, scrollToDaily]
+    );
+
     const handleBatchDelete = async (date: ISODateString) => {
         const group = entriesGroups[date] ?? [];
         const ids = group.map((entry) => entry.id);
@@ -194,7 +202,7 @@ export const DailyList = () => {
                             date={daily.date}
                             onCreateEntryDraft={() => handleCreateDraft(daily.date)}
                             onDeleteEntries={() => handleBatchDelete(daily.date)}
-                            onUpdateDate={(date) => handleBatchUpdate(daily.date, { date })}
+                            onUpdateDate={(date) => handleBatchDateUpdate(daily.date, date)}
                             onStatusChange={(isCompleted) => handleBatchUpdate(daily.date, { isCompleted })}
                             onIsFeaturedChange={(isFeatured) => handleBatchUpdate(daily.date, { isFeatured })}
                         />

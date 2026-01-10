@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { UpdateEntryDateInputs, useUpdateEntryDateForm } from "./hooks/useUpdateEntryDateForm";
 
 import { Button } from "@/components/Button";
 import { DatePicker } from "@/components/Input";
@@ -12,35 +12,51 @@ type UpdateEntryDateModalProps = {
     isOpen: boolean;
     onOpenChange: (isOpen: boolean) => void;
 };
+
 export const UpdateEntryDateModal = ({ defaultDate, onUpdate, isOpen, onOpenChange }: UpdateEntryDateModalProps) => {
     const t = useTranslate();
-    const [date, setDate] = useState<ISODateString>(defaultDate);
 
-    const handleUpdate = async () => {
-        await onUpdate(date);
-        close();
-    };
+    const {
+        handleSubmit,
+        setValue,
+        watch,
+        formState: { isSubmitting },
+    } = useUpdateEntryDateForm({ defaultDate });
+
+    const dateValue = watch("date");
 
     const close = () => {
         onOpenChange(false);
     };
 
+    const internalOnSubmit = async ({ date }: UpdateEntryDateInputs) => {
+        await onUpdate(date);
+        close();
+    };
+
     return (
         <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-            <ModalHeader onClose={close}>{t("entries.changeDate.modal.header")}</ModalHeader>
+            <form onSubmit={handleSubmit(internalOnSubmit)}>
+                <ModalHeader onClose={close}>{t("entries.changeDate.modal.header")}</ModalHeader>
 
-            <ModalBody>
-                <DatePicker label={t("entries.changeDate.modal.caption")} value={date} onChange={setDate} />
-            </ModalBody>
+                <ModalBody>
+                    <DatePicker
+                        autoFocus
+                        label={t("entries.changeDate.modal.caption")}
+                        value={dateValue}
+                        onChange={(value) => setValue("date", value)}
+                    />
+                </ModalBody>
 
-            <ModalFooter>
-                <Button variant="secondary" onPress={close}>
-                    {t("entries.changeDate.modal.buttons.cancel.label")}
-                </Button>
-                <Button variant="confirm" onPress={handleUpdate}>
-                    {t("entries.changeDate.modal.buttons.confirm.label")}
-                </Button>
-            </ModalFooter>
+                <ModalFooter>
+                    <Button variant="secondary" onPress={close}>
+                        {t("entries.changeDate.modal.buttons.cancel.label")}
+                    </Button>
+                    <Button variant="confirm" type="submit" isLoading={isSubmitting}>
+                        {t("entries.changeDate.modal.buttons.confirm.label")}
+                    </Button>
+                </ModalFooter>
+            </form>
         </Modal>
     );
 };
