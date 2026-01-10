@@ -42,7 +42,7 @@ export const DailyActivityChart = ({ activity, onSelectDay, isLoading }: DailyAc
         <Card
             as="article"
             tabIndex={0}
-            variant="translucent"
+            variant="semi-translucent"
             className={styles.container}
             onFocus={onGridFocus}
             onBlur={onGridBlur}
