@@ -12,12 +12,13 @@ import { NoEntriesMessage } from "@/features/daily/components/DailyList/componen
 import { useDailyDateRange } from "@/features/daily/components/DailyList/hooks/useDailyDateRange";
 import { useDailyEntriesPlaceholders } from "@/features/daily/components/DailyList/hooks/useDailyEntriesPlaceholders";
 import { useEntriesEvents } from "@/features/daily/components/DailyList/hooks/useEntriesEvents.ts";
-import { DailyEntryColumn, useNavigationBetweenEntries } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
+import { useNavigationBetweenEntries } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
 import { getEntryElementId, getEntryPlaceholderElementId } from "@/features/daily/components/DailyList/utils/dailyEntriesSelectors";
 import { DayHeader } from "@/features/daily/components/DayHeader/DayHeader";
 import { DaySkeleton } from "@/features/daily/components/DaySkeleton";
 import { useDailyMetrics } from "@/features/daily/hooks/useDailyMetrics.ts";
 import { formatToISODateString } from "@/features/daily/utils/dateUtils";
+import { highlightElement } from "@/features/daily/utils/highlight.ts";
 import { DailyEntry, DailyEntryPlaceholder } from "@/features/entries/components/DailyEntry";
 import { EntryFiltersGroup } from "@/features/entries/components/EntryFiltersGroup";
 import { EntryQuickAddForm } from "@/features/entries/components/EntryQuickAddForm/EntryQuickAddForm.tsx";
@@ -29,10 +30,7 @@ import { onNextTick } from "@/utils/onNextTick.ts";
 export const DailyList = () => {
     const containerRef = useRef<HTMLElement | null>(null);
     const targetDailyDateRef = useRef<string | null>(null);
-    const [filters, setFilters] = useState<{
-        completed?: boolean;
-        featured?: boolean;
-    }>({});
+    const [filters, setFilters] = useState<{ completed?: boolean; featured?: boolean }>({});
 
     const { setPrev, setNext, setRange, reset, endDate, startDate, defaultDate } = useDailyDateRange({
         granularity: "month",
@@ -57,11 +55,6 @@ export const DailyList = () => {
         autoFetch: true,
     });
 
-    const dailies = useMemo(() => {
-        const allEntries = entries?.pages?.flatMap((page) => page.data) ?? [];
-        return Array.from(new Map(allEntries.map((entry) => [entry.date, { date: entry.date }])).values());
-    }, [entries?.pages]);
-
     const {
         onCreateEntry,
         onUpdateEntryContent,
@@ -70,7 +63,9 @@ export const DailyList = () => {
         onUpdateEntryIsFeatured,
         onDeleteEntries,
         onUpdateEntries,
+        onUpdateEntryDate,
     } = useEntriesEvents();
+
     const { placeholders, addPlaceholder, removePlaceholder } = useDailyEntriesPlaceholders();
 
     const { navigateByIndex, navigateByEntryId, navigateToPlaceholderByGroup } = useNavigationBetweenEntries({
@@ -79,35 +74,23 @@ export const DailyList = () => {
         onBottomReached: addPlaceholder,
     });
 
-    const onSavePlaceholder = async (date: ISODateString, content: string) => {
-        const entry = await onCreateEntry({
-            date,
-            content,
-            isCompleted: filters.completed ?? false,
-            isFeatured: filters.featured ?? false,
-        });
+    const dailies = useMemo(() => {
+        const allEntries = entries?.pages?.flatMap((page) => page.data) ?? [];
+        const uniqueDates = Array.from(new Set(allEntries.map((e) => e.date)));
+        return uniqueDates.sort((a, b) => b.localeCompare(a)).map((date) => ({ date }));
+    }, [entries?.pages]);
 
-        if (entry) {
-            navigateByEntryId("input", entry.id);
-            removePlaceholder(date);
-        }
-    };
+    const scrollToDaily = useCallback((date: string) => {
+        const dailyHeader = containerRef.current?.querySelector(`[data-daily-date="${date}"]`);
 
-    const scrollToDaily = (date: string) => {
-        if (!containerRef.current) {
+        if (!dailyHeader) {
             return false;
         }
 
-        const dailyHeader = containerRef.current?.querySelector(`[data-daily-date="${date}"]`);
-
-        if (dailyHeader) {
-            targetDailyDateRef.current = null;
-            dailyHeader.scrollIntoView({ behavior: "smooth", block: "center" });
-            return true;
-        }
-
-        return false;
-    };
+        targetDailyDateRef.current = null;
+        highlightElement(dailyHeader);
+        return true;
+    }, []);
 
     const navigateToDailyByDate = useCallback(
         (date: string) => {
@@ -123,43 +106,72 @@ export const DailyList = () => {
                 }
             });
         },
-        [setRange]
+        [setRange, scrollToDaily]
     );
 
-    const createEntryDraft = (date: string) => {
+    const handleBatchUpdate = useCallback(
+        async (date: ISODateString, payload: Partial<Entry>) => {
+            const group = entriesGroups[date] ?? [];
+
+            const ids = group
+                .filter((entry) => {
+                    const keys = Object.keys(payload) as (keyof Entry)[];
+                    return keys.some((key) => entry[key] !== payload[key]);
+                })
+                .map((e) => e.id);
+
+            if (ids.length > 0) {
+                await onUpdateEntries(ids, payload);
+            }
+        },
+        [entriesGroups, onUpdateEntries]
+    );
+
+    const handleBatchDateUpdate = useCallback(
+        async (oldDate: ISODateString, newDate: ISODateString) => {
+            await handleBatchUpdate(oldDate, { date: newDate });
+            scrollToDaily(newDate);
+        },
+        [handleBatchUpdate, scrollToDaily]
+    );
+
+    const handleBatchDelete = async (date: ISODateString) => {
+        const group = entriesGroups[date] ?? [];
+        const ids = group.map((entry) => entry.id);
+
+        if (!ids.length) {
+            return;
+        }
+
+        await onDeleteEntries(ids);
+    };
+
+    const handleCreateDraft = (date: string) => {
         addPlaceholder(date);
         navigateToPlaceholderByGroup(date);
     };
 
-    const deleteEntries = async (entries: Entry[]) => {
-        const ids = entries.map((entry) => entry.id);
-        await onDeleteEntries(ids);
+    const onSavePlaceholder = async (date: ISODateString, content: string) => {
+        const entry = await onCreateEntry({
+            date,
+            content,
+            isCompleted: filters.completed ?? false,
+            isFeatured: filters.featured ?? false,
+        });
+
+        if (entry) {
+            navigateByEntryId("input", entry.id);
+            removePlaceholder(date);
+        }
     };
-
-    const updateEntriesDate = async (entries: Entry[], date: ISODateString) => {
-        const ids = entries.map((entry) => entry.id);
-        await onUpdateEntries(ids, { date });
-    };
-
-    const onQuickCreateEntry = useCallback(
-        async (entry: Pick<Entry, "content" | "date" | "isCompleted" | "isFeatured">) => {
-            const result = await onCreateEntry(entry);
-
-            if (result) {
-                navigateToDailyByDate(result.date);
-            }
-
-            return result;
-        },
-        [navigateToDailyByDate, onCreateEntry]
-    );
 
     useEffect(
         function processPendingDailyNavigation() {
-            if (isFetchingEntries || !targetDailyDateRef.current) return;
-            scrollToDaily(targetDailyDateRef.current);
+            if (!isFetchingEntries && targetDailyDateRef.current) {
+                scrollToDaily(targetDailyDateRef.current);
+            }
         },
-        [isFetchingEntries]
+        [isFetchingEntries, scrollToDaily]
     );
 
     return (
@@ -176,46 +188,54 @@ export const DailyList = () => {
 
             <div className={styles.floatingContainer}>
                 <section className={styles.quickAddWrapper}>
-                    <EntryQuickAddForm onCreateEntry={onQuickCreateEntry} defaultDate={defaultDate} />
+                    <EntryQuickAddForm defaultDate={defaultDate} onCreateEntry={onCreateEntry} />
                 </section>
             </div>
 
-            {dailies.map((daily) => (
-                <section className={styles.day} key={daily.date} data-daily-date={daily.date}>
-                    <DayHeader
-                        date={daily.date}
-                        onCreateEntryDraft={() => createEntryDraft(daily.date)}
-                        onUpdateDate={(date) => updateEntriesDate(entriesGroups[daily.date] ?? [], date)}
-                        onDeleteEntries={() => deleteEntries(entriesGroups[daily.date] ?? [])}
-                    />
+            {dailies.map((daily) => {
+                const dayEntries = entriesGroups[daily.date] ?? [];
+                const showPlaceholder = placeholders.includes(daily.date);
 
-                    <ul className={styles.entries}>
-                        {entriesGroups[daily.date]?.map((entry, index) => (
-                            <DailyEntry
-                                id={getEntryElementId(entry.id)}
-                                entry={entry}
-                                key={entry.id}
-                                onDelete={onDeleteEntry}
-                                onChangeStatus={onUpdateEntryStatus}
-                                onSaveContent={onUpdateEntryContent}
-                                onChangeIsFeatured={onUpdateEntryIsFeatured}
-                                onFocusColumn={(column: DailyEntryColumn) => navigateByIndex(column, daily.date, index)}
-                                onNavigateDown={(target) => navigateByIndex(target, daily.date, index + 1)}
-                                onNavigateUp={(target) => navigateByIndex(target, daily.date, index - 1)}
-                            />
-                        ))}
+                return (
+                    <section className={styles.day} key={daily.date} data-daily-date={daily.date}>
+                        <DayHeader
+                            date={daily.date}
+                            onCreateEntryDraft={() => handleCreateDraft(daily.date)}
+                            onDeleteEntries={() => handleBatchDelete(daily.date)}
+                            onUpdateDate={(date) => handleBatchDateUpdate(daily.date, date)}
+                            onStatusChange={(isCompleted) => handleBatchUpdate(daily.date, { isCompleted })}
+                            onIsFeaturedChange={(isFeatured) => handleBatchUpdate(daily.date, { isFeatured })}
+                        />
 
-                        {(!entriesGroups[daily.date]?.length || placeholders.includes(daily.date)) && (
-                            <DailyEntryPlaceholder
-                                id={getEntryPlaceholderElementId(daily.date)}
-                                onDelete={() => removePlaceholder(daily.date)}
-                                onSaveContent={(content) => onSavePlaceholder(daily.date, content)}
-                                onNavigateUp={() => navigateByIndex("input", daily.date, entriesGroups[daily.date]?.length - 1)}
-                            />
-                        )}
-                    </ul>
-                </section>
-            ))}
+                        <ul className={styles.entries}>
+                            {dayEntries.map((entry, index) => (
+                                <DailyEntry
+                                    key={entry.id}
+                                    id={getEntryElementId(entry.id)}
+                                    entry={entry}
+                                    onDelete={onDeleteEntry}
+                                    onChangeDate={onUpdateEntryDate}
+                                    onChangeStatus={onUpdateEntryStatus}
+                                    onSaveContent={onUpdateEntryContent}
+                                    onChangeIsFeatured={onUpdateEntryIsFeatured}
+                                    onFocusColumn={(column) => navigateByIndex(column, daily.date, index)}
+                                    onNavigateDown={(target) => navigateByIndex(target, daily.date, index + 1)}
+                                    onNavigateUp={(target) => navigateByIndex(target, daily.date, index - 1)}
+                                />
+                            ))}
+
+                            {showPlaceholder && (
+                                <DailyEntryPlaceholder
+                                    id={getEntryPlaceholderElementId(daily.date)}
+                                    onDelete={() => removePlaceholder(daily.date)}
+                                    onSaveContent={(content) => onSavePlaceholder(daily.date, content)}
+                                    onNavigateUp={() => navigateByIndex("input", daily.date, dayEntries.length - 1)}
+                                />
+                            )}
+                        </ul>
+                    </section>
+                );
+            })}
 
             <ItemLoader
                 shouldLoadNext={hasNextPage}

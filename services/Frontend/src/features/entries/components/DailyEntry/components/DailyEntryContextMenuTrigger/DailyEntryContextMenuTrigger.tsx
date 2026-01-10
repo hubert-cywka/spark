@@ -9,17 +9,11 @@ import { handleDailyEntryComponentsNavigation } from "@/features/entries/compone
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 
 type DailyEntryContextMenuTriggerProps = DailyEntryComponentProps;
-export const DailyEntryContextMenuTrigger = ({
-    column,
-    onNavigateLeft,
-    onNavigateDown,
-    onNavigateUp,
-    onNavigateRight,
-}: DailyEntryContextMenuTriggerProps) => {
+export const DailyEntryContextMenuTrigger = ({ column, onNavigateLeft, onNavigateRight }: DailyEntryContextMenuTriggerProps) => {
     const t = useTranslate();
 
     const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
-        handleDailyEntryComponentsNavigation(e, { onNavigateUp, onNavigateRight, onNavigateLeft, onNavigateDown });
+        handleDailyEntryComponentsNavigation(e, { onNavigateRight, onNavigateLeft });
     };
 
     return (

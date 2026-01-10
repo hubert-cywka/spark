@@ -2,4 +2,6 @@
 
 .container {
     font: tokens.$typography-body-200;
+    border-radius: tokens.$radius-200;
+    padding: tokens.$spacing-100;
 }

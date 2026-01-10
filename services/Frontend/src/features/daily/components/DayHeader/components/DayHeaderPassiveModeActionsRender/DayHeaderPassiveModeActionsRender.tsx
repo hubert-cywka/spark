@@ -1,14 +1,16 @@
-import { Pencil, Plus, Trash } from "lucide-react";
+import { EllipsisIcon, Pencil, Plus } from "lucide-react";
 
 import { IconButton } from "@/components/IconButton";
 import { PassiveTextInputPassiveModeActionsRenderProps } from "@/components/PassiveTextInput";
-import { DeleteEntriesByDateModal } from "@/features/daily/components/DeleteDailyModal/DeleteEntriesByDateModal.tsx";
+import { DayHeaderContextMenu } from "@/features/daily/components/DayHeader/components/DayHeaderContextMenu/DayHeaderContextMenu.tsx";
 import { ISODateString } from "@/types/ISODateString";
 
 type DayHeaderPassiveModeActionsRenderProps = {
     date: ISODateString;
     onCreateEntryDraft: () => void;
     onDeleteEntries: () => Promise<void>;
+    onIsFeaturedChange: (value: boolean) => void;
+    onStatusChange: (value: boolean) => void;
 } & PassiveTextInputPassiveModeActionsRenderProps;
 
 export const DayHeaderPassiveModeActionsRender = ({
@@ -16,6 +18,8 @@ export const DayHeaderPassiveModeActionsRender = ({
     onStartEditMode,
     onCreateEntryDraft,
     onDeleteEntries,
+    onStatusChange,
+    onIsFeaturedChange,
     translationFn,
 }: DayHeaderPassiveModeActionsRenderProps) => {
     return (
@@ -36,20 +40,21 @@ export const DayHeaderPassiveModeActionsRender = ({
                 tooltip={translationFn("daily.day.actions.edit.label")}
                 aria-label={translationFn("daily.day.actions.edit.label")}
             />
-            <DeleteEntriesByDateModal
-                date={date}
+
+            <DayHeaderContextMenu
                 onDelete={onDeleteEntries}
-                trigger={({ onClick }) => (
-                    <IconButton
-                        variant="danger"
-                        size="1"
-                        onPress={onClick}
-                        iconSlot={Trash}
-                        tooltip={translationFn("daily.day.actions.delete.label")}
-                        aria-label={translationFn("daily.day.actions.delete.label")}
-                    />
-                )}
-            />
+                onStatusChange={onStatusChange}
+                onIsFeaturedChange={onIsFeaturedChange}
+                date={date}
+            >
+                <IconButton
+                    variant="secondary"
+                    size="1"
+                    iconSlot={EllipsisIcon}
+                    tooltip={translationFn("daily.day.actions.more.label")}
+                    aria-label={translationFn("daily.day.actions.more.label")}
+                />
+            </DayHeaderContextMenu>
         </>
     );
 };

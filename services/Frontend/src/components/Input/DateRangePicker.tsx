@@ -1,5 +1,5 @@
 import { DateRangePicker as BaseDateRangePicker, DateValue, FieldError, Label } from "react-aria-components";
-import { fromDate } from "@internationalized/date";
+import { parseDate } from "@internationalized/date";
 import classNames from "clsx";
 import { CalendarIcon } from "lucide-react";
 
@@ -11,9 +11,8 @@ import { IconButton } from "@/components/IconButton";
 import { SegmentedDateInputSlot } from "@/components/Input/SegmentedDateInputSlot";
 import { DatePickerBaseProps } from "@/components/Input/types/DatePickerBaseProps";
 import { Popover } from "@/components/Popover";
-import { formatToISODateString } from "@/features/daily/utils/dateUtils";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
-import { ISODateStringRange } from "@/types/ISODateString";
+import { ISODateString, ISODateStringRange } from "@/types/ISODateString";
 
 type DateRangePickerProps = DatePickerBaseProps & {
     value: ISODateStringRange | null;
@@ -21,6 +20,7 @@ type DateRangePickerProps = DatePickerBaseProps & {
 };
 
 export const DateRangePicker = ({
+    autoFocus,
     size = "2",
     label,
     value,
@@ -39,13 +39,14 @@ export const DateRangePicker = ({
         }
 
         onChange?.({
-            from: formatToISODateString(new Date(value.start.toString())),
-            to: formatToISODateString(new Date(value.end.toString())),
+            from: value.start.toString() as ISODateString,
+            to: value.end.toString() as ISODateString,
         });
     };
 
     return (
         <BaseDateRangePicker
+            autoFocus={autoFocus}
             onChange={onChangeInternal}
             isInvalid={!!error}
             isRequired={required}
@@ -90,12 +91,16 @@ export const DateRangePicker = ({
 };
 
 const convertValue = (value: ISODateStringRange | null) => {
-    if (!value) {
-        return value;
+    if (!value || !value.from || !value.to) {
+        return null;
     }
 
-    return {
-        start: fromDate(new Date(value.from), "UTC"),
-        end: fromDate(new Date(value.to), "UTC"),
-    };
+    try {
+        const start = parseDate(value.from.split("T")[0]);
+        const end = parseDate(value.to.split("T")[0]);
+
+        return { start, end };
+    } catch (e) {
+        return null;
+    }
 };

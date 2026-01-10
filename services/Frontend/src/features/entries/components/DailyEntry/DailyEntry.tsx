@@ -1,3 +1,4 @@
+import { useState } from "react";
 import classNames from "clsx";
 
 import { DailyEntryContextMenu } from "./components/DailyEntryContextMenu/DailyEntryContextMenu.tsx";
@@ -5,18 +6,13 @@ import { DailyEntryContextMenu } from "./components/DailyEntryContextMenu/DailyE
 import styles from "./styles/DailyEntry.module.scss";
 
 import { DailyEntryColumn } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
-import {
-    DailyEntryGoalsPopupTrigger,
-    DailyEntryInput,
-    DailyEntryStatusCheckbox,
-    DailyEntryWrapper,
-} from "@/features/entries/components/DailyEntry/components";
+import { DailyEntryInput, DailyEntryStatusCheckbox, DailyEntryWrapper } from "@/features/entries/components/DailyEntry/components";
 import { DailyEntryContextMenuTrigger } from "@/features/entries/components/DailyEntry/components/DailyEntryContextMenuTrigger/DailyEntryContextMenuTrigger.tsx";
 import { DailyEntryFeaturedCheckbox } from "@/features/entries/components/DailyEntry/components/DailyEntryFeaturedCheckbox/DailyEntryFeaturedCheckbox.tsx";
-import { useDetectEntryCreation } from "@/features/entries/components/DailyEntry/hooks/useDetectEntryCreation.tsx";
 import { LinkGoalsPopover } from "@/features/entries/components/LinkGoalsPopover/LinkGoalsPopover.tsx";
 import { Entry } from "@/features/entries/types/Entry";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
+import { ISODateString } from "@/types/ISODateString";
 
 type DailyEntryProps = {
     id: string;
@@ -25,6 +21,7 @@ type DailyEntryProps = {
     onNavigateDown: (column: DailyEntryColumn) => void;
     onFocusColumn: (column: DailyEntryColumn) => void;
     onSaveContent: (entryId: string, content: string) => void;
+    onChangeDate: (entryId: string, date: ISODateString) => Promise<unknown>;
     onChangeStatus: (entryId: string, status: boolean) => void;
     onChangeIsFeatured: (entryId: string, isFeatured: boolean) => void;
     onDelete: (entryId: string) => void;
@@ -38,23 +35,32 @@ export const DailyEntry = ({
     onNavigateUp,
     onNavigateDown,
     onChangeStatus,
+    onChangeDate,
     onChangeIsFeatured,
     onFocusColumn,
 }: DailyEntryProps) => {
     const t = useTranslate();
-    const { wasCreated } = useDetectEntryCreation(entry);
+    const [isGoalsPopoverOpen, setGoalsPopoverChange] = useState(false);
+
+    const openGoalsPopover = () => {
+        setGoalsPopoverChange(true);
+    };
 
     return (
         <DailyEntryWrapper id={id}>
-            <div className={classNames(styles.row, { [styles.highlight]: wasCreated })}>
-                <DailyEntryContextMenu onDelete={() => onDelete(entry.id)}>
-                    <DailyEntryContextMenuTrigger
-                        column="actions"
-                        onNavigateRight={() => onFocusColumn("checkbox")}
-                        onNavigateUp={() => onNavigateUp("actions")}
-                        onNavigateDown={() => onNavigateDown("actions")}
-                    />
-                </DailyEntryContextMenu>
+            <div className={classNames(styles.row)}>
+                <LinkGoalsPopover entryId={entry.id} isOpen={isGoalsPopoverOpen} onOpenChange={setGoalsPopoverChange}>
+                    <DailyEntryContextMenu
+                        onChangeDate={(date) => onChangeDate(entry.id, date)}
+                        onOpenGoals={openGoalsPopover}
+                        entry={entry}
+                        onDelete={() => onDelete(entry.id)}
+                        onChangeStatus={(value) => onChangeStatus(entry.id, value)}
+                        onChangeIsFeatured={(value) => onChangeIsFeatured(entry.id, value)}
+                    >
+                        <DailyEntryContextMenuTrigger column="actions" onNavigateRight={() => onFocusColumn("checkbox")} />
+                    </DailyEntryContextMenu>
+                </LinkGoalsPopover>
 
                 <DailyEntryStatusCheckbox
                     column="checkbox"
@@ -69,29 +75,19 @@ export const DailyEntry = ({
                 <DailyEntryFeaturedCheckbox
                     column="featured"
                     onNavigateLeft={() => onFocusColumn("checkbox")}
-                    onNavigateRight={() => onFocusColumn("goals")}
+                    onNavigateRight={() => onFocusColumn("input")}
                     onNavigateUp={() => onNavigateUp("featured")}
                     onNavigateDown={() => onNavigateDown("featured")}
                     onChange={(isFeatured) => onChangeIsFeatured(entry.id, isFeatured)}
                     value={entry.isFeatured}
                 />
 
-                <LinkGoalsPopover entryId={entry.id}>
-                    <DailyEntryGoalsPopupTrigger
-                        column="goals"
-                        onNavigateLeft={() => onFocusColumn("featured")}
-                        onNavigateRight={() => onFocusColumn("input")}
-                        onNavigateUp={() => onNavigateUp("goals")}
-                        onNavigateDown={() => onNavigateDown("goals")}
-                    />
-                </LinkGoalsPopover>
-
                 <DailyEntryInput
                     column="input"
                     initialContent={entry.content}
                     onNavigateUp={() => onNavigateUp("input")}
                     onNavigateDown={() => onNavigateDown("input")}
-                    onNavigateLeft={() => onFocusColumn("goals")}
+                    onNavigateLeft={() => onFocusColumn("featured")}
                     onSaveContent={(content) => onSaveContent(entry.id, content)}
                     onDelete={() => onDelete(entry.id)}
                     placeholder={t("entries.placeholder")}

@@ -3,12 +3,19 @@ import classNames from "clsx";
 
 import styles from "./styles/MenuItem.module.scss";
 
-type MenuItemProps = BaseMenuItemProps;
+import { Icon } from "@/components/Icon";
+import { IconSlot } from "@/components/Icon/types/Icon";
 
-export function MenuItem({ children, className, ...rest }: MenuItemProps) {
+type MenuItemProps = Omit<BaseMenuItemProps, "children"> & {
+    label: string;
+    iconSlot: IconSlot;
+    variant?: "danger" | "neutral";
+};
+
+export function MenuItem({ className, label, iconSlot, variant = "neutral", ...rest }: MenuItemProps) {
     return (
-        <BaseMenuItem className={classNames(styles.menuItem, className)} {...rest}>
-            {children}
+        <BaseMenuItem data-variant={variant} className={classNames(styles.menuItem, className)} {...rest}>
+            <span className={styles.itemLabel}>{label}</span> <Icon className={styles.icon} slot={iconSlot} size="1" />
         </BaseMenuItem>
     );
 }

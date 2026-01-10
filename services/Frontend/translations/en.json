@@ -309,7 +309,27 @@
                 "label": "Entry actions menu"
             },
             "actions": {
-                "delete": "Delete entry"
+                "delete": {
+                    "label": "Delete entry"
+                },
+                "changeDate": {
+                    "label": "Pick a new date"
+                },
+                "openGoals": {
+                    "label": "Show goals"
+                },
+                "markAsCompleted": {
+                    "label": "Complete"
+                },
+                "markAsFeatured": {
+                    "label": "Feature"
+                },
+                "markAsPending": {
+                    "label": "Mark as pending"
+                },
+                "markAsNonFeatured": {
+                    "label": "Unfeature"
+                }
             }
         },
         "statusCheckbox": {
@@ -418,10 +438,24 @@
                 }
             }
         },
+        "changeDate": {
+            "modal": {
+                "header": "Update entry date",
+                "caption": "Pick a new date for your entry:",
+                "buttons": {
+                    "cancel": {
+                        "label": "Cancel"
+                    },
+                    "confirm": {
+                        "label": "Confirm"
+                    }
+                }
+            }
+        },
         "deleteByDay": {
             "modal": {
                 "header": "Delete entries",
-                "caption": "Are you sure that you want to delete entries assigned to {date}?",
+                "caption": "Are you sure that you want to delete ALL entries assigned to {date}?",
                 "buttons": {
                     "cancel": {
                         "label": "Cancel"
@@ -429,14 +463,6 @@
                     "confirm": {
                         "label": "Delete"
                     }
-                }
-            },
-            "notifications": {
-                "error": {
-                    "title": "Couldn't delete entries"
-                },
-                "success": {
-                    "title": "Entries have been deleted"
                 }
             }
         }
@@ -769,7 +795,22 @@
                     "label": "Update entries date"
                 },
                 "delete": {
-                    "label": "Delete entries"
+                    "label": "Delete all"
+                },
+                "more": {
+                    "label": "See more actions"
+                },
+                "markAsCompleted": {
+                    "label": "Complete all"
+                },
+                "markAsFeatured": {
+                    "label": "Feature all"
+                },
+                "markAsPending": {
+                    "label": "Mark all pending"
+                },
+                "markAsNonFeatured": {
+                    "label": "Unfeature all"
                 }
             }
         }
