@@ -47,7 +47,13 @@ export const DailyEntry = ({
     return (
         <DailyEntryWrapper id={id}>
             <div className={classNames(styles.row, { [styles.highlight]: wasCreated })}>
-                <DailyEntryContextMenu onDelete={() => onDelete(entry.id)}>
+                <DailyEntryContextMenu
+                    isCompleted={entry.isCompleted}
+                    isFeatured={entry.isFeatured}
+                    onDelete={() => onDelete(entry.id)}
+                    onChangeStatus={(value) => onChangeStatus(entry.id, value)}
+                    onChangeIsFeatured={(value) => onChangeIsFeatured(entry.id, value)}
+                >
                     <DailyEntryContextMenuTrigger
                         column="actions"
                         onNavigateRight={() => onFocusColumn("checkbox")}

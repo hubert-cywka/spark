@@ -1,24 +1,21 @@
 "use client";
 
-import { useState } from "react";
-
 import { Button } from "@/components/Button";
 import { Modal, ModalHeader } from "@/components/Modal";
 import { ModalBody } from "@/components/Modal/components/ModalBody/ModalBody";
 import { ModalFooter } from "@/components/Modal/components/ModalFooter/ModalFooter";
-import { ModalTrigger } from "@/components/Modal/types/Modal";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 import { ISODateString } from "@/types/ISODateString";
 
 type DeleteEntriesByDateModalProps = {
     date: ISODateString;
     onDelete: () => Promise<void>;
-    trigger: ModalTrigger;
+    isOpen: boolean;
+    onOpenChange: (isOpen: boolean) => void;
 };
 
-export const DeleteEntriesByDateModal = ({ trigger, date, onDelete }: DeleteEntriesByDateModalProps) => {
+export const DeleteEntriesByDateModal = ({ date, onDelete, isOpen, onOpenChange }: DeleteEntriesByDateModalProps) => {
     const t = useTranslate();
-    const [isOpen, setIsOpen] = useState(false);
 
     const handleDelete = async () => {
         await onDelete();
@@ -26,11 +23,11 @@ export const DeleteEntriesByDateModal = ({ trigger, date, onDelete }: DeleteEntr
     };
 
     const close = () => {
-        setIsOpen(false);
+        onOpenChange(false);
     };
 
     return (
-        <Modal trigger={trigger({ onClick: () => setIsOpen(true) })} isOpen={isOpen} onOpenChange={setIsOpen}>
+        <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
             <ModalHeader onClose={close}>{t("entries.deleteByDay.modal.header")}</ModalHeader>
 
             <ModalBody>

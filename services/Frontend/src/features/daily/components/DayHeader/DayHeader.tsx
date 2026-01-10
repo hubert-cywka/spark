@@ -15,9 +15,18 @@ type DayHeaderProps = {
     onCreateEntryDraft: () => void;
     onUpdateDate: (date: ISODateString) => Promise<void>;
     onDeleteEntries: () => Promise<void>;
+    onEntriesStatusChange: (value: boolean) => Promise<void>;
+    onEntriesIsFeaturedChange: (value: boolean) => Promise<void>;
 };
 
-export const DayHeader = ({ date, onCreateEntryDraft, onDeleteEntries, onUpdateDate }: DayHeaderProps) => {
+export const DayHeader = ({
+    date,
+    onCreateEntryDraft,
+    onDeleteEntries,
+    onUpdateDate,
+    onEntriesStatusChange,
+    onEntriesIsFeaturedChange,
+}: DayHeaderProps) => {
     const t = useTranslate();
 
     return (
@@ -30,6 +39,8 @@ export const DayHeader = ({ date, onCreateEntryDraft, onDeleteEntries, onUpdateD
                     date={date}
                     onCreateEntryDraft={onCreateEntryDraft}
                     onDeleteEntries={onDeleteEntries}
+                    onEntriesIsFeaturedChange={onEntriesIsFeaturedChange}
+                    onEntriesStatusChange={onEntriesStatusChange}
                     onStartEditMode={onStartEditMode}
                     translationFn={translationFn}
                 />

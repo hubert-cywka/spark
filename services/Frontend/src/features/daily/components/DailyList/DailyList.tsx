@@ -133,12 +133,42 @@ export const DailyList = () => {
 
     const deleteEntries = async (entries: Entry[]) => {
         const ids = entries.map((entry) => entry.id);
+
+        if (!ids.length) {
+            return;
+        }
+
         await onDeleteEntries(ids);
     };
 
     const updateEntriesDate = async (entries: Entry[], date: ISODateString) => {
         const ids = entries.map((entry) => entry.id);
+
+        if (!ids.length) {
+            return;
+        }
+
         await onUpdateEntries(ids, { date });
+    };
+
+    const updateEntriesFeaturedStatus = async (entries: Entry[], value: boolean) => {
+        const ids = entries.filter((entry) => entry.isFeatured !== value).map((entry) => entry.id);
+
+        if (!ids.length) {
+            return;
+        }
+
+        await onUpdateEntries(ids, { isFeatured: value });
+    };
+
+    const updateEntriesCompletionStatus = async (entries: Entry[], value: boolean) => {
+        const ids = entries.filter((entry) => entry.isCompleted !== value).map((entry) => entry.id);
+
+        if (!ids.length) {
+            return;
+        }
+
+        await onUpdateEntries(ids, { isCompleted: value });
     };
 
     const onQuickCreateEntry = useCallback(
@@ -187,6 +217,8 @@ export const DailyList = () => {
                         onCreateEntryDraft={() => createEntryDraft(daily.date)}
                         onUpdateDate={(date) => updateEntriesDate(entriesGroups[daily.date] ?? [], date)}
                         onDeleteEntries={() => deleteEntries(entriesGroups[daily.date] ?? [])}
+                        onEntriesStatusChange={(value) => updateEntriesCompletionStatus(entriesGroups[daily.date] ?? [], value)}
+                        onEntriesIsFeaturedChange={(value) => updateEntriesFeaturedStatus(entriesGroups[daily.date] ?? [], value)}
                     />
 
                     <ul className={styles.entries}>

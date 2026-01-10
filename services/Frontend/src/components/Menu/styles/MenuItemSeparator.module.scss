@@ -1,0 +1,6 @@
+@use "src/styles/tokens";
+
+.separator {
+  border-bottom: thin solid tokens.$color-neutral-surface-200;
+  margin-block: tokens.$spacing-100;
+}

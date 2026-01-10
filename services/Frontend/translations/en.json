@@ -309,7 +309,21 @@
                 "label": "Entry actions menu"
             },
             "actions": {
-                "delete": "Delete entry"
+                "delete": {
+                    "label": "Delete entry"
+                },
+                "markAsCompleted": {
+                    "label": "Complete"
+                },
+                "markAsFeatured": {
+                    "label": "Feature"
+                },
+                "markAsPending": {
+                    "label": "Mark as pending"
+                },
+                "markAsNonFeatured": {
+                    "label": "Unfeature"
+                }
             }
         },
         "statusCheckbox": {
@@ -421,7 +435,7 @@
         "deleteByDay": {
             "modal": {
                 "header": "Delete entries",
-                "caption": "Are you sure that you want to delete entries assigned to {date}?",
+                "caption": "Are you sure that you want to delete ALL entries assigned to {date}?",
                 "buttons": {
                     "cancel": {
                         "label": "Cancel"
@@ -769,7 +783,22 @@
                     "label": "Update entries date"
                 },
                 "delete": {
-                    "label": "Delete entries"
+                    "label": "Delete all"
+                },
+                "more": {
+                    "label": "See more actions"
+                },
+                "markAsCompleted": {
+                    "label": "Complete all"
+                },
+                "markAsFeatured": {
+                    "label": "Feature all"
+                },
+                "markAsPending": {
+                    "label": "Mark all pending"
+                },
+                "markAsNonFeatured": {
+                    "label": "Unfeature all"
                 }
             }
         }

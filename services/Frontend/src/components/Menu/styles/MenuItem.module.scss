@@ -4,8 +4,25 @@
   padding: tokens.$spacing-200 tokens.$spacing-300;
   border-radius: tokens.$radius-100;
   font: tokens.$typography-body-100;
-  
   cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.$spacing-300;
+
+  &[data-variant="danger"] {
+    color: tokens.$color-danger-text-300;
+
+    &[data-focused] {
+      color: tokens.$color-neutral-text-100;
+      background: tokens.$color-danger-solid-200;
+    }
+  }
+
+  .icon {
+    margin-left: tokens.$spacing-400;
+  }
 
   &[data-focused] {
     background: tokens.$color-accent-solid-300;
