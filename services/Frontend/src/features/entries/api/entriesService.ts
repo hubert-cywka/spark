@@ -1,10 +1,10 @@
 import { PageDto } from "@/api/dto/PageDto";
 import { PageCursor } from "@/api/types/PageCursor.ts";
+import { BulkDeleteEntryRequestDto } from "@/features/entries/api/dto/BulkDeleteEntryRequestDto.ts";
+import { BulkUpdateEntryRequestDto } from "@/features/entries/api/dto/BulkUpdateEntryRequestDto.ts";
 import { CreateEntryRequestDto } from "@/features/entries/api/dto/CreateEntryRequestDto";
 import { EntryDto } from "@/features/entries/api/dto/EntryDto";
-import { UpdateEntryContentRequestDto } from "@/features/entries/api/dto/UpdateEntryContentRequestDto";
-import { UpdateEntryIsFeaturedRequestDto } from "@/features/entries/api/dto/UpdateEntryIsFeaturedRequestDto.ts";
-import { UpdateEntryStatusRequestDto } from "@/features/entries/api/dto/UpdateEntryStatusRequestDto";
+import { UpdateEntryRequestDto } from "@/features/entries/api/dto/UpdateEntryRequestDto.ts";
 import { EntriesQueryFilters } from "@/features/entries/api/types/EntriesQueryFilters";
 import { Entry } from "@/features/entries/types/Entry";
 import { apiClient } from "@/lib/apiClient/apiClient";
@@ -14,7 +14,7 @@ const PAGE_SIZE = 100;
 export class EntriesService {
     public static async getPage(
         cursor: PageCursor,
-        { from, to, goals, featured, completed, content, includeGoals, includeDaily }: EntriesQueryFilters = {}
+        { from, to, goals, featured, completed, content, includeGoals }: EntriesQueryFilters = {}
     ) {
         const searchParams = new URLSearchParams({
             order: "DESC",
@@ -23,10 +23,6 @@ export class EntriesService {
 
         if (includeGoals) {
             searchParams.append("includeGoals", "true");
-        }
-
-        if (includeDaily) {
-            searchParams.append("includeDaily", "true");
         }
 
         if (cursor) {
@@ -61,45 +57,40 @@ export class EntriesService {
         return { ...data, data: data.data.map(EntriesService.mapDtoToEntry) };
     }
 
-    public static async createOne({ dailyId, ...dto }: CreateEntryRequestDto & { dailyId: string }) {
-        const { data } = await apiClient.post(`/daily/${dailyId}/entry`, dto);
+    public static async createOne(dto: CreateEntryRequestDto) {
+        const { data } = await apiClient.post("/entry", dto);
         return EntriesService.mapDtoToEntry(data);
     }
 
-    public static async updateContent({ entryId, dailyId, ...dto }: UpdateEntryContentRequestDto & { entryId: string; dailyId: string }) {
-        const { data } = await apiClient.patch(`/daily/${dailyId}/entry/${entryId}/content`, dto);
+    public static async updateOne({ entryId, ...dto }: UpdateEntryRequestDto & { entryId: string }) {
+        const { data } = await apiClient.patch(`/entry/${entryId}`, dto);
         return EntriesService.mapDtoToEntry(data);
     }
 
-    public static async updateStatus({ entryId, dailyId, ...dto }: UpdateEntryStatusRequestDto & { entryId: string; dailyId: string }) {
-        const { data } = await apiClient.patch(`/daily/${dailyId}/entry/${entryId}/completed`, dto);
+    public static async updateMany(dto: BulkUpdateEntryRequestDto) {
+        const { data } = await apiClient.patch("/entry", dto);
         return EntriesService.mapDtoToEntry(data);
     }
 
-    public static async updateIsFeatured({
-        entryId,
-        dailyId,
-        ...dto
-    }: UpdateEntryIsFeaturedRequestDto & { entryId: string; dailyId: string }) {
-        const { data } = await apiClient.patch(`/daily/${dailyId}/entry/${entryId}/featured`, dto);
+    public static async deleteMany(dto: BulkDeleteEntryRequestDto) {
+        const { data } = await apiClient.post("/entry/delete-requests", dto);
         return EntriesService.mapDtoToEntry(data);
     }
 
-    public static async deleteOne({ entryId, dailyId }: { entryId: string; dailyId: string }) {
-        await apiClient.delete(`/daily/${dailyId}/entry/${entryId}`);
+    public static async deleteOne({ entryId }: { entryId: string }) {
+        await apiClient.delete(`/entry/${entryId}`);
     }
 
     private static mapDtoToEntry(dto: EntryDto): Entry {
         return {
             id: dto.id,
-            dailyId: dto.dailyId,
+            date: dto.date,
             authorId: dto.authorId,
             content: dto.content,
             isCompleted: dto.isCompleted,
             isFeatured: dto.isFeatured,
             createdAt: new Date(dto.createdAt),
             updatedAt: new Date(dto.updatedAt),
-            daily: dto.daily,
             goals: dto.goals,
         };
     }

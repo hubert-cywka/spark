@@ -26,15 +26,15 @@ export const useEntriesDataGrid = ({ allGroups, activeGroups, onColumnGrouped, o
         isCompletedCellRenderer,
         isFeaturedCellRenderer,
         contentCellRenderer,
-        dailyDateCellRenderer,
-        dailyDateGroupCellRenderer,
+        dateCellRenderer,
+        dateGroupCellRenderer,
         isFeaturedGroupCellRenderer,
         isCompletedGroupCellRenderer,
         goalsCellRenderer,
         goalsGroupCellRenderer,
     } = useEntriesDataGridRenderers();
 
-    const isDailyGrouped = activeGroups.includes("daily");
+    const isDateGrouped = activeGroups.includes("date");
     const isGoalsGrouped = activeGroups.includes("goals");
     const isCompletedGrouped = activeGroups.includes("isCompleted");
     const isFeaturedGrouped = activeGroups.includes("isFeatured");
@@ -42,15 +42,15 @@ export const useEntriesDataGrid = ({ allGroups, activeGroups, onColumnGrouped, o
     const columns: readonly Column<DetailedEntry>[] = useMemo(
         () => [
             {
-                key: "daily",
-                name: t("reports.grid.columns.daily"),
+                key: "date",
+                name: t("reports.grid.columns.date"),
                 resizable: true,
                 sortable: true,
                 minWidth: 140,
                 width: 140,
-                renderCell: dailyDateCellRenderer,
+                renderCell: dateCellRenderer,
                 renderHeaderCell: headerCellRenderer,
-                renderGroupCell: isDailyGrouped ? dailyDateGroupCellRenderer : undefined,
+                renderGroupCell: isDateGrouped ? dateGroupCellRenderer : undefined,
             },
             {
                 key: "content",
@@ -94,10 +94,10 @@ export const useEntriesDataGrid = ({ allGroups, activeGroups, onColumnGrouped, o
         ],
         [
             t,
-            dailyDateCellRenderer,
+            dateCellRenderer,
             headerCellRenderer,
-            isDailyGrouped,
-            dailyDateGroupCellRenderer,
+            isDateGrouped,
+            dateGroupCellRenderer,
             contentCellRenderer,
             isCompletedCellRenderer,
             isCompletedGrouped,

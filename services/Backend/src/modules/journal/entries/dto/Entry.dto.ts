@@ -6,6 +6,9 @@ export class EntryDto {
     @IsUUID("4")
     id!: string;
 
+    @IsDateString()
+    date!: ISODateString;
+
     @IsUUID("4")
     authorId!: string;
 
@@ -26,10 +29,6 @@ export class EntryDto {
 
     @IsDateString()
     updatedAt!: string;
-
-    @IsOptional()
-    @IsDateString()
-    daily?: ISODateString;
 
     @IsOptional()
     @IsArray()

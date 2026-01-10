@@ -3,7 +3,7 @@ import { ISODateString } from "@/types/ISODateString";
 
 export type Entry = {
     id: string;
-    dailyId: string;
+    date: ISODateString;
     authorId: string;
     content: string;
     isCompleted: boolean;
@@ -11,12 +11,10 @@ export type Entry = {
     updatedAt: Date;
     createdAt: Date;
     goals?: string[];
-    daily?: ISODateString;
 };
 
 export type DetailedEntry = Entry & {
     goals: string[];
-    daily: ISODateString;
 };
 
 export type EntriesMetrics = {

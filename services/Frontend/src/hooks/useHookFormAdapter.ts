@@ -11,17 +11,18 @@ type UseHookFormAdapterResult<T extends FieldValues> = Omit<UseFormReturn<T>, "r
 };
 
 export const useHookFormAdapter = <T extends FieldValues>(options?: UseHookFormAdapterOptions<T>): UseHookFormAdapterResult<T> => {
-    const { register, setValue, ...rest } = useForm<T>(options);
+    const { register, setValue, watch, ...rest } = useForm<T>(options);
 
     const adaptedRegister: RegisterResult<T> = useCallback(
         (field: Path<T>) => ({
             ...register(field),
+            value: watch(field),
             onChange: (value) => {
                 setValue(field, value);
             },
         }),
-        [register, setValue]
+        [register, setValue, watch]
     );
 
-    return { ...rest, register: adaptedRegister, setValue };
+    return { ...rest, register: adaptedRegister, setValue, watch };
 };

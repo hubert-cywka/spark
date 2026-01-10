@@ -6,30 +6,31 @@ import styles from "./styles/DayHeader.module.scss";
 import { PassiveTextInput } from "@/components/PassiveTextInput/PassiveTextInput";
 import { DayHeaderEditModeActionsRender } from "@/features/daily/components/DayHeader/components/DayHeaderEditModeActionsRender/DayHeaderEditModeActionsRender";
 import { DayHeaderPassiveModeActionsRender } from "@/features/daily/components/DayHeader/components/DayHeaderPassiveModeActionsRender/DayHeaderPassiveModeActionsRender";
-import { Daily } from "@/features/daily/types/Daily";
-import { formatToISODateString } from "@/features/daily/utils/dateUtils";
+import { formatToISODateString } from "@/features/daily/utils/dateUtils.ts";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 import { ISODateString } from "@/types/ISODateString";
 
 type DayHeaderProps = {
-    daily: Daily;
-    onUpdateDate: (id: string, date: ISODateString) => void;
+    date: ISODateString;
     onCreateEntryDraft: () => void;
+    onUpdateDate: (date: ISODateString) => Promise<void>;
+    onDeleteEntries: () => Promise<void>;
 };
 
-export const DayHeader = ({ daily, onUpdateDate, onCreateEntryDraft }: DayHeaderProps) => {
+export const DayHeader = ({ date, onCreateEntryDraft, onDeleteEntries, onUpdateDate }: DayHeaderProps) => {
     const t = useTranslate();
 
     return (
         <PassiveTextInput
-            value={mapToDateValue(daily.date)}
-            onChange={(value) => onUpdateDate(daily.id, mapToISODate(value))}
+            value={mapToDateValue(date)}
+            onChange={(value) => onUpdateDate(mapToISODate(value))}
             onRenderEditModeActions={DayHeaderEditModeActionsRender}
             onRenderPassiveModeActions={({ onStartEditMode, translationFn }) => (
                 <DayHeaderPassiveModeActionsRender
+                    date={date}
                     onCreateEntryDraft={onCreateEntryDraft}
+                    onDeleteEntries={onDeleteEntries}
                     onStartEditMode={onStartEditMode}
-                    daily={daily}
                     translationFn={translationFn}
                 />
             )}

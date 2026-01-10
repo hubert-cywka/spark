@@ -7,7 +7,6 @@ import { OutboxEventEntity } from "@/common/events/entities/OutboxEvent.entity";
 import { OutboxEventPartitionEntity } from "@/common/events/entities/OutboxEventPartition.entity";
 import { AppConfig } from "@/config/configuration";
 import { AuthorEntity } from "@/modules/journal/authors/entities/Author.entity";
-import { DailyEntity } from "@/modules/journal/daily/entities/Daily.entity";
 import { EntryEntity } from "@/modules/journal/entries/entities/Entry.entity";
 import { GoalEntity } from "@/modules/journal/goals/entities/Goal.entity";
 
@@ -28,7 +27,6 @@ export const dataSource = new DataSource({
     entities: [
         OutboxEventEntity,
         InboxEventEntity,
-        DailyEntity,
         AuthorEntity,
         GoalEntity,
         EntryEntity,

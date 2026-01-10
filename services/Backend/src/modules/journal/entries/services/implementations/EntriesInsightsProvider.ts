@@ -15,10 +15,9 @@ export class EntriesInsightsProvider implements IEntriesInsightsProvider {
     public async getMetricsByDateRange(authorId: string, from: string, to: string): Promise<EntriesInsights> {
         const result = await this.getRepository()
             .createQueryBuilder("entry")
-            .innerJoin("entry.daily", "daily")
             .where("entry.authorId = :authorId", { authorId })
-            .andWhere("daily.date >= :from", { from })
-            .andWhere("daily.date <= :to", { to })
+            .andWhere("entry.date >= :from", { from })
+            .andWhere("entry.date <= :to", { to })
             .select([
                 "COUNT(entry.id) AS totalEntriesAmount",
                 "SUM(CASE WHEN entry.isFeatured = true THEN 1 ELSE 0 END) AS featuredEntriesAmount",
@@ -43,10 +42,9 @@ export class EntriesInsightsProvider implements IEntriesInsightsProvider {
     public async getLoggingHistogram(authorId: string, from: string, to: string, timezone: string): Promise<EntryLoggingHistogram> {
         const histogramResult = await this.getRepository()
             .createQueryBuilder("entry")
-            .innerJoin("entry.daily", "daily")
             .where("entry.authorId = :authorId", { authorId })
-            .andWhere("daily.date >= :from", { from })
-            .andWhere("daily.date <= :to", { to })
+            .andWhere("entry.date >= :from", { from })
+            .andWhere("entry.date <= :to", { to })
             .select([
                 "EXTRACT(DOW FROM entry.createdAt AT TIME ZONE :timezone AT TIME ZONE 'UTC') AS dayOfWeek",
                 "EXTRACT(HOUR FROM entry.createdAt AT TIME ZONE :timezone AT TIME ZONE 'UTC') AS hour",

@@ -4,6 +4,39 @@
     display: flex;
     flex-direction: column;
     gap: tokens.$spacing-700;
+    position: relative;
+
+    padding-top: tokens.$spacing-1000;
+    padding-bottom: tokens.$spacing-800;
+
+    @media (min-width: tokens.$breakpoint-md) {
+        padding-top: tokens.$spacing-900;
+    }
+
+    .floatingContainer {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        left: tokens.$spacing-700;
+        z-index: 100;
+
+        display: flex;
+        justify-content: center;
+        padding: tokens.$spacing-600 tokens.$spacing-400;
+
+        background: linear-gradient(to top, tokens.$color-neutral-background-300 50%, tokens.$color-neutral-background-alpha-300 75%, transparent);
+        pointer-events: none;
+        
+        @media (min-width: tokens.$breakpoint-sm) {
+            left: tokens.$sidebar-size;
+        }
+    }
+
+    .quickAddWrapper {
+        width: 100%;
+        max-width: 720px;
+        pointer-events: auto;
+    }
 
     .day {
         .entries {

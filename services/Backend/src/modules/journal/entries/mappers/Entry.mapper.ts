@@ -13,12 +13,11 @@ export class EntryMapper extends BaseModelDTOEntityMapper<Entry, EntryDto, Entry
             content: entity.content,
             isCompleted: entity.isCompleted,
             isFeatured: entity.isFeatured,
-            dailyId: entity.dailyId,
+            date: entity.date,
             authorId: entity.authorId,
             createdAt: entity.createdAt,
             updatedAt: entity.updatedAt,
 
-            daily: entity.daily?.date,
             goals: entity.goals?.map((goal) => goal.name),
         };
     }
@@ -29,12 +28,11 @@ export class EntryMapper extends BaseModelDTOEntityMapper<Entry, EntryDto, Entry
             content: model.content,
             isCompleted: model.isCompleted,
             isFeatured: model.isFeatured,
-            dailyId: model.dailyId,
+            date: model.date,
             authorId: model.authorId,
             createdAt: model.createdAt.toISOString(),
             updatedAt: model.updatedAt.toISOString(),
 
-            daily: model.daily,
             goals: model.goals,
         });
     }

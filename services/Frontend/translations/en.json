@@ -61,17 +61,7 @@
                     }
                 }
             },
-            "updateContent": {
-                "errors": {
-                    "notFound": "Perhaps it was already deleted?"
-                }
-            },
-            "updateStatus": {
-                "errors": {
-                    "notFound": "Perhaps it was already deleted?"
-                }
-            },
-            "updateIsFeatured": {
+            "update": {
                 "errors": {
                     "notFound": "Perhaps it was already deleted?"
                 }
@@ -193,6 +183,21 @@
                 "label": "Close"
             }
         },
+        "datePicker": {
+            "label": "Date",
+            "resetButton": {
+                "label": "Reset date"
+            },
+            "showCalendarButton": {
+                "label": "Show calendar"
+            },
+            "nextRangeButton": {
+                "label": "Show next timeframe"
+            },
+            "previousRangeButton": {
+                "label": "Show previous timeframe"
+            }
+        },
         "dateRangePicker": {
             "label": "Date range",
             "presets": {
@@ -304,7 +309,7 @@
                 "label": "Entry actions menu"
             },
             "actions": {
-                "delete": "Delete"
+                "delete": "Delete entry"
             }
         },
         "statusCheckbox": {
@@ -328,30 +333,37 @@
         },
         "placeholder": "Add entry...",
         "create": {
+            "quickAddForm": {
+                "input": {
+                    "placeholder": {
+                        "future": "What will you achieve on {date}?",
+                        "past": "What have you achieved on {date}?"
+                    }
+                },
+                "submitButton": {
+                    "label": "Create entry"
+                },
+                "datePicker": {
+                    "label": ""
+                }
+            },
             "notifications": {
                 "error": {
                     "title": "Couldn't create entry"
                 }
             }
         },
-        "updateContent": {
+        "update": {
             "notifications": {
                 "error": {
                     "title": "Couldn't update entry"
                 }
             }
         },
-        "updateStatus": {
+        "bulkUpdate": {
             "notifications": {
                 "error": {
-                    "title": "Couldn't update entry"
-                }
-            }
-        },
-        "updateIsFeatured": {
-            "notifications": {
-                "error": {
-                    "title": "Couldn't update entry"
+                    "title": "Couldn't update entries"
                 }
             }
         },
@@ -398,6 +410,35 @@
                     "title": "Couldn't delete entry"
                 }
             }
+        },
+        "bulkDelete": {
+            "notifications": {
+                "error": {
+                    "title": "Couldn't delete entries"
+                }
+            }
+        },
+        "deleteByDay": {
+            "modal": {
+                "header": "Delete entries",
+                "caption": "Are you sure that you want to delete entries assigned to {date}?",
+                "buttons": {
+                    "cancel": {
+                        "label": "Cancel"
+                    },
+                    "confirm": {
+                        "label": "Delete"
+                    }
+                }
+            },
+            "notifications": {
+                "error": {
+                    "title": "Couldn't delete entries"
+                },
+                "success": {
+                    "title": "Entries have been deleted"
+                }
+            }
         }
     },
     "reports": {
@@ -426,7 +467,7 @@
                 "label": "Expand group"
             },
             "columns": {
-                "daily": "Date",
+                "date": "Date",
                 "content": "Content",
                 "goals": "Goals",
                 "isCompleted": "Completed",
@@ -669,13 +710,7 @@
     "daily": {
         "empty": {
             "title": "Not much to see here",
-            "caption": "You have not added any daily in {date} yet.",
-            "addDailyButton": {
-                "label": "Add new daily"
-            }
-        },
-        "createDailyButton": {
-            "label": "Add new daily"
+            "caption": "You have not added any entries {date} yet."
         },
         "filters": {
             "previousYear": "Go 12 months back",
@@ -690,7 +725,7 @@
                     "less": "Less",
                     "more": "More"
                 },
-                "tooltip": "{count} daily entries on {date}",
+                "tooltip": "{count} entries on {date}",
                 "months": {
                     "jan": "Jan",
                     "feb": "Feb",
@@ -704,12 +739,21 @@
                     "oct": "Oct",
                     "nov": "Nov",
                     "dec": "Dec"
+                },
+                "days": {
+                    "mon": "Mon",
+                    "tue": "Tue",
+                    "wed": "Wed",
+                    "thu": "Thu",
+                    "fri": "Fri",
+                    "sat": "Sat",
+                    "sun": "Sun"
                 }
             }
         },
         "day": {
             "date": {
-                "label": "Daily's date"
+                "label": "Date"
             },
             "actions": {
                 "createDraftEntry": {
@@ -722,54 +766,10 @@
                     "label": "Cancel changes"
                 },
                 "edit": {
-                    "label": "Edit daily"
+                    "label": "Update entries date"
                 },
                 "delete": {
-                    "label": "Remove daily"
-                }
-            }
-        },
-        "create": {
-            "notifications": {
-                "error": {
-                    "title": "Couldn't create daily"
-                },
-                "success": {
-                    "title": "Daily has been created",
-                    "body": "It will be moved to correct timeframe once you leave this page."
-                }
-            }
-        },
-        "updateDate": {
-            "notifications": {
-                "error": {
-                    "title": "Couldn't update daily's date"
-                },
-                "success": {
-                    "title": "Daily's date has been updated",
-                    "body": "It will be moved to correct timeframe once you leave this page."
-                }
-            }
-        },
-        "delete": {
-            "modal": {
-                "header": "Delete daily",
-                "caption": "Are you sure that you want to delete {date} daily? All it's entries will be deleted as well.",
-                "buttons": {
-                    "cancel": {
-                        "label": "Cancel"
-                    },
-                    "confirm": {
-                        "label": "Delete anyway"
-                    }
-                }
-            },
-            "notifications": {
-                "error": {
-                    "title": "Couldn't delete daily"
-                },
-                "success": {
-                    "title": "Daily and it's entries have been deleted"
+                    "label": "Delete entries"
                 }
             }
         }

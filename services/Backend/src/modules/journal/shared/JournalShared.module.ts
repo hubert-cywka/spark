@@ -12,7 +12,6 @@ import {
     HealthCheckProbesRegistryToken,
 } from "@/modules/healthcheck/services/interfaces/IHealthCheckProbesRegistry";
 import { AuthorEntity } from "@/modules/journal/authors/entities/Author.entity";
-import { DailyEntity } from "@/modules/journal/daily/entities/Daily.entity";
 import { EntryEntity } from "@/modules/journal/entries/entities/Entry.entity";
 import { GoalEntity } from "@/modules/journal/goals/entities/Goal.entity";
 import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
@@ -20,6 +19,7 @@ import { RegenerateMigrations1749289925550 } from "@/modules/journal/infrastruct
 import { AddIndexes1767381735359 } from "@/modules/journal/infrastructure/database/migrations/1767381735359-add-indexes";
 import { ImproveIndexes1767428462687 } from "@/modules/journal/infrastructure/database/migrations/1767428462687-improve-indexes";
 import { TimestampsPrecisionJournal1767887791536 } from "@/modules/journal/infrastructure/database/migrations/1767887791536-timestamps-precision-journal";
+import { AddDateToEntries1767904875178 } from "@/modules/journal/infrastructure/database/migrations/1767904875178-add-date-to-entries";
 
 @Module({
     providers: [],
@@ -40,11 +40,12 @@ import { TimestampsPrecisionJournal1767887791536 } from "@/modules/journal/infra
                     AddIndexes1767381735359,
                     ImproveIndexes1767428462687,
                     TimestampsPrecisionJournal1767887791536,
+                    AddDateToEntries1767904875178,
                 ],
             }),
             inject: [ConfigService],
         }),
-        DatabaseModule.forFeature(JOURNAL_MODULE_DATA_SOURCE, [EntryEntity, DailyEntity, AuthorEntity, GoalEntity]),
+        DatabaseModule.forFeature(JOURNAL_MODULE_DATA_SOURCE, [EntryEntity, AuthorEntity, GoalEntity]),
         IntegrationEventsModule.forFeatureAsync({
             context: JournalSharedModule.name,
             consumerGroupId: "journal",

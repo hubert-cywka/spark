@@ -29,4 +29,9 @@
             scrollbar-color: tokens.$color-accent-solid-100 tokens.$color-accent-background-200;
         }
     }
+
+    text {
+        color: tokens.$color-accent-text-200;
+        font: tokens.$typography-caption-200;
+    }
 }

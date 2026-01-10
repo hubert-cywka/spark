@@ -23,22 +23,22 @@ export const useGetDailyEntriesByDateRange = ({ from, to, featured, completed, a
         autoFetch,
     });
 
-    const data = useMemo(() => {
+    const groupedData = useMemo(() => {
         const entries = entriesData?.pages?.flatMap((page) => page.data) ?? [];
         const entriesMap: Record<string, Entry[]> = {};
 
         entries.forEach((entry) => {
-            const dailyEntries = entriesMap[entry.dailyId];
+            const dailyEntries = entriesMap[entry.date];
 
             if (dailyEntries) {
                 dailyEntries.push(entry);
             } else {
-                entriesMap[entry.dailyId] = [entry];
+                entriesMap[entry.date] = [entry];
             }
         });
 
         return entriesMap;
     }, [entriesData]);
 
-    return { data, ...rest };
+    return { data: entriesData, groupedData, ...rest };
 };

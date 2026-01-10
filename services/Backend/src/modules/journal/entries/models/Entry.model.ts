@@ -1,13 +1,12 @@
 export type Entry = {
     id: string;
+    date: string;
     authorId: string;
-    dailyId: string;
     content: string;
     isCompleted: boolean;
     isFeatured: boolean;
     createdAt: Date;
     updatedAt: Date;
 
-    daily?: string;
     goals?: string[];
 };

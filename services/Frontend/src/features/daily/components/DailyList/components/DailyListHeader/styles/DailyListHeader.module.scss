@@ -4,19 +4,22 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: tokens.$spacing-600;
-    width: 100%;
+    gap: tokens.$spacing-300;
 
-    position: sticky;
+    position: fixed;
     z-index: 10;
     top: 0;
-    backdrop-filter: blur(10px);
+    left: 0;
+    right: 0;
+    background: linear-gradient(to bottom, tokens.$color-neutral-background-300 50%, tokens.$color-neutral-background-alpha-300 75%, transparent);
 
     font: tokens.$typography-title-500;
-    padding: tokens.$spacing-600 tokens.$spacing-400 tokens.$spacing-200;
-    margin-left: calc(#{tokens.$spacing-400} * -1);
-    margin-bottom: tokens.$spacing-400;
+    padding: tokens.$spacing-600 tokens.$spacing-800;
 
+    @media (min-width: tokens.$breakpoint-sm) {
+        left: tokens.$sidebar-size;
+    }
+    
     @media (min-width: tokens.$breakpoint-md) {
         flex-direction: row;
         align-items: center;
@@ -31,7 +34,7 @@
             display: flex;
             gap: tokens.$spacing-200;
 
-            @media (max-width: tokens.$breakpoint-sm) {
+            @media (max-width: tokens.$breakpoint-md) {
                 .changeYearButton {
                     display: none;
                 }
@@ -41,7 +44,7 @@
         .header {
             font: tokens.$typography-title-300;
 
-            @media (min-width: tokens.$breakpoint-sm) {
+            @media (min-width: tokens.$breakpoint-md) {
                 font: tokens.$typography-title-400;
             }
         }

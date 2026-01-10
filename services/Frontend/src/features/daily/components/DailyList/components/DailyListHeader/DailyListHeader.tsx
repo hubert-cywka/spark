@@ -1,5 +1,5 @@
 import { PropsWithChildren } from "react";
-import { Calendar, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, RotateCcwIcon } from "lucide-react";
 import { useLocale } from "next-intl";
 
 import styles from "./styles/DailyListHeader.module.scss";
@@ -15,17 +15,9 @@ type DailyListHeaderProps = PropsWithChildren<{
     onReset: () => void;
     onNextTimeframe: (units: number) => void;
     onPrevTimeframe: (units: number) => void;
-    onCreateNewDaily: () => void;
 }>;
 
-export const DailyListHeader = ({
-    timeframeStart,
-    onNextTimeframe,
-    onPrevTimeframe,
-    onReset,
-    onCreateNewDaily,
-    children,
-}: DailyListHeaderProps) => {
+export const DailyListHeader = ({ timeframeStart, onNextTimeframe, onPrevTimeframe, onReset, children }: DailyListHeaderProps) => {
     const t = useTranslate();
 
     const now = new Date();
@@ -37,17 +29,10 @@ export const DailyListHeader = ({
             <div className={styles.dateRangeFilters}>
                 <div className={styles.buttons}>
                     <IconButton
-                        onPress={onCreateNewDaily}
-                        variant="confirm"
-                        iconSlot={Plus}
-                        tooltip={t("daily.createDailyButton.label")}
-                        aria-label={t("daily.createDailyButton.label")}
-                    />
-                    <IconButton
                         isDisabled={isCurrentYearAndMonth}
                         onPress={onReset}
                         variant="secondary"
-                        iconSlot={Calendar}
+                        iconSlot={RotateCcwIcon}
                         tooltip={t("daily.filters.today")}
                         aria-label={t("daily.filters.today")}
                     />

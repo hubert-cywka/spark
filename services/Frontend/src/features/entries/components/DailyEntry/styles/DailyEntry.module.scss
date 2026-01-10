@@ -4,4 +4,20 @@
     display: flex;
     gap: tokens.$spacing-200;
     align-items: center;
+    border-radius: tokens.$radius-200;
+    padding: tokens.$spacing-100;
+}
+
+.highlight {
+    animation: highlight-fade 3s ease-out;
+}
+
+@keyframes highlight-fade {
+    0% {
+        background-color: rgba(tokens.$color-accent-solid-200, 0.5);
+    }
+    
+    100% {
+        background-color: transparent;
+    }
 }

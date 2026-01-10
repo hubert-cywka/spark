@@ -1,0 +1,97 @@
+@use "src/styles/tokens";
+
+.form {
+  display: flex;
+  align-items: center;
+  gap: tokens.$spacing-300;
+  width: 100%;
+
+  .formActions {
+    display: flex;
+    gap: tokens.$spacing-200;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    .formAction {
+      position: relative;
+      border-radius: 100%;
+      z-index: 1;
+      transition: 0.2s opacity, 0.3s transform;
+    }
+
+    .reset {
+      left: 0;
+      z-index: 0;
+
+      &.hidden {
+        opacity: 0;
+        transform: translateX(-100%);
+      }
+    }
+  }
+
+  .inputContainer {
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    border-radius: tokens.$radius-400;
+
+    .contentInput {
+      width: 100%;
+
+      input {
+        padding-right: 50px;
+        padding-left: tokens.$spacing-500;
+        border-radius: tokens.$radius-500;
+        height: 50px;
+
+        border-bottom: 2px solid transparent;
+        border-top: 0;
+        border-left: 0;
+        border-right: 0;
+        
+        animation: 8s rotate linear infinite;
+
+        &:not(:focus-within) {
+          background:
+                  linear-gradient(tokens.$color-neutral-background-100, tokens.$color-neutral-background-100) padding-box,
+                  conic-gradient(from var(--angle) at 50% 50%, tokens.$color-neutral-background-200 70%, tokens.$color-accent-solid-100 100%) border-box;
+        }
+      }
+    }
+
+    .inputActions {
+      position: absolute;
+      right: tokens.$spacing-400;
+      transform: translateY(-50%);
+      top: 50%;
+
+      display: flex;
+      align-items: center;
+
+      .inputAction {
+        transition: 0.3s opacity;
+      }
+    }
+  }
+}
+
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+
+@keyframes rotate {
+  from {
+    --angle: 0deg;
+  }
+
+  to {
+    --angle: 360deg;
+  }
+}

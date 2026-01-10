@@ -10,5 +10,4 @@ export type EntryFilters = {
     updatedAfter?: Date;
     updatedBefore?: Date;
     includeGoals?: boolean;
-    includeDaily?: boolean;
 };

@@ -13,7 +13,8 @@ import { useDailyActivityChartLabels } from "@/features/daily/components/DailyAc
 import { useDailyActivityChartNavigation } from "@/features/daily/components/DailyActivityChart/hooks/useDailyActivityChartNavigation.ts";
 import { DailyActivity } from "@/features/daily/types/Daily";
 
-const DAY_BLOCK_SIZE = 16;
+const DAY_BLOCK_SIZE = 12;
+const DAY_BLOCK_MARGIN = 6;
 
 type DailyActivityChartProps = {
     activity: DailyActivity[];
@@ -50,11 +51,12 @@ export const DailyActivityChart = ({ activity, onSelectDay, isLoading }: DailyAc
             aria-activedescendant={activeDescendantId}
         >
             <ActivityCalendar
-                hideTotalCount
-                hideColorLegend
+                weekStart={1}
                 loading={isLoading}
                 maxLevel={maxActivity}
                 blockSize={DAY_BLOCK_SIZE}
+                blockMargin={DAY_BLOCK_MARGIN}
+                showWeekdayLabels={["mon", "tue", "wed", "thu", "fri", "sat", "sun"]}
                 eventHandlers={{
                     onClick: (_event) => onGridCellClick,
                 }}
