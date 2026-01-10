@@ -8,18 +8,12 @@ import { ISODateString } from "@/types/ISODateString";
 
 type DayHeaderContextMenuProps = PropsWithChildren<{
     onDelete: () => Promise<void>;
-    onEntriesIsFeaturedChange: (value: boolean) => Promise<void>;
-    onEntriesStatusChange: (value: boolean) => Promise<void>;
+    onIsFeaturedChange: (value: boolean) => void;
+    onStatusChange: (value: boolean) => void;
     date: ISODateString;
 }>;
 
-export const DayHeaderContextMenu = ({
-    children,
-    onEntriesStatusChange,
-    onEntriesIsFeaturedChange,
-    onDelete,
-    date,
-}: DayHeaderContextMenuProps) => {
+export const DayHeaderContextMenu = ({ children, onStatusChange, onIsFeaturedChange, onDelete, date }: DayHeaderContextMenuProps) => {
     const t = useTranslate();
     const [isDeleteEntriesModalOpen, setIsDeleteEntriesModalOpen] = useState(false);
     const openDeleteEntriesModal = () => setIsDeleteEntriesModalOpen(true);
@@ -28,27 +22,25 @@ export const DayHeaderContextMenu = ({
         <>
             <Menu trigger={children}>
                 <MenuItem
-                    onAction={() => onEntriesStatusChange(true)}
+                    onAction={() => onStatusChange(true)}
                     label={t("daily.day.actions.markAsCompleted.label")}
                     iconSlot={CheckSquareIcon}
                 />
-                <MenuItem
-                    onAction={() => onEntriesStatusChange(false)}
-                    label={t("daily.day.actions.markAsPending.label")}
-                    iconSlot={SquareIcon}
-                />
+                <MenuItem onAction={() => onStatusChange(false)} label={t("daily.day.actions.markAsPending.label")} iconSlot={SquareIcon} />
+
                 <MenuItemSeparator />
 
                 <MenuItem
-                    onAction={() => onEntriesIsFeaturedChange(true)}
+                    onAction={() => onIsFeaturedChange(true)}
                     label={t("daily.day.actions.markAsFeatured.label")}
                     iconSlot={StarIcon}
                 />
                 <MenuItem
-                    onAction={() => onEntriesIsFeaturedChange(false)}
+                    onAction={() => onIsFeaturedChange(false)}
                     label={t("daily.day.actions.markAsNonFeatured.label")}
                     iconSlot={StarOffIcon}
                 />
+
                 <MenuItemSeparator />
 
                 <MenuItem

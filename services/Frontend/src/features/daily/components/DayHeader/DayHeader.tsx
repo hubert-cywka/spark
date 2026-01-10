@@ -13,10 +13,10 @@ import { ISODateString } from "@/types/ISODateString";
 type DayHeaderProps = {
     date: ISODateString;
     onCreateEntryDraft: () => void;
-    onUpdateDate: (date: ISODateString) => Promise<void>;
+    onUpdateDate: (date: ISODateString) => void;
     onDeleteEntries: () => Promise<void>;
-    onEntriesStatusChange: (value: boolean) => Promise<void>;
-    onEntriesIsFeaturedChange: (value: boolean) => Promise<void>;
+    onStatusChange: (value: boolean) => void;
+    onIsFeaturedChange: (value: boolean) => void;
 };
 
 export const DayHeader = ({
@@ -24,8 +24,8 @@ export const DayHeader = ({
     onCreateEntryDraft,
     onDeleteEntries,
     onUpdateDate,
-    onEntriesStatusChange,
-    onEntriesIsFeaturedChange,
+    onStatusChange,
+    onIsFeaturedChange,
 }: DayHeaderProps) => {
     const t = useTranslate();
 
@@ -39,8 +39,8 @@ export const DayHeader = ({
                     date={date}
                     onCreateEntryDraft={onCreateEntryDraft}
                     onDeleteEntries={onDeleteEntries}
-                    onEntriesIsFeaturedChange={onEntriesIsFeaturedChange}
-                    onEntriesStatusChange={onEntriesStatusChange}
+                    onIsFeaturedChange={onIsFeaturedChange}
+                    onStatusChange={onStatusChange}
                     onStartEditMode={onStartEditMode}
                     translationFn={translationFn}
                 />

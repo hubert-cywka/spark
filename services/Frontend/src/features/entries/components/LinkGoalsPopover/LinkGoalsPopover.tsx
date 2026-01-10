@@ -12,16 +12,18 @@ const SEARCH_DEBOUNCE_IN_MS = 350;
 
 type LinkGoalsPopoverProps = PropsWithChildren<{
     entryId: string;
+    isOpen: boolean;
+    onOpenChange: (isOpen: boolean) => void;
 }>;
 
-export const LinkGoalsPopover = ({ entryId, children }: LinkGoalsPopoverProps) => {
+export const LinkGoalsPopover = ({ entryId, isOpen, onOpenChange, children }: LinkGoalsPopoverProps) => {
     const t = useTranslate();
     const [search, setSearch] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState(search);
     useDebounce(() => setDebouncedSearch(search), SEARCH_DEBOUNCE_IN_MS, [search]);
 
     return (
-        <Popover offset={15} trigger={children}>
+        <Popover offset={15} isOpen={isOpen} onOpenChange={onOpenChange} trigger={children}>
             <section className={styles.container}>
                 <search>
                     <Field label={t("entries.goals.list.unlinked.search")} size="1" value={search} onChange={setSearch} autoFocus />

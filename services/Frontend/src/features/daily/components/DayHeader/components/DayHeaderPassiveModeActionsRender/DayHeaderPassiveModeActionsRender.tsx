@@ -9,8 +9,8 @@ type DayHeaderPassiveModeActionsRenderProps = {
     date: ISODateString;
     onCreateEntryDraft: () => void;
     onDeleteEntries: () => Promise<void>;
-    onEntriesIsFeaturedChange: (value: boolean) => Promise<void>;
-    onEntriesStatusChange: (value: boolean) => Promise<void>;
+    onIsFeaturedChange: (value: boolean) => void;
+    onStatusChange: (value: boolean) => void;
 } & PassiveTextInputPassiveModeActionsRenderProps;
 
 export const DayHeaderPassiveModeActionsRender = ({
@@ -18,8 +18,8 @@ export const DayHeaderPassiveModeActionsRender = ({
     onStartEditMode,
     onCreateEntryDraft,
     onDeleteEntries,
-    onEntriesStatusChange,
-    onEntriesIsFeaturedChange,
+    onStatusChange,
+    onIsFeaturedChange,
     translationFn,
 }: DayHeaderPassiveModeActionsRenderProps) => {
     return (
@@ -43,8 +43,8 @@ export const DayHeaderPassiveModeActionsRender = ({
 
             <DayHeaderContextMenu
                 onDelete={onDeleteEntries}
-                onEntriesStatusChange={onEntriesStatusChange}
-                onEntriesIsFeaturedChange={onEntriesIsFeaturedChange}
+                onStatusChange={onStatusChange}
+                onIsFeaturedChange={onIsFeaturedChange}
                 date={date}
             >
                 <IconButton

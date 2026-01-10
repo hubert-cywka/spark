@@ -312,6 +312,9 @@
                 "delete": {
                     "label": "Delete entry"
                 },
+                "openGoals": {
+                    "label": "Show goals"
+                },
                 "markAsCompleted": {
                     "label": "Complete"
                 },
