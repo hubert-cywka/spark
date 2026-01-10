@@ -8,15 +8,14 @@ import { EntityNotFoundError } from "@/common/errors/EntityNotFound.error";
 import { whenError } from "@/common/errors/whenError";
 import { AccessGuard } from "@/common/guards/Access.guard";
 import { PageOptionsDto } from "@/common/pagination/dto/PageOptions.dto";
+import { BulkDeleteEntryDto } from "@/modules/journal/entries/dto/BulkDeleteEntry.dto";
+import { BulkUpdateEntryDto } from "@/modules/journal/entries/dto/BulkUpdateEntry.dto";
 import { CreateEntryDto } from "@/modules/journal/entries/dto/CreateEntry.dto";
 import { EntriesMetricsDto } from "@/modules/journal/entries/dto/EntriesMetrics.dto";
 import { EntryLoggingHistogramDto } from "@/modules/journal/entries/dto/EntryLoggingHistogram.dto";
 import { FindEntriesFiltersDto } from "@/modules/journal/entries/dto/FindEntriesFilters.dto";
 import { FindEntriesInsightsDto } from "@/modules/journal/entries/dto/FindEntriesInsights.dto";
-import { UpdateEntryContentDto } from "@/modules/journal/entries/dto/UpdateEntryContent.dto";
-import { UpdateEntryDateDto } from "@/modules/journal/entries/dto/UpdateEntryDate.dto";
-import { UpdateEntryIsFeaturedDto } from "@/modules/journal/entries/dto/UpdateEntryIsFeatured.dto";
-import { UpdateEntryStatusDto } from "@/modules/journal/entries/dto/UpdateEntryStatus.dto";
+import { UpdateEntryDto } from "@/modules/journal/entries/dto/UpdateEntry.dto";
 import { type IEntryMapper, EntryMapperToken } from "@/modules/journal/entries/mappers/IEntry.mapper";
 import {
     type IEntriesInsightsProvider,
@@ -63,71 +62,31 @@ export class EntryController {
         }
     }
 
-    @Patch(":entryId/content")
+    @Patch()
     @UseGuards(AccessGuard)
     @AccessScopes("write:entry")
-    public async updateEntryContent(
-        @Param("entryId") entryId: string,
+    public async bulkUpdateEntries(@AuthenticatedUserContext() user: User, @Body() dto: BulkUpdateEntryDto) {
+        const result = await this.entryService.bulkUpdate(user.id, dto.ids, dto.value);
+        return this.entryMapper.fromModelToDtoBulk(result);
+    }
 
-        @AuthenticatedUserContext() user: User,
-        @Body() dto: UpdateEntryContentDto
-    ) {
+    @Patch(":entryId")
+    @UseGuards(AccessGuard)
+    @AccessScopes("write:entry")
+    public async updateEntry(@Param("entryId") entryId: string, @AuthenticatedUserContext() user: User, @Body() dto: UpdateEntryDto) {
         try {
-            const result = await this.entryService.update(user.id, entryId, { content: dto.content });
+            const result = await this.entryService.update(user.id, entryId, dto);
             return this.entryMapper.fromModelToDto(result);
         } catch (err) {
             whenError(err).is(EntityNotFoundError).throw(new NotFoundException());
         }
     }
 
-    @Patch(":entryId/date")
+    @Post("delete-requests")
     @UseGuards(AccessGuard)
     @AccessScopes("write:entry")
-    public async updateEntryDate(
-        @Param("entryId") entryId: string,
-        @AuthenticatedUserContext() user: User,
-        @Body() dto: UpdateEntryDateDto
-    ) {
-        try {
-            const result = await this.entryService.update(user.id, entryId, { content: dto.date });
-            return this.entryMapper.fromModelToDto(result);
-        } catch (err) {
-            whenError(err).is(EntityNotFoundError).throw(new NotFoundException());
-        }
-    }
-
-    @Patch(":entryId/completed")
-    @UseGuards(AccessGuard)
-    @AccessScopes("write:entry")
-    public async updateEntryStatus(
-        @Param("entryId") entryId: string,
-
-        @AuthenticatedUserContext() user: User,
-        @Body() dto: UpdateEntryStatusDto
-    ) {
-        try {
-            const result = await this.entryService.update(user.id, entryId, { isCompleted: dto.isCompleted });
-            return this.entryMapper.fromModelToDto(result);
-        } catch (err) {
-            whenError(err).is(EntityNotFoundError).throw(new NotFoundException());
-        }
-    }
-
-    @Patch(":entryId/featured")
-    @UseGuards(AccessGuard)
-    @AccessScopes("write:entry")
-    public async updateEntryIsFeatured(
-        @Param("entryId") entryId: string,
-
-        @AuthenticatedUserContext() user: User,
-        @Body() dto: UpdateEntryIsFeaturedDto
-    ) {
-        try {
-            const result = await this.entryService.update(user.id, entryId, { isFeatured: dto.isFeatured });
-            return this.entryMapper.fromModelToDto(result);
-        } catch (err) {
-            whenError(err).is(EntityNotFoundError).throw(new NotFoundException());
-        }
+    public async bulkDeleteEntries(@AuthenticatedUserContext() user: User, @Body() dto: BulkDeleteEntryDto) {
+        await this.entryService.bulkDelete(user.id, dto.ids);
     }
 
     @Delete(":entryId")

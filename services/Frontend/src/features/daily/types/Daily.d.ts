@@ -1,4 +1,4 @@
-import { ISODateString } from "@/types/ISODateString";
+import { ISODateString, ISODateStringRange } from "@/types/ISODateString";
 
 export type Daily = {
     id: string;
@@ -11,10 +11,7 @@ export type DailyActivity = {
 };
 
 export type DailyMetrics = {
-    dailyRange: {
-        from: string;
-        to: string;
-    };
+    dailyRange: ISODateStringRange;
     activityHistory: DailyActivity[];
     totalActiveDays: number;
     activeDayRate: number;

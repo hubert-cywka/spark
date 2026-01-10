@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 
 import styles from "./styles/GoalEntriesList.module.scss";
 
-import { useDailyEntriesEvents } from "@/features/daily/components/DailyList/hooks/useDailyEntriesEvents";
+import { useEntriesEvents } from "@/features/daily/components/DailyList/hooks/useEntriesEvents.ts";
 import { useNavigationBetweenEntries } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
 import { getEntryElementId } from "@/features/daily/components/DailyList/utils/dailyEntriesSelectors";
 import { DailyEntry } from "@/features/entries/components/DailyEntry";
@@ -20,7 +20,7 @@ type GoalEntriesListProps = {
 export const GoalEntriesList = ({ entries, isLoading, goalId, headerActions }: GoalEntriesListProps) => {
     const t = useTranslate();
 
-    const { onUpdateEntryContent, onDeleteEntry, onUpdateEntryStatus, onUpdateEntryIsFeatured } = useDailyEntriesEvents();
+    const { onUpdateEntryContent, onDeleteEntry, onUpdateEntryStatus, onUpdateEntryIsFeatured } = useEntriesEvents();
     const { navigateByIndex } = useNavigationBetweenEntries({
         entriesGroups: { [goalId]: entries },
     });

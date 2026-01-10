@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import dayjs from "dayjs";
+
+import { formatToISODateString } from "@/features/daily/utils/dateUtils.ts";
 
 type UseDailyDateRangeOptions = {
     granularity: "year" | "month" | "day";
@@ -20,7 +22,17 @@ export const useDailyDateRange = ({ granularity }: UseDailyDateRangeOptions) => 
         setStartDate(start);
     };
 
+    const defaultDate = useMemo(() => {
+        const now = dayjs();
+
+        if (now.isAfter(startDate) && now.isBefore(endDate)) {
+            return formatToISODateString(now.toDate());
+        } else {
+            return formatToISODateString(startDate);
+        }
+    }, [endDate, startDate]);
+
     const reset = () => setStartDate(dayjs().startOf(granularity).toDate());
 
-    return { startDate, endDate, setRange, setPrev, setNext, reset };
+    return { startDate, endDate, setRange, setPrev, setNext, reset, defaultDate };
 };

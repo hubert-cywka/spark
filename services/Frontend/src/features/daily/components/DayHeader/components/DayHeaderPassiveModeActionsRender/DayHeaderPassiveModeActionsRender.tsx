@@ -2,18 +2,20 @@ import { Pencil, Plus, Trash } from "lucide-react";
 
 import { IconButton } from "@/components/IconButton";
 import { PassiveTextInputPassiveModeActionsRenderProps } from "@/components/PassiveTextInput";
-import { DeleteDailyModal } from "@/features/daily/components/DeleteDailyModal/DeleteDailyModal";
+import { DeleteEntriesByDateModal } from "@/features/daily/components/DeleteDailyModal/DeleteEntriesByDateModal.tsx";
 import { ISODateString } from "@/types/ISODateString";
 
 type DayHeaderPassiveModeActionsRenderProps = {
     date: ISODateString;
     onCreateEntryDraft: () => void;
+    onDeleteEntries: () => Promise<void>;
 } & PassiveTextInputPassiveModeActionsRenderProps;
 
 export const DayHeaderPassiveModeActionsRender = ({
     date,
-    onStartEditMode,
+    onStartEditMode, // Assign all entries to a different date instead
     onCreateEntryDraft,
+    onDeleteEntries,
     translationFn,
 }: DayHeaderPassiveModeActionsRenderProps) => {
     return (
@@ -34,9 +36,9 @@ export const DayHeaderPassiveModeActionsRender = ({
                 tooltip={translationFn("daily.day.actions.edit.label")}
                 aria-label={translationFn("daily.day.actions.edit.label")}
             />
-            <DeleteDailyModal
+            <DeleteEntriesByDateModal
                 date={date}
-                onDelete={() => {}}
+                onDelete={onDeleteEntries}
                 trigger={({ onClick }) => (
                     <IconButton
                         variant="danger"

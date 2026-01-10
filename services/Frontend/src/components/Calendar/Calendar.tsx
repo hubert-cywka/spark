@@ -1,4 +1,4 @@
-import { CalendarCell, CalendarGrid, Heading, RangeCalendar } from "react-aria-components";
+import { Calendar as AriaCalendar, CalendarCell, CalendarGrid, Heading } from "react-aria-components";
 import { CalendarDate, parseDate } from "@internationalized/date";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
@@ -14,46 +14,37 @@ export const Calendar = ({ minDate, maxDate, value, onChange, shownMonths = 1, s
 
     const minValue = minDate ? parseDate(minDate) : undefined;
     const maxValue = maxDate ? parseDate(maxDate) : undefined;
-    const internalValue = value
-        ? {
-              start: parseDate(value.from),
-              end: parseDate(value.to),
-          }
-        : undefined;
+    const internalValue = value ? parseDate(value) : undefined;
 
-    const onChangeInternal = (value: { start: CalendarDate; end: CalendarDate } | null) => {
-        if (!value) {
+    const onChangeInternal = (date: CalendarDate) => {
+        if (!date) {
             return;
         }
 
-        onChange?.({
-            from: formatToISODateString(value.start.toDate("ISO")),
-            to: formatToISODateString(value.end.toDate("ISO")),
-        });
+        onChange?.(formatToISODateString(date.toDate("ISO")));
     };
 
     return (
-        <RangeCalendar
+        <AriaCalendar
             className={styles.container}
             minValue={minValue}
             maxValue={maxValue}
             value={internalValue}
             onChange={onChangeInternal}
-            visibleDuration={{ months: shownMonths }}
         >
             <header className={styles.header}>
                 <IconButton
                     slot="previous"
                     iconSlot={ChevronLeftIcon}
-                    tooltip={t("common.dateRangePicker.previousRangeButton.label")}
-                    aria-label={t("common.dateRangePicker.previousRangeButton.label")}
+                    tooltip={t("common.datePicker.previousRangeButton.label")}
+                    aria-label={t("common.datePicker.previousRangeButton.label")}
                 />
                 <Heading />
                 <IconButton
                     slot="next"
                     iconSlot={ChevronRightIcon}
-                    tooltip={t("common.dateRangePicker.nextRangeButton.label")}
-                    aria-label={t("common.dateRangePicker.nextRangeButton.label")}
+                    tooltip={t("common.datePicker.nextRangeButton.label")}
+                    aria-label={t("common.datePicker.nextRangeButton.label")}
                 />
             </header>
 
@@ -64,6 +55,6 @@ export const Calendar = ({ minDate, maxDate, value, onChange, shownMonths = 1, s
                     </CalendarGrid>
                 ))}
             </div>
-        </RangeCalendar>
+        </AriaCalendar>
     );
 };

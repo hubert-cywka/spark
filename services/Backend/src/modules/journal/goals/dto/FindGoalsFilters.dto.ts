@@ -22,6 +22,10 @@ export class FindGoalsFiltersDto {
 
     @IsOptional()
     @IsBoolean()
-    @Type(() => Boolean)
+    @Transform(({ value }) => {
+        if (value === "true") return true;
+        if (value === "false") return false;
+        return value;
+    })
     readonly includeProgress?: boolean;
 }

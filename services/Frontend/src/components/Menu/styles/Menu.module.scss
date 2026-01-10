@@ -7,7 +7,11 @@
     color: tokens.$color-neutral-text-100;
     border: 1px solid tokens.$color-neutral-surface-100;
     background: tokens.$color-neutral-background-alpha-100;
-    backdrop-filter: blur(10px);    
+    backdrop-filter: blur(10px);
+
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$spacing-100;
     
     &:focus-visible {
         outline: 2px solid tokens.$color-accent-solid-300;

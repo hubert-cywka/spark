@@ -13,7 +13,6 @@ import { ExportsModule } from "@/modules/exports/Exports.module";
 import { AuthorsModule } from "@/modules/journal/authors/Authors.module";
 import { AccountCreatedEventHandler } from "@/modules/journal/authors/events/AccountCreatedEvent.handler";
 import { AuthorRemovedEventHandler } from "@/modules/journal/authors/events/AuthorRemovedEvent.handler";
-import { DailyModule } from "@/modules/journal/daily/Daily.module";
 import { EntriesModule } from "@/modules/journal/entries/Entries.module";
 import { EntriesDataExportProvider } from "@/modules/journal/entries/services/implementations/EntriesDataExportProvider";
 import { GoalsModule } from "@/modules/journal/goals/Goals.module";
@@ -32,7 +31,6 @@ import { JournalSharedModule } from "@/modules/journal/shared/JournalShared.modu
     imports: [
         JournalSharedModule,
         AuthorsModule,
-        DailyModule,
         GoalsModule,
         EntriesModule,
         ExportsModule.forFeature({

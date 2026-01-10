@@ -6,7 +6,7 @@
 
     min-height: fit-content;
     height: 100vh;
-    min-width: 150px;
+    min-width: tokens.$sidebar-size;
 
     z-index: 1000;
     display: flex;
@@ -49,7 +49,7 @@
             right: 0;
 
             button {
-                border-radius: tokens.$radius-500;
+                border-radius: tokens.$radius-400;
             }
         }
     }

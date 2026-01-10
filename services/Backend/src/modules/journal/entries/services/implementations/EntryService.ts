@@ -1,6 +1,6 @@
 import { Inject, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, SelectQueryBuilder } from "typeorm";
+import { In, Repository, SelectQueryBuilder } from "typeorm";
 
 import { applyCursorBasedPagination, createPage, createPaginationKeys } from "@/common/pagination/pagination";
 import { type PageOptions } from "@/common/pagination/types/PageOptions";
@@ -71,6 +71,13 @@ export class EntryService implements IEntryService {
         }
     }
 
+    public async bulkDelete(authorId: string, entriesIds: string[]): Promise<void> {
+        await this.getRepository().softDelete({
+            id: In(entriesIds),
+            author: { id: authorId },
+        });
+    }
+
     public async restoreById(authorId: string, entryId: string): Promise<void> {
         const result = await this.getRepository().restore({
             id: entryId,
@@ -86,7 +93,7 @@ export class EntryService implements IEntryService {
     public async update(
         authorId: string,
         entryId: string,
-        partialEntry: Pick<Entry, "isFeatured" | "isCompleted" | "content">
+        partialEntry: Pick<Entry, "isFeatured" | "isCompleted" | "content" | "date">
     ): Promise<Entry> {
         const result = await this.getRepository()
             .createQueryBuilder()
@@ -105,6 +112,24 @@ export class EntryService implements IEntryService {
         }
 
         return this.entryMapper.fromEntityToModel(updatedEntity);
+    }
+
+    public async bulkUpdate(
+        authorId: string,
+        entriesIds: string[],
+        value: Pick<Entry, "isFeatured" | "isCompleted" | "content" | "date">
+    ): Promise<Entry[]> {
+        const result = await this.getRepository()
+            .createQueryBuilder()
+            .update(EntryEntity)
+            .set(value)
+            .where("id IN (:...ids)", { ids: entriesIds })
+            .andWhere("author.id = :authorId", { authorId })
+            .returning("*")
+            .execute();
+
+        const updatedEntities = result.raw;
+        return this.entryMapper.fromEntityToModelBulk(updatedEntities);
     }
 
     private applyScalarFilters(

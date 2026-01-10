@@ -5,3 +5,18 @@
     gap: tokens.$spacing-200;
     align-items: center;
 }
+
+
+.highlight {
+    animation: highlight-fade 1s ease-out;
+}
+
+@keyframes highlight-fade {
+    0% {
+        background-color: rgba(tokens.$color-accent-solid-300, 0.4);
+    }
+    
+    100% {
+        background-color: transparent;
+    }
+}

@@ -1,3 +1,6 @@
+import { useEffect, useRef, useState } from "react";
+import classNames from "clsx";
+
 import { DailyEntryContextMenu } from "./components/DailyEntryContextMenu/DailyEntryContextMenu.tsx";
 
 import styles from "./styles/DailyEntry.module.scss";
@@ -21,9 +24,9 @@ type DailyEntryProps = {
     onNavigateUp: (column: DailyEntryColumn) => void;
     onNavigateDown: (column: DailyEntryColumn) => void;
     onFocusColumn: (column: DailyEntryColumn) => void;
-    onSaveContent: (entry: Entry, content: string) => void;
-    onChangeStatus: (entry: Entry, status: boolean) => void;
-    onChangeIsFeatured: (entry: Entry, isFeatured: boolean) => void;
+    onSaveContent: (entryId: string, content: string) => void;
+    onChangeStatus: (entryId: string, status: boolean) => void;
+    onChangeIsFeatured: (entryId: string, isFeatured: boolean) => void;
     onDelete: (entryId: string) => void;
 };
 
@@ -39,10 +42,29 @@ export const DailyEntry = ({
     onFocusColumn,
 }: DailyEntryProps) => {
     const t = useTranslate();
+    const [isHighlighting, setIsHighlighting] = useState(false);
+    const prevDate = useRef(entry.date);
+    const isFirstRender = useRef(true);
+
+    useEffect(() => {
+        const dateChanged = prevDate.current !== entry.date;
+        const isNewEntry = entry.createdAt && Date.now() - new Date(entry.createdAt).getTime() < 5000;
+
+        if (dateChanged || (isFirstRender.current && isNewEntry)) {
+            setIsHighlighting(true);
+            const timer = setTimeout(() => setIsHighlighting(false), 500);
+
+            prevDate.current = entry.date;
+            return () => clearTimeout(timer);
+        }
+
+        isFirstRender.current = false;
+        prevDate.current = entry.date;
+    }, [entry.date, entry.createdAt]);
 
     return (
         <DailyEntryWrapper id={id}>
-            <div className={styles.row}>
+            <div className={classNames(styles.row, { [styles.highlight]: isHighlighting })}>
                 <DailyEntryContextMenu onDelete={() => onDelete(entry.id)}>
                     <DailyEntryContextMenuTrigger
                         column="actions"
@@ -58,7 +80,7 @@ export const DailyEntry = ({
                     onNavigateRight={() => onFocusColumn("featured")}
                     onNavigateUp={() => onNavigateUp("checkbox")}
                     onNavigateDown={() => onNavigateDown("checkbox")}
-                    onChange={(status) => onChangeStatus(entry, status)}
+                    onChange={(status) => onChangeStatus(entry.id, status)}
                     value={entry.isCompleted}
                 />
 
@@ -68,7 +90,7 @@ export const DailyEntry = ({
                     onNavigateRight={() => onFocusColumn("goals")}
                     onNavigateUp={() => onNavigateUp("featured")}
                     onNavigateDown={() => onNavigateDown("featured")}
-                    onChange={(isFeatured) => onChangeIsFeatured(entry, isFeatured)}
+                    onChange={(isFeatured) => onChangeIsFeatured(entry.id, isFeatured)}
                     value={entry.isFeatured}
                 />
 
@@ -88,7 +110,7 @@ export const DailyEntry = ({
                     onNavigateUp={() => onNavigateUp("input")}
                     onNavigateDown={() => onNavigateDown("input")}
                     onNavigateLeft={() => onFocusColumn("goals")}
-                    onSaveContent={(content) => onSaveContent(entry, content)}
+                    onSaveContent={(content) => onSaveContent(entry.id, content)}
                     onDelete={() => onDelete(entry.id)}
                     placeholder={t("entries.placeholder")}
                 />

@@ -12,7 +12,6 @@ import {
     HealthCheckProbesRegistryToken,
 } from "@/modules/healthcheck/services/interfaces/IHealthCheckProbesRegistry";
 import { AuthorEntity } from "@/modules/journal/authors/entities/Author.entity";
-import { DailyEntity } from "@/modules/journal/daily/entities/Daily.entity";
 import { EntryEntity } from "@/modules/journal/entries/entities/Entry.entity";
 import { GoalEntity } from "@/modules/journal/goals/entities/Goal.entity";
 import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
@@ -46,7 +45,7 @@ import { AddDateToEntries1767904875178 } from "@/modules/journal/infrastructure/
             }),
             inject: [ConfigService],
         }),
-        DatabaseModule.forFeature(JOURNAL_MODULE_DATA_SOURCE, [EntryEntity, DailyEntity, AuthorEntity, GoalEntity]),
+        DatabaseModule.forFeature(JOURNAL_MODULE_DATA_SOURCE, [EntryEntity, AuthorEntity, GoalEntity]),
         IntegrationEventsModule.forFeatureAsync({
             context: JournalSharedModule.name,
             consumerGroupId: "journal",

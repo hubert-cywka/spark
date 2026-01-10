@@ -1,11 +1,10 @@
 import { PageDto } from "@/api/dto/PageDto";
 import { PageCursor } from "@/api/types/PageCursor.ts";
+import { BulkDeleteEntryRequestDto } from "@/features/entries/api/dto/BulkDeleteEntryRequestDto.ts";
+import { BulkUpdateEntryRequestDto } from "@/features/entries/api/dto/BulkUpdateEntryRequestDto.ts";
 import { CreateEntryRequestDto } from "@/features/entries/api/dto/CreateEntryRequestDto";
 import { EntryDto } from "@/features/entries/api/dto/EntryDto";
-import { UpdateEntryContentRequestDto } from "@/features/entries/api/dto/UpdateEntryContentRequestDto";
-import { UpdateEntryDateRequestDto } from "@/features/entries/api/dto/UpdateEntryDateRequestDto.ts";
-import { UpdateEntryIsFeaturedRequestDto } from "@/features/entries/api/dto/UpdateEntryIsFeaturedRequestDto.ts";
-import { UpdateEntryStatusRequestDto } from "@/features/entries/api/dto/UpdateEntryStatusRequestDto";
+import { UpdateEntryRequestDto } from "@/features/entries/api/dto/UpdateEntryRequestDto.ts";
 import { EntriesQueryFilters } from "@/features/entries/api/types/EntriesQueryFilters";
 import { Entry } from "@/features/entries/types/Entry";
 import { apiClient } from "@/lib/apiClient/apiClient";
@@ -63,23 +62,18 @@ export class EntriesService {
         return EntriesService.mapDtoToEntry(data);
     }
 
-    public static async updateContent({ entryId, ...dto }: UpdateEntryContentRequestDto & { entryId: string }) {
-        const { data } = await apiClient.patch(`/entry/${entryId}/content`, dto);
+    public static async updateOne({ entryId, ...dto }: UpdateEntryRequestDto & { entryId: string }) {
+        const { data } = await apiClient.patch(`/entry/${entryId}`, dto);
         return EntriesService.mapDtoToEntry(data);
     }
 
-    public static async updateDate({ entryId, ...dto }: UpdateEntryDateRequestDto & { entryId: string }) {
-        const { data } = await apiClient.patch(`/entry/${entryId}/date`, dto);
+    public static async updateMany(dto: BulkUpdateEntryRequestDto) {
+        const { data } = await apiClient.patch("/entry", dto);
         return EntriesService.mapDtoToEntry(data);
     }
 
-    public static async updateStatus({ entryId, ...dto }: UpdateEntryStatusRequestDto & { entryId: string }) {
-        const { data } = await apiClient.patch(`/entry/${entryId}/completed`, dto);
-        return EntriesService.mapDtoToEntry(data);
-    }
-
-    public static async updateIsFeatured({ entryId, ...dto }: UpdateEntryIsFeaturedRequestDto & { entryId: string }) {
-        const { data } = await apiClient.patch(`/entry/${entryId}/featured`, dto);
+    public static async deleteMany(dto: BulkDeleteEntryRequestDto) {
+        const { data } = await apiClient.post("/entry/delete-requests", dto);
         return EntriesService.mapDtoToEntry(data);
     }
 

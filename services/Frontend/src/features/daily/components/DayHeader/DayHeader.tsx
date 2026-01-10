@@ -1,4 +1,4 @@
-import { DateField, DateInput, DateSegment } from "react-aria-components";
+import { DateField, DateInput, DateSegment, DateValue } from "react-aria-components";
 import { fromDate } from "@internationalized/date";
 
 import styles from "./styles/DayHeader.module.scss";
@@ -6,26 +6,30 @@ import styles from "./styles/DayHeader.module.scss";
 import { PassiveTextInput } from "@/components/PassiveTextInput/PassiveTextInput";
 import { DayHeaderEditModeActionsRender } from "@/features/daily/components/DayHeader/components/DayHeaderEditModeActionsRender/DayHeaderEditModeActionsRender";
 import { DayHeaderPassiveModeActionsRender } from "@/features/daily/components/DayHeader/components/DayHeaderPassiveModeActionsRender/DayHeaderPassiveModeActionsRender";
+import { formatToISODateString } from "@/features/daily/utils/dateUtils.ts";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 import { ISODateString } from "@/types/ISODateString";
 
 type DayHeaderProps = {
     date: ISODateString;
     onCreateEntryDraft: () => void;
+    onUpdateDate: (date: ISODateString) => Promise<void>;
+    onDeleteEntries: () => Promise<void>;
 };
 
-export const DayHeader = ({ date, onCreateEntryDraft }: DayHeaderProps) => {
+export const DayHeader = ({ date, onCreateEntryDraft, onDeleteEntries, onUpdateDate }: DayHeaderProps) => {
     const t = useTranslate();
 
     return (
         <PassiveTextInput
             value={mapToDateValue(date)}
-            onChange={() => ({})}
+            onChange={(value) => onUpdateDate(mapToISODate(value))}
             onRenderEditModeActions={DayHeaderEditModeActionsRender}
             onRenderPassiveModeActions={({ onStartEditMode, translationFn }) => (
                 <DayHeaderPassiveModeActionsRender
                     date={date}
                     onCreateEntryDraft={onCreateEntryDraft}
+                    onDeleteEntries={onDeleteEntries}
                     onStartEditMode={onStartEditMode}
                     translationFn={translationFn}
                 />
@@ -50,4 +54,4 @@ export const DayHeader = ({ date, onCreateEntryDraft }: DayHeaderProps) => {
 };
 
 const mapToDateValue = (date: string) => fromDate(new Date(date), "UTC");
-// const mapToISODate = (date: DateValue) => formatToISODateString(date.toDate("UTC"));
+const mapToISODate = (date: DateValue) => formatToISODateString(date.toDate("UTC"));

@@ -18,6 +18,15 @@ export const useDailyActivityChartLabels = () => {
             t("daily.activity.chart.months.nov"),
             t("daily.activity.chart.months.dec"),
         ],
+        weekdays: [
+            t("daily.activity.chart.days.sun"),
+            t("daily.activity.chart.days.mon"),
+            t("daily.activity.chart.days.tue"),
+            t("daily.activity.chart.days.wed"),
+            t("daily.activity.chart.days.thu"),
+            t("daily.activity.chart.days.fri"),
+            t("daily.activity.chart.days.sat"),
+        ],
         legend: {
             less: t("daily.activity.chart.legend.less"),
             more: t("daily.activity.chart.legend.more"),

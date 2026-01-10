@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dayjs from "dayjs";
 
 import styles from "./styles/DailyList.module.scss";
@@ -8,10 +8,10 @@ import styles from "./styles/DailyList.module.scss";
 import { ItemLoader } from "@/components/ItemLoader/ItemLoader";
 import { DailyActivityChart } from "@/features/daily/components/DailyActivityChart/DailyActivityChart.tsx";
 import { DailyListHeader } from "@/features/daily/components/DailyList/components/DailyListHeader/DailyListHeader";
-import { NoDailiesMessage } from "@/features/daily/components/DailyList/components/NoDailiesMessage/NoDailiesMessage.tsx";
+import { NoEntriesMessage } from "@/features/daily/components/DailyList/components/NoDailiesMessage/NoEntriesMessage.tsx";
 import { useDailyDateRange } from "@/features/daily/components/DailyList/hooks/useDailyDateRange";
-import { useDailyEntriesEvents } from "@/features/daily/components/DailyList/hooks/useDailyEntriesEvents";
 import { useDailyEntriesPlaceholders } from "@/features/daily/components/DailyList/hooks/useDailyEntriesPlaceholders";
+import { useEntriesEvents } from "@/features/daily/components/DailyList/hooks/useEntriesEvents.ts";
 import { DailyEntryColumn, useNavigationBetweenEntries } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
 import { getEntryElementId, getEntryPlaceholderElementId } from "@/features/daily/components/DailyList/utils/dailyEntriesSelectors";
 import { DayHeader } from "@/features/daily/components/DayHeader/DayHeader";
@@ -20,21 +20,21 @@ import { useDailyMetrics } from "@/features/daily/hooks/useDailyMetrics.ts";
 import { formatToISODateString } from "@/features/daily/utils/dateUtils";
 import { DailyEntry, DailyEntryPlaceholder } from "@/features/entries/components/DailyEntry";
 import { EntryFiltersGroup } from "@/features/entries/components/EntryFiltersGroup";
+import { EntryQuickAddForm } from "@/features/entries/components/EntryQuickAddForm/EntryQuickAddForm.tsx";
 import { useGetDailyEntriesByDateRange } from "@/features/entries/hooks";
+import { Entry } from "@/features/entries/types/Entry";
 import { ISODateString } from "@/types/ISODateString";
 import { onNextTick } from "@/utils/onNextTick.ts";
 
-// TODO: Improve UX of navigation between dailies
 export const DailyList = () => {
     const containerRef = useRef<HTMLElement | null>(null);
     const targetDailyDateRef = useRef<string | null>(null);
-
     const [filters, setFilters] = useState<{
         completed?: boolean;
         featured?: boolean;
     }>({});
 
-    const { setPrev, setNext, setRange, reset, endDate, startDate } = useDailyDateRange({
+    const { setPrev, setNext, setRange, reset, endDate, startDate, defaultDate } = useDailyDateRange({
         granularity: "month",
     });
 
@@ -62,7 +62,15 @@ export const DailyList = () => {
         return Array.from(new Map(allEntries.map((entry) => [entry.date, { date: entry.date }])).values());
     }, [entries?.pages]);
 
-    const { onCreateEntry, onUpdateEntryContent, onDeleteEntry, onUpdateEntryStatus, onUpdateEntryIsFeatured } = useDailyEntriesEvents();
+    const {
+        onCreateEntry,
+        onUpdateEntryContent,
+        onDeleteEntry,
+        onUpdateEntryStatus,
+        onUpdateEntryIsFeatured,
+        onDeleteEntries,
+        onUpdateEntries,
+    } = useEntriesEvents();
     const { placeholders, addPlaceholder, removePlaceholder } = useDailyEntriesPlaceholders();
 
     const { navigateByIndex, navigateByEntryId, navigateToPlaceholderByGroup } = useNavigationBetweenEntries({
@@ -101,35 +109,58 @@ export const DailyList = () => {
         return false;
     };
 
-    const navigateToDailyByDate = (date: string) => {
-        if (!containerRef.current) {
-            return;
-        }
-
-        setRange(dayjs(date).startOf("month").toDate());
-
-        onNextTick(() => {
-            if (!scrollToDaily(date)) {
-                targetDailyDateRef.current = date;
-            }
-        });
-    };
-
-    useEffect(
-        function processPendingDailyNavigation() {
-            if (isFetchingEntries || !targetDailyDateRef.current) {
+    const navigateToDailyByDate = useCallback(
+        (date: string) => {
+            if (!containerRef.current) {
                 return;
             }
 
-            scrollToDaily(targetDailyDateRef.current);
+            setRange(dayjs(date).startOf("month").toDate());
+
+            onNextTick(() => {
+                if (!scrollToDaily(date)) {
+                    targetDailyDateRef.current = date;
+                }
+            });
         },
-        [isFetchingEntries]
+        [setRange]
     );
 
     const createEntryDraft = (date: string) => {
         addPlaceholder(date);
         navigateToPlaceholderByGroup(date);
     };
+
+    const deleteEntries = async (entries: Entry[]) => {
+        const ids = entries.map((entry) => entry.id);
+        await onDeleteEntries(ids);
+    };
+
+    const updateEntriesDate = async (entries: Entry[], date: ISODateString) => {
+        const ids = entries.map((entry) => entry.id);
+        await onUpdateEntries(ids, { date });
+    };
+
+    const onQuickCreateEntry = useCallback(
+        async (entry: Pick<Entry, "content" | "date" | "isCompleted" | "isFeatured">) => {
+            const result = await onCreateEntry(entry);
+
+            if (result) {
+                navigateToDailyByDate(result.date);
+            }
+
+            return result;
+        },
+        [navigateToDailyByDate, onCreateEntry]
+    );
+
+    useEffect(
+        function processPendingDailyNavigation() {
+            if (isFetchingEntries || !targetDailyDateRef.current) return;
+            scrollToDaily(targetDailyDateRef.current);
+        },
+        [isFetchingEntries]
+    );
 
     return (
         <main className={styles.container} ref={containerRef}>
@@ -143,9 +174,20 @@ export const DailyList = () => {
                 isLoading={!dailyMetrics}
             />
 
+            <div className={styles.floatingContainer}>
+                <section className={styles.quickAddWrapper}>
+                    <EntryQuickAddForm onCreateEntry={onQuickCreateEntry} defaultDate={defaultDate} />
+                </section>
+            </div>
+
             {dailies.map((daily) => (
                 <section className={styles.day} key={daily.date} data-daily-date={daily.date}>
-                    <DayHeader date={daily.date} onCreateEntryDraft={() => createEntryDraft(daily.date)} />
+                    <DayHeader
+                        date={daily.date}
+                        onCreateEntryDraft={() => createEntryDraft(daily.date)}
+                        onUpdateDate={(date) => updateEntriesDate(entriesGroups[daily.date] ?? [], date)}
+                        onDeleteEntries={() => deleteEntries(entriesGroups[daily.date] ?? [])}
+                    />
 
                     <ul className={styles.entries}>
                         {entriesGroups[daily.date]?.map((entry, index) => (
@@ -183,7 +225,7 @@ export const DailyList = () => {
                 <DaySkeleton count={3} />
             </ItemLoader>
 
-            {!dailies.length && !isFetchingEntries && <NoDailiesMessage onCreateNewDaily={() => ({})} timeframeStart={startDate} />}
+            {!dailies.length && !isFetchingEntries && <NoEntriesMessage timeframeStart={startDate} />}
         </main>
     );
 };
