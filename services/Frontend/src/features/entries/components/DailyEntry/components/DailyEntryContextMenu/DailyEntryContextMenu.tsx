@@ -24,35 +24,25 @@ export const DailyEntryContextMenu = ({
 
     return (
         <Menu trigger={children}>
-            {!isCompleted && (
-                <MenuItem
-                    onAction={() => onChangeStatus(true)}
-                    label={t("entries.actionsMenu.actions.markAsCompleted.label")}
-                    iconSlot={CheckSquareIcon}
-                />
-            )}
-            {isCompleted && (
-                <MenuItem
-                    onAction={() => onChangeStatus(false)}
-                    label={t("entries.actionsMenu.actions.markAsPending.label")}
-                    iconSlot={SquareIcon}
-                />
-            )}
+            <MenuItem
+                onAction={() => onChangeStatus(!isCompleted)}
+                label={
+                    isCompleted
+                        ? t("entries.actionsMenu.actions.markAsPending.label")
+                        : t("entries.actionsMenu.actions.markAsCompleted.label")
+                }
+                iconSlot={isCompleted ? SquareIcon : CheckSquareIcon}
+            />
 
-            {!isFeatured && (
-                <MenuItem
-                    onAction={() => onChangeIsFeatured(true)}
-                    label={t("entries.actionsMenu.actions.markAsFeatured.label")}
-                    iconSlot={StarIcon}
-                />
-            )}
-            {isFeatured && (
-                <MenuItem
-                    onAction={() => onChangeIsFeatured(false)}
-                    label={t("entries.actionsMenu.actions.markAsNonFeatured.label")}
-                    iconSlot={StarOffIcon}
-                />
-            )}
+            <MenuItem
+                onAction={() => onChangeIsFeatured(!isFeatured)}
+                label={
+                    isFeatured
+                        ? t("entries.actionsMenu.actions.markAsNonFeatured.label")
+                        : t("entries.actionsMenu.actions.markAsFeatured.label")
+                }
+                iconSlot={isFeatured ? StarOffIcon : StarIcon}
+            />
 
             <MenuItemSeparator />
 
