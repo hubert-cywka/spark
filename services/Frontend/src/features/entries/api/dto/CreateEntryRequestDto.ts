@@ -1,5 +1,7 @@
+import { ISODateString } from "@/types/ISODateString";
+
 export type CreateEntryRequestDto = {
-    date: string;
+    date: ISODateString;
     content: string;
     isFeatured?: boolean;
     isCompleted?: boolean;

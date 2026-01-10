@@ -103,11 +103,7 @@ export class EntryController {
     @Post(":entryId/restore")
     @UseGuards(AccessGuard)
     @AccessScopes("write:entry")
-    public async restoreEntry(
-        @Param("entryId") entryId: string,
-
-        @AuthenticatedUserContext() user: User
-    ) {
+    public async restoreEntry(@Param("entryId") entryId: string, @AuthenticatedUserContext() user: User) {
         try {
             await this.entryService.restoreById(user.id, entryId);
         } catch (err) {

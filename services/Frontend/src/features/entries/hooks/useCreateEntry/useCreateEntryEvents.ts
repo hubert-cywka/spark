@@ -25,5 +25,5 @@ export const useCreateEntryEvents = () => {
 };
 
 const errorsMap: ErrorsMap = {
-    [HttpStatusCode.NotFound]: "api.delete.create.errors.notFound",
+    [HttpStatusCode.NotFound]: "api.entries.create.errors.notFound",
 };

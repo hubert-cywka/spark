@@ -1,32 +1,32 @@
 import { RenderCellProps, RenderGroupCellProps } from "react-data-grid";
 
-import styles from "./styles/DailyDateCellRenderer.module.scss";
+import styles from "./styles/DateCellRenderer.module.scss";
 
 import { GroupCellRenderer } from "@/components/DataGrid/renderers/GroupCellRenderer.tsx";
 import { OverflowableText } from "@/components/OverflowableText";
 import { DetailedEntry } from "@/features/entries/types/Entry";
 import { ISODateString } from "@/types/ISODateString";
 
-type DailyDateCellValueRendererProps = {
+type DateCellValueRendererProps = {
     value: ISODateString;
 };
 
-const DailyDateCellValueRenderer = ({ value }: DailyDateCellValueRendererProps) => {
+const DateCellValueRenderer = ({ value }: DateCellValueRendererProps) => {
     return <OverflowableText tooltip={value}>{value}</OverflowableText>;
 };
 
-export const DailyDateCellRenderer = ({ row }: RenderCellProps<DetailedEntry>) => {
+export const DateCellRenderer = ({ row }: RenderCellProps<DetailedEntry>) => {
     return (
         <div className={styles.container}>
-            <DailyDateCellValueRenderer value={row.date} />
+            <DateCellValueRenderer value={row.date} />
         </div>
     );
 };
 
-export const DailyDateGroupCellRenderer = (p: RenderGroupCellProps<DetailedEntry>) => {
+export const DateGroupCellRenderer = (p: RenderGroupCellProps<DetailedEntry>) => {
     return (
         <GroupCellRenderer {...p}>
-            <DailyDateCellValueRenderer value={p.row.childRows[0].date} />
+            <DateCellValueRenderer value={p.row.childRows[0].date} />
         </GroupCellRenderer>
     );
 };

@@ -8,7 +8,7 @@ import styles from "./styles/DailyList.module.scss";
 import { ItemLoader } from "@/components/ItemLoader/ItemLoader";
 import { DailyActivityChart } from "@/features/daily/components/DailyActivityChart/DailyActivityChart.tsx";
 import { DailyListHeader } from "@/features/daily/components/DailyList/components/DailyListHeader/DailyListHeader";
-import { NoEntriesMessage } from "@/features/daily/components/DailyList/components/NoDailiesMessage/NoEntriesMessage.tsx";
+import { NoEntriesMessage } from "@/features/daily/components/DailyList/components/NoEntriesMessage/NoEntriesMessage.tsx";
 import { useDailyDateRange } from "@/features/daily/components/DailyList/hooks/useDailyDateRange";
 import { useDailyEntriesPlaceholders } from "@/features/daily/components/DailyList/hooks/useDailyEntriesPlaceholders";
 import { useEntriesEvents } from "@/features/daily/components/DailyList/hooks/useEntriesEvents.ts";

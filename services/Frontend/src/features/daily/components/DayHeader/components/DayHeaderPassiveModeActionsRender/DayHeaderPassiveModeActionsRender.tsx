@@ -13,7 +13,7 @@ type DayHeaderPassiveModeActionsRenderProps = {
 
 export const DayHeaderPassiveModeActionsRender = ({
     date,
-    onStartEditMode, // Assign all entries to a different date instead
+    onStartEditMode,
     onCreateEntryDraft,
     onDeleteEntries,
     translationFn,

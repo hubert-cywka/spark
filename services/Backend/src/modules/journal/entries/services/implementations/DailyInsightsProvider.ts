@@ -5,10 +5,10 @@ import { Repository } from "typeorm";
 
 import { isOutsideDateRange } from "@/common/utils/dateUtils";
 import { mean } from "@/common/utils/mathUtils";
-import { type DailyActivity } from "@/modules/journal/daily/models/DailyActivity.model";
-import { DailyMetrics } from "@/modules/journal/daily/models/DailyMetrics.model";
-import { type IDailyInsightsProvider } from "@/modules/journal/daily/services/interfaces/IDailyInsightsProvider";
 import { EntryEntity } from "@/modules/journal/entries/entities/Entry.entity";
+import { type DailyActivity } from "@/modules/journal/entries/models/DailyActivity.model";
+import { DailyMetrics } from "@/modules/journal/entries/models/DailyMetrics.model";
+import { type IDailyInsightsProvider } from "@/modules/journal/entries/services/interfaces/IDailyInsightsProvider";
 import { JOURNAL_MODULE_DATA_SOURCE } from "@/modules/journal/infrastructure/database/constants";
 import { getFormattedDailyDate } from "@/modules/journal/shared/utils/getFormattedDailyDate";
 import { type ISODateStringRange } from "@/types/Date";
