@@ -736,7 +736,7 @@
     "daily": {
         "empty": {
             "title": "Not much to see here",
-            "caption": "You have not added any entries {date} yet."
+            "caption": "You have not added any entries in {date} yet."
         },
         "filters": {
             "previousYear": "Go 12 months back",

@@ -6,7 +6,8 @@
     flex-direction: column;
     align-items: center;
     
-    padding: tokens.$spacing-400;
+    text-align: center;
+    padding-block: tokens.$spacing-900;
     margin-inline: auto;
     
     .header {
