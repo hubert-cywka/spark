@@ -309,8 +309,7 @@
                 "label": "Entry actions menu"
             },
             "actions": {
-                "delete": "Delete entry",
-                "move": "Change entry date"
+                "delete": "Delete entry"
             }
         },
         "statusCheckbox": {
@@ -697,10 +696,7 @@
     "daily": {
         "empty": {
             "title": "Not much to see here",
-            "caption": "You have not added any entries {date} yet.",
-            "addEntryButton": {
-                "label": "Add new entry"
-            }
+            "caption": "You have not added any entries {date} yet."
         },
         "filters": {
             "previousYear": "Go 12 months back",
