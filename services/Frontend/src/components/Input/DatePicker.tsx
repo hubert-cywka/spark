@@ -1,5 +1,5 @@
 import { DatePicker as BaseDatePicker, DateValue, FieldError, Label } from "react-aria-components";
-import { fromDate } from "@internationalized/date";
+import { CalendarDate, parseDate } from "@internationalized/date";
 import classNames from "clsx";
 import { CalendarIcon } from "lucide-react";
 
@@ -11,7 +11,6 @@ import { IconButton } from "@/components/IconButton";
 import { SegmentedDateInputSlot } from "@/components/Input/SegmentedDateInputSlot";
 import { DatePickerBaseProps } from "@/components/Input/types/DatePickerBaseProps";
 import { Popover } from "@/components/Popover";
-import { formatToISODateString } from "@/features/daily/utils/dateUtils";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate.ts";
 import { ISODateString } from "@/types/ISODateString";
 
@@ -28,7 +27,7 @@ export const DatePicker = ({ size = "2", label, value, error, onChange, required
             return;
         }
 
-        onChange?.(formatToISODateString(new Date(value.toString())));
+        onChange?.(value.toString() as ISODateString);
     };
 
     return (
@@ -74,10 +73,15 @@ export const DatePicker = ({ size = "2", label, value, error, onChange, required
     );
 };
 
-const convertValue = (value: ISODateString | null) => {
+const convertValue = (value: ISODateString | null): CalendarDate | null => {
     if (!value) {
-        return value;
+        return null;
     }
 
-    return fromDate(new Date(value), "UTC");
+    try {
+        const datePart = value.split("T")[0];
+        return parseDate(datePart);
+    } catch (e) {
+        return null;
+    }
 };

@@ -1,0 +1,17 @@
+@use "./src/styles/tokens";
+
+.element {
+  &[data-highlighted="true"] {
+    animation: highlight-fade 3s ease-out;
+  }
+
+  @keyframes highlight-fade {
+    0% {
+      background-color: rgba(tokens.$color-accent-solid-200, 0.5);
+    }
+
+    100% {
+      background-color: transparent;
+    }
+  }
+}

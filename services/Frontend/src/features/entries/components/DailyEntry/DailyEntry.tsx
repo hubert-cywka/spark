@@ -9,10 +9,10 @@ import { DailyEntryColumn } from "@/features/daily/components/DailyList/hooks/us
 import { DailyEntryInput, DailyEntryStatusCheckbox, DailyEntryWrapper } from "@/features/entries/components/DailyEntry/components";
 import { DailyEntryContextMenuTrigger } from "@/features/entries/components/DailyEntry/components/DailyEntryContextMenuTrigger/DailyEntryContextMenuTrigger.tsx";
 import { DailyEntryFeaturedCheckbox } from "@/features/entries/components/DailyEntry/components/DailyEntryFeaturedCheckbox/DailyEntryFeaturedCheckbox.tsx";
-import { useDetectEntryCreation } from "@/features/entries/components/DailyEntry/hooks/useDetectEntryCreation.tsx";
 import { LinkGoalsPopover } from "@/features/entries/components/LinkGoalsPopover/LinkGoalsPopover.tsx";
 import { Entry } from "@/features/entries/types/Entry";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
+import { ISODateString } from "@/types/ISODateString";
 
 type DailyEntryProps = {
     id: string;
@@ -21,6 +21,7 @@ type DailyEntryProps = {
     onNavigateDown: (column: DailyEntryColumn) => void;
     onFocusColumn: (column: DailyEntryColumn) => void;
     onSaveContent: (entryId: string, content: string) => void;
+    onChangeDate: (entryId: string, date: ISODateString) => Promise<unknown>;
     onChangeStatus: (entryId: string, status: boolean) => void;
     onChangeIsFeatured: (entryId: string, isFeatured: boolean) => void;
     onDelete: (entryId: string) => void;
@@ -34,11 +35,11 @@ export const DailyEntry = ({
     onNavigateUp,
     onNavigateDown,
     onChangeStatus,
+    onChangeDate,
     onChangeIsFeatured,
     onFocusColumn,
 }: DailyEntryProps) => {
     const t = useTranslate();
-    const { wasCreated } = useDetectEntryCreation(entry);
     const [isGoalsPopoverOpen, setGoalsPopoverChange] = useState(false);
 
     const openGoalsPopover = () => {
@@ -47,9 +48,10 @@ export const DailyEntry = ({
 
     return (
         <DailyEntryWrapper id={id}>
-            <div className={classNames(styles.row, { [styles.highlight]: wasCreated })}>
+            <div className={classNames(styles.row)}>
                 <LinkGoalsPopover entryId={entry.id} isOpen={isGoalsPopoverOpen} onOpenChange={setGoalsPopoverChange}>
                     <DailyEntryContextMenu
+                        onChangeDate={(date) => onChangeDate(entry.id, date)}
                         onOpenGoals={openGoalsPopover}
                         entry={entry}
                         onDelete={() => onDelete(entry.id)}

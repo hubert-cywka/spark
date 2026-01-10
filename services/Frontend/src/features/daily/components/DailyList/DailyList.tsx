@@ -18,6 +18,7 @@ import { DayHeader } from "@/features/daily/components/DayHeader/DayHeader";
 import { DaySkeleton } from "@/features/daily/components/DaySkeleton";
 import { useDailyMetrics } from "@/features/daily/hooks/useDailyMetrics.ts";
 import { formatToISODateString } from "@/features/daily/utils/dateUtils";
+import { highlightElement } from "@/features/daily/utils/highlight.ts";
 import { DailyEntry, DailyEntryPlaceholder } from "@/features/entries/components/DailyEntry";
 import { EntryFiltersGroup } from "@/features/entries/components/EntryFiltersGroup";
 import { EntryQuickAddForm } from "@/features/entries/components/EntryQuickAddForm/EntryQuickAddForm.tsx";
@@ -62,6 +63,7 @@ export const DailyList = () => {
         onUpdateEntryIsFeatured,
         onDeleteEntries,
         onUpdateEntries,
+        onUpdateEntryDate,
     } = useEntriesEvents();
 
     const { placeholders, addPlaceholder, removePlaceholder } = useDailyEntriesPlaceholders();
@@ -75,8 +77,37 @@ export const DailyList = () => {
     const dailies = useMemo(() => {
         const allEntries = entries?.pages?.flatMap((page) => page.data) ?? [];
         const uniqueDates = Array.from(new Set(allEntries.map((e) => e.date)));
-        return uniqueDates.map((date) => ({ date }));
+        return uniqueDates.sort((a, b) => b.localeCompare(a)).map((date) => ({ date }));
     }, [entries?.pages]);
+
+    const scrollToDaily = useCallback((date: string) => {
+        const dailyHeader = containerRef.current?.querySelector(`[data-daily-date="${date}"]`);
+
+        if (!dailyHeader) {
+            return false;
+        }
+
+        targetDailyDateRef.current = null;
+        highlightElement(dailyHeader);
+        return true;
+    }, []);
+
+    const navigateToDailyByDate = useCallback(
+        (date: string) => {
+            if (!containerRef.current) {
+                return;
+            }
+
+            setRange(dayjs(date).startOf("month").toDate());
+
+            onNextTick(() => {
+                if (!scrollToDaily(date)) {
+                    targetDailyDateRef.current = date;
+                }
+            });
+        },
+        [setRange, scrollToDaily]
+    );
 
     const handleBatchUpdate = useCallback(
         async (date: ISODateString, payload: Partial<Entry>) => {
@@ -107,48 +138,6 @@ export const DailyList = () => {
         await onDeleteEntries(ids);
     };
 
-    const scrollToDaily = (date: string) => {
-        const dailyHeader = containerRef.current?.querySelector(`[data-daily-date="${date}"]`);
-
-        if (!dailyHeader) {
-            return false;
-        }
-
-        targetDailyDateRef.current = null;
-        dailyHeader.scrollIntoView({ behavior: "smooth", block: "center" });
-        return true;
-    };
-
-    const navigateToDailyByDate = useCallback(
-        (date: string) => {
-            if (!containerRef.current) {
-                return;
-            }
-
-            setRange(dayjs(date).startOf("month").toDate());
-
-            onNextTick(() => {
-                if (!scrollToDaily(date)) {
-                    targetDailyDateRef.current = date;
-                }
-            });
-        },
-        [setRange]
-    );
-
-    const handleQuickCreate = useCallback(
-        async (entry: Pick<Entry, "content" | "date" | "isCompleted" | "isFeatured">) => {
-            const result = await onCreateEntry(entry);
-
-            if (result) {
-                navigateToDailyByDate(result.date);
-            }
-
-            return result;
-        },
-        [navigateToDailyByDate, onCreateEntry]
-    );
-
     const handleCreateDraft = (date: string) => {
         addPlaceholder(date);
         navigateToPlaceholderByGroup(date);
@@ -174,7 +163,7 @@ export const DailyList = () => {
                 scrollToDaily(targetDailyDateRef.current);
             }
         },
-        [isFetchingEntries]
+        [isFetchingEntries, scrollToDaily]
     );
 
     return (
@@ -191,7 +180,7 @@ export const DailyList = () => {
 
             <div className={styles.floatingContainer}>
                 <section className={styles.quickAddWrapper}>
-                    <EntryQuickAddForm defaultDate={defaultDate} onCreateEntry={handleQuickCreate} />
+                    <EntryQuickAddForm defaultDate={defaultDate} onCreateEntry={onCreateEntry} />
                 </section>
             </div>
 
@@ -217,6 +206,7 @@ export const DailyList = () => {
                                     id={getEntryElementId(entry.id)}
                                     entry={entry}
                                     onDelete={onDeleteEntry}
+                                    onChangeDate={onUpdateEntryDate}
                                     onChangeStatus={onUpdateEntryStatus}
                                     onSaveContent={onUpdateEntryContent}
                                     onChangeIsFeatured={onUpdateEntryIsFeatured}

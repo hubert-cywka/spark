@@ -1,3 +1,7 @@
+import { useCallback } from "react";
+
+import { getEntryElementId } from "@/features/daily/components/DailyList/utils/dailyEntriesSelectors.ts";
+import { highlightElement } from "@/features/daily/utils/highlight.ts";
 import {
     useCreateEntry,
     useCreateEntryEvents,
@@ -12,6 +16,7 @@ import { useBulkUpdateEntries } from "@/features/entries/hooks/useUpdateEntry/us
 import { useBulkUpdateEntriesEvents } from "@/features/entries/hooks/useUpdateEntry/useBulkUpdateEntriesEvents.ts";
 import { Entry } from "@/features/entries/types/Entry";
 import { ISODateString } from "@/types/ISODateString";
+import { onNextTick } from "@/utils/onNextTick.ts";
 
 export const useEntriesEvents = () => {
     const { mutateAsync: createEntry } = useCreateEntry();
@@ -28,6 +33,17 @@ export const useEntriesEvents = () => {
 
     const { mutateAsync: updateEntries } = useBulkUpdateEntries();
     const { onUpdateEntriesError } = useBulkUpdateEntriesEvents();
+
+    const highlight = useCallback((entryId: string) => {
+        const elementId = getEntryElementId(entryId);
+        const element = document.getElementById(elementId);
+
+        if (!element) {
+            return;
+        }
+
+        highlightElement(element);
+    }, []);
 
     const onDeleteEntry = async (entryId: string) => {
         try {
@@ -66,10 +82,13 @@ export const useEntriesEvents = () => {
 
     const onUpdateEntryDate = async (entryId: string, newDate: ISODateString) => {
         try {
-            return await updateEntry({
-                entryId,
-                date: newDate,
+            const result = await updateEntry({ entryId, date: newDate });
+
+            onNextTick(() => {
+                highlight(result.id);
             });
+
+            return result;
         } catch (err) {
             onUpdateEntryError(err);
         }
@@ -99,7 +118,13 @@ export const useEntriesEvents = () => {
 
     const onCreateEntry = async (entry: Pick<Entry, "date" | "content" | "isCompleted" | "isFeatured">) => {
         try {
-            return await createEntry(entry);
+            const result = await createEntry(entry);
+
+            onNextTick(() => {
+                highlight(result.id);
+            });
+
+            return result;
         } catch (err) {
             onCreateEntryError(err);
         }

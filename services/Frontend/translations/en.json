@@ -312,6 +312,9 @@
                 "delete": {
                     "label": "Delete entry"
                 },
+                "changeDate": {
+                    "label": "Pick a new date"
+                },
                 "openGoals": {
                     "label": "Show goals"
                 },
@@ -435,6 +438,20 @@
                 }
             }
         },
+        "changeDate": {
+            "modal": {
+                "header": "Update entry date",
+                "caption": "Pick a new date for your entry:",
+                "buttons": {
+                    "cancel": {
+                        "label": "Cancel"
+                    },
+                    "confirm": {
+                        "label": "Confirm"
+                    }
+                }
+            }
+        },
         "deleteByDay": {
             "modal": {
                 "header": "Delete entries",
@@ -446,14 +463,6 @@
                     "confirm": {
                         "label": "Delete"
                     }
-                }
-            },
-            "notifications": {
-                "error": {
-                    "title": "Couldn't delete entries"
-                },
-                "success": {
-                    "title": "Entries have been deleted"
                 }
             }
         }
