@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from "react";
 import classNames from "clsx";
 
 import { DailyEntryContextMenu } from "./components/DailyEntryContextMenu/DailyEntryContextMenu.tsx";
@@ -14,6 +13,7 @@ import {
 } from "@/features/entries/components/DailyEntry/components";
 import { DailyEntryContextMenuTrigger } from "@/features/entries/components/DailyEntry/components/DailyEntryContextMenuTrigger/DailyEntryContextMenuTrigger.tsx";
 import { DailyEntryFeaturedCheckbox } from "@/features/entries/components/DailyEntry/components/DailyEntryFeaturedCheckbox/DailyEntryFeaturedCheckbox.tsx";
+import { useDetectEntryCreation } from "@/features/entries/components/DailyEntry/hooks/useDetectEntryCreation.tsx";
 import { LinkGoalsPopover } from "@/features/entries/components/LinkGoalsPopover/LinkGoalsPopover.tsx";
 import { Entry } from "@/features/entries/types/Entry";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
@@ -42,29 +42,11 @@ export const DailyEntry = ({
     onFocusColumn,
 }: DailyEntryProps) => {
     const t = useTranslate();
-    const [isHighlighting, setIsHighlighting] = useState(false);
-    const prevDate = useRef(entry.date);
-    const isFirstRender = useRef(true);
-
-    useEffect(() => {
-        const dateChanged = prevDate.current !== entry.date;
-        const isNewEntry = entry.createdAt && Date.now() - new Date(entry.createdAt).getTime() < 5000;
-
-        if (dateChanged || (isFirstRender.current && isNewEntry)) {
-            setIsHighlighting(true);
-            const timer = setTimeout(() => setIsHighlighting(false), 500);
-
-            prevDate.current = entry.date;
-            return () => clearTimeout(timer);
-        }
-
-        isFirstRender.current = false;
-        prevDate.current = entry.date;
-    }, [entry.date, entry.createdAt]);
+    const { wasCreated } = useDetectEntryCreation(entry);
 
     return (
         <DailyEntryWrapper id={id}>
-            <div className={classNames(styles.row, { [styles.highlight]: isHighlighting })}>
+            <div className={classNames(styles.row, { [styles.highlight]: wasCreated })}>
                 <DailyEntryContextMenu onDelete={() => onDelete(entry.id)}>
                     <DailyEntryContextMenuTrigger
                         column="actions"

@@ -333,6 +333,20 @@
         },
         "placeholder": "Add entry...",
         "create": {
+            "quickAddForm": {
+                "input": {
+                    "placeholder": {
+                        "future": "What will you achieve on {date}?",
+                        "past": "What have you achieved on {date}?"
+                    }
+                },
+                "submitButton": {
+                    "label": "Create entry"
+                },
+                "datePicker": {
+                    "label": ""
+                }
+            },
             "notifications": {
                 "error": {
                     "title": "Couldn't create entry"

@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import classNames from "clsx";
+import dayjs from "dayjs";
 import { RotateCcwIcon, SendHorizonalIcon } from "lucide-react";
 
 import styles from "./styles/EntryQuickAddForm.module.scss";
@@ -23,6 +24,7 @@ export const EntryQuickAddForm = ({ onCreateEntry, defaultDate }: EntryQuickAddF
     const contentValue = watch("content");
     const dateValue = watch("date");
     const isDefaultDate = dateValue === defaultDate;
+    const isDateFromFuture = dayjs(dateValue).isAfter(dayjs());
 
     const internalOnSubmit = useCallback(
         async (data: EntryQuickAddInputs) => {
@@ -46,14 +48,16 @@ export const EntryQuickAddForm = ({ onCreateEntry, defaultDate }: EntryQuickAddF
                 <Field
                     size="3"
                     {...register("content")}
-                    placeholder={`What have you achieved on ${dateValue}?`}
+                    placeholder={t(`entries.create.quickAddForm.input.placeholder.${isDateFromFuture ? "future" : "past"}`, {
+                        date: dateValue,
+                    })}
                     className={styles.contentInput}
                 />
 
                 <div className={styles.inputActions}>
                     <IconButton
                         size="2"
-                        aria-label="Add entry"
+                        aria-label={t("entries.create.quickAddForm.submitButton.label")}
                         variant="subtle"
                         type="submit"
                         className={classNames(styles.inputAction)}
@@ -67,7 +71,7 @@ export const EntryQuickAddForm = ({ onCreateEntry, defaultDate }: EntryQuickAddF
                 <DatePicker
                     size="3"
                     className={styles.formAction}
-                    label="Quick add date"
+                    label={t("entries.create.quickAddForm.datePicker.label")}
                     value={dateValue}
                     onChange={(value) => setValue("date", value)}
                     minimal

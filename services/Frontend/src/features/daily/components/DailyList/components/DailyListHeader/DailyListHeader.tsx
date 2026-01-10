@@ -1,5 +1,5 @@
 import { PropsWithChildren } from "react";
-import { Calendar, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, RotateCcwIcon } from "lucide-react";
 import { useLocale } from "next-intl";
 
 import styles from "./styles/DailyListHeader.module.scss";
@@ -32,7 +32,7 @@ export const DailyListHeader = ({ timeframeStart, onNextTimeframe, onPrevTimefra
                         isDisabled={isCurrentYearAndMonth}
                         onPress={onReset}
                         variant="secondary"
-                        iconSlot={Calendar}
+                        iconSlot={RotateCcwIcon}
                         tooltip={t("daily.filters.today")}
                         aria-label={t("daily.filters.today")}
                     />
