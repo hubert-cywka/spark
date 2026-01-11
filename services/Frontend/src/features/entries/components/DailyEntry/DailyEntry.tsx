@@ -49,18 +49,18 @@ export const DailyEntry = ({
     return (
         <DailyEntryWrapper id={id}>
             <div className={classNames(styles.row)}>
-                <LinkGoalsPopover entryId={entry.id} isOpen={isGoalsPopoverOpen} onOpenChange={setGoalsPopoverChange}>
-                    <DailyEntryContextMenu
-                        onChangeDate={(date) => onChangeDate(entry.id, date)}
-                        onOpenGoals={openGoalsPopover}
-                        entry={entry}
-                        onDelete={() => onDelete(entry.id)}
-                        onChangeStatus={(value) => onChangeStatus(entry.id, value)}
-                        onChangeIsFeatured={(value) => onChangeIsFeatured(entry.id, value)}
-                    >
+                <DailyEntryContextMenu
+                    onChangeDate={(date) => onChangeDate(entry.id, date)}
+                    onOpenGoals={openGoalsPopover}
+                    entry={entry}
+                    onDelete={() => onDelete(entry.id)}
+                    onChangeStatus={(value) => onChangeStatus(entry.id, value)}
+                    onChangeIsFeatured={(value) => onChangeIsFeatured(entry.id, value)}
+                >
+                    <LinkGoalsPopover entryId={entry.id} isOpen={isGoalsPopoverOpen} onOpenChange={setGoalsPopoverChange}>
                         <DailyEntryContextMenuTrigger column="actions" onNavigateRight={() => onFocusColumn("checkbox")} />
-                    </DailyEntryContextMenu>
-                </LinkGoalsPopover>
+                    </LinkGoalsPopover>
+                </DailyEntryContextMenu>
 
                 <DailyEntryStatusCheckbox
                     column="checkbox"
