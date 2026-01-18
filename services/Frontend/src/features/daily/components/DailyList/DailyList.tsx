@@ -181,6 +181,7 @@ export const DailyList = () => {
             </DailyListHeader>
 
             <DailyActivityChart
+                className={styles.activityChart}
                 activity={dailyMetrics?.activityHistory ?? []}
                 onSelectDay={navigateToDailyByDate}
                 isLoading={!dailyMetrics}

@@ -2,6 +2,7 @@
 
 import ActivityCalendar from "react-activity-calendar";
 import { Tooltip } from "react-tooltip";
+import classNames from "clsx";
 
 import styles from "./styles/DailyActivityChart.module.scss";
 import "react-tooltip/dist/react-tooltip.css";
@@ -20,9 +21,10 @@ type DailyActivityChartProps = {
     activity: DailyActivity[];
     onSelectDay?: (date: string) => void;
     isLoading?: boolean;
+    className?: string;
 };
 
-export const DailyActivityChart = ({ activity, onSelectDay, isLoading }: DailyActivityChartProps) => {
+export const DailyActivityChart = ({ activity, onSelectDay, isLoading, className }: DailyActivityChartProps) => {
     const labels = useDailyActivityChartLabels();
     const { focusedDate, onGridFocus, onGridBlur, onGridKeyDown, isGridFocused, onGridCellClick } = useDailyActivityChartNavigation({
         activity,
@@ -43,7 +45,7 @@ export const DailyActivityChart = ({ activity, onSelectDay, isLoading }: DailyAc
             as="article"
             tabIndex={0}
             variant="semi-translucent"
-            className={styles.container}
+            className={classNames(styles.container, className)}
             onFocus={onGridFocus}
             onBlur={onGridBlur}
             onKeyDown={onGridKeyDown}

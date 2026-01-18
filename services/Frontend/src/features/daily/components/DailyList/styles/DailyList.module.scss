@@ -12,6 +12,10 @@
     @media (min-width: tokens.$breakpoint-md) {
         padding-top: tokens.$spacing-900;
     }
+    
+    .activityChart {
+        margin-top: tokens.$spacing-700;
+    }
 
     .floatingContainer {
         position: fixed;
@@ -22,9 +26,9 @@
 
         display: flex;
         justify-content: center;
-        padding: tokens.$spacing-600 tokens.$spacing-400;
+        padding: tokens.$spacing-900 tokens.$spacing-400 tokens.$spacing-600;
 
-        background: linear-gradient(to top, tokens.$color-neutral-background-300 50%, tokens.$color-neutral-background-alpha-300 75%, transparent);
+        background: linear-gradient(to top, tokens.$color-neutral-background-300 50%, transparent);
         pointer-events: none;
         
         @media (min-width: tokens.$breakpoint-sm) {
