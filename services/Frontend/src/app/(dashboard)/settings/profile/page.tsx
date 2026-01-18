@@ -38,17 +38,17 @@ function Page() {
             <SectionSeparator />
 
             <Section>
-                <SectionTitle>{t("settings.profile.logoutFromAllDevices.header")}</SectionTitle>
-                <SectionDescription>{t("settings.profile.logoutFromAllDevices.description")}</SectionDescription>
-                <LogoutButton logoutFromAllSessions variant="primary" />
+                <SectionTitle>{t("settings.profile.exports.header")}</SectionTitle>
+                <SectionDescription>{t("settings.profile.exports.description")}</SectionDescription>
+                <ExportEntriesDashboard />
             </Section>
 
             <SectionSeparator />
 
             <Section>
-                <SectionTitle>{t("settings.profile.exports.header")}</SectionTitle>
-                <SectionDescription>{t("settings.profile.exports.description")}</SectionDescription>
-                <ExportEntriesDashboard />
+                <SectionTitle>{t("settings.profile.logoutFromAllDevices.header")}</SectionTitle>
+                <SectionDescription>{t("settings.profile.logoutFromAllDevices.description")}</SectionDescription>
+                <LogoutButton logoutFromAllSessions variant="primary" />
             </Section>
 
             <SectionSeparator />

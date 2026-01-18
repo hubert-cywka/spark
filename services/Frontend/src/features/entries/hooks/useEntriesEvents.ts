@@ -1,7 +1,6 @@
 import { useCallback } from "react";
 
 import { getEntryElementId } from "@/features/daily/components/DailyList/utils/dailyEntriesSelectors.ts";
-import { highlightElement } from "@/features/daily/utils/highlight.ts";
 import {
     useCreateEntry,
     useCreateEntryEvents,
@@ -16,6 +15,7 @@ import { useBulkUpdateEntries } from "@/features/entries/hooks/useUpdateEntry/us
 import { useBulkUpdateEntriesEvents } from "@/features/entries/hooks/useUpdateEntry/useBulkUpdateEntriesEvents.ts";
 import { Entry } from "@/features/entries/types/Entry";
 import { ISODateString } from "@/types/ISODateString";
+import { highlightElement } from "@/utils/highlight";
 import { onNextTick } from "@/utils/onNextTick.ts";
 
 export const useEntriesEvents = () => {

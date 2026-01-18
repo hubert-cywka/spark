@@ -11,20 +11,20 @@ import { DailyListHeader } from "@/features/daily/components/DailyList/component
 import { NoEntriesMessage } from "@/features/daily/components/DailyList/components/NoEntriesMessage/NoEntriesMessage.tsx";
 import { useDailyDateRange } from "@/features/daily/components/DailyList/hooks/useDailyDateRange";
 import { useDailyEntriesPlaceholders } from "@/features/daily/components/DailyList/hooks/useDailyEntriesPlaceholders";
-import { useEntriesEvents } from "@/features/daily/components/DailyList/hooks/useEntriesEvents.ts";
 import { useNavigationBetweenEntries } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
 import { getEntryElementId, getEntryPlaceholderElementId } from "@/features/daily/components/DailyList/utils/dailyEntriesSelectors";
 import { DayHeader } from "@/features/daily/components/DayHeader/DayHeader";
 import { DaySkeleton } from "@/features/daily/components/DaySkeleton";
 import { useDailyMetrics } from "@/features/daily/hooks/useDailyMetrics.ts";
 import { formatToISODateString } from "@/features/daily/utils/dateUtils";
-import { highlightElement } from "@/features/daily/utils/highlight.ts";
 import { DailyEntry, DailyEntryPlaceholder } from "@/features/entries/components/DailyEntry";
 import { EntryFiltersGroup } from "@/features/entries/components/EntryFiltersGroup";
 import { EntryQuickAddForm } from "@/features/entries/components/EntryQuickAddForm/EntryQuickAddForm.tsx";
 import { useGetDailyEntriesByDateRange } from "@/features/entries/hooks";
+import { useEntriesEvents } from "@/features/entries/hooks/useEntriesEvents";
 import { Entry } from "@/features/entries/types/Entry";
 import { ISODateString } from "@/types/ISODateString";
+import { highlightElement } from "@/utils/highlight";
 import { onNextTick } from "@/utils/onNextTick.ts";
 
 export const DailyList = () => {
@@ -181,6 +181,7 @@ export const DailyList = () => {
             </DailyListHeader>
 
             <DailyActivityChart
+                className={styles.activityChart}
                 activity={dailyMetrics?.activityHistory ?? []}
                 onSelectDay={navigateToDailyByDate}
                 isLoading={!dailyMetrics}

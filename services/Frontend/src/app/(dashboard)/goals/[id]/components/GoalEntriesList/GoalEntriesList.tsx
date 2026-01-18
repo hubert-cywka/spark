@@ -2,11 +2,11 @@ import { ReactNode } from "react";
 
 import styles from "./styles/GoalEntriesList.module.scss";
 
-import { useEntriesEvents } from "@/features/daily/components/DailyList/hooks/useEntriesEvents.ts";
 import { useNavigationBetweenEntries } from "@/features/daily/components/DailyList/hooks/useNavigateBetweenEntries";
 import { getEntryElementId } from "@/features/daily/components/DailyList/utils/dailyEntriesSelectors";
 import { DailyEntry } from "@/features/entries/components/DailyEntry";
 import { EntriesListSkeleton } from "@/features/entries/components/EntriesListSkeleton";
+import { useEntriesEvents } from "@/features/entries/hooks/useEntriesEvents";
 import { Entry } from "@/features/entries/types/Entry";
 import { useTranslate } from "@/lib/i18n/hooks/useTranslate";
 
