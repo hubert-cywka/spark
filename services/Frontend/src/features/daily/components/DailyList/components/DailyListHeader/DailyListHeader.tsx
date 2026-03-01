@@ -31,7 +31,7 @@ export const DailyListHeader = ({ timeframeStart, onNextTimeframe, onPrevTimefra
                     <IconButton
                         isDisabled={isCurrentYearAndMonth}
                         onPress={onReset}
-                        variant="secondary"
+                        variant="primary"
                         iconSlot={RotateCcwIcon}
                         tooltip={t("daily.filters.today")}
                         aria-label={t("daily.filters.today")}

@@ -197,6 +197,7 @@ export const DailyList = () => {
                 const dayEntries = entriesGroups[daily.date] ?? [];
                 const showPlaceholder = placeholders.includes(daily.date);
 
+                // TODO: Extract "Day" component
                 return (
                     <section className={styles.day} key={daily.date} data-daily-date={daily.date}>
                         <DayHeader
